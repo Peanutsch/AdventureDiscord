@@ -13,7 +13,7 @@ namespace Adventure
         /// <summary>
         /// Starts the player's adventure and initializes their state.
         /// </summary>
-        [SlashCommand("start", "Lets star in the Inn's Diner Room!")]
+        [SlashCommand("start", "Lets start in the Inn's Diner Room!")]
         public async Task StartAdventure()
         {
             var state = new GameState
