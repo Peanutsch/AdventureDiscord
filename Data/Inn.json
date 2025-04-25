@@ -1,0 +1,16 @@
+[
+    {
+        "id": "Inn_Diner_Room",
+        "name": "Diner Room",
+        "description": "Ah, the diner!\nThe most important room of the inn.\nOn the tables are some plates, cutlery knife, fork and spoon and some candles. Torches hang on the wall.\nBecause of the low light you can't see much in the shadows, but at the other side of the room you see a pale light. A sign on the wall says 'KITCHEN'.",
+        "connectedRooms": [ "Inn_Kitchen", "Door_Main_Entrance" ],
+        "items": [ "torch", "candle", "knife", "fork", "spoon" ]
+    },
+    {
+        "id": "Inn_Kitchen",
+        "name": "The Kitchen",
+        "description": "The kitchen.\nThe smell that hangs around here is as questionable as the food the cook is preparing.",
+        "connectedRooms": [ "Inn_Diner_Room" ],
+        "items": [ "ancient_sword", "health_potion" ]
+    }
+]
