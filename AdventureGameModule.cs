@@ -7,13 +7,20 @@ namespace Adventure
 {
     public class AdventureGameModule : InteractionModuleBase<SocketInteractionContext>
     {
+        private readonly AdventureBot _bot;
+
+        public AdventureGameModule(AdventureBot bot)
+        {
+            _bot = bot;
+        }
+
         // Store player progress using a thread-safe dictionary
         private static ConcurrentDictionary<ulong, GameState> playerStates = new();
 
         /// <summary>
         /// Starts the player's adventure and initializes their state.
         /// </summary>
-        [SlashCommand("start", "Lets start in the Inn's Diner Room!")]
+        [SlashCommand("Begin", "Lets start in the Inn's Diner Room!")]
         public async Task StartAdventure()
         {
             var state = new GameState
@@ -32,14 +39,21 @@ namespace Adventure
         {
             string description = !string.IsNullOrEmpty(state.Room) && RoomDescriptions.ContainsKey(state.Room) ? RoomDescriptions[state.Room] : "Error Room."; // Fallback-tekst
 
-
             var builder = new ComponentBuilder();
             foreach (var option in RoomOptions[state.Room!])
             {
                 builder.WithButton(option.Description, option.Id);
             }
 
-            await RespondAsync(description, components: builder.Build());
+            // Eerst controleren of we het kanaal kunnen gebruiken
+            if (await _bot.CanSendMessage(Context.Channel.Id))
+            {
+                await RespondAsync(description, components: builder.Build());
+            }
+            else
+            {
+                await RespondAsync("Ik kan geen berichten sturen in dit kanaal. Controleer de botpermissies.", ephemeral: true);
+            }
         }
 
         /// <summary>

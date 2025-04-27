@@ -78,5 +78,24 @@ namespace Adventure
                 throw new FileNotFoundException("Token bestand niet gevonden.", filePath);
             }
         }
+
+        /// <summary>
+        /// Controleert of de bot berichten kan versturen in een specifiek kanaal.
+        /// </summary>
+        public async Task<bool> CanSendMessage(ulong channelId)
+        {
+            var guildChannel = _client.GetChannel(channelId) as IGuildChannel;
+
+            if (guildChannel != null)
+            {
+                var botUser = await guildChannel.Guild.GetCurrentUserAsync();
+                var perms = botUser.GetPermissions(guildChannel);
+
+                return perms.ViewChannel && perms.SendMessages;
+            }
+
+            return false;
+        }
     }
+
 }
