@@ -2,6 +2,7 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace Adventure
 {
@@ -20,11 +21,27 @@ namespace Adventure
         /// <summary>
         /// Starts the player's adventure and initializes their state.
         /// </summary>
-        [SlashCommand("start", "test test test")]
+        [SlashCommand("start", "Start the adventure.")]
         public async Task StartAdventure()
         {
-            // Send a test message confirming the slash command registration
-            await RespondAsync("Slash Command registered");
+            // Defer the response to prevent the "No response" error
+            await DeferAsync();
+
+            Console.WriteLine("Slash Command /start is being executed");
+            Debug.WriteLine("Slash Command /start is being executed");
+
+            // Send a follow-up response after the processing is complete.
+            await FollowupAsync("Your adventure has begun!");
+        }
+
+
+        public static async Task OnSlashCommand(SocketSlashCommand command)
+        {
+            if (command.CommandName == "start")
+            {
+                await command.RespondAsync("Slash Command /start is being executed");
+                Console.WriteLine("Slash Command /start is being executed");
+            }
         }
     }
 }

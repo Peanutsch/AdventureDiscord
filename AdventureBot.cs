@@ -45,11 +45,16 @@ namespace Adventure
             // Subscribe to events for logging, bot readiness, and handling interactions
             _client.Log += LogAsync;
             _client.Ready += ReadyAsync;
+            _client.SlashCommandExecuted += OnSlashCommandAsync;
             _client.InteractionCreated += HandleInteractionAsync;
 
             // Get token and log in to Discord
             string token = GetToken();
             await _client.LoginAsync(TokenType.Bot, token);
+            
+            Console.WriteLine("[Startup AdventureBot]");
+            Debug.WriteLine("[Startup AdventureBot]");
+
             await _client.StartAsync();
 
             // Use a CancellationToken to keep the bot running until the program is closed
@@ -58,9 +63,8 @@ namespace Adventure
 
         private async Task ReadyAsync()
         {
-            var latency = _client.Latency;
-            Console.WriteLine($"Bot connected with a latency of {latency}ms");
-            Debug.WriteLine($"Bot connected with a latency of {latency}ms");
+            Console.WriteLine($"[Bot connected with a latency of {_client.Latency}ms]");
+            Debug.WriteLine($"[Bot connected with a latency of {_client.Latency}ms]");
 
             // Add modules (commands) and register them globally
             await _interactions.AddModulesAsync(typeof(AdventureBot).Assembly, _services);
@@ -124,6 +128,13 @@ namespace Adventure
                 Console.WriteLine("Error while shutting down the bot: " + ex.Message);
                 Debug.WriteLine("Error while shutting down the bot: " + ex.Message);
             }
+        }
+
+
+        private async Task OnSlashCommandAsync(SocketSlashCommand command)
+        {
+            //var module = new AdventureGameModule(this); // Zorg dat de juiste module wordt aangeroepen
+            await AdventureGameModule.OnSlashCommand(command);
         }
 
         /// <summary>
