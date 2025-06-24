@@ -1,0 +1,19 @@
+{
+  {
+    "id": "player_default",
+    "name": "player_name",
+    "description": "A brave soul starting their journey.",
+    "hitpoints": 50,
+    "mana": 0,
+    "attributes": {
+      "strength": 10,
+      "dexterity": 14,
+      "constitution": 10,
+      "intelligence": 10,
+      "wisdom": 11,
+      "charisma": 10
+    },
+    "weapons": [ "short_sword", "dagger" ],
+    "items": []
+  }
+}

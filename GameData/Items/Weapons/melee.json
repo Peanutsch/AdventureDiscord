@@ -1,0 +1,63 @@
+[
+  {
+    // SHORT SWORD
+    "id": "short_sword",
+    "name": "Short Sword",
+    "description": "Just 70 cm of steel — quick, quiet, and lethal. When in the right hands that is.",
+    "weight": 5,
+    "range": {
+      "melee": 1.5
+    },
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d6 Piercing"
+    }
+  },
+  {
+    // LONG SWORD
+    "id": "long_sword",
+    "name": "Long Sword",
+    "description": "Roughly 100 cm long, crafted for balanced, deadly blows in the hands of a trained warrior.",
+    "weight": 8,
+    "range": {
+      "melee": 1
+    },
+    "damage": {
+      "normal": {
+        "diceCount": 1,
+        "diceValue": 8,
+        "modifier": 0,
+        "type": "slashing",
+        "display": "1d8 Normal Slashing"
+      },
+      "versatile": {
+        "diceCount": 1,
+        "diceValue": 10,
+        "modifier": 0,
+        "type": "slashing",
+        "display": "1d10 Versatile Slashing"
+      }
+    }
+  }
+]
+/*
+  {
+    "id": "",
+    "name": "",
+    "description": "",
+    "range": {
+      "": 0
+    },
+    "damage": {
+      "diceCount": 0,
+      "diceValue": 0,
+      "modifier": 0,
+      "type": "",
+      "display": ""
+    },
+    "weight": 0
+  }
+*/

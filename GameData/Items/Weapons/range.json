@@ -1,0 +1,36 @@
+[
+  {
+    "id": "crossbow_standard",
+    "name": "Standard Crossbow",
+    "description": "Favored by soldiers and hunters alike, this crossbow combines raw power with mechanical reliability. Ideal for those who prefer precision from a distance.",
+    "weight": 4,
+    "range": {
+      "ranged": 8,
+      "melee": 1
+    },
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 8,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d8 Piercing"
+    }
+  },
+  {
+    "id": "arrow_standard",
+    "name": "Standard Arrow",
+    "description": "A standard wooden shaft with an iron tip, commonly used as ammunition for bows and crossbows.",
+    "weight": 0.1,
+    "range": {
+      "ranged": 0,
+      "melee": 0
+    },
+    "damage": {
+      "diceCount": 0,
+      "diceValue": 0,
+      "modifier": 1,
+      "type": "",
+      "display": ""
+    }
+  }
+]

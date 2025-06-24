@@ -1,0 +1,36 @@
+[
+  {
+    "id": "Goblin",
+    "name": "Goblin",
+    "description": "A little green goblin...",
+    "hitpoints": 10,
+    "attributes": {
+      "strength": 8,
+      "dexterity": 14,
+      "constitution": 10,
+      "intelligence": 10,
+      "wisdom": 8,
+      "charisma": 8
+    },
+    "armor": [ "leather_armor" ],
+    "weapons": [ "short_sword", "dagger" ],
+    "loot": []
+  },
+  {
+    "id": "Orc",
+    "name": "Orc",
+    "description": "A big, brutish orc...",
+    "hitpoints": 50,
+    "attributes": {
+      "strength": 16,
+      "dexterity": 12,
+      "constitution": 16,
+      "intelligence": 7,
+      "wisdom": 11,
+      "charisma": 10
+    },
+    "armor": [ "hide_armor" ],
+    "weapons": [ "great_axe" ],
+    "loot": []
+  }
+]

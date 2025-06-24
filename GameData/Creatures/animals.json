@@ -1,0 +1,45 @@
+{
+  "mammals": [
+    {
+      "id": "wolf",
+      "name": "Wolf",
+      "description": "",
+      "hitpoints": 11,
+      "attributes": {
+        "strength": 12,
+        "dexterity": 15,
+        "constitution": 12,
+        "intelligence": 3,
+        "wisdom": 12,
+        "charisma": 6
+      },
+      "weapons": [ "wolf_claw", "wolf_fangs" ],
+      "loot": [
+        {"id": "wolf_fur", "amount": 1},
+        {"id": "wolf_claw", "amount": 1},
+        {"id": "wolf_fang", "amount": 1}
+      ]
+    },
+
+    {
+      "id": "wolf_dire",
+      "name": "Dire Wolf",
+      "description": "",
+      "hitpoints": 37,
+      "attributes": {
+        "strength": 17,
+        "dexterity": 15,
+        "constitution": 15,
+        "intelligence": 3,
+        "wisdom": 12,
+        "charisma": 7
+      },
+      "weapons": [ "wolf_claw", "wolf_fangs" ],
+      "loot": [
+        {"id": "wolf_fur", "amount": 1},
+        {"id": "wolf_claw", "amount": 1},
+        {"id": "wolf_fang", "amount": 1}
+      ]
+    }
+  ]
+}
