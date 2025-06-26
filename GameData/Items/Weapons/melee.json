@@ -1,3 +1,4 @@
+// WEIGHT IN KG, RANGE IN M
 [
   {
     // SHORT SWORD
@@ -5,9 +6,7 @@
     "name": "Short Sword",
     "description": "Just 70 cm of steel — quick, quiet, and lethal. When in the right hands that is.",
     "weight": 5,
-    "range": {
-      "melee": 1.5
-    },
+    "range": 1.5, // 5ft
     "damage": {
       "diceCount": 1,
       "diceValue": 6,
@@ -22,9 +21,7 @@
     "name": "Long Sword",
     "description": "Roughly 100 cm long, crafted for balanced, deadly blows in the hands of a trained warrior.",
     "weight": 8,
-    "range": {
-      "melee": 1
-    },
+    "range": 1.5, // 5 ft
     "damage": {
       "normal": {
         "diceCount": 1,
@@ -41,6 +38,21 @@
         "display": "1d10 Versatile Slashing"
       }
     }
+  },
+  {
+    // GREAT AXE
+    "id": "great_axe",
+    "name": "Great Axe",
+    "description": "A heavy, brutal weapon designed to cleave through armor with powerful, sweeping strikes.",
+    "weight": 3.2,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 12,
+      "modifier": 0,
+      "type": "slashing",
+      "display": "1d12 Slashing"
+    }
   }
 ]
 /*
@@ -48,16 +60,14 @@
     "id": "",
     "name": "",
     "description": "",
-    "range": {
-      "": 0
-    },
+    "weight": ,
+    "range": ,
     "damage": {
-      "diceCount": 0,
-      "diceValue": 0,
-      "modifier": 0,
+      "diceCount": ,
+      "diceValue": ,
+      "modifier": ,
       "type": "",
       "display": ""
-    },
-    "weight": 0
+    }
   }
 */

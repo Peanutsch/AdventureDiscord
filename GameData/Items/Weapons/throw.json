@@ -1,10 +1,11 @@
+// WEIGHT IN KG, RANGE IN M
 [
   {
     // DAGGER
     "id": "dagger",
     "name": "Dagger",
     "description": "A small blade, easy to conceal and quick to strike. Favored by rogues and those who prefer subtlety over strength.",
-    "weight": 1,
+    "weight": 0.5,
     "range": {
       "melee": 1,
       "thrown": 5
@@ -15,24 +16,6 @@
       "modifier": 0,
       "type": "piercing",
       "display": "1d4 Piercing"
-    }
-  },
-  {
-    // GREAT AXE
-    "id": "great_axe",
-    "name": "Great Axe",
-    "description": "A heavy, brutal weapon designed to cleave through armor with powerful, sweeping strikes.",
-    "weight": 10,
-    "range": {
-      "melee": 1,
-      "thrown": 5
-    },
-    "damage": {
-      "diceCount": 1,
-      "diceValue": 12,
-      "modifier": 0,
-      "type": "slashing",
-      "display": "1d12 Slashing"
     }
   }
 ]

@@ -1,3 +1,4 @@
+// WEIGHT IN KG
 {
   "mammals": [
     {
@@ -15,12 +16,11 @@
       },
       "weapons": [ "wolf_claw", "wolf_fangs" ],
       "loot": [
-        {"id": "wolf_fur", "amount": 1},
-        {"id": "wolf_claw", "amount": 1},
-        {"id": "wolf_fang", "amount": 1}
+        {"id": "wolf_fur", "amount": 1, "weight": 1.7},
+        {"id": "wolf_claw", "amount": 1, "weight": 0.1 },
+        {"id": "wolf_fang", "amount": 1, "weight": 0.05 }
       ]
     },
-
     {
       "id": "wolf_dire",
       "name": "Dire Wolf",
@@ -36,9 +36,9 @@
       },
       "weapons": [ "wolf_claw", "wolf_fangs" ],
       "loot": [
-        {"id": "wolf_fur", "amount": 1},
-        {"id": "wolf_claw", "amount": 1},
-        {"id": "wolf_fang", "amount": 1}
+        {"id": "wolf_fur", "amount": 1, "weight": 1.5 },
+        {"id": "wolf_claw", "amount": 1, "weight": 0.5 },
+        {"id": "wolf_fang", "amount": 1, "weight": 0.1 }
       ]
     }
   ]

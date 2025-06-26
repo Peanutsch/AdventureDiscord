@@ -1,0 +1,19 @@
+// WEIGHT IN KG, RANGE IN M
+[
+  {
+    "id": "leather_armor",
+    "name": "Leather Armor",
+    "description": "Light armor made from toughened leather. Flexible and quiet.",
+    "ac_bonus": 11,
+    "weight": 4.5,
+    "type": "light"
+  },
+  {
+    "id": "hide_armor",
+    "name": "Hide Armor",
+    "description": "Thick furs and pelts stitched together. Offers modest protection.",
+    "ac_bonus": 12,
+    "weight": 5.4,
+    "type": "medium"
+  }
+]

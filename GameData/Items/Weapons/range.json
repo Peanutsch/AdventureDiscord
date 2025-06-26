@@ -1,36 +1,50 @@
+// WEIGHT IN KG, RANGE IN M
 [
   {
+    // Standard Crossbow
     "id": "crossbow_standard",
     "name": "Standard Crossbow",
     "description": "Favored by soldiers and hunters alike, this crossbow combines raw power with mechanical reliability. Ideal for those who prefer precision from a distance.",
     "weight": 4,
-    "range": {
-      "ranged": 8,
-      "melee": 1
-    },
+    "range": 8, // 30m/100ft
+    "damage": {
+      "ranged": {
+        "diceCount": 1,
+        "diceValue": 8,
+        "modifier": 0,
+        "type": "piercing",
+        "display": "1d8 Piercing"
+      }
+    }
+  },
+  {
+    // Shortbow
+    "id": "shortbow",
+    "name": "Shortbow",
+    "description": "Compact and lightweight, the shortbow is favored by scouts, rangers, and skirmishers who rely on speed and stealth. Though it lacks the range of larger bows, it excels in tight quarters and rapid engagements.",
+    "weight": 2,
+    "range": 5, // 24m/80ft
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d6 Piercing"
+    }
+  },
+  {
+    // Longbow
+    "id": "longbow",
+    "name": "Longbow",
+    "description": "This tall, finely crafted bow delivers powerful shots over vast distances. Preferred by elite archers and war-trained rangers, the longbow demands strength and skill, but rewards with deadly precision from afar.",
+    "weight": 2,
+    "range": 10, // 45m/150ft
     "damage": {
       "diceCount": 1,
       "diceValue": 8,
       "modifier": 0,
       "type": "piercing",
       "display": "1d8 Piercing"
-    }
-  },
-  {
-    "id": "arrow_standard",
-    "name": "Standard Arrow",
-    "description": "A standard wooden shaft with an iron tip, commonly used as ammunition for bows and crossbows.",
-    "weight": 0.1,
-    "range": {
-      "ranged": 0,
-      "melee": 0
-    },
-    "damage": {
-      "diceCount": 0,
-      "diceValue": 0,
-      "modifier": 1,
-      "type": "",
-      "display": ""
     }
   }
 ]

@@ -1,0 +1,24 @@
+// WEIGHT IN KG, RANGE IN M
+[
+  {
+    "id": "potion_heal_s",
+    "name": "Healing Potion Small",
+    "description": "A small vial containing a mild restorative liquid that heals minor amount of health.",
+    "points": 2,
+    "weight": 0.5
+  },
+  {
+    "id": "potion_heal_m",
+    "name": "Healing Potion Medium",
+    "description": "A standard healing potion, effective at mending moderate injuries quickly.",
+    "points": 10,
+    "weight": 0.05
+  },
+  {
+    "id": "potion_heal_l",
+    "name": "Healing Potion Large",
+    "description": "A potent elixir that rapidly restores a significant amount of health.",
+    "points": 15,
+    "weight": 0.05
+  }
+]

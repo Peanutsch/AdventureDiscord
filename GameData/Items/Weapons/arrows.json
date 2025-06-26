@@ -1,3 +1,4 @@
+// WEIGHT IN KG, RANGE IN M
 [
   {
     // Standard Arrow
@@ -18,18 +19,35 @@
       {
         "type": "extraDamage",
         "damageType": "fire",
-        "dice": "1d6"
+        "diceCount": 1,
+        "diceValue": "d6"
       }
     ],
-    "compatibleWeapons": [ "longbow", "shortbow"]
+    "compatibleWeapons": [ "longbow", "shortbow" ]
   },
   {
-    // 
+    // Standard Bolt
     "id": "bolt_standard",
     "name": "Standard Bolt",
     "description": "Standard ammunition for crossbows.",
     "weight": 0.2,
     "effects": [],
+    "compatibleWeapons": [ "crossbow_standard", "crossbow_heavy" ]
+  },
+  {
+    // Fire Bolt
+    "id": "bolt_fire",
+    "name": "Standard Bolt",
+    "description": "Standard ammunition for crossbows.",
+    "weight": 0.2,
+    "effects": [
+      {
+        "type": "extraDamage",
+        "damageType": "fire",
+        "diceCount": 1,
+        "diceValue": "d6"
+      }
+    ],
     "compatibleWeapons": [ "crossbow_standard", "crossbow_heavy" ]
   }
 ]

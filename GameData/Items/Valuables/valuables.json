@@ -1,0 +1,33 @@
+// WEIGHT IN KG, RANGE IN M
+{
+  "items_coins": [
+    {
+      "id": "coins_copper",
+      "name": "Silver Coins",
+      "description": "",
+      "value": 0.01,
+      "weight": 0.01
+    },
+    {
+      "id": "coins_silver",
+      "name": "Silver Coins",
+      "description": "",
+      "value": 0.1,
+      "weight": 0.03
+    },
+    {
+      "id": "coins_gold",
+      "name": "Golden Coins",
+      "description": "",
+      "value": 1,
+      "weight": 0.05
+    },
+    {
+      "id": "coins_platinum",
+      "name": "Platinum Coins",
+      "description": "",
+      "value": 10,
+      "weight": 0.08
+    }
+  ]
+}

@@ -21,6 +21,9 @@ namespace Adventure.Models.Player
         [JsonPropertyName("hitpoints")]
         public int Hitpoints { get; set; }
 
+        [JsonPropertyName("maxCarry")]
+        public double MaxCarry { get; set; }
+
         [JsonPropertyName("attributes")]
         public AttributesModel Attributes { get; set; } = new();
 

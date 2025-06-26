@@ -1,10 +1,11 @@
-{
+// WEIGHT IN KG, RANGE IN M
+[
   {
     "id": "player_default",
     "name": "player_name",
     "description": "A brave soul starting their journey.",
     "hitpoints": 50,
-    "mana": 0,
+    "maxCarry": 70,
     "attributes": {
       "strength": 10,
       "dexterity": 14,
@@ -16,4 +17,4 @@
     "weapons": [ "short_sword", "dagger" ],
     "items": []
   }
-}
+]
