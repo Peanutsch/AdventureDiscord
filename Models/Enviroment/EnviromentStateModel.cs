@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Enviroment
 {
-    public class GameStateModel
+    public class EnviromentStateModel
     {
         public string? Room { get; set; }
         public bool InCombat { get; set; }
