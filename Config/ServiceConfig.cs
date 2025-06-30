@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Adventure.Gateway;
+using Adventure.Buttons.Handlers;
 
 namespace Adventure.Config
 {
@@ -49,7 +50,6 @@ namespace Adventure.Config
 
 
             // Register helpers that do not depend on HttpClient via AddSingleton
-
 
             // Return the fully built service provider
             return services.BuildServiceProvider();

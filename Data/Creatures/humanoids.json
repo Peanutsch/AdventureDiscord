@@ -1,6 +1,6 @@
 [
   {
-    "id": "Goblin",
+    "id": "goblin",
     "name": "Goblin",
     "description": "A little green goblin...",
     "hitpoints": 10,
@@ -17,7 +17,7 @@
     "loot": []
   },
   {
-    "id": "Orc",
+    "id": "orc",
     "name": "Orc",
     "description": "A big, brutish orc...",
     "hitpoints": 50,

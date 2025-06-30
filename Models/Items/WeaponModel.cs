@@ -9,6 +9,9 @@ namespace Adventure.Models.Items
 {
     public class WeaponModel
     {
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
+
         [JsonPropertyName("name")]
         public string? Name { get; set; }
 

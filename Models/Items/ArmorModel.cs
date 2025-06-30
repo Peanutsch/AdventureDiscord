@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Items
 {
-    class ArmorModel
+    public class ArmorModel
     {
         [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
