@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Adventure.Gateway;
-using Adventure.Buttons.Handlers;
+using Adventure.Buttons;
 
 namespace Adventure.Config
 {

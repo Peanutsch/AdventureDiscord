@@ -14,7 +14,7 @@
       "wisdom": 11,
       "charisma": 10
     },
-    "weapons": [ "short_sword", "dagger" ],
+    "weapons": [ "short_sword", "dagger"],
     "items": []
   }
 ]

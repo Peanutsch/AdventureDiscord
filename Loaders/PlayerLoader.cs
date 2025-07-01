@@ -4,7 +4,7 @@ namespace Adventure.Loaders
 {
     public static class PlayerLoader
     {
-        public static List<PlayerModel> Load() =>
+        public static List<PlayerModel>? Load() =>
            JsonDataLoader.LoadListFromJson<PlayerModel>("Data/Player/player.json");
     }
 }

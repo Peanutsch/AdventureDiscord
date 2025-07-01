@@ -1,6 +1,20 @@
 // WEIGHT IN KG, RANGE IN M
 [
   {
+    "id": "dagger",
+    "name": "Dagger",
+    "description": "A small, easily concealed blade suitable for quick strikes.",
+    "weight": 1,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d4 Piercing"
+    }
+  },
+  {
     // SHORT SWORD
     "id": "short_sword",
     "name": "Short Sword",
@@ -23,6 +37,13 @@
     "weight": 8,
     "range": 1.5, // 5 ft
     "damage": {
+        "diceCount": 1,
+        "diceValue": 8,
+        "modifier": 0,
+        "type": "slashing",
+        "display": "1d8 Normal Slashing"
+      /*
+          "damage": {
       "normal": {
         "diceCount": 1,
         "diceValue": 8,
@@ -37,6 +58,7 @@
         "type": "slashing",
         "display": "1d10 Versatile Slashing"
       }
+  */
     }
   },
   {

@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿// Adventure/Quest/QuestEngine.cs
+using System.Collections.Concurrent;
+using Adventure.Buttons;
 using Discord;
 using Discord.WebSocket;
 
@@ -24,24 +26,68 @@ namespace Adventure.Quest
                 case "start":
                     if (action == "flee")
                     {
-                        await interaction.RespondAsync("You fled. The forest grows quiet.", ephemeral: false);
-                        SetStep(userId, "fled_goblins");
+                        if (interaction is SocketMessageComponent componentFlee)
+                        {
+                            await ButtonInteractionHelpers.RemoveButtonsAsync(
+                                componentFlee,
+                                "You fled. The forest grows quiet."
+                            );
+                        }
+                        else
+                        {
+                            await interaction.RespondAsync("You fled. The forest grows quiet.", ephemeral: false);
+                        }
+
+                        SetStep(userId, "flee");
                     }
                     else if (action == "attack")
                     {
-                        var weaponButtons = new ComponentBuilder()
-                            .WithButton("Shortsword", "btn_weapon_shortsword", ButtonStyle.Primary)
-                            .WithButton("Dagger", "btn_weapon_dagger", ButtonStyle.Primary);
+                        if (interaction is SocketMessageComponent componentAttack)
+                        {
+                            var weaponButtons = new ComponentBuilder()
+                                .WithButton("Attack with Shortsword", "btn_weapon_shortsword", ButtonStyle.Primary)
+                                .WithButton("Attack with Dagger", "btn_weapon_dagger", ButtonStyle.Primary);
 
-                        await interaction.RespondAsync("Choose your weapon:", components: weaponButtons.Build(), ephemeral: false);
-                        SetStep(userId, "weapon_choice");
+                            await componentAttack.UpdateAsync(msg =>
+                            {
+                                var embed = componentAttack.Message.Embeds.FirstOrDefault()?.ToEmbedBuilder()?.Build();
+                                msg.Embeds = embed != null ? new[] { embed } : null;
+                                msg.Content = ""; // geen content erboven
+                                msg.Components = weaponButtons.Build();
+                            });
+
+                            SetStep(userId, "weapon_choice");
+                        }
+                        else
+                        {
+                            await interaction.RespondAsync("Choose your weapon:", ephemeral: false);
+                        }
                     }
                     break;
 
                 case "weapon_choice":
-                    await interaction.RespondAsync($"You attack with your {action}!", ephemeral: false);
+                    if (interaction is SocketMessageComponent componentWeaponChoice)
+                    {
+                        string weaponUsed = action switch
+                        {
+                            "Shortsword" => "Shortsword",
+                            "Dagger" => "Dagger",
+                            _ => $"Unknown weapon ({action})"
+                        };
+
+                        await ButtonInteractionHelpers.RemoveButtonsAsync(
+                            componentWeaponChoice,
+                            $"You attack with your [**{weaponUsed}**]!"
+                        );
+                    }
+                    else
+                    {
+                        await interaction.RespondAsync($"You attack with your weapon!", ephemeral: false);
+                    }
+
                     SetStep(userId, "post_battle");
                     break;
+
                 default:
                     await interaction.RespondAsync("Nothing happens...", ephemeral: false);
                     break;

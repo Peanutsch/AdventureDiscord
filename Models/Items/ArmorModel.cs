@@ -19,10 +19,10 @@ namespace Adventure.Models.Items
         public string Description { get; set; } = string.Empty;
 
         [JsonPropertyName("ac_bonus")]
-        public int ACBonus { get; set; }
+        public int AC_Bonus { get; set; }
 
         [JsonPropertyName("weight")]
-        public int Weight { get; set; }
+        public double Weight { get; set; }
 
         [JsonPropertyName("type")]
         public string Type { get; set; } = "light"; // light, medium, heavy

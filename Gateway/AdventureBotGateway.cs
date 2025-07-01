@@ -1,4 +1,6 @@
-﻿using Adventure.Services;
+﻿using Adventure.Data;
+using Adventure.Loaders;
+using Adventure.Services;
 using Adventure.TokenAccess;
 using Discord;
 using Discord.Interactions;
@@ -27,6 +29,13 @@ namespace Adventure.Gateway
 
         public async Task StartBotAsync()
         {
+            // Load GameData
+            GameData.Weapons = WeaponLoader.Load();
+            GameData.Armor = ArmorLoader.Load();
+            GameData.Potions = PotionLoader.Load();
+            GameData.Player = PlayerLoader.Load();
+            GameData.Humanoids = HumanoidLoader.Load();
+
             string discordToken = GetToken.GetTokenFromCSV();
 
             await _client.LoginAsync(TokenType.Bot, discordToken);                                // Authenticate the bot

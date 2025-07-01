@@ -12,6 +12,9 @@ namespace Adventure.Models.Items
         [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
 
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
         [JsonPropertyName("amount")]
         public int Amount { get; set; } = 1;
     }

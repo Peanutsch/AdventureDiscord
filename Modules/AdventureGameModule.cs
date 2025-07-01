@@ -31,10 +31,8 @@ namespace Adventure.Modules
                 playerStates[Context.User.Id] = new GameStateModel();
 
             playerStates[Context.User.Id].Inventory.Clear(); // reset inventory
-            playerStates[Context.User.Id].Inventory.Add(1, "Item_1");
-            playerStates[Context.User.Id].Inventory.Add(2, "Item_2");
-            playerStates[Context.User.Id].Inventory.Add(10, "Item_3");
-
+            playerStates[Context.User.Id].Inventory.Add(1, "Shortsword");
+            playerStates[Context.User.Id].Inventory.Add(2, "Dagger");
 
 
             // Send a follow-up response after the processing is complete.

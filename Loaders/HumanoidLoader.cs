@@ -9,7 +9,7 @@ namespace Adventure.Loaders
 {
     public static class HumanoidLoader
     {
-        public static List<CreaturesModel> Load() =>
+        public static List<CreaturesModel>? Load() =>
             JsonDataLoader.LoadListFromJson<CreaturesModel>("Data/Creatures/humanoids.json");
     }
 }

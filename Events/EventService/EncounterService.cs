@@ -1,4 +1,5 @@
 ﻿using Adventure.Data;
+using Adventure.Helpers;
 using Adventure.Models.Creatures;
 using Adventure.Services;
 using Discord;
@@ -16,10 +17,19 @@ namespace Adventure.Events.EventService
         {
             try
             {
+                List shuffle = (humanoids_shuffle, animals_shuffle);
+
                 var humanoids = GameData.Humanoids;
+                var animals = GameData.Animals;
+
                 var random = new Random();
+
+                var rndNPC = random.Next([humanoids, animals]);
+
+                var pickedNPC = rndNPC![random.Next(rndNPC.Count)];
                 
-                return humanoids[random.Next(humanoids.Count)];
+                //return humanoids![random.Next(humanoids.Count)];
+                return humanoids![random.Next(humanoids.Count)];
             }
             catch (Exception ex)
             {
@@ -35,21 +45,48 @@ namespace Adventure.Events.EventService
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: {creature.Name}");
 
             var embed = new EmbedBuilder()
-                .WithColor(Color.Orange)
+                .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
                 .WithDescription($"**[{creature.Name!.ToUpper()}]** appears!\n{creature.Description}")
-                //.AddField("-----", $"[{creature.Name!.ToUpper()}] appears!\n{creature.Description}", false)
-                //.AddField("Description", creature.Description, false)
                 .AddField("Hit Points", creature.Hitpoints, false);
 
+            LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", creature.Armor ?? new())}");
             if (creature.Armor?.Any() == true)
-                embed.AddField("Armor", string.Join(", ", creature.Armor), false);
+            {
+                var armorList = EntityResolver.ResolveArmorNames(creature.Armor);
 
+                if (armorList.Count > 0)
+                {
+                    embed.AddField("Armor:", string.Join(", ", armorList), false);
+                }
+                else
+                {
+                    LogService.Error($"[EncounterService.GetRandomEncounter] > armorList = 0");
+                    embed.AddField("Armor:", "None", false);
+                }
+            }
+
+            LogService.Info($"[EncounterService.GetRandomEncounter] > Weapons: {string.Join(",", creature.Weapons ?? new())}");
             if (creature.Weapons?.Any() == true)
-                embed.AddField("Weapons", string.Join(", ", creature.Weapons), false);
+            {
+                var weaponList = EntityResolver.ResolveWeaponNames(creature.Weapons!);
+                if (weaponList.Count > 0)
+                {
+                    embed.AddField("Weapons:", string.Join(", ", weaponList), false);
+                }
+                else
+                {
+                    LogService.Error($"[EncounterService.GetRandomEncounter] > weaponList = 0");
+                    embed.AddField("Weapons:", "None", false);
+                }
+                
+            }
 
+            /*
+            LogService.Info($"[EncounterService.GetRandomEncounter] > Loot: {string.Join(",", creature.Loot ?? new())}");
             if (creature.Loot?.Any() == true)
                 embed.AddField("Loot", string.Join(", ", creature.Loot), false);
+            */
 
             return embed;
         }

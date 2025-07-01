@@ -19,7 +19,7 @@ namespace Adventure.Models.Items
         public string? Description { get; set; }
 
         [JsonPropertyName("range")]
-        public required Dictionary<string, int> Range { get; set; }
+        public double Range { get; set; }
 
         [JsonPropertyName("weight")]
         public double Weight { get; set; }
