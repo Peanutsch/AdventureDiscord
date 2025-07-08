@@ -3,11 +3,32 @@ using Discord;
 using Adventure.Quest;
 using Adventure.Data;
 using Adventure.Events.EventService;
+using Adventure.Services;
 
 namespace Adventure.Buttons
 {
     public class ComponentInteractions : InteractionModuleBase<SocketInteractionContext>
     {
+        /*
+        [ComponentInteraction("*")]
+        public async Task CatchAll(string id)
+        {
+            LogService.Info($"[CatchAll] component ID: {id}");
+            await RespondAsync($"You clicked: {id}", ephemeral: true);
+        }
+        */
+
+        [ComponentInteraction("btn_weapon:*")]
+        public async Task HandleDynamicWeaponButton(string weaponName)
+        {
+            
+            LogService.Info($"[ComponentInteractions.HandleDynamicWeaponButton] > weaponName: {weaponName}");
+            //var weaponName = rawWeaponName.Replace("_", " ");
+            //weaponName = char.ToUpper(weaponName[0]) + weaponName.Substring(1);
+
+            await QuestEngine.HandleEncounterAction(Context.Interaction, weaponName);
+        }
+
         [ComponentInteraction("btn_attack")]
         public async Task ButtonAttackHandler()
         {
@@ -20,7 +41,8 @@ namespace Adventure.Buttons
             await QuestEngine.HandleEncounterAction(Context.Interaction, "flee");
         }
 
-        [ComponentInteraction("btn_weapon_shortsword")]
+        /*
+        [ComponentInteraction("btn_weapon_short_sword")]
         public async Task WeaponShortswordHandler()
         {
             await QuestEngine.HandleEncounterAction(Context.Interaction, "Shortsword");
@@ -31,6 +53,7 @@ namespace Adventure.Buttons
         {
             await QuestEngine.HandleEncounterAction(Context.Interaction, "Dagger");
         }
+        */
 
         [ComponentInteraction("btn_toggle_detail:*")]
         public async Task HandleToggleDetail(string creatureId)

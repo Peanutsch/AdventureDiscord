@@ -10,7 +10,7 @@ namespace Adventure.Helpers
 {
     public static class EntityResolver
     {
-        public static List<string> ResolveArmorNames(List<string> armorIds)
+        public static List<string> ResolveArmorAttributes(List<string> armorIds)
         {
             if (armorIds.Count >= 1)
             {
@@ -48,7 +48,7 @@ namespace Adventure.Helpers
             return new List<string>();
         }
 
-        public static List<string> ResolveWeaponNames(List<string?> weaponIds)
+        public static List<string> ResolveWeaponAttributes(List<string?> weaponIds)
         {
             if (weaponIds == null || weaponIds.Count == 0)
             {
@@ -87,12 +87,12 @@ namespace Adventure.Helpers
                     .Where(w => w != null)
                     .ToList();
 
-                LogService.Info("[EntityResolver.ResolveWeaponNames] > Completed weapons lookup. Preparing weapon data.");
+                LogService.Info("[EntityResolver.ResolveWeaponNames] > Completed weapons lookup. Returning weapon data.");
 
                 var weaponData = weapons
                     .Select(w => $"[{w!.Name}]\n" +
                                  $"Range: {w.Range}m\n" +
-                                 $"Weight: {w.Weight}kg)\n" +
+                                 $"Weight: {w.Weight}kg\n" +
                                  $"~{w.Description}~\n")
                     .ToList();
 

@@ -1,4 +1,5 @@
 ﻿using Adventure.Loaders;
+using Adventure.Models;
 using Adventure.Models.Creatures;
 using Adventure.Models.Items;
 using Adventure.Models.Player;
@@ -75,6 +76,14 @@ namespace Adventure.Data
         {
             get => _potions;
             set => _potions = value;
+        }
+
+        public static List<InventoryModel>? _inventory;
+
+        public static List<InventoryModel>? Inventory
+        {
+            get => _inventory;
+            set => _inventory = value;
         }
     }
 }

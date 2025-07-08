@@ -17,23 +17,23 @@ namespace Adventure.Events.EventService
         {
             try
             {
-                List shuffle = (humanoids_shuffle, animals_shuffle);
+                //List shuffle = (humanoids_shuffle, animals_shuffle);
 
                 var humanoids = GameData.Humanoids;
                 var animals = GameData.Animals;
 
                 var random = new Random();
 
-                var rndNPC = random.Next([humanoids, animals]);
+                //var rndNPC = random.Next([humanoids, animals]);
 
-                var pickedNPC = rndNPC![random.Next(rndNPC.Count)];
+                //var pickedNPC = rndNPC![random.Next(rndNPC.Count)];
                 
                 //return humanoids![random.Next(humanoids.Count)];
                 return humanoids![random.Next(humanoids.Count)];
             }
             catch (Exception ex)
             {
-                LogService.Error($"[EncounterService.CreatureRandomizer]                 > Error:\n{ex.Message}");
+                LogService.Error($"[EncounterService.CreatureRandomizer] > Error:\n{ex.Message}");
 
                 return null;
             }
@@ -53,7 +53,7 @@ namespace Adventure.Events.EventService
             LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", creature.Armor ?? new())}");
             if (creature.Armor?.Any() == true)
             {
-                var armorList = EntityResolver.ResolveArmorNames(creature.Armor);
+                var armorList = EntityResolver.ResolveArmorAttributes(creature.Armor);
 
                 if (armorList.Count > 0)
                 {
@@ -69,10 +69,10 @@ namespace Adventure.Events.EventService
             LogService.Info($"[EncounterService.GetRandomEncounter] > Weapons: {string.Join(",", creature.Weapons ?? new())}");
             if (creature.Weapons?.Any() == true)
             {
-                var weaponList = EntityResolver.ResolveWeaponNames(creature.Weapons!);
+                var weaponList = EntityResolver.ResolveWeaponAttributes(creature.Weapons!);
                 if (weaponList.Count > 0)
                 {
-                    embed.AddField("Weapons:", string.Join(", ", weaponList), false);
+                    embed.AddField("Weapons:", string.Join(" ", weaponList), false);
                 }
                 else
                 {

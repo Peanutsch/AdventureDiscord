@@ -24,16 +24,10 @@ namespace Adventure.Modules
             await DeferAsync();
 
             LogService.SessionDivider('=', "START");
-            LogService.Info("[AdventureGameModule.SlashCommandStartHandler]          > Slash Command /start is executed");
+            LogService.Info("[AdventureGameModule.SlashCommandStartHandler] > Slash Command /start is executed");
 
-
-            if (!playerStates.ContainsKey(Context.User.Id))
-                playerStates[Context.User.Id] = new GameStateModel();
-
-            playerStates[Context.User.Id].Inventory.Clear(); // reset inventory
-            playerStates[Context.User.Id].Inventory.Add(1, "Shortsword");
-            playerStates[Context.User.Id].Inventory.Add(2, "Dagger");
-
+            // Reset inventory to basic inventory: Shordsword and Dagger
+            GameStateService.LoadInventory(Context.User.Id);
 
             // Send a follow-up response after the processing is complete.
             //await FollowupAsync("Slash Command /start is executed");
@@ -52,7 +46,7 @@ namespace Adventure.Modules
                 return;
             }
 
-            LogService.Info("[AdventureGameModule.SlashCommandInventoryHandler]          > Slash Command /inventory is executed");
+            LogService.Info("[AdventureGameModule.SlashCommandInventoryHandler] > Slash Command /inventory is executed");
 
             EmbedBuilder embed = InventoryEmbedBuilder.BuildInventoryEmbed(gameState.Inventory);
 
@@ -64,6 +58,9 @@ namespace Adventure.Modules
         [SlashCommand("encounter", "Triggers a random encounter")]
         public async Task SlashCommandEncounterHandler()
         {
+            // Start with basic inventory
+            GameStateService.LoadInventory(Context.User.Id);
+
             await DeferAsync();
 
             var creature = EncounterService.CreatureRandomizer();
@@ -71,7 +68,7 @@ namespace Adventure.Modules
             if (creature == null)
             {
                 await FollowupAsync("⚠️ Could not pick a random creature.");
-                LogService.Error("[AdventureGameModule.SlashCommandEncounterHandler]                    > No creature could be picked.");
+                LogService.Error("[AdventureGameModule.SlashCommandEncounterHandler] > No creature could be picked.");
                 return;
             }
 

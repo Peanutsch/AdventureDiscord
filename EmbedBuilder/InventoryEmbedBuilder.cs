@@ -5,7 +5,7 @@ using System.Drawing;
 
 public static class InventoryEmbedBuilder
 {
-    public static EmbedBuilder BuildInventoryEmbed(Dictionary<int, string> inventory)
+    public static EmbedBuilder BuildInventoryEmbed(Dictionary<string, int> inventory)
     {
         var embed = new EmbedBuilder()
             .WithColor(Discord.Color.DarkRed)

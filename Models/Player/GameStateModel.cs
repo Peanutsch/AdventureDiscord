@@ -8,6 +8,6 @@ namespace Adventure.Models.Player
 {
     public class GameStateModel
     {
-        public Dictionary<int, string> Inventory { get; set; } = new Dictionary<int, string>();
+        public Dictionary<string, int> Inventory { get; set; } = new Dictionary<string, int>();
     }
 }
