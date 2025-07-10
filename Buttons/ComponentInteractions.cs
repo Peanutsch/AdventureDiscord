@@ -4,6 +4,7 @@ using Adventure.Quest;
 using Adventure.Data;
 using Adventure.Events.EventService;
 using Adventure.Services;
+using Adventure.Helpers;
 
 namespace Adventure.Buttons
 {
@@ -18,15 +19,26 @@ namespace Adventure.Buttons
         }
         */
 
-        [ComponentInteraction("btn_weapon:*")]
-        public async Task HandleDynamicWeaponButton(string weaponName)
+        [ComponentInteraction("btn_:*")]
+        public async Task HandleDynamicWeaponButton(string customId)
         {
-            
-            LogService.Info($"[ComponentInteractions.HandleDynamicWeaponButton] > weaponName: {weaponName}");
-            //var weaponName = rawWeaponName.Replace("_", " ");
-            //weaponName = char.ToUpper(weaponName[0]) + weaponName.Substring(1);
+            var preparedWeaponId = $"{customId.Replace("btn_", "")}";
+            var weapons = GameEntityFetcher.RetrieveWeaponAttributes(new List<string> {preparedWeaponId});
+            var weapon = weapons.FirstOrDefault();
 
-            await QuestEngine.HandleEncounterAction(Context.Interaction, weaponName);
+            LogService.Info($"[ComponentInteractions.HandleDynamicWeaponButton] > Param customId: {customId}");
+            LogService.Info($"[ComponentInteractions.HandleDynamicWeaponButton] > preparedWeaponId: {preparedWeaponId}");
+
+            if (weapon == null)
+            {
+                LogService.Error($"[ComponentInteractions.HandleDynamicWeaponButton] > Weapon ID '{preparedWeaponId}' not found.");
+                await RespondAsync($"⚠️ Weapon not found: {preparedWeaponId}", ephemeral: true);
+                return;
+            }
+
+            LogService.Info($"[ComponentInteractions.HandleDynamicWeaponButton] > weaponName: {weapon!.Name}");
+
+            await QuestEngine.HandleEncounterAction(Context.Interaction, weapon.Name!);
         }
 
         [ComponentInteraction("btn_attack")]

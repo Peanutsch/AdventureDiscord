@@ -14,17 +14,14 @@ namespace Adventure.Quest
 {
     public static class QuestEngine
     {
-        // === Step identifiers ===
         private const string StepStart = "start";
         private const string StepFlee = "flee";
         private const string StepWeaponChoice = "weapon_choice";
         private const string StepPostBattle = "post_battle";
 
-        // === Action identifiers ===
         private const string ActionFlee = "flee";
         private const string ActionAttack = "attack";
 
-        // === Messages ===
         private const string MsgFlee = "You fled. The forest grows quiet.";
         private const string MsgChooseWeapon = "Choose your weapon:";
         private const string MsgAttackShortsword = "You attack with your **Shortsword**!";
@@ -48,12 +45,10 @@ namespace Adventure.Quest
 
             switch (currentStep)
             {
-                // STEP START
                 case StepStart:
-                    // FLEE
                     if (action == ActionFlee)
                     {
-                        LogService.Info("[QuestEngine.HandleEncounterAction] > Button Action FLEE");
+                        LogService.Info("[QuestEngine.HandleEncounterAction] > [action == ActionFlee] > Button Action FLEE");
 
                         if (interaction is SocketMessageComponent componentFlee)
                         {
@@ -68,28 +63,22 @@ namespace Adventure.Quest
 
                         SetStep(userId, StepFlee);
                     }
-                    // ACTION ATTACK
                     else if (action == ActionAttack)
                     {
-                        LogService.Info($"Inventory count: {inventory.Count}");
+                        LogService.Info($"[QuestEngine.HandleEncounterAction] > [action == ActionAttack] > Inventory count: {inventory.Count}");
 
                         if (interaction is SocketMessageComponent componentAttack)
                         {
                             var builder = new ComponentBuilder();
+                            var weaponIds = inventory.Keys.Select(k => k.ToLower()).ToList();
+                            var weapons = GameEntityFetcher.RetrieveWeaponAttributes(weaponIds);
 
-                            foreach (var item in inventory.Keys)
+                            foreach (var weapon in weapons)
                             {
-                                LogService.Info($"item: {item}");
+                                string customId = $"btn_{weapon.Id}";
+                                string label = $"Attack with {weapon.Name}";
 
-                                var weapon = GameData.Weapons?.FirstOrDefault(w =>
-                                    w.Id != null && w.Id.ToLower() == item.ToLower());
-
-                                var weaponName = weapon?.Name ?? item;
-
-                                var label = $"Attack with {weaponName}";
-                                var customId = $"btn_weapon:{item.ToLower()}";
-
-                                LogService.Info($"[QuestEngine.HandleEncounterAction] item: {item}, weapon name: {weaponName} => label: {label}, customId: {customId}");
+                                LogService.Info($"[QuestEngine.HandleEncounterAction] > [action == ActionAttack] > Label: {label}, customId: {customId}");
 
                                 builder.WithButton(label, customId, ButtonStyle.Primary);
                             }
@@ -109,12 +98,12 @@ namespace Adventure.Quest
                             await interaction.RespondAsync(MsgChooseWeapon, ephemeral: false);
                         }
                     }
-                break;
-                // STEP WEAPON CHOICE
+                    break;
+
                 case StepWeaponChoice:
                 {
-                    WeaponModel? weapon = GetWeaponNameFromAction(action);
-                    LogService.Info($"[QuestEngine.HandleEncounterAction] > Chosen weapon: {weapon}");
+                    WeaponModel? weapon = GetWeaponFromActionId(action);
+                    LogService.Info($"[QuestEngine.HandleEncounterAction] > [Case StepWeaponChoice] > Chosen weapon: {weapon?.Name}");
 
                     if (weapon == null)
                     {
@@ -151,24 +140,22 @@ namespace Adventure.Quest
                 }
 
                 default:
-                await interaction.RespondAsync(MsgNothingHappens, ephemeral: false);
-                break;
+                    await interaction.RespondAsync(MsgNothingHappens, ephemeral: false);
+                    break;
             }
         }
 
-        private static WeaponModel? GetWeaponNameFromAction(string action)
+        private static WeaponModel? GetWeaponFromActionId(string action)
         {
+            LogService.Info($"[QuestEngine.GetWeaponFromActionId] > param action: {action}");
+
             if (string.IsNullOrEmpty(action) || GameData.Weapons == null)
                 return null;
 
-            if (action.StartsWith("btn_weapon_"))
+            if (action.StartsWith("btn_"))
             {
-                var raw = action.Replace("btn_weapon_", "").Replace("_", " ").ToLower();
-
-                var weapon = GameData.Weapons
-                    .FirstOrDefault(w => w.Name!.ToLower() == raw);
-
-                return weapon;
+                var weaponId = action.Substring(4); // Strip 'btn_'
+                return GameEntityFetcher.RetrieveWeaponAttributes(new List<string> { weaponId }).FirstOrDefault();
             }
 
             return null;

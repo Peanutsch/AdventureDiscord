@@ -1,10 +1,10 @@
 [
   {
-    "Item": "short_sword",
+    "Item": "weapon_short_sword",
     "Value": 1
   },
   {
-    "Item": "dagger",
+    "Item": "weapon_dagger",
     "Value": 1
   }
 ]

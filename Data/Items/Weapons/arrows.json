@@ -7,7 +7,7 @@
     "description": "A simple wooden arrow with an iron tip.",
     "weight": 0.1,
     "effects": [],
-    "compatibleWeapons": [ "longbow", "shortbow" ]
+    "compatibleWeapons": [ "weapon_longbow", "weapon_shortbow" ]
   },
   {
     // Fire Arrow
@@ -23,20 +23,20 @@
         "diceValue": "d6"
       }
     ],
-    "compatibleWeapons": [ "longbow", "shortbow" ]
+    "compatibleWeapons": [ "weapon_longbow", "weapon_shortbow" ]
   },
   {
     // Standard Bolt
-    "id": "bolt_standard",
+    "id": "arrow_bolt_standard",
     "name": "Standard Bolt",
     "description": "Standard ammunition for crossbows.",
     "weight": 0.2,
     "effects": [],
-    "compatibleWeapons": [ "crossbow_standard", "crossbow_heavy" ]
+    "compatibleWeapons": [ "weapon_crossbow_standard", "weapon_crossbow_heavy" ]
   },
   {
     // Fire Bolt
-    "id": "bolt_fire",
+    "id": "arrow_bolt_fire",
     "name": "Standard Bolt",
     "description": "Standard ammunition for crossbows.",
     "weight": 0.2,
@@ -48,6 +48,6 @@
         "diceValue": "d6"
       }
     ],
-    "compatibleWeapons": [ "crossbow_standard", "crossbow_heavy" ]
+    "compatibleWeapons": [ "weapon_crossbow_standard", "weapon_crossbow_heavy" ]
   }
 ]

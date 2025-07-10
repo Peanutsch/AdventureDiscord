@@ -12,8 +12,8 @@
       "wisdom": 8,
       "charisma": 8
     },
-    "armor": [ "leather_armor" ],
-    "weapons": [ "short_sword", "dagger" ],
+    "armor": [ "armor_leather_armor" ],
+    "weapons": [ "weapon_short_sword", "weapon_dagger" ],
     "loot": []
   },
   {
@@ -29,8 +29,8 @@
       "wisdom": 11,
       "charisma": 10
     },
-    "armor": [ "hide_armor" ],
-    "weapons": [ "great_axe" ],
+    "armor": [ "armor_hide_armor" ],
+    "weapons": [ "weapon_great_axe" ],
     "loot": []
   }
 ]

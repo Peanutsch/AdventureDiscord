@@ -1,7 +1,7 @@
 // WEIGHT IN KG, RANGE IN M
 [
   {
-    "id": "dagger",
+    "id": "weapon_dagger",
     "name": "Dagger",
     "description": "A small, easily concealed blade suitable for quick strikes.",
     "weight": 1,
@@ -16,7 +16,7 @@
   },
   {
     // SHORT SWORD
-    "id": "short_sword",
+    "id": "weapon_short_sword",
     "name": "Short Sword",
     "description": "Just 70 cm of steel — quick, quiet, and lethal. When in the right hands that is.",
     "weight": 5,
@@ -31,17 +31,17 @@
   },
   {
     // LONG SWORD
-    "id": "long_sword",
+    "id": "weapon_long_sword",
     "name": "Long Sword",
     "description": "Roughly 100 cm long, crafted for balanced, deadly blows in the hands of a trained warrior.",
     "weight": 8,
     "range": 1.5, // 5 ft
     "damage": {
-        "diceCount": 1,
-        "diceValue": 8,
-        "modifier": 0,
-        "type": "slashing",
-        "display": "1d8 Normal Slashing"
+      "diceCount": 1,
+      "diceValue": 8,
+      "modifier": 0,
+      "type": "slashing",
+      "display": "1d8 Normal Slashing"
       /*
           "damage": {
       "normal": {
@@ -63,7 +63,7 @@
   },
   {
     // GREAT AXE
-    "id": "great_axe",
+    "id": "weapon_great_axe",
     "name": "Great Axe",
     "description": "A heavy, brutal weapon designed to cleave through armor with powerful, sweeping strikes.",
     "weight": 3.2,

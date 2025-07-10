@@ -2,28 +2,28 @@
 {
   "items_coins": [
     {
-      "id": "coins_copper",
+      "id": "valuables_coins_copper",
       "name": "Silver Coins",
       "description": "",
       "value": 0.01,
       "weight": 0.01
     },
     {
-      "id": "coins_silver",
+      "id": "valuables_coins_silver",
       "name": "Silver Coins",
       "description": "",
       "value": 0.1,
       "weight": 0.03
     },
     {
-      "id": "coins_gold",
+      "id": "valuables_coins_gold",
       "name": "Golden Coins",
       "description": "",
       "value": 1,
       "weight": 0.05
     },
     {
-      "id": "coins_platinum",
+      "id": "valuables_coins_platinum",
       "name": "Platinum Coins",
       "description": "",
       "value": 10,

@@ -14,11 +14,23 @@
         "wisdom": 12,
         "charisma": 6
       },
-      "weapons": [ "wolf_claw", "wolf_fangs" ],
+      "weapons": [ "weapon_wolf_claw", "weapon_wolf_fangs" ],
       "loot": [
-        {"id": "wolf_fur", "amount": 1, "weight": 1.7},
-        {"id": "wolf_claw", "amount": 1, "weight": 0.1 },
-        {"id": "wolf_fang", "amount": 1, "weight": 0.05 }
+        {
+          "id": "weapon_wolf_fur",
+          "amount": 1,
+          "weight": 1.7
+        },
+        {
+          "id": "weapon_wolf_claw",
+          "amount": 1,
+          "weight": 0.1
+        },
+        {
+          "id": "weapon_wolf_fang",
+          "amount": 1,
+          "weight": 0.05
+        }
       ]
     },
     {
@@ -34,11 +46,23 @@
         "wisdom": 12,
         "charisma": 7
       },
-      "weapons": [ "wolf_claw", "wolf_fangs" ],
+      "weapons": [ "weapon_wolf_claw", "weapon_wolf_fangs" ],
       "loot": [
-        {"id": "wolf_fur", "amount": 1, "weight": 1.5 },
-        {"id": "wolf_claw", "amount": 1, "weight": 0.5 },
-        {"id": "wolf_fang", "amount": 1, "weight": 0.1 }
+        {
+          "id": "weapon_wolf_fur",
+          "amount": 1,
+          "weight": 1.5
+        },
+        {
+          "id": "weapon_wolf_claw",
+          "amount": 1,
+          "weight": 0.5
+        },
+        {
+          "id": "weapon_wolf_fang",
+          "amount": 1,
+          "weight": 0.1
+        }
       ]
     }
   ]

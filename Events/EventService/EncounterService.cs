@@ -1,5 +1,6 @@
 ﻿using Adventure.Data;
 using Adventure.Helpers;
+using Adventure.Loaders;
 using Adventure.Models.Creatures;
 using Adventure.Services;
 using Discord;
@@ -42,44 +43,66 @@ namespace Adventure.Events.EventService
 
         public static EmbedBuilder GetRandomEncounter(CreaturesModel creature)
         {
-            LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: {creature.Name}");
+            LogService.Info($"\n[Start]==========[Data NPC]==========[Start]");
+
+            LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered:\n" +
+                                                $"{creature.Name}" +
+                                                $"{creature.Armor}" +
+                                                $"{creature.Weapons}");
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
-                .WithDescription($"**[{creature.Name!.ToUpper()}]** appears!\n{creature.Description}")
-                .AddField("Hit Points", creature.Hitpoints, false);
+                .WithDescription($"**[{creature.Name!.ToUpper()}]** appears!\n*\"{creature.Description}\"*")
+                .AddField("Hit Points:", creature.Hitpoints, false);
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", creature.Armor ?? new())}");
             if (creature.Armor?.Any() == true)
             {
-                var armorList = EntityResolver.ResolveArmorAttributes(creature.Armor);
+                var armorList = GameEntityFetcher.RetrieveArmorAttributes(creature.Armor);
 
                 if (armorList.Count > 0)
                 {
-                    embed.AddField("Armor:", string.Join(", ", armorList), false);
+                    foreach (var armor in armorList)
+                    {
+                        embed.AddField($"**[{armor.Name}]**\n",
+                            //$"**[{armor.Name}]**\n" +
+                            $"Type: {armor.Type} armor\n" +
+                            $"AC Bonus: +{armor.AC_Bonus}\n" +
+                            $"Weight: {armor.Weight}kg\n" +
+                            $"*\"{armor.Description}\"*", false);
+                    }
                 }
                 else
                 {
-                    LogService.Error($"[EncounterService.GetRandomEncounter] > armorList = 0");
+                    LogService.Error("[EncounterService.GetRandomEncounter] > No armor data resolved.");
                     embed.AddField("Armor:", "None", false);
                 }
+
             }
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Weapons: {string.Join(",", creature.Weapons ?? new())}");
             if (creature.Weapons?.Any() == true)
             {
-                var weaponList = EntityResolver.ResolveWeaponAttributes(creature.Weapons!);
+                var weaponList = GameEntityFetcher.RetrieveWeaponAttributes(creature.Weapons!);
                 if (weaponList.Count > 0)
                 {
-                    embed.AddField("Weapons:", string.Join(" ", weaponList), false);
+                    foreach (var weapon in weaponList)
+                    {
+                        embed.AddField($"**[{weapon.Name}]**",
+                            //$"**[{weapon.Name}]**\n" +
+                            $"Range: {weapon.Range} meter\n" +
+                            $"Weight: {weapon.Weight}kg\n" +
+                            $"*\"{weapon.Description}\"*", false);
+                    }
                 }
                 else
                 {
                     LogService.Error($"[EncounterService.GetRandomEncounter] > weaponList = 0");
                     embed.AddField("Weapons:", "None", false);
                 }
-                
+
+                LogService.Info($"\n[End]==========[Data NPC]==========[End]");
             }
 
             /*
