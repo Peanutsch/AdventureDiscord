@@ -1,4 +1,5 @@
-﻿using Adventure.Models.Items;
+﻿using Adventure.Helpers;
+using Adventure.Models.Items;
 using Adventure.Services;
 using System;
 using System.Collections.Generic;
@@ -19,16 +20,20 @@ namespace Adventure.Quest.Battle
         {
             var state = BattleEngine.GetBattleState(userId);
             var creature = state.Creatures;
-            var random = new Random();
+            var playerStrength = state.Player.Attributes.Strength;
+            var diceCount = weapon.Damage.DiceCount;
+            var diceValue = weapon.Damage.DiceValue;
 
-            int damage = 0; // Placeholder — logic for actual damage calculation to be implemented
+            var (damage, rolls) = DiceRoller.RollWithDetails(diceCount, diceValue);
+
 
             // Reduce creature HP
             creature.Hitpoints -= damage;
             if (creature.Hitpoints < 0)
                 creature.Hitpoints = 0;
 
-            LogService.Info($"[BattleEngine.ProcessPlayerAttack] {state.Player.Name} attacked {creature.Name} for {damage} damage. Remaining HP: {creature.Hitpoints}");
+            LogService.Info($"[BattleEngine.ProcessPlayerAttack] Player rolls: {rolls}\n" +
+                            $"{state.Player.Name} attacked {creature.Name} for {damage} damage. Remaining HP: {creature.Hitpoints}");
 
             if (creature.Hitpoints <= 0)
             {
@@ -42,15 +47,18 @@ namespace Adventure.Quest.Battle
         /// <summary>
         /// Processes the creature's attack on the player.
         /// </summary>
-        public static string ProcessCreatureAttack(ulong userId)
+        public static string ProcessCreatureAttack(ulong userId, WeaponModel weapon)
         {
             var state = BattleEngine.GetBattleState(userId);
             var player = state.Player;
             var creature = state.Creatures;
+            var creatureStrenght = state.Creatures.Attributes.Strength;
+            var diceCount = weapon.Damage.DiceCount;
+            var diceValue = weapon.Damage.DiceValue;
 
             var random = new Random();
-            //int damage = random.Next(5, 11); // Creature deals between 5 and 10 damage
-            int damage = 0;
+
+            var (damage, rolls) = DiceRoller.RollWithDetails(diceCount, diceValue);
 
             player.Hitpoints -= damage;
             if (player.Hitpoints < 0)

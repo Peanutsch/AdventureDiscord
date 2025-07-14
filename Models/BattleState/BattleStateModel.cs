@@ -11,11 +11,11 @@ namespace Adventure.Models.BattleState
 {
     public class BattleStateModel
     {
-        public required PlayerModel Player { get; set; }
-        public required CreaturesModel Creatures { get; set; }
-        public required List<WeaponModel> PlayerWeapons { get; set; }
-        public required List<ArmorModel> PlayerArmor { get; set; }
-        public required List<WeaponModel> CreatureWeapons { get; set; }
-        public required List<ArmorModel> CreatureArmor { get; set; }
+        public PlayerModel Player { get; set; } = new();
+        public CreaturesModel Creatures { get; set; } = new();
+        public List<WeaponModel> PlayerWeapons { get; set; } = new();
+        public List<ArmorModel> PlayerArmor { get; set; } = new();
+        public List<WeaponModel> CreatureWeapons { get; set; } = new();
+        public List<ArmorModel> CreatureArmor { get; set; } = new();
     }
 }

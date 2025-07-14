@@ -11,21 +11,27 @@ namespace Adventure.Buttons
     public class ComponentInteractions : InteractionModuleBase<SocketInteractionContext>
     {
         [ComponentInteraction("*")]
-        public async Task CatchAll(string id)
+        public async Task CatchAll(string weaponId)
         {
-            LogService.Info($"[CatchAll] component ID: {id}");
-            await RespondAsync($"You clicked: {id}\nNo ComponentInteraction match found...", ephemeral: false);
+            LogService.Info($"[CatchAll] component ID: {weaponId}");
+
+            if (weaponId.StartsWith("weapon_"))
+            {
+                await HandleWeaponButton(weaponId);
+            }
+                
+            await RespondAsync($"You clicked: {weaponId}\nNo ComponentInteraction match found...");
         }
 
-        [ComponentInteraction("_*")]
-        public async Task HandleDynamicWeaponButton(string weaponId)
+        //[ComponentInteraction("_*")]
+        public async Task HandleWeaponButton(string weaponId)
         {
-            LogService.Info($"[HandleDynamicWeaponButton] > Param customId: {weaponId}");
+            LogService.Info($"[HandleWeaponButton] > Recieved weaponId: {weaponId}");
 
             var state = BattleEngine.GetBattleState(Context.User.Id);
             if (state == null)
             {
-                await RespondAsync("❌ No active battle found.", ephemeral: true);
+                await RespondAsync("❌ No active battle found.");
                 return;
             }
 
@@ -35,12 +41,12 @@ namespace Adventure.Buttons
 
             if (weapon == null)
             {
-                LogService.Error($"[HandleDynamicWeaponButton] > Weapon ID '{weaponId}' not found.");
-                await RespondAsync($"⚠️ Weapon not found: {weaponId}", ephemeral: true);
+                LogService.Error($"[HandleWeaponButton] > Weapon ID '{weaponId}' not found.");
+                await RespondAsync($"⚠️ Weapon not found: {weaponId}");
                 return;
             }
 
-            LogService.Info($"[HandleDynamicWeaponButton] > Player chose: {weapon.Name}");
+            LogService.Info($"[HandleWeaponButton] > Player chose: {weapon.Name}");
 
             await BattleEngine.HandleEncounterAction(Context.Interaction, weapon.Name!, weaponId);
         }
