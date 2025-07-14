@@ -1,96 +1,60 @@
 ﻿using Discord.Interactions;
 using Discord;
-using Adventure.Quest;
 using Adventure.Data;
 using Adventure.Events.EventService;
 using Adventure.Services;
 using Adventure.Helpers;
+using Adventure.Quest.Battle;
 
 namespace Adventure.Buttons
 {
     public class ComponentInteractions : InteractionModuleBase<SocketInteractionContext>
     {
-        /*
         [ComponentInteraction("*")]
         public async Task CatchAll(string id)
         {
             LogService.Info($"[CatchAll] component ID: {id}");
-            await RespondAsync($"You clicked: {id}", ephemeral: true);
+            await RespondAsync($"You clicked: {id}\nNo ComponentInteraction match found...", ephemeral: false);
         }
-        */
 
-        [ComponentInteraction("btn_:*")]
-        public async Task HandleDynamicWeaponButton(string customId)
+        [ComponentInteraction("_*")]
+        public async Task HandleDynamicWeaponButton(string weaponId)
         {
-            var preparedWeaponId = $"{customId.Replace("btn_", "")}";
-            var weapons = GameEntityFetcher.RetrieveWeaponAttributes(new List<string> {preparedWeaponId});
-            var weapon = weapons.FirstOrDefault();
+            LogService.Info($"[HandleDynamicWeaponButton] > Param customId: {weaponId}");
 
-            LogService.Info($"[ComponentInteractions.HandleDynamicWeaponButton] > Param customId: {customId}");
-            LogService.Info($"[ComponentInteractions.HandleDynamicWeaponButton] > preparedWeaponId: {preparedWeaponId}");
-
-            if (weapon == null)
+            var state = BattleEngine.GetBattleState(Context.User.Id);
+            if (state == null)
             {
-                LogService.Error($"[ComponentInteractions.HandleDynamicWeaponButton] > Weapon ID '{preparedWeaponId}' not found.");
-                await RespondAsync($"⚠️ Weapon not found: {preparedWeaponId}", ephemeral: true);
+                await RespondAsync("❌ No active battle found.", ephemeral: true);
                 return;
             }
 
-            LogService.Info($"[ComponentInteractions.HandleDynamicWeaponButton] > weaponName: {weapon!.Name}");
+            var weapon = GameEntityFetcher
+                .RetrieveWeaponAttributes(new List<string> { weaponId })
+                .FirstOrDefault();
 
-            await QuestEngine.HandleEncounterAction(Context.Interaction, weapon.Name!);
+            if (weapon == null)
+            {
+                LogService.Error($"[HandleDynamicWeaponButton] > Weapon ID '{weaponId}' not found.");
+                await RespondAsync($"⚠️ Weapon not found: {weaponId}", ephemeral: true);
+                return;
+            }
+
+            LogService.Info($"[HandleDynamicWeaponButton] > Player chose: {weapon.Name}");
+
+            await BattleEngine.HandleEncounterAction(Context.Interaction, weapon.Name!, weaponId);
         }
 
         [ComponentInteraction("btn_attack")]
         public async Task ButtonAttackHandler()
         {
-            await QuestEngine.HandleEncounterAction(Context.Interaction, "attack");
+            await BattleEngine.HandleEncounterAction(Context.Interaction, "attack", "none");
         }
 
         [ComponentInteraction("btn_flee")]
         public async Task ButtonFleeHandler()
         {
-            await QuestEngine.HandleEncounterAction(Context.Interaction, "flee");
+            await BattleEngine.HandleEncounterAction(Context.Interaction, "flee", "none");
         }
-
-        /*
-        [ComponentInteraction("btn_weapon_short_sword")]
-        public async Task WeaponShortswordHandler()
-        {
-            await QuestEngine.HandleEncounterAction(Context.Interaction, "Shortsword");
-        }
-
-        [ComponentInteraction("btn_weapon_dagger")]
-        public async Task WeaponDaggerHandler()
-        {
-            await QuestEngine.HandleEncounterAction(Context.Interaction, "Dagger");
-        }
-        */
-
-        [ComponentInteraction("btn_toggle_detail:*")]
-        public async Task HandleToggleDetail(string creatureId)
-        {
-            await DeferAsync();
-
-            var creature = GameData.Humanoids!.FirstOrDefault(c => c.Id == creatureId);
-            if (creature == null)
-            {
-                await FollowupAsync("⚠️ Could not find this creature anymore.");
-                return;
-            }
-
-            var embed = EncounterService.GetRandomEncounter(creature);
-
-            var updatedButtons = new ComponentBuilder()
-                .WithButton("Attack", "btn_attack", ButtonStyle.Danger)
-                .WithButton("Flee", "btn_flee", ButtonStyle.Secondary);
-
-            await ModifyOriginalResponseAsync(msg =>
-            {
-                msg.Embed = embed.Build();
-                msg.Components = updatedButtons.Build();
-            });
-        }
-
     }
 }

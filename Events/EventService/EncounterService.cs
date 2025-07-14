@@ -43,12 +43,10 @@ namespace Adventure.Events.EventService
 
         public static EmbedBuilder GetRandomEncounter(CreaturesModel creature)
         {
-            LogService.Info($"\n[Start]==========[Data NPC]==========[Start]");
+            LogService.Info($"\n[Start]          [Data NPC]          [Start]");
 
-            LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered:\n" +
-                                                $"{creature.Name}" +
-                                                $"{creature.Armor}" +
-                                                $"{creature.Weapons}");
+            LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{creature.Name}]");
+            ;
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
@@ -66,7 +64,6 @@ namespace Adventure.Events.EventService
                     foreach (var armor in armorList)
                     {
                         embed.AddField($"**[{armor.Name}]**\n",
-                            //$"**[{armor.Name}]**\n" +
                             $"Type: {armor.Type} armor\n" +
                             $"AC Bonus: +{armor.AC_Bonus}\n" +
                             $"Weight: {armor.Weight}kg\n" +
@@ -90,7 +87,6 @@ namespace Adventure.Events.EventService
                     foreach (var weapon in weaponList)
                     {
                         embed.AddField($"**[{weapon.Name}]**",
-                            //$"**[{weapon.Name}]**\n" +
                             $"Range: {weapon.Range} meter\n" +
                             $"Weight: {weapon.Weight}kg\n" +
                             $"*\"{weapon.Description}\"*", false);
@@ -102,7 +98,7 @@ namespace Adventure.Events.EventService
                     embed.AddField("Weapons:", "None", false);
                 }
 
-                LogService.Info($"\n[End]==========[Data NPC]==========[End]");
+                LogService.Info($"[End]          [Data NPC]          [End]\n");
             }
 
             /*

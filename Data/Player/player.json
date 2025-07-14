@@ -1,7 +1,7 @@
 // WEIGHT IN KG, RANGE IN M
 [
   {
-    "id": "player_default",
+    "id": "playername",
     "name": "player_name",
     "description": "A brave soul starting their journey.",
     "hitpoints": 50,

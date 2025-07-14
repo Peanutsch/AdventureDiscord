@@ -5,14 +5,14 @@ using Discord.Interactions;
 using System.Collections.Concurrent;
 using Discord;
 using Adventure.Events.EventService;
-using Adventure.Quest;
+using Adventure.Quest.Battle;
 
 namespace Adventure.Modules
 {
     public class AdventureGameModule : InteractionModuleBase<SocketInteractionContext>
     {
         // Store player progress using a thread-safe dictionary
-        private static readonly ConcurrentDictionary<ulong, GameStateModel> playerStates = new();
+        private static readonly ConcurrentDictionary<ulong, InventoryStateModel> playerStates = new();
 
         /// <summary>
         /// Starts the player's adventure and initializes their state.
@@ -27,7 +27,7 @@ namespace Adventure.Modules
             LogService.Info("[AdventureGameModule.SlashCommandStartHandler] > Slash Command /start is executed");
 
             // Reset inventory to basic inventory: Shordsword and Dagger
-            GameStateService.LoadInventory(Context.User.Id);
+            InventoryStateService.LoadInventory(Context.User.Id);
 
             // Send a follow-up response after the processing is complete.
             //await FollowupAsync("Slash Command /start is executed");
@@ -58,8 +58,8 @@ namespace Adventure.Modules
         [SlashCommand("encounter", "Triggers a random encounter")]
         public async Task SlashCommandEncounterHandler()
         {
-            // Start with basic inventory
-            GameStateService.LoadInventory(Context.User.Id);
+            // Load inventory
+            InventoryStateService.LoadInventory(Context.User.Id);
 
             await DeferAsync();
 
@@ -72,6 +72,9 @@ namespace Adventure.Modules
                 return;
             }
 
+            // Update BattleState 
+            BattleEngine.SetCreature(Context.User.Id, creature);
+
             var embed = EncounterService.GetRandomEncounter(creature);
 
             var buttons = new ComponentBuilder()
@@ -79,7 +82,7 @@ namespace Adventure.Modules
                 .WithButton("Flee", "btn_flee", ButtonStyle.Secondary);
 
             // Reset step from GameEngine.HandleEncounterAction to [start]
-            QuestEngine.SetStep(Context.User.Id, "start");
+            BattleEngine.SetStep(Context.User.Id, "start");
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
         }

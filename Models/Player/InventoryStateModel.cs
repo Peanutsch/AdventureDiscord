@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Player
 {
-    public class GameStateModel
+    public class InventoryStateModel
     {
         public Dictionary<string, int> Inventory { get; set; } = new Dictionary<string, int>();
     }

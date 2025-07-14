@@ -13,10 +13,10 @@ namespace Adventure.Helpers
     {
         public static List<ArmorModel> RetrieveArmorAttributes(List<string> armorIds)
         {
+            LogService.Info($"[GameEntityFetcher.RetrieveArmorAttributes] > Resolving armor names for IDs: {string.Join(", ", armorIds)}");
+
             if (armorIds.Count >= 1)
             {
-                LogService.Info($"[GameEntityFetcher.RetrieveArmorAttributes] > Resolving armor names for IDs: {string.Join(", ", armorIds)}");
-
                 if (GameData.Armor == null)
                 {
                     LogService.Error("[GameEntityFetcher.RetrieveArmorAttributes] > GameData.Armor is null. Armor data was not loaded.");
@@ -33,6 +33,13 @@ namespace Adventure.Helpers
                     })
                     .Where(a => a != null)
                     .ToList();
+
+                int counter = 1;
+                foreach (var item in armors)
+                {
+                    LogService.Info($"Item #{counter}: {item}");
+                    counter++;
+                }
 
                 return armors!;
             }
@@ -64,6 +71,13 @@ namespace Adventure.Helpers
                 })
                 .Where(w => w != null)
                 .ToList()!;
+
+            int counter = 1;
+            foreach (var item in weapons)
+            {
+                LogService.Info($"Item #{counter}: {item!.Name}");
+                counter++;
+            }
 
             return weapons!;
         }

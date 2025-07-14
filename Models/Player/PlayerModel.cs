@@ -12,6 +12,9 @@ namespace Adventure.Models.Player
 {
     public class PlayerModel
     {
+        [JsonIgnore]
+        public ulong Id { get; set; }
+
         [JsonPropertyName("name")]
         public string? Name { get; set; }
 
@@ -35,6 +38,9 @@ namespace Adventure.Models.Player
 
         [JsonPropertyName("loot")]
         public List<ItemModel> Loot { get; set; } = new();
+
+        [JsonIgnore]
+        public string? Step { get; set; }
 
     }
 }

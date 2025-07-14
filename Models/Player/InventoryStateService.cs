@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Player
 {
-    public static class GameStateService
+    public static class InventoryStateService
     {
-        private static readonly ConcurrentDictionary<ulong, GameStateModel> playerStates = new();
+        private static readonly ConcurrentDictionary<ulong, InventoryStateModel> playerStates = new();
 
-        public static GameStateModel GetState(ulong userId)
+        public static InventoryStateModel GetState(ulong userId)
         {
             if (!playerStates.ContainsKey(userId))
-                playerStates[userId] = new GameStateModel();
+                playerStates[userId] = new InventoryStateModel();
 
             return playerStates[userId];
         }
