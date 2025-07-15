@@ -15,10 +15,10 @@ namespace Adventure.Loaders
     {
         public static List<InventoryModel>? Load()
         {
-            var inventory = JsonDataLoader.LoadListFromJson<InventoryModel>("Data/Inventory/inventory.json");
+            var inventory = JsonDataManager.LoadListFromJson<InventoryModel>("Data/Inventory/inventory.json");
             LogService.Info($"[InventoryLoader] > Adding [Inventory]: {inventory!.Count} to GameData.Inventory");
 
-            return JsonDataLoader.LoadListFromJson<InventoryModel>("Data/Inventory/inventory.json");
+            return JsonDataManager.LoadListFromJson<InventoryModel>("Data/Inventory/inventory.json");
         }
     }
 }

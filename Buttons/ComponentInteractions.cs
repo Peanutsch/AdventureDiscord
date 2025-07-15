@@ -27,6 +27,8 @@ namespace Adventure.Buttons
         {
             LogService.Info($"[ComponentInteractions.HandleWeaponButton] > Recieved weaponId: {weaponId}");
 
+            ulong userId = Context.User.Id;
+
             var state = BattleEngine.GetBattleState(Context.User.Id);
             if (state == null)
             {
@@ -47,7 +49,12 @@ namespace Adventure.Buttons
 
             LogService.Info($"[ComponentInteractions.HandleWeaponButton] > Player choose: {weapon.Name}\n");
 
-            await BattleEngine.HandleEncounterAction(Context.Interaction, "fight", weaponId);
+            var step = BattleEngine.GetStep(userId);
+            LogService.Info($"[HandleWeaponButton] Current battle step: {step}");
+
+            //await BattleEngine.HandleEncounterAction(Context.Interaction, "fight", weaponId);
+            // Direct call BattleEngine.HandleStepBattle
+            await BattleEngine.HandleStepBattle(Context.Interaction, weaponId);
         }
 
         [ComponentInteraction("btn_attack")]

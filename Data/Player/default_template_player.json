@@ -1,8 +1,7 @@
-// WEIGHT IN KG, RANGE IN M
 [
   {
-    "id": "playername",
-    "name": "player_name",
+    "id": "",
+    "name": "",
     "description": "A brave soul starting their journey.",
     "hitpoints": 50,
     "maxCarry": 70,

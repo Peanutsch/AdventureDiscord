@@ -33,7 +33,7 @@ namespace Adventure.Gateway
             GameData.Weapons = WeaponLoader.Load();
             GameData.Armor = ArmorLoader.Load();
             GameData.Potions = PotionLoader.Load();
-            //GameData.Player = PlayerLoader.Load();
+            //GameData.Player = PlayerLoader.Load(userId);
             GameData.Humanoids = HumanoidLoader.Load();
             GameData.Inventory = InventoryLoader.Load();
 

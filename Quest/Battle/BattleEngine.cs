@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
+using System.Numerics;
 using Adventure.Buttons;
 using Adventure.Data;
 using Adventure.Helpers;
@@ -67,7 +68,10 @@ namespace Adventure.Quest.Battle
 
                 state = new BattleStateModel
                 {
-                    Player = new PlayerModel(),
+                    Player = new PlayerModel
+                    {
+                        Id = userId
+                    },
                     Creatures = new CreaturesModel(),
                     PlayerWeapons = playerWeapons,
                     PlayerArmor = new List<ArmorModel>(),
@@ -117,7 +121,8 @@ namespace Adventure.Quest.Battle
                     break;
 
                 case StepBattle:
-                    await HandleStepFightChoice(interaction, weaponId);
+                    //await HandleStepBattle(interaction, weaponId);
+                    // HandleStepBattle(interaction, weaponId) called in ComponentInteractions.HandleWeaponButton(string weaponId)
                     break;
 
                 default:
@@ -188,14 +193,14 @@ namespace Adventure.Quest.Battle
                 string message = $"You attack with your {weapon.Name}!";
                 if (interaction is SocketMessageComponent componentWeaponChoice)
                 {
-                    LogService.Info($"[HandleStepWeaponChoice] interaction is SocketMessageComponent componentWeaponChoice: {message}");
+                    LogService.Info($"[HandleStepWeaponChoice] interaction is SocketMessageComponent componentWeaponChoice: [{message}]");
 
                     SetStep(userId, StepBattle);
                     await ButtonInteractionHelpers.RemoveButtonsAsync(componentWeaponChoice, message);
                 }
                 else
                 {
-                    LogService.Info($"[HandleStepWeaponChoice] interaction is NOT SocketMessageComponent componentWeaponChoice: {message}");
+                    LogService.Info($"[HandleStepWeaponChoice] interaction is NOT SocketMessageComponent componentWeaponChoice: [{message}]");
 
                     SetStep(userId, StepBattle);
                     await interaction.RespondAsync(message, ephemeral: false);
@@ -205,7 +210,7 @@ namespace Adventure.Quest.Battle
             }
             else
             {
-                LogService.Error($"[HandleStepWeaponChoice] Inventory does not contain {weaponId}: You fumble with the unfamiliar {weapon.Name}...");
+                LogService.Error($"[HandleStepWeaponChoice] Inventory does not contain {weaponId}: [You fumble with the unfamiliar {weapon.Name}...]");
 
                 SetStep(userId, StepBattle);
                 await interaction.RespondAsync($"You fumble with the unfamiliar {weapon.Name}...", ephemeral: false);
@@ -214,13 +219,16 @@ namespace Adventure.Quest.Battle
             }
         }
 
-        private static async Task HandleStepFightChoice(SocketInteraction interaction, string weaponId)
+        public static async Task HandleStepBattle(SocketInteraction interaction, string weaponId)
         {
             ulong userId = interaction.User.Id;
             var state = GetBattleState(userId);
             var creature = state.Creatures;
 
-            LogService.DividerParts(1, "HandleStepFightChoice");
+            LogService.DividerParts(1, "HandleStepBattle");
+
+            LogService.Info($"Before attack: Player HP: {state.Player.Hitpoints}, Creature HP: {state.Creatures.Hitpoints}");
+            await interaction.RespondAsync($"Before attack: Player HP: {state.Player.Hitpoints}, Creature HP: {state.Creatures.Hitpoints}");
 
             // 1. Zoek het gekozen wapen in de player's inventory
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
@@ -228,8 +236,8 @@ namespace Adventure.Quest.Battle
             {
                 await interaction.RespondAsync("⚠️ Weapon not found in your inventory.", ephemeral: true);
 
-                LogService.Error("[HandleStepFightChoice] weapon is null or empty: Weapon not found in your inventory.");
-                LogService.DividerParts(2, "HandleStepFightChoice");
+                LogService.Error("[HandleStepBattle] weapon is null or empty: Weapon not found in your inventory.");
+                LogService.DividerParts(2, "HandleStepBattle");
 
                 return;
             }

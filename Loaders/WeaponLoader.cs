@@ -9,14 +9,14 @@ namespace Adventure.Loaders
         {
             var combinedWeapons = new List<WeaponModel>();
 
-            var arrows = JsonDataLoader.LoadListFromJson<WeaponModel>("Data/Items/Weapons/arrows.json");
+            var arrows = JsonDataManager.LoadListFromJson<WeaponModel>("Data/Items/Weapons/arrows.json");
             if (arrows != null)
             {
                 LogService.Info($"[WeaponLoader] > Adding [arrows]: {arrows.Count} to GameData.Weapons");
                 combinedWeapons.AddRange(arrows);
             }
 
-            var melee = JsonDataLoader.LoadListFromJson<WeaponModel>("Data/Items/Weapons/melee.json");
+            var melee = JsonDataManager.LoadListFromJson<WeaponModel>("Data/Items/Weapons/melee.json");
             if (melee != null)
             {
                 LogService.Info($"[WeaponLoader] > Adding [melee]: {melee.Count} to GameData.Weapons");
@@ -24,7 +24,7 @@ namespace Adventure.Loaders
             }
                 
 
-            var range = JsonDataLoader.LoadListFromJson<WeaponModel>("Data/Items/Weapons/range.json");
+            var range = JsonDataManager.LoadListFromJson<WeaponModel>("Data/Items/Weapons/range.json");
             if (range != null)
             {
                 LogService.Info($"[WeaponLoader] > Adding [range]: {range.Count} to GameData.Weapons");

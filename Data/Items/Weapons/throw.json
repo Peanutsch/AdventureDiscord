@@ -1,7 +1,5 @@
-// WEIGHT IN KG, RANGE IN M
 [
   {
-    // DAGGER
     "id": "dagger",
     "name": "Dagger",
     "description": "A small blade, easy to conceal and quick to strike. Favored by rogues and those who prefer subtlety over strength.",

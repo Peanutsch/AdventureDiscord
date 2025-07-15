@@ -7,10 +7,10 @@ namespace Adventure.Loaders
     {
         public static List<ArmorModel>? Load()
         {
-            var armor = JsonDataLoader.LoadListFromJson<ArmorModel>("Data/Items/Armor/armor.json");
+            var armor = JsonDataManager.LoadListFromJson<ArmorModel>("Data/Items/Armor/armor.json");
             LogService.Info($"[ArmorLoader] > Adding [armor]: {armor!.Count} to GameData.Armor");
 
-            return JsonDataLoader.LoadListFromJson<ArmorModel>("Data/Items/Armor/armor.json");
+            return JsonDataManager.LoadListFromJson<ArmorModel>("Data/Items/Armor/armor.json");
         }
     }
 }
