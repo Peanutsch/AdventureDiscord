@@ -43,7 +43,7 @@ namespace Adventure.Events.EventService
 
         public static EmbedBuilder GetRandomEncounter(CreaturesModel creature)
         {
-            LogService.Info($"\n[Start]          [Data NPC]          [Start]");
+            LogService.DividerParts(1, "Data NPC");
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{creature.Name}]");
             ;
@@ -98,7 +98,7 @@ namespace Adventure.Events.EventService
                     embed.AddField("Weapons:", "None", false);
                 }
 
-                LogService.Info($"[End]          [Data NPC]          [End]\n");
+                LogService.DividerParts(2, "Data NPC");
             }
 
             /*

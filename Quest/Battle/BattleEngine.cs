@@ -25,7 +25,7 @@ namespace Adventure.Quest.Battle
         private const string StepFlee = "flee";
         private const string StepWeaponChoice = "weapon_choice";
         private const string StepBattle = "fight";
-        private const string StepPostBattle = "post_battle";
+        public const string StepPostBattle = "post_battle";
 
         // Action identifiers
         private const string ActionFlee = "flee";
@@ -104,6 +104,8 @@ namespace Adventure.Quest.Battle
             ulong userId = interaction.User.Id;
             string currentStep = GetStep(userId);
 
+            LogService.Info($">>> [Current step: {currentStep}, action: {action}, weaponId: {weaponId}] <<<\n");
+
             switch (currentStep)
             {
                 case StepStart:
@@ -131,6 +133,8 @@ namespace Adventure.Quest.Battle
         {
             ulong userId = interaction.User.Id;
 
+            LogService.DividerParts(1, "HandleStepStart");
+
             if (action == ActionFlee)
             {
                 LogService.Info("[HandleStepStart] Player flees");
@@ -141,10 +145,12 @@ namespace Adventure.Quest.Battle
                     await interaction.RespondAsync(MsgFlee, ephemeral: false);
 
                 SetStep(userId, StepFlee);
+
+                LogService.DividerParts(2, "HandleStepStart");
             }
             else if (action == ActionAttack)
             {
-                LogService.Info("[HandleStepStart] Player attacks");
+                LogService.Info("[HandleStepStart] Player choose attack");
 
                 if (interaction is SocketMessageComponent componentAttack)
                     await ShowWeaponChoiceButtons(componentAttack, userId);
@@ -152,6 +158,8 @@ namespace Adventure.Quest.Battle
                     await interaction.RespondAsync(MsgChooseWeapon, ephemeral: false);
 
                 SetStep(userId, StepWeaponChoice);
+
+                LogService.DividerParts(2, "HandleStepStart");
             }
         }
 
@@ -164,12 +172,13 @@ namespace Adventure.Quest.Battle
             var state = GetBattleState(userId);
             var inventory = InventoryStateService.GetState(userId).Inventory;
 
-            LogService.Info("[HandleStepWeaponChoice]");
+            LogService.DividerParts(1, "HandleStepWeaponChoice");
 
             WeaponModel? weapon = GameEntityFetcher.RetrieveWeaponAttributes(new List<string> { weaponId }).FirstOrDefault();
 
             if (weapon == null)
             {
+                LogService.Error("[HandleStepWeaponChoice] weapon is null or empty: You selected an unknown weapon...");
                 await interaction.RespondAsync("You selected an unknown weapon...", ephemeral: false);
                 return;
             }
@@ -178,16 +187,30 @@ namespace Adventure.Quest.Battle
             {
                 string message = $"You attack with your {weapon.Name}!";
                 if (interaction is SocketMessageComponent componentWeaponChoice)
-                    await ButtonInteractionHelpers.RemoveButtonsAsync(componentWeaponChoice, message);
-                else
-                    await interaction.RespondAsync(message, ephemeral: false);
+                {
+                    LogService.Info($"[HandleStepWeaponChoice] interaction is SocketMessageComponent componentWeaponChoice: {message}");
 
-                //SetStep(userId, StepPostBattle);
-                SetStep(userId, StepBattle);
+                    SetStep(userId, StepBattle);
+                    await ButtonInteractionHelpers.RemoveButtonsAsync(componentWeaponChoice, message);
+                }
+                else
+                {
+                    LogService.Info($"[HandleStepWeaponChoice] interaction is NOT SocketMessageComponent componentWeaponChoice: {message}");
+
+                    SetStep(userId, StepBattle);
+                    await interaction.RespondAsync(message, ephemeral: false);
+                }
+
+                LogService.DividerParts(2, "HandleStepWeaponChoice");
             }
             else
             {
+                LogService.Error($"[HandleStepWeaponChoice] Inventory does not contain {weaponId}: You fumble with the unfamiliar {weapon.Name}...");
+
+                SetStep(userId, StepBattle);
                 await interaction.RespondAsync($"You fumble with the unfamiliar {weapon.Name}...", ephemeral: false);
+
+                LogService.DividerParts(2, "HandleStepWeaponChoice");
             }
         }
 
@@ -197,11 +220,17 @@ namespace Adventure.Quest.Battle
             var state = GetBattleState(userId);
             var creature = state.Creatures;
 
+            LogService.DividerParts(1, "HandleStepFightChoice");
+
             // 1. Zoek het gekozen wapen in de player's inventory
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
             {
                 await interaction.RespondAsync("⚠️ Weapon not found in your inventory.", ephemeral: true);
+
+                LogService.Error("[HandleStepFightChoice] weapon is null or empty: Weapon not found in your inventory.");
+                LogService.DividerParts(2, "HandleStepFightChoice");
+
                 return;
             }
 
@@ -229,6 +258,8 @@ namespace Adventure.Quest.Battle
             // 6. Toon gecombineerde resultaten
             string combinedResult = $"{playerAttackResult}\n\n{creatureAttackResult}";
             await interaction.RespondAsync(combinedResult);
+
+            LogService.DividerParts(2, "HandleStepFightChoice");
         }
 
 
@@ -249,7 +280,7 @@ namespace Adventure.Quest.Battle
                 var label = $"{weapon.Name!.ToUpper()}";
                 var weaponId = $"{weapon.Id}";
 
-                LogService.Info($"[BattleEngine.ShowWeaponChoiceButtons] Label: Attack with {weapon.Name!.ToUpper()} ");
+                LogService.Info($"[BattleEngine.ShowWeaponChoiceButtons] Label: Attack with {weapon.Name!.ToUpper()} WeaponId: {weaponId}");
                 builder.WithButton($"Attack with {label}", weaponId, ButtonStyle.Primary);
             }
 

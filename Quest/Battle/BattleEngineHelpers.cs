@@ -11,7 +11,7 @@ namespace Adventure.Quest.Battle
 {
     class BattleEngineHelpers
     {
-        private const string StepPostBattle = "post_battle";
+        //private const string StepPostBattle = "post_battle";
 
         /// <summary>
         /// Processes the player's attack and applies damage to the creature.
@@ -37,7 +37,7 @@ namespace Adventure.Quest.Battle
 
             if (creature.Hitpoints <= 0)
             {
-                BattleEngine.SetStep(userId, StepPostBattle);
+                BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
                 return $"🗡️ You attacked **{creature.Name}** with your **{weapon.Name}** for `{damage}` damage.\n💀 The creature is defeated!";
             }
 
@@ -68,7 +68,7 @@ namespace Adventure.Quest.Battle
 
             if (player.Hitpoints <= 0)
             {
-                BattleEngine.SetStep(userId, StepPostBattle);
+                BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
                 return $"💥 **{creature.Name}** attacked you for `{damage}` damage.\n☠️ You have been defeated!";
             }
 

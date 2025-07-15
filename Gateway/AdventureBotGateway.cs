@@ -48,7 +48,14 @@ namespace Adventure.Gateway
             _client.Ready += ReadyAsync;
             _client.InteractionCreated += HandleInteractionAsync;
 
-            await Task.Delay(-1, _cancellationTokenSource.Token);
+            try
+            {
+                await Task.Delay(-1, _cancellationTokenSource.Token);
+            }
+            catch (TaskCanceledException)
+            {
+                LogService.Info("Bot offline");
+            }
         }
 
         private async Task ReadyAsync()

@@ -11,9 +11,9 @@ namespace Adventure.Buttons
     public class ComponentInteractions : InteractionModuleBase<SocketInteractionContext>
     {
         [ComponentInteraction("*")]
-        public async Task CatchAll(string weaponId)
+        public async Task DispatchComponentAction(string weaponId)
         {
-            LogService.Info($"[CatchAll] component ID: {weaponId}");
+            LogService.Info($"[DispatchComponentAction] component ID: {weaponId}");
 
             if (weaponId.StartsWith("weapon_"))
             {
@@ -23,10 +23,9 @@ namespace Adventure.Buttons
             await RespondAsync($"You clicked: {weaponId}\nNo ComponentInteraction match found...");
         }
 
-        //[ComponentInteraction("_*")]
         public async Task HandleWeaponButton(string weaponId)
         {
-            LogService.Info($"[HandleWeaponButton] > Recieved weaponId: {weaponId}");
+            LogService.Info($"[ComponentInteractions.HandleWeaponButton] > Recieved weaponId: {weaponId}");
 
             var state = BattleEngine.GetBattleState(Context.User.Id);
             if (state == null)
@@ -41,14 +40,14 @@ namespace Adventure.Buttons
 
             if (weapon == null)
             {
-                LogService.Error($"[HandleWeaponButton] > Weapon ID '{weaponId}' not found.");
+                LogService.Error($"[ComponentInteractions.HandleWeaponButton] > Weapon ID '{weaponId}' not found.");
                 await RespondAsync($"⚠️ Weapon not found: {weaponId}");
                 return;
             }
 
-            LogService.Info($"[HandleWeaponButton] > Player chose: {weapon.Name}");
+            LogService.Info($"[ComponentInteractions.HandleWeaponButton] > Player choose: {weapon.Name}\n");
 
-            await BattleEngine.HandleEncounterAction(Context.Interaction, weapon.Name!, weaponId);
+            await BattleEngine.HandleEncounterAction(Context.Interaction, "fight", weaponId);
         }
 
         [ComponentInteraction("btn_attack")]

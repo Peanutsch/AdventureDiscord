@@ -58,6 +58,8 @@ namespace Adventure.Modules
         [SlashCommand("encounter", "Triggers a random encounter")]
         public async Task SlashCommandEncounterHandler()
         {
+            LogService.DividerParts(1, "Slashcommand: Encounter");
+
             // Load inventory
             InventoryStateService.LoadInventory(Context.User.Id);
 

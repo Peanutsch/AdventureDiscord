@@ -13,7 +13,7 @@ namespace Adventure.Helpers
     {
         public static List<ArmorModel> RetrieveArmorAttributes(List<string> armorIds)
         {
-            LogService.Info($"[GameEntityFetcher.RetrieveArmorAttributes] > Resolving armor names for IDs: {string.Join(", ", armorIds)}");
+            LogService.Info($"[GameEntityFetcher.RetrieveArmorAttributes] > Resolving armor names for IDs: {string.Join(", ", armorIds)}:");
 
             if (armorIds.Count >= 1)
             {
@@ -53,7 +53,7 @@ namespace Adventure.Helpers
             if (weaponIds == null || weaponIds.Count == 0)
                 return new List<WeaponModel>();
 
-            LogService.Info($"[GameEntityFetcher.RetrieveWeaponAttributes] > Resolving weapon data for IDs: {string.Join(", ", weaponIds)}");
+            LogService.Info($"[GameEntityFetcher.RetrieveWeaponAttributes] > Resolving weapon data for IDs: {string.Join(", ", weaponIds)}:");
 
             if (GameData.Weapons == null)
             {
