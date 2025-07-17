@@ -1,10 +1,9 @@
 ﻿using Discord.Interactions;
 using Discord;
 using Adventure.Data;
-using Adventure.Events.EventService;
 using Adventure.Services;
-using Adventure.Helpers;
 using Adventure.Quest.Battle;
+using Adventure.Quest.Encounter;
 
 namespace Adventure.Buttons
 {

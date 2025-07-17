@@ -1,19 +1,17 @@
-[
-  {
-    "id": "",
-    "name": "",
-    "description": "A brave soul starting their journey.",
-    "hitpoints": 50,
-    "maxCarry": 70,
-    "attributes": {
-      "strength": 10,
-      "dexterity": 14,
-      "constitution": 10,
-      "intelligence": 10,
-      "wisdom": 11,
-      "charisma": 10
-    },
-    "weapons": [ "weapon_short_sword", "weapon_dagger" ],
-    "items": []
-  }
-]
+{
+  "id": 0,
+  "name": "default",
+  "description": "A brave soul starting their journey.",
+  "hitpoints": 50,
+  "maxCarry": 70,
+  "attributes": {
+    "strength": 10,
+    "dexterity": 14,
+    "constitution": 10,
+    "intelligence": 10,
+    "wisdom": 11,
+    "charisma": 10
+  },
+  "weapons": [ "weapon_short_sword", "weapon_dagger" ],
+  "items": []
+}

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Helpers
+namespace Adventure.Quest.Dice
 {
     public class DiceRoller
     {

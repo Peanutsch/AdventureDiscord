@@ -1,5 +1,4 @@
 ﻿using Adventure.Data;
-using Adventure.Helpers;
 using Adventure.Loaders;
 using Adventure.Models.Creatures;
 using Adventure.Services;
@@ -10,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Events.EventService
+namespace Adventure.Quest.Encounter
 {
     public class EncounterService
     {

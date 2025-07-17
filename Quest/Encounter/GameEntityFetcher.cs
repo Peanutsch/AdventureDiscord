@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Helpers
+namespace Adventure.Quest.Encounter
 {
     public static class GameEntityFetcher
     {

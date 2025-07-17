@@ -3,11 +3,12 @@ using System.Linq;
 using System.Numerics;
 using Adventure.Buttons;
 using Adventure.Data;
-using Adventure.Helpers;
+using Adventure.Loaders;
 using Adventure.Models.BattleState;
 using Adventure.Models.Creatures;
 using Adventure.Models.Items;
 using Adventure.Models.Player;
+using Adventure.Quest.Encounter;
 using Adventure.Services;
 using Discord;
 using Discord.WebSocket;
@@ -56,6 +57,32 @@ namespace Adventure.Quest.Battle
             battleStates[userId] = state;
         }
 
+        public static BattleStateModel GetBattleState(ulong userId)
+        {
+            if (!battleStates.TryGetValue(userId, out var state))
+            {
+                var player = PlayerDataManager.LoadByUserId(userId);
+                var inventory = InventoryStateService.GetState(userId).Inventory;
+                var playerWeapons = GameEntityFetcher.RetrieveWeaponAttributes(inventory.Keys.ToList());
+
+                state = new BattleStateModel
+                {
+                    Player = player,
+                    Creatures = new CreaturesModel(),
+                    PlayerWeapons = playerWeapons,
+                    PlayerArmor = new List<ArmorModel>(),
+                    CreatureWeapons = new List<WeaponModel>(),
+                    CreatureArmor = new List<ArmorModel>(),
+                };
+            }
+
+            return battleStates.GetOrAdd(userId, state);
+        }
+
+
+
+
+        /*
         /// <summary>
         /// Gets or initializes the battle state for a user.
         /// </summary>
@@ -82,6 +109,7 @@ namespace Adventure.Quest.Battle
 
             return battleStates.GetOrAdd(userId, state);
         }
+        */
 
         /// <summary>
         /// Sets the creature data for the current encounter.
@@ -158,9 +186,15 @@ namespace Adventure.Quest.Battle
                 LogService.Info("[HandleStepStart] Player choose attack");
 
                 if (interaction is SocketMessageComponent componentAttack)
+                {
+                    LogService.Info("[HandleStepStart] Interaction is componentAttack...");
                     await ShowWeaponChoiceButtons(componentAttack, userId);
+                }
                 else
+                {
+                    LogService.Error("[HandleStepStart] No component interaction...");
                     await interaction.RespondAsync(MsgChooseWeapon, ephemeral: false);
+                }
 
                 SetStep(userId, StepWeaponChoice);
 

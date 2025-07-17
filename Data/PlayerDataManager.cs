@@ -2,6 +2,7 @@
 using Adventure.Models.Attributes;
 using Adventure.Models.Player;
 using Adventure.Services;
+using Discord;
 using Discord.Rest;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,28 @@ namespace Adventure.Data
 {
     public static class PlayerDataManager
     {
+        /*
         public static PlayerModel? LoadByUserId(ulong userId)
         {
             string path = $"Data/Player/{userId}.json";
             return JsonDataManager.LoadObjectFromJson<PlayerModel>(path);
         }
+        */
+
+        public static PlayerModel LoadByUserId(ulong userId)
+        {
+            string path = Path.Combine("Data", "Player", $"{userId}.json");
+
+            if (!File.Exists(path))
+            {
+                LogService.Error($"[PlayerDataManager.LoadByUserId] Player file not found for userId {userId}. Returning empty PlayerModel.");
+                return new PlayerModel { Id = userId };
+            }
+
+            var player = JsonDataManager.LoadObjectFromJson<PlayerModel>(path);
+            return player ?? new PlayerModel { Id = userId };
+        }
+
 
         public static List<PlayerModel>? LoadAll()
         {
@@ -67,9 +85,21 @@ namespace Adventure.Data
 
         public static PlayerModel CreateDefaultPlayer(ulong userId, string playerName)
         {
+            LogService.Info("[CreateDefaultPlayer] Attempting to load default_template_player.json");
+
             var defaultTemplate = JsonDataManager.LoadObjectFromJson<PlayerModel>("Data/Player/default_template_player.json");
+            
+            if (defaultTemplate!.Hitpoints != 50)
+            {
+                LogService.Error("[CreateDefaultPlayer] Error loading default template");
+            }
+
+            LogService.Info("[CreateDefaultPlayer] Finished loading default template");
+
             var player = defaultTemplate ?? new PlayerModel
             {
+                Id = userId,
+                Name = playerName,
                 Hitpoints = 50,
                 MaxCarry = 70,
                 Attributes = new AttributesModel

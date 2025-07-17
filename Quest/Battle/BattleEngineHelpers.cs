@@ -1,6 +1,6 @@
-﻿using Adventure.Helpers;
-using Adventure.Models.Items;
+﻿using Adventure.Models.Items;
 using Adventure.Services;
+using Adventure.Quest.Dice;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +11,6 @@ namespace Adventure.Quest.Battle
 {
     class BattleEngineHelpers
     {
-        //private const string StepPostBattle = "post_battle";
-
         /// <summary>
         /// Processes the player's attack and applies damage to the creature.
         /// </summary>

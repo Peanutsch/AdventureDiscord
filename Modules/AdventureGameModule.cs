@@ -4,10 +4,11 @@ using Adventure.Models.Player;
 using Discord.Interactions;
 using System.Collections.Concurrent;
 using Discord;
-using Adventure.Events.EventService;
 using Adventure.Quest.Battle;
 using Adventure.Loaders;
 using Adventure.Data;
+using Microsoft.VisualBasic;
+using Adventure.Quest.Encounter;
 
 namespace Adventure.Modules
 {
@@ -67,74 +68,38 @@ namespace Adventure.Modules
         [SlashCommand("encounter", "Triggers a random encounter")]
         public async Task SlashCommandEncounterHandler()
         {
-            #region CONTROL USER DATA
-            var user = Context.Client.GetUser(Context.User.Id);
-            string displayName = user.GlobalName ?? user.Username;
+            await DeferAsync();
 
+            var user = SlashEncounterHelpers.GetDiscordUser(Context ,Context.User.Id);
             if (user == null)
             {
-                LogService.Error("[/Encounter] Could not find user.");
-                await RespondAsync("⚠️ An error occured file loading your userdata...");
+                await RespondAsync("⚠️ Error loading user data.");
                 return;
             }
 
             LogService.DividerParts(1, "Slashcommand: Encounter");
-            LogService.Info($"[/Encounter] Slash command triggered by {displayName} (userId: {user!.Id})");
-            #endregion CONTROL USER DATA
+            LogService.Info($"[/Encounter] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
-            // Verify player
-            string relativePath = $"Data/Player/{user.Id}.json";
-            string filePath = Path.Combine(AppContext.BaseDirectory, relativePath);
-            PlayerModel? player;
-
-            if (!File.Exists(filePath))
+            var player = SlashEncounterHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
+            if (player == null)
             {
-                LogService.Error($"[/Encounter] No existing player file found for {displayName}. Creating Player Model.");
-                player = PlayerDataManager.CreateDefaultPlayer(user.Id, displayName);
-            }
-            else
-            {
-                player = PlayerDataManager.LoadByUserId(user.Id);
-                if (player == null)
-                {
-                    LogService.Error($"[/Encounter] Failed to load existing player data. Recreating default for {displayName}.");
-                    player = PlayerDataManager.CreateDefaultPlayer(user.Id, displayName);
-                }
+                await FollowupAsync("⚠️ Internal error while creating or loading player.");
+                return;
             }
 
-            player!.Id = user.Id;
-            LogService.Info($"[/Encounter] Player '{player.Name}' loaded with ID: {user.Id}");
+            SlashEncounterHelpers.EnsureInventoryLoaded(user.Id);
 
-            // Load inventory
-            LogService.Info("[/Encounter] Checking Inventory...");
-            if (GameData.Inventory == null)
-            {
-                LogService.Info("[/Encounter] Reload Inventory...");
-                GameData.Inventory = InventoryLoader.Load();
-                InventoryStateService.LoadInventory(Context.User.Id);
-            }
-
-            await DeferAsync();
-
-            // Randomizer NPC
             var creature = EncounterService.CreatureRandomizer();
             if (creature == null)
             {
                 await FollowupAsync("⚠️ Could not pick a random creature.");
-                LogService.Error("[AdventureGameModule.SlashCommandEncounterHandler] > No creature could be picked.");
                 return;
             }
 
-            LogService.Info($"[/Encounter] Creature '{creature.Name}' chosen for userId: {user.Id}");
-
-            BattleEngine.SetCreature(user.Id, creature);     // Update BattleState 
-            BattleEngine.SetStep(Context.User.Id, "start"); // Reset step from GameEngine.HandleEncounterAction to [start]
+            SlashEncounterHelpers.SetupBattleState(user.Id, creature);
 
             var embed = EncounterService.GetRandomEncounter(creature);
-
-            var buttons = new ComponentBuilder()
-                .WithButton("Attack", "btn_attack", ButtonStyle.Danger)
-                .WithButton("Flee", "btn_flee", ButtonStyle.Secondary);
+            var buttons = SlashEncounterHelpers.BuildEncounterButtons();
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
         }

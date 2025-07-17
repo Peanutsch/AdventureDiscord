@@ -16,14 +16,18 @@ namespace Adventure.Loaders
 
         public static T? LoadObjectFromJson<T>(string filePath)
         {
+            LogService.Info($"[JsonDataManager.LoadObjectFromJson] Method LoadObjectFromJson is called.\nparam filepath: {filePath}");
+
             var json = File.ReadAllText(filePath);
+
+            LogService.Info($"[JsonDataManager.LoadObjectFromJson] Returning object\n{json}");
+
             return JsonSerializer.Deserialize<T>(json);
         }
 
         public static void SaveToJson(ulong userId, PlayerModel player)
         {
-            string relativePath = $"Data/Player/{userId}.json";
-            string filePath = Path.Combine(AppContext.BaseDirectory, relativePath);
+            string filePath = Path.Combine(AppContext.BaseDirectory, "Data", "Player", $"{userId}.json");
             string? directory = Path.GetDirectoryName(filePath);
 
             LogService.Info($"[JsonDataManager.SaveToJson] Directory: {directory}");
@@ -34,7 +38,6 @@ namespace Adventure.Loaders
                     Directory.CreateDirectory(directory);
                 }
 
-                // JSON-serialisatie met nette opmaak
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true

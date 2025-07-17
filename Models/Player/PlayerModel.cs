@@ -12,7 +12,7 @@ namespace Adventure.Models.Player
 {
     public class PlayerModel
     {
-        [JsonIgnore]
+        [JsonPropertyName("id")]
         public ulong Id { get; set; }
 
         [JsonPropertyName("name")]
