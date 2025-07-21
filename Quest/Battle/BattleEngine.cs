@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
 using System.Numerics;
+using System.Text.Json;
 using Adventure.Buttons;
 using Adventure.Data;
 using Adventure.Loaders;
@@ -79,37 +80,12 @@ namespace Adventure.Quest.Battle
             return battleStates.GetOrAdd(userId, state);
         }
 
-
-
-
-        /*
-        /// <summary>
-        /// Gets or initializes the battle state for a user.
-        /// </summary>
-        public static BattleStateModel GetBattleState(ulong userId)
+        public static void SaveBattleState(ulong userId, BattleStateModel newState)
         {
-            if (!battleStates.TryGetValue(userId, out var state))
-            {
-                var inventory = InventoryStateService.GetState(userId).Inventory;
-                var playerWeapons = GameEntityFetcher.RetrieveWeaponAttributes(inventory.Keys.ToList());
-
-                state = new BattleStateModel
-                {
-                    Player = new PlayerModel
-                    {
-                        Id = userId
-                    },
-                    Creatures = new CreaturesModel(),
-                    PlayerWeapons = playerWeapons,
-                    PlayerArmor = new List<ArmorModel>(),
-                    CreatureWeapons = new List<WeaponModel>(),
-                    CreatureArmor = new List<ArmorModel>(),
-                };
-            }
-
-            return battleStates.GetOrAdd(userId, state);
+            string json = JsonSerializer.Serialize(newState, new JsonSerializerOptions { WriteIndented = true });
+            string path = $"Data/Player/{userId}.json";
+            File.WriteAllText(path, json);
         }
-        */
 
         /// <summary>
         /// Sets the creature data for the current encounter.
@@ -151,6 +127,10 @@ namespace Adventure.Quest.Battle
                 case StepBattle:
                     //await HandleStepBattle(interaction, weaponId);
                     // HandleStepBattle(interaction, weaponId) called in ComponentInteractions.HandleWeaponButton(string weaponId)
+                    break;
+
+                case StepPostBattle:
+
                     break;
 
                 default:
@@ -261,8 +241,13 @@ namespace Adventure.Quest.Battle
 
             LogService.DividerParts(1, "HandleStepBattle");
 
-            LogService.Info($"Before attack: Player HP: {state.Player.Hitpoints}, Creature HP: {state.Creatures.Hitpoints}");
-            await interaction.RespondAsync($"Before attack: Player HP: {state.Player.Hitpoints}, Creature HP: {state.Creatures.Hitpoints}");
+            LogService.Info($"[BattleEngine.HandleStepBattle] Before attack:\n" +
+                            $"Player HP: {state.Player.Hitpoints}\n" +
+                            $"Creature HP: {state.Creatures.Hitpoints}");
+
+            await interaction.RespondAsync($"Before attack:\n" +
+                                           $"Player HP: {state.Player.Hitpoints}\n" +
+                                           $"Creature HP: {state.Creatures.Hitpoints}");
 
             // 1. Zoek het gekozen wapen in de player's inventory
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
@@ -290,7 +275,7 @@ namespace Adventure.Quest.Battle
             var creatureWeapon = state.CreatureWeapons.FirstOrDefault();
             if (creatureWeapon == null)
             {
-                await interaction.RespondAsync($"{playerAttackResult}\n\n⚠️ {creature.Name} has no weapon to attack with.", ephemeral: true);
+                await interaction.RespondAsync($"{playerAttackResult}\n\n⚠️ {creature.Name} has nothing to attack with.", ephemeral: true);
                 return;
             }
 
@@ -303,7 +288,6 @@ namespace Adventure.Quest.Battle
 
             LogService.DividerParts(2, "HandleStepFightChoice");
         }
-
 
         /// <summary>
         /// Displays available weapon choices as buttons for the user to select.

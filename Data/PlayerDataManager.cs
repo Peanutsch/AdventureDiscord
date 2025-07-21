@@ -14,14 +14,6 @@ namespace Adventure.Data
 {
     public static class PlayerDataManager
     {
-        /*
-        public static PlayerModel? LoadByUserId(ulong userId)
-        {
-            string path = $"Data/Player/{userId}.json";
-            return JsonDataManager.LoadObjectFromJson<PlayerModel>(path);
-        }
-        */
-
         public static PlayerModel LoadByUserId(ulong userId)
         {
             string path = Path.Combine("Data", "Player", $"{userId}.json");
@@ -111,7 +103,19 @@ namespace Adventure.Data
                     Wisdom = 11,
                     Charisma = 10
                 },
-                Weapons = new() { "weapon_short_sword", "weapon_dagger" }
+               
+                Weapons = new List<PlayerInventoryWeaponsModel>
+                {
+                    new PlayerInventoryWeaponsModel
+                    {
+                        Id = "",
+                        Value = 0
+                    }
+                },
+
+                Items = new List<PlayerInventoryItemModel>(),
+
+                Loot = new List<PlayerInventoryItemModel>()
             };
 
             player.Id = userId;

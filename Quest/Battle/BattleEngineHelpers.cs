@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Discord;
+using System.Numerics;
+using Adventure.Loaders;
+using Adventure.Models.BattleState;
 
 namespace Adventure.Quest.Battle
 {
@@ -26,29 +30,34 @@ namespace Adventure.Quest.Battle
 
             var (damage, rolls) = DiceRoller.RollWithDetails(diceCount, diceValue);
 
-            LogService.Info($"[BattleEngine.ProcessCreatureAttack] Before creature.Hitpoints -= damage\n" +
-                            $"HP Player: {player.Hitpoints}\n" +
-                            $"HP Creature: {creature.Hitpoints}");
-
             // Reduce creature HP
             creature.Hitpoints -= damage;
             if (creature.Hitpoints < 0)
                 creature.Hitpoints = 0;
 
-            LogService.Info($"[BattleEngine.ProcessCreatureAttack] After creature.Hitpoints -= damage\n" +
-                            $"HP Player: {player.Hitpoints}\n" +
-                            $"HP Creature: {creature.Hitpoints}");
+            // Save new hitpoints value
+            JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Hitpoints);
 
+            // Player wins
             if (creature.Hitpoints <= 0)
             {
+                LogService.Info($"[BattleEngine.ProcessPlayerAttack] After player attack\n" +
+                                $"HP Player: {player.Hitpoints}\n" +
+                                $"HP Creature: {creature.Hitpoints}");
+
                 BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
                 return $"🗡️ You attacked **{creature.Name}** with your **{weapon.Name}** ({dice}) for `{damage}` damage.\n" +
                        $"Your Hitpoints: {player.Hitpoints}\n{creature.Name} Hitpoints: {creature.Hitpoints}\n" +
                        $"💀 The creature is defeated!";
             }
 
+            // NPC survived
+            LogService.Info($"[BattleEngine.ProcessPlayerAttack] After player attack\n" +
+                            $"HP Player: {player.Hitpoints}\n" +
+                            $"HP Creature: {creature.Hitpoints}");
+
             LogService.Info($"[BattleEngine.ProcessPlayerAttack] Player rolls: {string.Join(", ", rolls)}\n" +
-                $"{state.Player.Name} attacked {creature.Name} for {damage} damage. Remaining HP: {creature.Hitpoints}");
+                            $"{state.Player.Name} attacked {creature.Name} for {damage} damage. Remaining HP: {creature.Hitpoints}");
 
             return $"🗡️ You attacked **{creature.Name}** with your **{weapon.Name}** ({dice}) for `{damage}` damage.\n" +
                    $"Your Hitpoints: {player.Hitpoints}\n{creature.Name} Hitpoints: {creature.Hitpoints}\n" +
@@ -70,19 +79,18 @@ namespace Adventure.Quest.Battle
 
             var (damage, rolls) = DiceRoller.RollWithDetails(diceCount, diceValue);
 
-            LogService.Info($"[BattleEngine.ProcessCreatureAttack] Before player.Hitpoints -= damage\n" +
-                            $"HP Player: {player.Hitpoints}\n" +
-                            $"HP Creature: {creature.Hitpoints}");
-
             player.Hitpoints -= damage;
             if (player.Hitpoints < 0)
                 player.Hitpoints = 0;
 
-            LogService.Info($"[BattleEngine.ProcessCreatureAttack] After player.Hitpoints -= damage\n" +
+            LogService.Info($"[BattleEngine.ProcessCreatureAttack] After creature attack\n" +
                             $"HP Player: {player.Hitpoints}\n" +
                             $"HP Creature: {creature.Hitpoints}");
 
+            // Save new hitpoints value
+            JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Hitpoints);
 
+            // NPC wins
             if (player.Hitpoints <= 0)
             {
                 LogService.Info($"[BattleEngine.ProcessCreatureAttack] {creature.Name} rolls: {string.Join(", ", rolls)}\n" +
@@ -94,11 +102,18 @@ namespace Adventure.Quest.Battle
                        $"☠️ You have been defeated!";
             }
 
+            // Player survived
             LogService.Info($"[BattleEngine.ProcessCreatureAttack] {creature.Name} rolls {dice}: {string.Join(", ", rolls)}\n" +
                 $"{creature.Name} attacked {player.Name} for {damage} damage.\n" +
                 $"Remaining HP: {player.Hitpoints}");
 
+            BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
             return $"\U0001f9df You have {player.Hitpoints} hitpoints\n💥 **{creature.Name}** attacked you ({dice}) for `{damage}` damage.\n❤️ You have `{player.Hitpoints}` HP left.";
+        }
+
+        public static void SavePlayerHitpoints(ulong userId, BattleStateModel state)
+        {
+            JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Hitpoints);
         }
     }
 }

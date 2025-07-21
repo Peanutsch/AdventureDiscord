@@ -31,17 +31,34 @@ namespace Adventure.Models.Player
         public AttributesModel Attributes { get; set; } = new();
 
         [JsonPropertyName("weapons")]
-        public List<string> Weapons { get; set; } = new();
+        public List<PlayerInventoryWeaponsModel> Weapons { get; set; } = new();
 
         [JsonPropertyName("items")]
-        public List<string> Items { get; set; } = new();
+        public List<PlayerInventoryItemModel> Items { get; set; } = new();
 
         [JsonPropertyName("loot")]
-        public List<ItemModel> Loot { get; set; } = new();
+        public List<PlayerInventoryItemModel> Loot { get; set; } = new();
 
         [JsonIgnore]
         public string? Step { get; set; }
+    }
 
+    public class PlayerInventoryItemModel
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = string.Empty;
+
+        [JsonPropertyName("value")]
+        public int Value { get; set; }
+    }
+
+    public class PlayerInventoryWeaponsModel
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = string.Empty;
+
+        [JsonPropertyName("value")]
+        public int Value { get; set; }
     }
 }
 
