@@ -1,6 +1,8 @@
 ﻿using Adventure.Data;
 using Adventure.Loaders;
 using Adventure.Models.Creatures;
+using Adventure.Models.Player;
+using Adventure.Modules;
 using Adventure.Services;
 using Discord;
 using System;
@@ -40,7 +42,7 @@ namespace Adventure.Quest.Encounter
         }
 
 
-        public static EmbedBuilder GetRandomEncounter(CreaturesModel creature)
+        public static EmbedBuilder BuildEmbedRandomEncounter(CreaturesModel creature)
         {
             LogService.DividerParts(1, "Data NPC");
 
@@ -105,6 +107,18 @@ namespace Adventure.Quest.Encounter
             if (creature.Loot?.Any() == true)
                 embed.AddField("Loot", string.Join(", ", creature.Loot), false);
             */
+
+            return embed;
+        }
+
+        public static EmbedBuilder RebuildBattleEmbed(PlayerModel player, CreaturesModel npc)
+        {
+            var embed = new EmbedBuilder()
+                .WithColor(Color.Red)
+                .WithTitle("⚔️ ⚔️ ⚔️")
+                .AddField($"HP {player.Name} // HP {npc.Hitpoints}:", $"{player.Hitpoints} // {npc.Hitpoints}", false)
+                .AddField($"HP {npc.Name}:", npc.Hitpoints, false)
+                .AddField($"Choose your next action!", "Attack or Flee", false);
 
             return embed;
         }

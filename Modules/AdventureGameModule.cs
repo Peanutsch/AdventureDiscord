@@ -98,7 +98,7 @@ namespace Adventure.Modules
 
             SlashEncounterHelpers.SetupBattleState(user.Id, creature);
 
-            var embed = EncounterService.GetRandomEncounter(creature);
+            var embed = EncounterService.BuildEmbedRandomEncounter(creature);
             var buttons = SlashEncounterHelpers.BuildEncounterButtons();
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());

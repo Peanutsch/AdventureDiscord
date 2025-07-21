@@ -24,31 +24,35 @@ namespace Adventure.Quest.Battle
             var creature = state.Creatures;
             var player = state.Player;
             var playerStrength = state.Player.Attributes.Strength;
+
             var diceCount = weapon.Damage.DiceCount;
             var diceValue = weapon.Damage.DiceValue;
-            var dice = $"{diceCount}d{diceValue}";
-
             var (damage, rolls) = DiceRoller.RollWithDetails(diceCount, diceValue);
+            var dice = $"{diceCount}d{diceValue}";
+            var totalDamage = damage + playerStrength;
 
             // Reduce creature HP
-            creature.Hitpoints -= damage;
+            creature.Hitpoints -= totalDamage;
             if (creature.Hitpoints < 0)
                 creature.Hitpoints = 0;
 
             // Save new hitpoints value
-            JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Hitpoints);
+            JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Name!, state.Player.Hitpoints);
 
             // Player wins
             if (creature.Hitpoints <= 0)
             {
                 LogService.Info($"[BattleEngine.ProcessPlayerAttack] After player attack\n" +
-                                $"HP Player: {player.Hitpoints}\n" +
+                                $"HP {player.Name}: {player.Hitpoints}\n" +
                                 $"HP Creature: {creature.Hitpoints}");
 
-                BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
-                return $"🗡️ You attacked **{creature.Name}** with your **{weapon.Name}** ({dice}) for `{damage}` damage.\n" +
-                       $"Your Hitpoints: {player.Hitpoints}\n{creature.Name} Hitpoints: {creature.Hitpoints}\n" +
-                       $"💀 The creature is defeated!";
+                // Set step in Battleengine
+                BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
+
+                return $"🗡️ {player.Name} attacked **{creature.Name}** with **{weapon.Name}** ({dice}) for `{damage}` damage.\n" +
+                       $"  Total damage = damage ({damage}) + STR({playerStrength}) = {totalDamage}\n" +
+                       $"{player.Name} HP: {player.Hitpoints}\n{creature.Name} HP: {creature.Hitpoints}\n" +
+                       $"💀 {creature.Name} is defeated!";
             }
 
             // NPC survived
@@ -57,11 +61,14 @@ namespace Adventure.Quest.Battle
                             $"HP Creature: {creature.Hitpoints}");
 
             LogService.Info($"[BattleEngine.ProcessPlayerAttack] Player rolls: {string.Join(", ", rolls)}\n" +
-                            $"{state.Player.Name} attacked {creature.Name} for {damage} damage. Remaining HP: {creature.Hitpoints}");
+                            $"{player.Name} attacked {creature.Name} for {damage} damage. Remaining HP: {creature.Hitpoints}");
 
-            return $"🗡️ You attacked **{creature.Name}** with your **{weapon.Name}** ({dice}) for `{damage}` damage.\n" +
-                   $"Your Hitpoints: {player.Hitpoints}\n{creature.Name} Hitpoints: {creature.Hitpoints}\n" +
-                   $"🧟 {creature.Name} has `{creature.Hitpoints}` HP left.";
+            BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
+
+            return $"🗡️ Player {player.Name} attacked **{creature.Name}** with **[{weapon.Name}]** ({dice}) for `{damage}` damage.\n" +
+                   $"  Total damage = damage ({damage}) + STR({playerStrength}) = {totalDamage}\n" +
+                   $"Player {player.Name} HP: {player.Hitpoints}\n{creature.Name} Hitpoints: {creature.Hitpoints}\n" +
+                   $"🧟 {creature.Name} is still standing!";
         }
 
         /// <summary>
@@ -72,14 +79,15 @@ namespace Adventure.Quest.Battle
             var state = BattleEngine.GetBattleState(userId);
             var player = state.Player;
             var creature = state.Creatures;
-            var creatureStrenght = state.Creatures.Attributes.Strength;
+            var creatureStrength = state.Creatures.Attributes.Strength;
+            
             var diceCount = weapon.Damage.DiceCount;
             var diceValue = weapon.Damage.DiceValue;
-            var dice = $"{diceCount}d{diceValue}";
-
             var (damage, rolls) = DiceRoller.RollWithDetails(diceCount, diceValue);
+            var dice = $"{diceCount}d{diceValue}";
+            var totalDamage = damage + creatureStrength;
 
-            player.Hitpoints -= damage;
+            player.Hitpoints -= totalDamage;
             if (player.Hitpoints < 0)
                 player.Hitpoints = 0;
 
@@ -88,32 +96,34 @@ namespace Adventure.Quest.Battle
                             $"HP Creature: {creature.Hitpoints}");
 
             // Save new hitpoints value
-            JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Hitpoints);
+            JsonDataManager.UpdatePlayerHitpointsInJson(userId, player.Name!,state.Player.Hitpoints);
 
             // NPC wins
             if (player.Hitpoints <= 0)
             {
                 LogService.Info($"[BattleEngine.ProcessCreatureAttack] {creature.Name} rolls: {string.Join(", ", rolls)}\n" +
-                                $"{creature.Name} attacked {player.Name} with his **{creature.Weapons}** ({dice}) for {damage} damage. Remaining HP: {player.Hitpoints}");
+                                $"{creature.Name} attacked {player.Name} with his **{creature.Weapons}** ({dice}) for {damage} damage. Remaining HP: {player.Hitpoints}" +
+                                $"Player {player.Name} is still standing!");
 
-                BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
-                return $"💥 **{creature.Name}** attacked you with his **{creature.Weapons}** ({dice}) for `{damage}` damage.\n" +
-                       $"🧟 You have {player.Hitpoints} hitpoints\n" +
+                // Set step in Battleengine
+                BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
+
+                return $"💥 **{creature.Name}** attacked you with his **[{creature.Weapons}]** ({dice}) for `{damage}` damage.\n" +
+                       $"Total damage = damage ({damage}) + {creature.Name}'s STR({creatureStrength}) = {totalDamage}\n" +
+                       $"🧟 You have `{player.Hitpoints}` hitpoints\n" +
                        $"☠️ You have been defeated!";
             }
 
             // Player survived
             LogService.Info($"[BattleEngine.ProcessCreatureAttack] {creature.Name} rolls {dice}: {string.Join(", ", rolls)}\n" +
-                $"{creature.Name} attacked {player.Name} for {damage} damage.\n" +
+                $"{creature.Name} attacked {player.Name} for `{damage}` damage.\n" +
+                $"Total damage = damage ({damage}) + your STR({creatureStrength}) = {totalDamage}\n" +
                 $"Remaining HP: {player.Hitpoints}");
 
+            // Set step in Battleengine
             BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
-            return $"\U0001f9df You have {player.Hitpoints} hitpoints\n💥 **{creature.Name}** attacked you ({dice}) for `{damage}` damage.\n❤️ You have `{player.Hitpoints}` HP left.";
-        }
 
-        public static void SavePlayerHitpoints(ulong userId, BattleStateModel state)
-        {
-            JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Hitpoints);
+            return $"\U0001f9df You have {player.Hitpoints} hitpoints\n💥 **{creature.Name}** attacked you ({dice}) for `{damage}` damage.\n❤️ You have `{player.Hitpoints}` HP left.";
         }
     }
 }

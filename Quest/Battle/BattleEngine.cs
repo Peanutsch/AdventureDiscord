@@ -12,6 +12,7 @@ using Adventure.Models.Player;
 using Adventure.Quest.Encounter;
 using Adventure.Services;
 using Discord;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.VisualBasic;
 
@@ -29,6 +30,7 @@ namespace Adventure.Quest.Battle
         private const string StepWeaponChoice = "weapon_choice";
         private const string StepBattle = "fight";
         public const string StepPostBattle = "post_battle";
+        public const string StepEndBattle = "end_battle";
 
         // Action identifiers
         private const string ActionFlee = "flee";
@@ -37,6 +39,7 @@ namespace Adventure.Quest.Battle
         // Common messages
         private const string MsgFlee = "You fled. The forest grows quiet.";
         private const string MsgChooseWeapon = "Choose your weapon:";
+        public const string MsgBattleOver = "Battle is over!";
         private const string MsgNothingHappens = "Nothing happens...";
 
         // Tracks the battle state per user
@@ -130,7 +133,11 @@ namespace Adventure.Quest.Battle
                     break;
 
                 case StepPostBattle:
+                    await HandleStepPostBattle(interaction);
+                    break;
 
+                case StepEndBattle:
+                    await interaction.RespondAsync(MsgBattleOver);
                     break;
 
                 default:
@@ -241,23 +248,27 @@ namespace Adventure.Quest.Battle
 
             LogService.DividerParts(1, "HandleStepBattle");
 
-            LogService.Info($"[BattleEngine.HandleStepBattle] Before attack:\n" +
-                            $"Player HP: {state.Player.Hitpoints}\n" +
-                            $"Creature HP: {state.Creatures.Hitpoints}");
+            LogService.Info($"[BattleEngine.HandleStepBattle] HP before attack:\n" +
+                            $"Player = {state.Player.Hitpoints}\n" +
+                            $"Creature = {state.Creatures.Hitpoints}");
 
-            await interaction.RespondAsync($"Before attack:\n" +
-                                           $"Player HP: {state.Player.Hitpoints}\n" +
-                                           $"Creature HP: {state.Creatures.Hitpoints}");
+            // Defer the response to allow updates later
+            await interaction.DeferAsync();
+
+            // Info vóór de aanval
+            string preAttackInfo = $"HP before attack:\n" +
+                                   $"Player = {state.Player.Hitpoints}\n" +
+                                   $"Creature = {state.Creatures.Hitpoints}";
 
             // 1. Zoek het gekozen wapen in de player's inventory
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
             {
-                await interaction.RespondAsync("⚠️ Weapon not found in your inventory.", ephemeral: true);
+                await interaction.ModifyOriginalResponseAsync(msg =>
+                    msg.Content = $"{preAttackInfo}\n\n⚠️ Weapon not found in your inventory.");
 
                 LogService.Error("[HandleStepBattle] weapon is null or empty: Weapon not found in your inventory.");
                 LogService.DividerParts(2, "HandleStepBattle");
-
                 return;
             }
 
@@ -267,7 +278,9 @@ namespace Adventure.Quest.Battle
             // 3. Check of het wezen dood is
             if (creature.Hitpoints <= 0)
             {
-                await interaction.RespondAsync(playerAttackResult);
+                await interaction.ModifyOriginalResponseAsync(msg =>
+                    msg.Content = $"{preAttackInfo}\n\n{playerAttackResult}");
+
                 return;
             }
 
@@ -275,7 +288,9 @@ namespace Adventure.Quest.Battle
             var creatureWeapon = state.CreatureWeapons.FirstOrDefault();
             if (creatureWeapon == null)
             {
-                await interaction.RespondAsync($"{playerAttackResult}\n\n⚠️ {creature.Name} has nothing to attack with.", ephemeral: true);
+                await interaction.ModifyOriginalResponseAsync(msg =>
+                    msg.Content = $"{preAttackInfo}\n\n{playerAttackResult}\n\n⚠️ {creature.Name} has nothing to attack with.");
+
                 return;
             }
 
@@ -283,11 +298,74 @@ namespace Adventure.Quest.Battle
             string creatureAttackResult = BattleEngineHelpers.ProcessCreatureAttack(userId, creatureWeapon);
 
             // 6. Toon gecombineerde resultaten
-            string combinedResult = $"{playerAttackResult}\n\n{creatureAttackResult}";
-            await interaction.RespondAsync(combinedResult);
+            string combinedResult = $"{preAttackInfo}\n\n{playerAttackResult}\n\n{creatureAttackResult}";
 
-            LogService.DividerParts(2, "HandleStepFightChoice");
+            await interaction.ModifyOriginalResponseAsync(msg =>
+                msg.Content = combinedResult);
+
+            SetStep(userId, StepPostBattle);
+
+            LogService.DividerParts(2, "HandleStepBattle");
         }
+
+        private static async Task HandleStepPostBattle(SocketInteraction interaction)
+        {
+            ulong userId = interaction.User.Id;
+            var state = GetBattleState(userId);
+            var creature = state.Creatures;
+
+            if (state == null)
+            {
+                await interaction.RespondAsync("No battle found...", ephemeral: true);
+                return;
+            }
+
+            // Bouw het post-battle embed
+            if (state.Player.Hitpoints <= 0 && state.Creatures.Hitpoints <= 0)
+            {
+                EncounterService.RebuildBattleEmbed(state.Player, state.Creatures);
+            }
+
+            if (state.Player.Hitpoints <= 0)
+            {
+                var embed = EncounterService.RebuildBattleEmbed(state.Player, state.Creatures)
+                    .WithTitle("⚔️ Battle's over' ⚔️")
+                    .WithDescription($"The battle between **{state.Player.Name}** en **{state.Creatures.Name}** is over.");
+
+                SetStep(userId, StepEndBattle);
+            }
+            else
+            {
+                var embed = EncounterService.RebuildBattleEmbed(state.Player, state.Creatures)
+                    .WithTitle($"⚔️ {state.Player.Name} VS {state.Creatures.Name} ⚔️")
+                    .WithDescription($"The battle between **{state.Player.Name}** en **{state.Creatures.Name}** is over.");
+
+                SetStep(userId, StepWeaponChoice);
+            }
+
+            
+            /*
+            var embed = EncounterService.RebuildBattleEmbed(state.Player, state.Creatures)
+                .WithTitle("⚔️ Battle beëindigd ⚔️")
+                .WithDescription($"De strijd tussen **{state.Player.Name}** en **{state.Creatures.Name}** is voorbij.");
+
+            // Je kunt hier ook extra velden toevoegen, bijvoorbeeld wie gewonnen heeft
+            string outcome = state.Player.Hitpoints > 0 ? "Je hebt gewonnen! 🏆" : "Je bent verslagen... 😢";
+            embed.AddField("Uitkomst:", outcome, false);
+
+            // Update het originele bericht met het post-battle overzicht
+            await interaction.ModifyOriginalResponseAsync(msg =>
+            {
+                msg.Embed = embed.Build();
+                // Optioneel: pas de buttons aan naar 'Nieuwe ronde starten', 'Terug naar menu', etc.
+                msg.Components = null;
+            });
+            */
+
+            // Verwijder battle state of zet battle status op 'klaar'
+            //BattleStateService.ClearBattleState(userId);
+        }
+
 
         /// <summary>
         /// Displays available weapon choices as buttons for the user to select.

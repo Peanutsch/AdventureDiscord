@@ -3,7 +3,7 @@
     "id": "goblin",
     "name": "Goblin",
     "description": "A little green goblin...",
-    "hitpoints": 10,
+    "hitpoints": 25,
     "attributes": {
       "strength": 8,
       "dexterity": 14,

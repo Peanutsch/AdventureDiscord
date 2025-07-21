@@ -78,7 +78,7 @@ namespace Adventure.Loaders
         /// </summary>
         /// <param name="userId">Discord user ID.</param>
         /// <param name="newHitpoints">New hitpoints value to set.</param>
-        public static void UpdatePlayerHitpointsInJson(ulong userId, int newHitpoints)
+        public static void UpdatePlayerHitpointsInJson(ulong userId, string playerName, int newHitpoints)
         {
             string path = Path.Combine("Data", "Player", $"{userId}.json");
 
@@ -108,7 +108,7 @@ namespace Adventure.Loaders
 
                 File.WriteAllText(path, updatedJson);
 
-                LogService.Info($"[UpdatePlayerHitpointsInJson] Hitpoints updated to {newHitpoints} for userId {userId}");
+                LogService.Info($"[UpdatePlayerHitpointsInJson] Hitpoints updated to {newHitpoints} for userId {userId} ({playerName})");
             }
             catch (Exception ex)
             {
@@ -122,7 +122,7 @@ namespace Adventure.Loaders
         /// <param name="userId">Discord user ID.</param>
         /// <param name="listType">The type of list to update: "items", "weapons", or "loot".</param>
         /// <param name="itemId">The item identifier (ID) to add to the list.</param>
-        public static void UpdatePlayerItemsInJson(ulong userId, string listType, string itemId)
+        public static void UpdatePlayerItemsInJson(ulong userId, string playerName, string listType, string itemId)
         {
             string path = Path.Combine("Data", "Player", $"{userId}.json");
 
@@ -177,7 +177,7 @@ namespace Adventure.Loaders
                 });
 
                 File.WriteAllText(path, updatedJson);
-                LogService.Info($"[UpdatePlayerItemsInJson] Item '{itemId}' added to '{listType}' for userId {userId}");
+                LogService.Info($"[UpdatePlayerItemsInJson] Item '{itemId}' added to '{listType}' for userId {userId} ({playerName})");
             }
             catch (Exception ex)
             {
