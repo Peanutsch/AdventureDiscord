@@ -67,5 +67,39 @@ namespace Adventure.Buttons
         {
             await BattleEngine.HandleEncounterAction(Context.Interaction, "flee", "none");
         }
+
+        [ComponentInteraction("battle_continue_*")]
+        public async Task ContinueBattleHandler(string userIdRaw)
+        {
+            LogService.Info($"[ContinueBattleHandler] User {Context.User.Username} wants to continue.");
+
+            if (Context.User.Id.ToString() != userIdRaw)
+            {
+                await RespondAsync("⚠️ You can't interact with this battle!", ephemeral: true);
+                return;
+            }
+
+            // Zet de battle-stap terug naar de wapenkeuze
+            BattleEngine.SetStep(Context.User.Id, BattleEngine.StepWeaponChoice);
+
+            // Toon opnieuw de wapenkeuze
+            await EncounterService.ShowWeaponChoices(Context.Interaction);
+        }
+
+        [ComponentInteraction("battle_flee_*")]
+        public async Task FleeBattleHandler(string userIdRaw)
+        {
+            LogService.Info($"[FleeBattleHandler] User {Context.User.Username} tries to flee.");
+
+            if (Context.User.Id.ToString() != userIdRaw)
+            {
+                await RespondAsync("⚠️ You can't interact with this battle!", ephemeral: true);
+                return;
+            }
+
+            // 👟 Verwerk 'flee' via bestaande handler
+            await BattleEngine.HandleEncounterAction(Context.Interaction, "flee", "none");
+        }
+
     }
 }

@@ -2,7 +2,7 @@
   {
     "id": "arrow_standard",
     "name": "Standard Arrow",
-    "description": "A simple wooden arrow with an iron tip.",
+    "description": "*\"A simple wooden arrow with an iron tip.\"*",
     "weight": 0.1,
     "effects": [],
     "compatibleWeapons": [ "weapon_longbow", "weapon_shortbow" ]
@@ -10,7 +10,7 @@
   {
     "id": "arrow_fire",
     "name": "Flaming Arrow",
-    "description": "Ignites on launch and burns the target.",
+    "description": "*\"Ignites on launch and burns the target.\"*",
     "weight": 0.1,
     "effects": [
       {
@@ -25,7 +25,7 @@
   {
     "id": "arrow_bolt_standard",
     "name": "Standard Bolt",
-    "description": "Standard ammunition for crossbows.",
+    "description": "*\"Standard ammunition for crossbows.\"*",
     "weight": 0.2,
     "effects": [],
     "compatibleWeapons": [ "weapon_crossbow_standard", "weapon_crossbow_heavy" ]
@@ -33,7 +33,7 @@
   {
     "id": "arrow_bolt_fire",
     "name": "Standard Bolt",
-    "description": "Standard ammunition for crossbows.",
+    "description": "*\"Standard ammunition for crossbows.\"*",
     "weight": 0.2,
     "effects": [
       {

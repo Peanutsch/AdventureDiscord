@@ -2,7 +2,7 @@
   {
     "id": "weapon_crossbow_standard",
     "name": "Standard Crossbow",
-    "description": "Favored by soldiers and hunters alike, this crossbow combines raw power with mechanical reliability. Ideal for those who prefer precision from a distance.",
+    "description": "*\"Favored by soldiers and hunters alike, this crossbow combines raw power with mechanical reliability. Ideal for those who prefer precision from a distance.\"*",
     "weight": 4,
     "range": 8,
     "damage": {
@@ -18,7 +18,7 @@
   {
     "id": "weapon_shortbow",
     "name": "Shortbow",
-    "description": "Compact and lightweight, the shortbow is favored by scouts, rangers, and skirmishers who rely on speed and stealth. Though it lacks the range of larger bows, it excels in tight quarters and rapid engagements.",
+    "description": "*\"Compact and lightweight, the shortbow is favored by scouts, rangers, and skirmishers who rely on speed and stealth. Though it lacks the range of larger bows, it excels in tight quarters and rapid engagements.\"*",
     "weight": 2,
     "range": 5,
     "damage": {
@@ -32,7 +32,7 @@
   {
     "id": "weapon_longbow",
     "name": "Longbow",
-    "description": "This tall, finely crafted bow delivers powerful shots over vast distances. Preferred by elite archers and war-trained rangers, the longbow demands strength and skill, but rewards with deadly precision from afar.",
+    "description": "*\"This tall, finely crafted bow delivers powerful shots over vast distances. Preferred by elite archers and war-trained rangers, the longbow demands strength and skill, but rewards with deadly precision from afar.\"*",
     "weight": 2,
     "range": 10,
     "damage": {

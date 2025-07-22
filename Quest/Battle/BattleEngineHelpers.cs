@@ -53,10 +53,11 @@ namespace Adventure.Quest.Battle
                 // Set step in Battleengine
                 BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
 
-                return $"🗡️ {player.Name} attacked **{creature.Name}** with **{weapon.Name}** ({dice}) for `{damage}` damage.\n" +
-                       $"  Total damage = damage ({damage}) + STR({playerStrength}) = {totalDamage}\n" +
-                       $"{player.Name} HP: {player.Hitpoints}\n{creature.Name} HP: {creature.Hitpoints}\n" +
-                       $"💀 {creature.Name} is defeated!";
+                return $"🎲 {player.Name} rolls: {string.Join(", ", rolls)}\n\n" +
+                       $"🗡️ **{player.Name}** attacked **{creature.Name}** with **{weapon.Name}** ({dice}) for `{damage}` damage.\n\n" +
+                       $"🎯  Total damage = damage ({damage}) + STR({playerStrength}) = {totalDamage}\n" +
+                       //$"{player.Name} HP: {player.Hitpoints}\n{creature.Name} HP: {creature.Hitpoints}\n" +
+                       $"💀 **{creature.Name}** is defeated!";
             }
 
             // NPC survived
@@ -69,10 +70,11 @@ namespace Adventure.Quest.Battle
 
             BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
 
-            return $"🗡️ Player {player.Name} attacked **{creature.Name}** with **[{weapon.Name}]** ({dice}) for `{damage}` damage.\n" +
-                   $"  Total damage = damage ({damage}) + STR({playerStrength}) = {totalDamage}\n" +
-                   $"Player {player.Name} HP: {player.Hitpoints}\n{creature.Name} Hitpoints: {creature.Hitpoints}\n" +
-                   $"🧟 {creature.Name} is still standing!";
+            return $"🎲 **{player.Name}** rolls: {string.Join(", ", rolls)}\n" +
+                   $"🗡️ **{player.Name}** attacked **{creature.Name}** with **[{weapon.Name}]** ({dice}) for `{damage}` damage.\n" +
+                   $"🎯  Total damage = damage ({damage}) + STR({playerStrength}) = {totalDamage}\n\n" +
+                   //$"Player {player.Name} HP: {player.Hitpoints}\n{creature.Name} Hitpoints: {creature.Hitpoints}\n" +
+                   $"🧟 **{creature.Name}** is still standing with {creature.Hitpoints} HP!";
         }
 
         /// <summary>
@@ -116,22 +118,26 @@ namespace Adventure.Quest.Battle
                 // Set step in Battleengine
                 BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
 
-                return $"💥 **{creature.Name}** attacked you with his **[{creature.Weapons}]** ({dice}) for `{damage}` damage.\n" +
-                       $"Total damage = damage ({damage}) + {creature.Name}'s STR({creatureStrength}) = {totalDamage}\n" +
-                       $"🧟 You have `{player.Hitpoints}` hitpoints\n" +
-                       $"☠️ You have been defeated!";
+                return $"🎲 **{creature.Name}** rolls: {string.Join(", ", rolls)}\n\n" +
+                       $"💥 **{creature.Name}** attacked {player.Name} with his **[{creature.Weapons}]** ({dice}) for `{damage}` damage.\n" +
+                       $"🎯 Total damage = damage ({damage}) + {creature.Name}'s STR({creatureStrength}) = {totalDamage}\n\n" +
+                       //$"🧟 {player.Name} have `{player.Hitpoints}` hitpoints\n" +
+                       $"**☠️ **{player.Name}** have been defeated!**";
             }
 
             // Player survived
             LogService.Info($"[BattleEngine.ProcessCreatureAttack] {creature.Name} rolls {dice}: {string.Join(", ", rolls)}\n" +
-                $"{creature.Name} attacked {player.Name} for `{damage}` damage.\n" +
+                $"{creature.Name} attacked {player.Name} with his {weapon.Name} ({dice}) for `{damage}` damage.\n" +
                 $"Total damage = damage ({damage}) + your STR({creatureStrength}) = {totalDamage}\n" +
                 $"Remaining HP: {player.Hitpoints}");
 
             // Set step in Battleengine
             BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
 
-            return $"\U0001f9df You have {player.Hitpoints} hitpoints\n💥 **{creature.Name}** attacked you ({dice}) for `{damage}` damage.\n❤️ You have `{player.Hitpoints}` HP left.";
+            return $"🎲 **{creature.Name}** rolls {dice}: {string.Join(", ", rolls)}\n" +
+                   $"💥 **{creature.Name}** attacked {player.Name} with his **[{weapon.Name}]** ({dice}) for `{damage}` damage.\n" +
+                   $"🎯 Total damage = damage ({damage}) + {creature.Name}'s STR({creatureStrength}) = {totalDamage}\n\n" +
+                   $"🧟 **{player.Name}** is still standing with {player.Hitpoints} HP!\n";
         }
     }
 }

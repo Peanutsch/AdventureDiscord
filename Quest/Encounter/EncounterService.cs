@@ -6,6 +6,7 @@ using Adventure.Modules;
 using Adventure.Quest.Battle;
 using Adventure.Services;
 using Discord;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,7 +113,7 @@ namespace Adventure.Quest.Encounter
             return embed;
         }
 
-        public static EmbedBuilder RebuildBattleEmbed(ulong userId, string weaponName, int damage, int prePlayerHP, int preNpcHP)
+        public static EmbedBuilder RebuildBattleEmbed(ulong userId, int prePlayerHP, int preNpcHP, string attackSummary)
         {
             var state = BattleEngine.GetBattleState(userId);
             var player = state.Player;
@@ -122,14 +123,70 @@ namespace Adventure.Quest.Encounter
                 .WithColor(Color.Red)
                 .WithTitle($"{player.Name} ⚔️ {npc.Name}")
                 .AddField("⚔️ Battle Summary",
-                    $"**HP before attack**\nPlayer: {prePlayerHP}\nCreature: {preNpcHP}", false)
+                    $"**HP before attack**\n{player.Name}: {prePlayerHP}\n{npc.Name}: {preNpcHP}", false)
                 .AddField("🗡️ Attack Log",
-                    $"You attacked {npc.Name} with your {weaponName} for {damage} damage.\n" +
-                    $"Your Hitpoints: {player.Hitpoints}\n" +
-                    $"{npc.Name} Hitpoints: {npc.Hitpoints}", false)
-                .AddField("🧭 Choose your next action!", "Attack or Flee", false);
+                    $"{attackSummary}", false);
+                //.AddField("🧭 Choose your next action!", "Attack or Flee", false);
 
             return embed;
+        }
+
+        public static async Task ShowWeaponChoices(SocketInteraction interaction)
+        {
+            LogService.Info("[EncounterService.ShowWeaponChoices] Running ShowWeaponChoices...");
+
+            if (!interaction.HasResponded)
+            {
+                await interaction.DeferAsync();
+            }
+
+            ulong userId = interaction.User.Id;
+            var state = BattleEngine.GetBattleState(userId);
+            if (state == null)
+            {
+                LogService.Info("[EncounterService.ShowWeaponChoices] BattleState is null!");
+
+                await interaction.ModifyOriginalResponseAsync(msg =>
+                {
+                    msg.Content = "⚠️ No active battle found.";
+                    msg.Embeds = Array.Empty<Embed>();
+                    msg.Components = new ComponentBuilder().Build();
+                });
+                return;
+            }
+
+
+            LogService.Info("[EncounterService.ShowWeaponChoices] Building Buttons");
+            var weaponOptions = state.PlayerWeapons;
+
+            var builder = new ComponentBuilder();
+            foreach (var weapon in weaponOptions)
+            {
+                LogService.Info($"[EncounterService.ShowWeaponChoices] Building button {weapon.Name}");
+                builder.WithButton(weapon.Name, $"{weapon.Id}", ButtonStyle.Primary);
+            }
+
+            builder.WithButton("Flee", "btn_flee", ButtonStyle.Secondary);
+
+            LogService.Info("[EncounterService.ShowWeaponChoices] Building Embed");
+            var embed = new EmbedBuilder()
+                .WithTitle("🔪 Choose your weapon")
+                .WithColor(Color.DarkRed);
+
+            foreach (var weapon in weaponOptions)
+            {
+                string diceNotation = $"{weapon.Damage.DiceCount}d{weapon.Damage.DiceValue}";
+                string weaponName = $"{weapon.Name!} ({diceNotation})";
+                embed.AddField(weaponName, $"{weapon.Description}");
+            }
+            
+            await interaction.ModifyOriginalResponseAsync(msg =>
+            {
+                msg.Embed = embed.Build();
+                msg.Components = builder.Build();
+            });
+
+            LogService.Info("[EncounterService.ShowWeaponChoices] Completed");
         }
     }
 }
