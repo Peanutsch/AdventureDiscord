@@ -133,7 +133,7 @@ namespace Adventure.Quest.Battle
             switch (currentStep)
             {
                 case StepStart:
-                    await HandleStepStart(interaction, action);
+                    await HandleStepStart((SocketMessageComponent)interaction, action);
                     break;
 
                 case StepWeaponChoice:
@@ -159,23 +159,21 @@ namespace Adventure.Quest.Battle
             }
         }
 
-        
-        /// <summary>
-        /// Handles the initial step where user chooses to attack or flee.
-        /// </summary>
-        private static async Task HandleStepStart(SocketInteraction interaction, string action)
+        private static async Task HandleStepStart(SocketMessageComponent component, string action)
         {
-            ulong userId = interaction.User.Id;
+            ulong userId = component.User.Id;
             LogService.DividerParts(1, "HandleStepStart");
 
             if (action == ActionFlee)
             {
                 LogService.Info("[BattleEngine.HandleStepStart] Player flees");
 
-                if (interaction is SocketMessageComponent componentFlee)
-                    await ButtonInteractionHelpers.RemoveButtonsAsync(componentFlee, MsgFlee);
-                else
-                    await interaction.RespondAsync(MsgFlee, ephemeral: false);
+                await component.UpdateAsync(msg =>
+                {
+                    msg.Content = MsgFlee;
+                    msg.Components = new ComponentBuilder().Build(); // knoppen verwijderen
+                    msg.Embed = null;
+                });
 
                 SetStep(userId, StepFlee);
             }
@@ -183,9 +181,8 @@ namespace Adventure.Quest.Battle
             {
                 LogService.Info("[BattleEngine.HandleStepStart] Player choose attack. Calling EncounterService.ShowWeaponChoices...");
 
-                await EncounterService.ShowWeaponChoices(interaction);
-
-                LogService.Info("[BattleEngine.HandleStepStart] Completed EncounterService.ShowWeaponChoices. SetStep > StepWeaponChoice");
+                //await component.DeferAsync();
+                await EncounterService.ShowWeaponChoices(component);
 
                 SetStep(userId, StepWeaponChoice);
             }
@@ -334,7 +331,7 @@ namespace Adventure.Quest.Battle
 
             if (state == null)
             {
-                await interaction.RespondAsync("No battle found...", ephemeral: true);
+                await interaction.RespondAsync("No battle found...");
                 return;
             }
 

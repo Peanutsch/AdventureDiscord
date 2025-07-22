@@ -4,6 +4,7 @@ using Adventure.Data;
 using Adventure.Services;
 using Adventure.Quest.Battle;
 using Adventure.Quest.Encounter;
+using Discord.WebSocket;
 
 namespace Adventure.Buttons
 {
@@ -51,9 +52,8 @@ namespace Adventure.Buttons
             var step = BattleEngine.GetStep(userId);
             LogService.Info($"[HandleWeaponButton] Current battle step: {step}");
 
-            //await BattleEngine.HandleEncounterAction(Context.Interaction, "fight", weaponId);
             // Direct call BattleEngine.HandleStepBattle
-            await BattleEngine.HandleStepBattle(Context.Interaction, weaponId);
+            await BattleEngine.HandleStepBattle(Context.Interaction, weaponId);           
         }
 
         [ComponentInteraction("btn_attack")]
@@ -83,7 +83,7 @@ namespace Adventure.Buttons
             BattleEngine.SetStep(Context.User.Id, BattleEngine.StepWeaponChoice);
 
             // Toon opnieuw de wapenkeuze
-            await EncounterService.ShowWeaponChoices(Context.Interaction);
+            await EncounterService.ShowWeaponChoices((SocketMessageComponent)Context.Interaction);
         }
 
         [ComponentInteraction("battle_flee_*")]
@@ -97,7 +97,6 @@ namespace Adventure.Buttons
                 return;
             }
 
-            // 👟 Verwerk 'flee' via bestaande handler
             await BattleEngine.HandleEncounterAction(Context.Interaction, "flee", "none");
         }
 

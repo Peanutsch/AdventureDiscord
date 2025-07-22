@@ -9,6 +9,7 @@ namespace Adventure.Buttons
     public static class ButtonInteractionHelpers
     {
         public static async Task RemoveButtonsAsync(SocketMessageComponent component, string message)
+        //public static async Task RemoveButtonsAsync(SocketMessageComponent component)
         {
             // Haal bestaande embed op
             var originalEmbed = component.Message.Embeds.FirstOrDefault()?.ToEmbedBuilder()?.Build();
@@ -25,8 +26,8 @@ namespace Adventure.Buttons
                     ? new[] { originalEmbed, resultEmbed }
                     : new[] { resultEmbed };
 
-                msg.Components = new ComponentBuilder().Build(); // knoppen verwijderen
-                msg.Content = ""; // geen tekst erboven
+                msg.Components = new ComponentBuilder().Build(); 
+                msg.Content = ""; 
             });
         }
     }

@@ -17,39 +17,40 @@ namespace Adventure.Quest.Encounter
 {
     public class EncounterService
     {
+        /// <summary>
+        /// Randomly selects a creature from the humanoids list.
+        /// </summary>
+        /// <returns>A random CreaturesModel instance or null if an error occurs.</returns>
         public static CreaturesModel? CreatureRandomizer()
         {
             try
             {
-                //List shuffle = (humanoids_shuffle, animals_shuffle);
-
+                // Get the list of humanoid creatures
                 var humanoids = GameData.Humanoids;
-                var animals = GameData.Animals;
+                var animals = GameData.Animals; // currently unused but could be used for expanding randomization
 
                 var random = new Random();
 
-                //var rndNPC = random.Next([humanoids, animals]);
-
-                //var pickedNPC = rndNPC![random.Next(rndNPC.Count)];
-                
-                //return humanoids![random.Next(humanoids.Count)];
+                // Return a random humanoid creature from the list
                 return humanoids![random.Next(humanoids.Count)];
             }
             catch (Exception ex)
             {
                 LogService.Error($"[EncounterService.CreatureRandomizer] > Error:\n{ex.Message}");
-
                 return null;
             }
         }
 
-
+        /// <summary>
+        /// Builds an embed describing the randomly encountered creature with stats and equipment.
+        /// </summary>
+        /// <param name="creature">The creature to display in the encounter embed.</param>
+        /// <returns>An EmbedBuilder with creature details formatted.</returns>
         public static EmbedBuilder BuildEmbedRandomEncounter(CreaturesModel creature)
         {
             LogService.DividerParts(1, "Data NPC");
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{creature.Name}]");
-            ;
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
@@ -58,12 +59,15 @@ namespace Adventure.Quest.Encounter
                 .AddField("Hit Points:", creature.Hitpoints, false);
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", creature.Armor ?? new())}");
+
             if (creature.Armor?.Any() == true)
             {
+                // Retrieve detailed armor info based on armor IDs/names
                 var armorList = GameEntityFetcher.RetrieveArmorAttributes(creature.Armor);
 
                 if (armorList.Count > 0)
                 {
+                    // Add each armor piece as a separate field with details
                     foreach (var armor in armorList)
                     {
                         embed.AddField($"**[{armor.Name}]**\n",
@@ -78,15 +82,17 @@ namespace Adventure.Quest.Encounter
                     LogService.Error("[EncounterService.GetRandomEncounter] > No armor data resolved.");
                     embed.AddField("Armor:", "None", false);
                 }
-
             }
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Weapons: {string.Join(",", creature.Weapons ?? new())}");
+
             if (creature.Weapons?.Any() == true)
             {
+                // Retrieve detailed weapon info based on weapon IDs/names
                 var weaponList = GameEntityFetcher.RetrieveWeaponAttributes(creature.Weapons!);
                 if (weaponList.Count > 0)
                 {
+                    // Add each weapon as a separate field with details
                     foreach (var weapon in weaponList)
                     {
                         embed.AddField($"**[{weapon.Name}]**",
@@ -105,6 +111,7 @@ namespace Adventure.Quest.Encounter
             }
 
             /*
+            // Loot field is commented out but could be added in the future
             LogService.Info($"[EncounterService.GetRandomEncounter] > Loot: {string.Join(",", creature.Loot ?? new())}");
             if (creature.Loot?.Any() == true)
                 embed.AddField("Loot", string.Join(", ", creature.Loot), false);
@@ -113,6 +120,14 @@ namespace Adventure.Quest.Encounter
             return embed;
         }
 
+        /// <summary>
+        /// Rebuilds an embed summarizing the current battle state including HP before attack and attack log.
+        /// </summary>
+        /// <param name="userId">User ID of the player in battle.</param>
+        /// <param name="prePlayerHP">Player's HP before the attack.</param>
+        /// <param name="preNpcHP">NPC's HP before the attack.</param>
+        /// <param name="attackSummary">Text describing the attack results.</param>
+        /// <returns>An EmbedBuilder summarizing the battle.</returns>
         public static EmbedBuilder RebuildBattleEmbed(ulong userId, int prePlayerHP, int preNpcHP, string attackSummary)
         {
             var state = BattleEngine.GetBattleState(userId);
@@ -126,67 +141,44 @@ namespace Adventure.Quest.Encounter
                     $"**HP before attack**\n{player.Name}: {prePlayerHP}\n{npc.Name}: {preNpcHP}", false)
                 .AddField("🗡️ Attack Log",
                     $"{attackSummary}", false);
-                //.AddField("🧭 Choose your next action!", "Attack or Flee", false);
 
             return embed;
         }
 
-        public static async Task ShowWeaponChoices(SocketInteraction interaction)
+        /// <summary>
+        /// Shows the player their weapon choices by updating the message with weapon buttons and embed.
+        /// </summary>
+        /// <param name="component">The component interaction from Discord (button click).</param>
+        public static async Task ShowWeaponChoices(SocketMessageComponent component)
         {
-            LogService.Info("[EncounterService.ShowWeaponChoices] Running ShowWeaponChoices...");
-
-            if (!interaction.HasResponded)
-            {
-                await interaction.DeferAsync();
-            }
-
-            ulong userId = interaction.User.Id;
-            var state = BattleEngine.GetBattleState(userId);
-            if (state == null)
-            {
-                LogService.Info("[EncounterService.ShowWeaponChoices] BattleState is null!");
-
-                await interaction.ModifyOriginalResponseAsync(msg =>
-                {
-                    msg.Content = "⚠️ No active battle found.";
-                    msg.Embeds = Array.Empty<Embed>();
-                    msg.Components = new ComponentBuilder().Build();
-                });
-                return;
-            }
-
-
-            LogService.Info("[EncounterService.ShowWeaponChoices] Building Buttons");
-            var weaponOptions = state.PlayerWeapons;
+            var state = BattleEngine.GetBattleState(component.User.Id);
+            var weapons = state?.PlayerWeapons;
 
             var builder = new ComponentBuilder();
-            foreach (var weapon in weaponOptions)
+
+            if (weapons != null)
             {
-                LogService.Info($"[EncounterService.ShowWeaponChoices] Building button {weapon.Name}");
-                builder.WithButton(weapon.Name, $"{weapon.Id}", ButtonStyle.Primary);
+                // Create a button for each weapon in the player's inventory
+                foreach (var weapon in weapons)
+                {
+                    builder.WithButton(weapon.Name, weapon.Id, ButtonStyle.Primary);
+                }
             }
 
-            builder.WithButton("Flee", "btn_flee", ButtonStyle.Secondary);
-
-            LogService.Info("[EncounterService.ShowWeaponChoices] Building Embed");
             var embed = new EmbedBuilder()
                 .WithTitle("🔪 Choose your weapon")
-                .WithColor(Color.DarkRed);
+                .WithColor(Color.DarkRed)
+                .WithDescription($"{state!.Player.Name} prepares for battle...");
 
-            foreach (var weapon in weaponOptions)
+            //await component.FollowupAsync(embed: embed.Build(), components: builder.Build());
+
+            // Update the interaction response with new embed and buttons
+            await component.UpdateAsync(msg =>
             {
-                string diceNotation = $"{weapon.Damage.DiceCount}d{weapon.Damage.DiceValue}";
-                string weaponName = $"{weapon.Name!} ({diceNotation})";
-                embed.AddField(weaponName, $"{weapon.Description}");
-            }
-            
-            await interaction.ModifyOriginalResponseAsync(msg =>
-            {
+                msg.Content = "";
                 msg.Embed = embed.Build();
                 msg.Components = builder.Build();
             });
-
-            LogService.Info("[EncounterService.ShowWeaponChoices] Completed");
         }
     }
 }

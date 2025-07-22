@@ -2,7 +2,7 @@
   "id": 0,
   "name": "default",
   "description": "A brave soul starting their journey.",
-  "hitpoints": 50,
+  "hitpoints": 100,
   "maxCarry": 70,
   "attributes": {
     "strength": 10,

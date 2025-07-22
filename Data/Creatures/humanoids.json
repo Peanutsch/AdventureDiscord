@@ -2,7 +2,7 @@
   {
     "id": "goblin",
     "name": "Goblin",
-    "description": "A little green goblin...",
+    "description": "A small, wiry creature with green skin, sharp teeth, and a mischievous grin.\n More cunning than brave, and more annoying than deadly—unless you turn your back.",
     "hitpoints": 25,
     "attributes": {
       "strength": 8,
@@ -19,7 +19,7 @@
   {
     "id": "orc",
     "name": "Orc",
-    "description": "A big, brutish orc...",
+    "description": "A hulking brute with jagged armor and a thirst for blood.\n Not known for brains, but definitely for breaking bones.",
     "hitpoints": 50,
     "attributes": {
       "strength": 16,
