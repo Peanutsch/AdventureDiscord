@@ -165,6 +165,8 @@ namespace Adventure.Quest.Encounter
                 }
             }
 
+            builder.WithButton("Flee!", "btn_flee", ButtonStyle.Secondary);
+
             var embed = new EmbedBuilder()
                 .WithTitle("🔪 Choose your weapon")
                 .WithColor(Color.DarkRed)
