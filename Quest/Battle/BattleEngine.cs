@@ -77,6 +77,11 @@ namespace Adventure.Quest.Battle
                     PlayerArmor = new List<ArmorModel>(),
                     CreatureWeapons = new List<WeaponModel>(),
                     CreatureArmor = new List<ArmorModel>(),
+
+                    PrePlayerHP = player.Hitpoints,
+                    PreCreatureHP = 0,
+                    LastUsedWeapon = "",
+                    Damage = 0
                 };
             }
 
@@ -133,6 +138,9 @@ namespace Adventure.Quest.Battle
                     break;
 
                 case StepPostBattle:
+
+                    LogService.Info("Calling Case HandleEncounterAction.StepPostBattle");
+
                     await HandleStepPostBattle(interaction);
                     break;
 
@@ -305,14 +313,20 @@ namespace Adventure.Quest.Battle
 
             SetStep(userId, StepPostBattle);
 
+            await HandleStepPostBattle(interaction);
+
             LogService.DividerParts(2, "HandleStepBattle");
         }
 
-        private static async Task HandleStepPostBattle(SocketInteraction interaction)
+        public static async Task HandleStepPostBattle(SocketInteraction interaction)
         {
+            LogService.Info("[RINNING HandleStepPostBattle]");
+
+            if (interaction == null)
+                return;
+
             ulong userId = interaction.User.Id;
             var state = GetBattleState(userId);
-            var creature = state.Creatures;
 
             if (state == null)
             {
@@ -320,52 +334,45 @@ namespace Adventure.Quest.Battle
                 return;
             }
 
-            // Bouw het post-battle embed
-            if (state.Player.Hitpoints <= 0 && state.Creatures.Hitpoints <= 0)
+            var player = state.Player;
+            var npc = state.Creatures;
+
+            // Kies embed-title en vervolg-stap op basis van HP
+            string title;
+            string description;
+
+            if (player.Hitpoints <= 0 && npc.Hitpoints <= 0)
             {
-                EncounterService.RebuildBattleEmbed(state.Player, state.Creatures);
+                title = "⚔️ Double KO ⚔️";
+                description = $"Both **{player.Name}** and **{npc.Name}** have fallen!";
+                SetStep(userId, StepEndBattle);
             }
-
-            if (state.Player.Hitpoints <= 0)
+            else if (player.Hitpoints <= 0)
             {
-                var embed = EncounterService.RebuildBattleEmbed(state.Player, state.Creatures)
-                    .WithTitle("⚔️ Battle's over' ⚔️")
-                    .WithDescription($"The battle between **{state.Player.Name}** en **{state.Creatures.Name}** is over.");
-
+                title = "☠️ You were defeated ☠️";
+                description = $"The battle between **{player.Name}** and **{npc.Name}** is over. You lost.";
+                SetStep(userId, StepEndBattle);
+            }
+            else if (npc.Hitpoints <= 0)
+            {
+                title = "🎉 Victory! 🎉";
+                description = $"The battle between **{player.Name}** and **{npc.Name}** is over. You won!";
                 SetStep(userId, StepEndBattle);
             }
             else
             {
-                var embed = EncounterService.RebuildBattleEmbed(state.Player, state.Creatures)
-                    .WithTitle($"⚔️ {state.Player.Name} VS {state.Creatures.Name} ⚔️")
-                    .WithDescription($"The battle between **{state.Player.Name}** en **{state.Creatures.Name}** is over.");
-
+                title = $"⚔️ {player.Name} VS {npc.Name} ⚔️";
+                description = $"The fight rages on between **{player.Name}** and **{npc.Name}**!";
                 SetStep(userId, StepWeaponChoice);
             }
 
-            
-            /*
-            var embed = EncounterService.RebuildBattleEmbed(state.Player, state.Creatures)
-                .WithTitle("⚔️ Battle beëindigd ⚔️")
-                .WithDescription($"De strijd tussen **{state.Player.Name}** en **{state.Creatures.Name}** is voorbij.");
+            // Build Embed
+            var embed = EncounterService.RebuildBattleEmbed(userId, state.LastUsedWeapon, state.Damage, player.Hitpoints, npc.Hitpoints)
+                .WithTitle(title)
+                .WithDescription(description);
 
-            // Je kunt hier ook extra velden toevoegen, bijvoorbeeld wie gewonnen heeft
-            string outcome = state.Player.Hitpoints > 0 ? "Je hebt gewonnen! 🏆" : "Je bent verslagen... 😢";
-            embed.AddField("Uitkomst:", outcome, false);
-
-            // Update het originele bericht met het post-battle overzicht
-            await interaction.ModifyOriginalResponseAsync(msg =>
-            {
-                msg.Embed = embed.Build();
-                // Optioneel: pas de buttons aan naar 'Nieuwe ronde starten', 'Terug naar menu', etc.
-                msg.Components = null;
-            });
-            */
-
-            // Verwijder battle state of zet battle status op 'klaar'
-            //BattleStateService.ClearBattleState(userId);
+            await interaction.RespondAsync(embed: embed.Build(), ephemeral: true);
         }
-
 
         /// <summary>
         /// Displays available weapon choices as buttons for the user to select.

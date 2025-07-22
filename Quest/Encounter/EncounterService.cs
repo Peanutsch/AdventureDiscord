@@ -3,6 +3,7 @@ using Adventure.Loaders;
 using Adventure.Models.Creatures;
 using Adventure.Models.Player;
 using Adventure.Modules;
+using Adventure.Quest.Battle;
 using Adventure.Services;
 using Discord;
 using System;
@@ -111,14 +112,22 @@ namespace Adventure.Quest.Encounter
             return embed;
         }
 
-        public static EmbedBuilder RebuildBattleEmbed(PlayerModel player, CreaturesModel npc)
+        public static EmbedBuilder RebuildBattleEmbed(ulong userId, string weaponName, int damage, int prePlayerHP, int preNpcHP)
         {
+            var state = BattleEngine.GetBattleState(userId);
+            var player = state.Player;
+            var npc = state.Creatures;
+
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithTitle("⚔️ ⚔️ ⚔️")
-                .AddField($"HP {player.Name} // HP {npc.Hitpoints}:", $"{player.Hitpoints} // {npc.Hitpoints}", false)
-                .AddField($"HP {npc.Name}:", npc.Hitpoints, false)
-                .AddField($"Choose your next action!", "Attack or Flee", false);
+                .WithTitle($"{player.Name} ⚔️ {npc.Name}")
+                .AddField("⚔️ Battle Summary",
+                    $"**HP before attack**\nPlayer: {prePlayerHP}\nCreature: {preNpcHP}", false)
+                .AddField("🗡️ Attack Log",
+                    $"You attacked {npc.Name} with your {weaponName} for {damage} damage.\n" +
+                    $"Your Hitpoints: {player.Hitpoints}\n" +
+                    $"{npc.Name} Hitpoints: {npc.Hitpoints}", false)
+                .AddField("🧭 Choose your next action!", "Attack or Flee", false);
 
             return embed;
         }

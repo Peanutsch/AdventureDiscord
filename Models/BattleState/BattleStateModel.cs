@@ -17,5 +17,10 @@ namespace Adventure.Models.BattleState
         public List<ArmorModel> PlayerArmor { get; set; } = new();
         public List<WeaponModel> CreatureWeapons { get; set; } = new();
         public List<ArmorModel> CreatureArmor { get; set; } = new();
+
+        public int Damage { get; set; }
+        public string LastUsedWeapon { get; set; } = string.Empty;
+        public int PrePlayerHP { get; set; }
+        public int PreCreatureHP { get; set; }
     }
 }

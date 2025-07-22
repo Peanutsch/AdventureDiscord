@@ -31,6 +31,10 @@ namespace Adventure.Quest.Battle
             var dice = $"{diceCount}d{diceValue}";
             var totalDamage = damage + playerStrength;
 
+            state.Damage = totalDamage;
+            state.LastUsedWeapon = weapon.Name!;
+            state.PreCreatureHP = creature.Hitpoints + totalDamage;
+
             // Reduce creature HP
             creature.Hitpoints -= totalDamage;
             if (creature.Hitpoints < 0)
@@ -77,15 +81,19 @@ namespace Adventure.Quest.Battle
         public static string ProcessCreatureAttack(ulong userId, WeaponModel weapon)
         {
             var state = BattleEngine.GetBattleState(userId);
-            var player = state.Player;
             var creature = state.Creatures;
-            var creatureStrength = state.Creatures.Attributes.Strength;
-            
+            var player = state.Player;
+            var creatureStrength = creature.Attributes.Strength;
+
             var diceCount = weapon.Damage.DiceCount;
             var diceValue = weapon.Damage.DiceValue;
             var (damage, rolls) = DiceRoller.RollWithDetails(diceCount, diceValue);
             var dice = $"{diceCount}d{diceValue}";
             var totalDamage = damage + creatureStrength;
+
+            state.Damage = totalDamage;
+            state.LastUsedWeapon = weapon.Name!;
+            state.PrePlayerHP = player.Hitpoints + totalDamage;
 
             player.Hitpoints -= totalDamage;
             if (player.Hitpoints < 0)
