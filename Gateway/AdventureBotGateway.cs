@@ -32,10 +32,9 @@ namespace Adventure.Gateway
             // Load GameData
             GameData.Weapons = WeaponLoader.Load();
             GameData.Armor = ArmorLoader.Load();
-            GameData.Potions = PotionLoader.Load();
+            GameData.Items = ItemLoader.Load();
             //GameData.Player = PlayerLoader.Load(userId);
             GameData.Humanoids = HumanoidLoader.Load();
-            GameData.Inventory = InventoryLoader.Load();
 
             string discordToken = GetToken.GetTokenFromCSV();
 

@@ -81,5 +81,39 @@ namespace Adventure.Quest.Encounter
 
             return weapons!;
         }
+
+        public static List<ItemModel> RetrieveItemAttributes(List<string> itemIds)
+        {
+            if (itemIds == null || itemIds.Count == 0)
+                return new List<ItemModel>();
+
+            LogService.Info($"[GameEntityFetcher.RetrieveItemAttributes] > Resolving Item data for IDs: {string.Join(", ", itemIds)}:");
+
+            if (GameData.Items == null)
+            {
+                LogService.Error("[GameEntityFetcher.RetrieveItemAttributes] > GameData.Items is null. Item data was not loaded.");
+                return new List<ItemModel>();
+            }
+
+            var items = itemIds
+                .Select(id =>
+                {
+                    var item = GameData.Items!.FirstOrDefault(i => i.Id == id);
+                    if (item == null)
+                        LogService.Error($"[EntityResolver.RetrieveItemAttributes] > Item with ID '{id}' not found.");
+                    return item;
+                })
+                .Where(i => i != null)
+                .ToList()!;
+
+            int counter = 1;
+            foreach (var item in items)
+            {
+                LogService.Info($"Item #{counter}: {item!.Name}");
+                counter++;
+            }
+
+            return items!;
+        }
     }
 }

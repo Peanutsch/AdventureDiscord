@@ -153,26 +153,52 @@ namespace Adventure.Quest.Encounter
         {
             var state = BattleEngine.GetBattleState(component.User.Id);
             var weapons = state?.PlayerWeapons;
+            var items = state?.Items;
 
             var builder = new ComponentBuilder();
 
+            // Create a button for each weapon in the player's inventory
             if (weapons != null)
             {
-                // Create a button for each weapon in the player's inventory
                 foreach (var weapon in weapons)
                 {
                     builder.WithButton(weapon.Name, weapon.Id, ButtonStyle.Primary);
                 }
             }
 
+            // Create a button for each item in the player's inventory
+            if (items!.Count > 0)
+            {
+                foreach (var item in items)
+                {
+                    builder.WithButton(item.Name, item.Id, ButtonStyle.Success);
+                }
+            }
+            else
+            {
+                LogService.Info("[EncounterService.ShowWeaponChoices] items == 0");
+            }
+
+                var embed = new EmbedBuilder()
+                    .WithTitle("🔪 Make your choice!")
+                    .WithColor(Color.DarkRed)
+                    .WithDescription($"{state!.Player.Name} prepares for battle...");
+
+            foreach (var weapon in weapons!)
+            {
+                string diceNotation = $"{weapon.Damage.DiceCount}d{weapon.Damage.DiceValue}";
+                string weaponName = $"{weapon.Name!} ({diceNotation})";
+                embed.AddField(weaponName, $"{weapon.Description}");
+            }
+
+            foreach (var item in items!)
+            {
+                string diceNotation = $"{item.Effect.DiceCount}d{item.Effect.DiceValue}+{item.Effect.BonusHP}";
+                string itemName = $"{item.Name} ({diceNotation})";
+                embed.AddField(itemName, $"{item.Description}");
+            }
+
             builder.WithButton("Flee!", "btn_flee", ButtonStyle.Secondary);
-
-            var embed = new EmbedBuilder()
-                .WithTitle("🔪 Choose your weapon")
-                .WithColor(Color.DarkRed)
-                .WithDescription($"{state!.Player.Name} prepares for battle...");
-
-            //await component.FollowupAsync(embed: embed.Build(), components: builder.Build());
 
             // Update the interaction response with new embed and buttons
             await component.UpdateAsync(msg =>

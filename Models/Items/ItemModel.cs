@@ -29,5 +29,21 @@ namespace Adventure.Models.Items
 
         [JsonPropertyName("value")]
         public double Value { get; set; }
+
+        [JsonPropertyName("effect")]
+        public EffectModel Effect { get; set; } = new();
+    }
+
+    public class EffectModel
+    {
+        [JsonPropertyName("diceCount")]
+        public int DiceCount { get; set; }
+
+        [JsonPropertyName("diceValue")]
+        public int DiceValue { get; set; }
+        
+        [JsonPropertyName("bonusHP")]
+        public int BonusHP { get; set; }
+
     }
 }

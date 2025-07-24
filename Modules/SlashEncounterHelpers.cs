@@ -35,6 +35,7 @@ namespace Adventure.Modules
             return player ?? PlayerDataManager.CreateDefaultPlayer(userId, playerName);
         }
 
+        /*
         public static void EnsureInventoryLoaded(ulong userId)
         {
             if (GameData.Inventory == null)
@@ -45,6 +46,7 @@ namespace Adventure.Modules
 
             InventoryStateService.LoadInventory(userId);
         }
+        */
 
         public static void SetupBattleState(ulong userId, CreaturesModel creature)
         {

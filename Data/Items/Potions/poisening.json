@@ -3,21 +3,39 @@
     "id": "potion_poison_s",
     "name": "Poison Potion Small",
     "description": "A small vial containing a mild poison that causes minor harm.",
-    "points": -2,
-    "weight": 0.05
+    "points": -5,
+    "weight": 0.05,
+    "effect": 
+      {
+        "diceCount": 2,
+        "diceValue": 4,
+        "bonusHP": 2
+      }
   },
   {
     "id": "potion_poison_m",
     "name": "Poison Potion Medium",
     "description": "A stronger poison that inflicts considerable damage and weakens the target.",
     "points": -10,
-    "weight": 0.05
+    "weight": 0.05,
+    "effect": 
+      {
+        "diceCount": 4,
+        "diceValue": 4,
+        "bonusHP": 4
+      }
   },
   {
     "id": "potion_poison_l",
     "name": "Poison Potion Large",
     "description": "A deadly poison capable of causing severe damage.",
-    "points": -15,
-    "weight": 0.05
+    "points": -25,
+    "weight": 0.05,
+    "effect": 
+      {
+        "diceCount": 8,
+        "diceValue": 4,
+        "bonusHP": 8
+      }
   }
 ]

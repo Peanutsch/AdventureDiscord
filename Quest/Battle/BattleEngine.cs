@@ -71,8 +71,39 @@ namespace Adventure.Quest.Battle
             {
                 // Load player data and inventory
                 var player = PlayerDataManager.LoadByUserId(userId);
-                var inventory = InventoryStateService.GetState(userId).Inventory;
-                var playerWeapons = GameEntityFetcher.RetrieveWeaponAttributes(inventory.Keys.ToList());
+
+                var weaponIds = player.Weapons.Select(w => w.Id).ToList();
+                var armorIds = player.Armor.Select(a => a.Id).ToList();
+                var itemIds = player.Items.Select(i => i.Id).ToList();
+
+                var playerWeapons = GameEntityFetcher.RetrieveWeaponAttributes(weaponIds);
+                var playerArmor = GameEntityFetcher.RetrieveArmorAttributes(armorIds);
+                var playerItems = GameEntityFetcher.RetrieveItemAttributes(itemIds);
+
+                // Add total ammount to Weapons
+                foreach (var weapon in player.Weapons)
+                {
+                    var match = player.Weapons.FirstOrDefault(w => w.Id == weapon.Id);
+                    if (match != null)
+                        weapon.Value = match.Value;
+                }
+
+                // Add total ammount to Armor
+                foreach (var armor in player.Armor)
+                {
+                    var match = player.Armor.FirstOrDefault(a => a.Id == armor.Id);
+                    if (match != null)
+                        armor.Value = match.Value;
+                }
+
+                // Add total ammount to Items
+                foreach (var item in player.Items)
+                {
+                    var match = player.Weapons.FirstOrDefault(i => i.Id == item.Id);
+                    if (match != null)
+                        item.Value = match.Value;
+                }
+
 
                 // Create new battle state
                 state = new BattleStateModel
@@ -80,7 +111,8 @@ namespace Adventure.Quest.Battle
                     Player = player,
                     Creatures = new CreaturesModel(),
                     PlayerWeapons = playerWeapons,
-                    PlayerArmor = new List<ArmorModel>(),
+                    PlayerArmor = playerArmor,
+                    Items = playerItems,
                     CreatureWeapons = new List<WeaponModel>(),
                     CreatureArmor = new List<ArmorModel>(),
                     PrePlayerHP = player.Hitpoints,
@@ -200,7 +232,8 @@ namespace Adventure.Quest.Battle
 
             ulong userId = interaction.User.Id;
             var state = GetBattleState(userId);
-            var inventory = InventoryStateService.GetState(userId).Inventory;
+            var ownedWeaponIds = state.Player.Weapons.Select(w => w.Id).ToHashSet();
+            //var inventory = InventoryStateService.GetState(userId).Inventory;
 
             LogService.DividerParts(1, "HandleStepWeaponChoice");
 
@@ -213,7 +246,7 @@ namespace Adventure.Quest.Battle
                 return;
             }
 
-            if (inventory.ContainsKey(weaponId))
+            if (ownedWeaponIds.Contains(weaponId))
             {
                 // Valid weapon from player's inventory
                 string message = $"You attack with your {weapon.Name}!";

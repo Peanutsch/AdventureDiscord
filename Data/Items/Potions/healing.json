@@ -1,23 +1,41 @@
 [
   {
-    "id": "potion_heal_s",
-    "name": "Healing Potion Small",
+    "id": "potion_small_healing",
+    "name": "Potion of small healing",
     "description": "A small vial containing a mild restorative liquid that heals minor amount of health.",
-    "points": 2,
-    "weight": 0.5
+    "points": 5,
+    "weight": 0.5,
+    "effect": 
+      {
+        "diceCount": 2,
+        "diceValue": 4,
+        "bonusHP": 2
+      }
   },
   {
-    "id": "potion_heal_m",
-    "name": "Healing Potion Medium",
+    "id": "potion_greater_healing",
+    "name": "Potion of greater healing",
     "description": "A standard healing potion, effective at mending moderate injuries quickly.",
     "points": 10,
-    "weight": 0.05
+    "weight": 0.05,
+    "effect":
+      {
+        "diceCount": 4,
+        "diceValue": 4,
+        "bonusHP": 4
+      }
   },
   {
-    "id": "potion_heal_l",
-    "name": "Healing Potion Large",
+    "id": "potion_superior_healing",
+    "name": "Potion of superior healing",
     "description": "A potent elixir that rapidly restores a significant amount of health.",
-    "points": 15,
-    "weight": 0.05
+    "points": 25,
+    "weight": 0.05,
+    "effect":
+      {
+        "diceCount": 8,
+        "diceValue": 4,
+        "bonusHP": 8
+      }
   }
 ]

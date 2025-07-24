@@ -14,9 +14,6 @@ namespace Adventure.Modules
 {
     public class AdventureGameModule : InteractionModuleBase<SocketInteractionContext>
     {
-        // Store player progress using a thread-safe dictionary
-        private static readonly ConcurrentDictionary<ulong, InventoryStateModel> playerStates = new();
-
         /// <summary>
         /// Starts the player's adventure and initializes their state.
         /// </summary>
@@ -38,30 +35,11 @@ namespace Adventure.Modules
             LogService.Info("[AdventureGameModule.SlashCommandStartHandler] > Slash Command /start is executed");
 
             // Reset inventory to basic inventory: Shordsword and Dagger
-            InventoryStateService.LoadInventory(Context.User.Id);
+            //InventoryStateService.LoadInventory(Context.User.Id);
 
             // Send a follow-up response after the processing is complete.
             //await FollowupAsync("Slash Command /start is executed");
             await FollowupAsync("Your adventure has begun!");
-        }
-
-        [SlashCommand("inventory", "Show your inventory")]
-        public async Task SlashCommandInventoryHandler()
-        {
-            await DeferAsync();
-
-            if (!playerStates.TryGetValue(Context.User.Id, out var gameState))
-            {
-                await FollowupAsync("You haven't started your adventure yet. Use /start.");
-                return;
-            }
-
-            LogService.Info("[AdventureGameModule.SlashCommandInventoryHandler] > Slash Command /inventory is executed");
-
-            EmbedBuilder embed = InventoryEmbedBuilder.BuildInventoryEmbed(gameState.Inventory);
-
-            await FollowupAsync(embed: embed.Build());
-
         }
 
         // Trigger encounter for testing
@@ -87,7 +65,7 @@ namespace Adventure.Modules
                 return;
             }
 
-            SlashEncounterHelpers.EnsureInventoryLoaded(user.Id);
+            //SlashEncounterHelpers.EnsureInventoryLoaded(user.Id);
 
             var creature = EncounterService.CreatureRandomizer();
             if (creature == null)

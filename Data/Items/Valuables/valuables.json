@@ -1,32 +1,34 @@
-{
-  "items_coins": [
-    {
-      "id": "valuables_coins_copper",
-      "name": "Silver Coins",
-      "description": "",
-      "value": 0.01,
-      "weight": 0.01
-    },
-    {
-      "id": "valuables_coins_silver",
-      "name": "Silver Coins",
-      "description": "",
-      "value": 0.1,
-      "weight": 0.03
-    },
-    {
-      "id": "valuables_coins_gold",
-      "name": "Golden Coins",
-      "description": "",
-      "value": 1,
-      "weight": 0.05
-    },
-    {
-      "id": "valuables_coins_platinum",
-      "name": "Platinum Coins",
-      "description": "",
-      "value": 10,
-      "weight": 0.08
-    }
-  ]
-}
+[
+  {
+    "items_coins": [
+      {
+        "id": "valuables_coins_copper",
+        "name": "Silver Coins",
+        "description": "",
+        "value": 0.01,
+        "weight": 0.01
+      },
+      {
+        "id": "valuables_coins_silver",
+        "name": "Silver Coins",
+        "description": "",
+        "value": 0.1,
+        "weight": 0.03
+      },
+      {
+        "id": "valuables_coins_gold",
+        "name": "Golden Coins",
+        "description": "",
+        "value": 1,
+        "weight": 0.05
+      },
+      {
+        "id": "valuables_coins_platinum",
+        "name": "Platinum Coins",
+        "description": "",
+        "value": 10,
+        "weight": 0.08
+      }
+    ]
+  }
+]

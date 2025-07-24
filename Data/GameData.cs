@@ -78,6 +78,14 @@ namespace Adventure.Data
             set => _potions = value;
         }
 
+        public static List<ItemModel>? _items;
+
+        public static List<ItemModel>? Items
+        {
+            get => _items;
+            set => _items = value;
+        }
+
         public static List<InventoryModel>? _inventory;
 
         public static List<InventoryModel>? Inventory

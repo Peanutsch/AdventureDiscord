@@ -15,6 +15,9 @@ namespace Adventure.Models.BattleState
         public CreaturesModel Creatures { get; set; } = new();
         public List<WeaponModel> PlayerWeapons { get; set; } = new();
         public List<ArmorModel> PlayerArmor { get; set; } = new();
+
+        public List<ItemModel> Items { get; set; } = new();
+
         public List<WeaponModel> CreatureWeapons { get; set; } = new();
         public List<ArmorModel> CreatureArmor { get; set; } = new();
 

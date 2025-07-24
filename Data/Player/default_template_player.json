@@ -19,13 +19,19 @@
     },
     {
       "id": "weapon_dagger",
-      "value":  1
+      "value": 1
+    }
+  ],
+  "armor": [
+    {
+      "id": "",
+      "value": 0
     }
   ],
   "items": [
     {
       "id": "",
-      "value":  0
+      "value": 0
     }
   ]
 }

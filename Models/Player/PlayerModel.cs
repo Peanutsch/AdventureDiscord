@@ -33,6 +33,9 @@ namespace Adventure.Models.Player
         [JsonPropertyName("weapons")]
         public List<PlayerInventoryWeaponsModel> Weapons { get; set; } = new();
 
+        [JsonPropertyName("armor")]
+        public List<PlayerInventoryArmorModel> Armor { get; set; } = new();
+
         [JsonPropertyName("items")]
         public List<PlayerInventoryItemModel> Items { get; set; } = new();
 
@@ -53,6 +56,15 @@ namespace Adventure.Models.Player
     }
 
     public class PlayerInventoryWeaponsModel
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = string.Empty;
+
+        [JsonPropertyName("value")]
+        public int Value { get; set; }
+    }
+
+    public class PlayerInventoryArmorModel
     {
         [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
