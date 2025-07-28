@@ -8,11 +8,11 @@
     "type": "light"
   },
   {
-    "id": "armor_hide_armor",
-    "name": "Hide Armor",
-    "description": "Thick cured animal furs and pelts stitched together. Offers modest protection.",
-    "ac_bonus": 12,
-    "weight": 5.4,
-    "type": "medium"
+  "id": "armor_hide_armor",
+  "name": "Hide Armor",
+  "description": "Thick cured animal furs and pelts stitched together. Offers modest protection.",
+  "ac_bonus": 12,
+  "weight": 5.4,
+  "type": "medium"
   }
 ]

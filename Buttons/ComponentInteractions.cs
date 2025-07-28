@@ -83,7 +83,7 @@ namespace Adventure.Buttons
             BattleEngine.SetStep(Context.User.Id, BattleEngine.StepWeaponChoice);
 
             // Toon opnieuw de wapenkeuze
-            await EncounterService.ShowWeaponChoices((SocketMessageComponent)Context.Interaction);
+            await EncounterService.PrepareForBattleChoices((SocketMessageComponent)Context.Interaction);
         }
 
         [ComponentInteraction("battle_flee_*")]

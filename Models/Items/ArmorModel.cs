@@ -26,5 +26,7 @@ namespace Adventure.Models.Items
 
         [JsonPropertyName("type")]
         public string Type { get; set; } = "light"; // light, medium, heavy
+
+
     }
 }

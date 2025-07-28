@@ -30,5 +30,19 @@ namespace Adventure.Quest.Dice
 
             return (rolls.Sum(), rolls);
         }
+
+        public static int RollWithoutDetails(int diceCount, int diceValue)
+        {
+            if (diceCount <= 0 || diceValue <= 0)
+                throw new ArgumentException("Dice count and value must be greater than 0.");
+
+            var rolls = new List<int>();
+            for (int i = 0; i < diceCount; i++)
+            {
+                rolls.Add(rng.Next(1, diceValue + 1));
+            }
+
+            return rolls.Sum();
+        }
     }
 }

@@ -214,7 +214,7 @@ namespace Adventure.Quest.Battle
                 LogService.Info("[BattleEngine.HandleStepStart] Player choose attack. Calling EncounterService.ShowWeaponChoices...");
 
                 //await component.DeferAsync();
-                await EncounterService.ShowWeaponChoices(component);
+                await EncounterService.PrepareForBattleChoices(component);
 
                 SetStep(userId, StepWeaponChoice);
             }

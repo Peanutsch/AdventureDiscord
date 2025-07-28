@@ -27,7 +27,7 @@ namespace Adventure.Quest.Encounter
             {
                 // Get the list of humanoid creatures
                 var humanoids = GameData.Humanoids;
-                var animals = GameData.Animals; // currently unused but could be used for expanding randomization
+                var animals = GameData.Animals; 
 
                 var random = new Random();
 
@@ -137,9 +137,9 @@ namespace Adventure.Quest.Encounter
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle($"{player.Name} ⚔️ {npc.Name}")
-                .AddField("⚔️ Battle Summary",
-                    $"**HP before attack**\n{player.Name}: {prePlayerHP}\n{npc.Name}: {preNpcHP}", false)
-                .AddField("🗡️ Attack Log",
+                .AddField("[HP before attack]",
+                    $"\n{player.Name}: {prePlayerHP}\n{npc.Name}: {preNpcHP}", false)
+                .AddField("[Battle Log]",
                     $"{attackSummary}", false);
 
             return embed;
@@ -149,11 +149,12 @@ namespace Adventure.Quest.Encounter
         /// Shows the player their weapon choices by updating the message with weapon buttons and embed.
         /// </summary>
         /// <param name="component">The component interaction from Discord (button click).</param>
-        public static async Task ShowWeaponChoices(SocketMessageComponent component)
+        public static async Task PrepareForBattleChoices(SocketMessageComponent component)
         {
             var state = BattleEngine.GetBattleState(component.User.Id);
             var weapons = state?.PlayerWeapons;
             var items = state?.Items;
+            var armors = state?.PlayerArmor;
 
             var builder = new ComponentBuilder();
 
@@ -171,7 +172,7 @@ namespace Adventure.Quest.Encounter
             {
                 foreach (var item in items)
                 {
-                    builder.WithButton(item.Name, item.Id, ButtonStyle.Success);
+                    builder.WithButton(item.Name, item.Id, ButtonStyle.Success, row: 2);
                 }
             }
             else
@@ -182,23 +183,34 @@ namespace Adventure.Quest.Encounter
                 var embed = new EmbedBuilder()
                     .WithTitle("🔪 Make your choice!")
                     .WithColor(Color.DarkRed)
-                    .WithDescription($"{state!.Player.Name} prepares for battle...");
+                    .WithDescription($"**{state!.Player.Name}** prepares for battle...");
 
+            // Add weapons to embed
             foreach (var weapon in weapons!)
             {
                 string diceNotation = $"{weapon.Damage.DiceCount}d{weapon.Damage.DiceValue}";
-                string weaponName = $"{weapon.Name!} ({diceNotation})";
-                embed.AddField(weaponName, $"{weapon.Description}");
+                string nameNotation = $"{weapon.Name!} ({diceNotation})";
+                embed.AddField(nameNotation, $"*{weapon.Description}*");
             }
 
+            // Add button "Flee" on same row as weapons
+            builder.WithButton("Flee!", "btn_flee", ButtonStyle.Secondary);
+
+            // Add armors to embed
+            foreach (var armor in armors!)
+            {
+                string acNotation = $"AC: +{armor.AC_Bonus}";
+                string nameNotation = $"{armor.Name} ({acNotation})";
+                embed.AddField(nameNotation, $"*{armor.Description}*");
+            }
+
+            // Add items to embed
             foreach (var item in items!)
             {
                 string diceNotation = $"{item.Effect.DiceCount}d{item.Effect.DiceValue}+{item.Effect.BonusHP}";
-                string itemName = $"{item.Name} ({diceNotation})";
-                embed.AddField(itemName, $"{item.Description}");
+                string nameNotation = $"{item.Name} ({diceNotation})";
+                embed.AddField(nameNotation, $"* {item.Description} *");
             }
-
-            builder.WithButton("Flee!", "btn_flee", ButtonStyle.Secondary);
 
             // Update the interaction response with new embed and buttons
             await component.UpdateAsync(msg =>

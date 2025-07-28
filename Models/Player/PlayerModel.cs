@@ -42,6 +42,9 @@ namespace Adventure.Models.Player
         [JsonPropertyName("loot")]
         public List<PlayerInventoryItemModel> Loot { get; set; } = new();
 
+        [JsonPropertyName("armor_class")]
+        public ArmorModel ArmorElements { get; set; } = new();
+
         [JsonIgnore]
         public string? Step { get; set; }
     }
