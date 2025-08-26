@@ -31,6 +31,8 @@ namespace Adventure.Models.BattleState
 
         public int AttackRoll { get; set; }
 
+        public int TotalRoll { get; set; }
+
         public int Damage { get; set; }
         public string LastUsedWeapon { get; set; } = string.Empty;
         public int PrePlayerHP { get; set; }
