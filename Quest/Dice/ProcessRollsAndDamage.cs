@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Quest.Dice
 {
-    class Bonus
+    class ProcessRollsAndDamage
     {
         /// <summary>
         /// Calculates the proficiency bonus for a player or creature based on their 
@@ -18,7 +18,7 @@ namespace Adventure.Quest.Dice
         /// <returns>
         /// The proficiency bonus as an integer.
         /// </returns>
-        public static int GetBonus(int levelOrCR)
+        public static int GetModifier(int levelOrCR)
         {
             if (levelOrCR >= 1 && levelOrCR <= 4) return 2; // Level 1–4 or CR 1–4 → ability/proficiency +2
 

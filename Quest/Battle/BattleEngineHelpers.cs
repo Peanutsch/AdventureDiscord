@@ -87,7 +87,7 @@ namespace Adventure.Quest.Battle
             }
 
             // Get ability modifier
-            int abilityMod = Bonus.GetBonus(attackStrength);
+            int abilityMod = ProcessRollsAndDamage.GetModifier(attackStrength);
 
             // Calculate total attack value
             int totalRoll = attackRoll + abilityMod;
@@ -160,7 +160,7 @@ namespace Adventure.Quest.Battle
             var dice = $"{diceCount}d{diceValue}";
 
             // Get level/challenge rating
-            var bonusModifier = Bonus.GetBonus(attackerStrength);
+            var bonusModifier = ProcessRollsAndDamage.GetModifier(attackerStrength);
 
             // Base damage: normal roll + strength modifier
             var totalDamage = damage + bonusModifier;
