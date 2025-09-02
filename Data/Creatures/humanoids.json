@@ -2,8 +2,9 @@
   {
     "id": "goblin",
     "name": "Goblin",
+    "level":  1,
     "description": "A small, wiry creature with green skin, sharp teeth, and a mischievous grin.\n More cunning than brave, and more annoying than deadly—unless you turn your back.",
-    "hitpoints": 25,
+    "hitpoints": 12,
     "attributes": {
       "strength": 8,
       "dexterity": 14,
@@ -19,8 +20,9 @@
   {
     "id": "orc",
     "name": "Orc",
+    "level":  3,
     "description": "A hulking brute with jagged armor and a thirst for blood.\n Not known for brains, but definitely for breaking bones.",
-    "hitpoints": 50,
+    "hitpoints": 1000,
     "attributes": {
       "strength": 16,
       "dexterity": 12,

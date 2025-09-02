@@ -52,11 +52,13 @@ namespace Adventure.Quest.Encounter
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{creature.Name}]");
 
+            var HitpointsLevelCrFormat = $"{creature.Hitpoints} / {creature.LevelCR}";
+
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
                 .WithDescription($"**[{creature.Name!.ToUpper()}]** appears!\n*\"{creature.Description}\"*")
-                .AddField("Hit Points:", creature.Hitpoints, false);
+                .AddField("Hit Points / Challenge Rate", HitpointsLevelCrFormat, false);
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", creature.Armor ?? new())}");
 
@@ -136,7 +138,7 @@ namespace Adventure.Quest.Encounter
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithTitle($"{player.Name} ⚔️ {npc.Name}")
+                .WithTitle($"{player.Name} (Level: {state.Player.LevelCR}) ⚔️ {npc.Name} (CR: {state.Creatures.LevelCR})")
                 .AddField("[HP before attack]",
                     $"\n{player.Name}: {prePlayerHP} VS {npc.Name}: {preNpcHP}", false)
                 .AddField("[Battle Log]",

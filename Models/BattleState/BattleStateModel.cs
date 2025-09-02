@@ -31,7 +31,9 @@ namespace Adventure.Models.BattleState
 
         public int AttackRoll { get; set; }
 
-        public int AbilityMod { get; set; }
+        public int AbilityModifier { get; set; }
+
+        public int ProficiencyModifier { get; set; }
 
         public int TotalRoll { get; set; }
 

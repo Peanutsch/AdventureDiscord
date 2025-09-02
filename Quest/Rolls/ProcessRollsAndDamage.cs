@@ -37,7 +37,8 @@ namespace Adventure.Quest.Rolls
             // Perform the attack roll (1d20)
             int attackRoll = DiceRoller.RollWithoutDetails(1, 20);
 
-            int attackStrength;
+            int abilityStrength;
+            int levelCR;
             int defenderAC;
 
             // Determine attacking and defending stats based on who is attacking
@@ -45,26 +46,30 @@ namespace Adventure.Quest.Rolls
             {
                 // Ensure the creature has valid armor
                 state.Creatures.ArmorElements = state.CreatureArmor.FirstOrDefault() ?? new ArmorModel();
-                attackStrength = state.Player.Attributes.Strength;
+                levelCR = state.Player.LevelCR;
+                abilityStrength = state.Player.Attributes.Strength;
                 defenderAC = state.Creatures.ArmorElements.ArmorClass;
             }
             else
             {
                 // Ensure the player has valid armor
                 state.Player.ArmorElements = state.PlayerArmor.FirstOrDefault() ?? new ArmorModel();
-                attackStrength = state.Creatures.Attributes.Strength;
+                abilityStrength = state.Creatures.Attributes.Strength;
+                levelCR = state.Creatures.LevelCR;
                 defenderAC = state.Player.ArmorElements.ArmorClass;
             }
 
-            // Get ability modifier
-            int abilityMod = GetModifier(attackStrength);
+            // Get modifiers
+            int proficiencyModifier = Modifiers.GetProficiencyModifier(levelCR);
+            int abilityModifier = Modifiers.GetAbilityModifier(abilityStrength);
 
             // Calculate total attack value
-            int totalRoll = attackRoll + abilityMod;
+            int totalRoll = attackRoll + abilityModifier + proficiencyModifier;
 
             // Store relevant data in the battle state
             state.AttackRoll = attackRoll;
-            state.AbilityMod = abilityMod;
+            state.ProficiencyModifier = proficiencyModifier;
+            state.AbilityModifier = abilityModifier;
             state.TotalRoll = totalRoll;
             state.ArmorElements.ArmorClass = defenderAC;
             state.IsCriticalHit = attackRoll == 20;   // Natural 20 = critical hit
@@ -73,7 +78,8 @@ namespace Adventure.Quest.Rolls
             // Log the calculation details for debugging
             LogService.Info($"[BattleEngineHelpers.ValidateHit]\n" +
                             $"attackRoll: {attackRoll}\n" +
-                            $"attackModifier: {attackStrength}\n" +
+                            $"attackModifier: {abilityStrength}\n" +
+                            $"proficiencyModifier: {proficiencyModifier}" +
                             $"totalRoll: {totalRoll}\n" +
                             $"defenderAC: {defenderAC}");
 
@@ -128,14 +134,11 @@ namespace Adventure.Quest.Rolls
             // Format dice notation, e.g., "1d8"
             var dice = $"{diceCount}d{diceValue}";
 
-            // Get level/challenge rating
-            var bonusModifier = GetModifier(attackerStrength);
-
             // Base damage: normal roll + strength modifier
-            var totalDamage = damage + bonusModifier;
+            var totalDamage = damage + state.AbilityModifier;
 
             // Critical hit: add extra dice roll to damage
-            var totalCritDamage = damage + critRoll + bonusModifier;
+            var totalCritDamage = damage + critRoll + state.AbilityModifier;
 
             // Apply critical hit rules
             if (state.IsCriticalHit)
@@ -168,36 +171,5 @@ namespace Adventure.Quest.Rolls
             return (damage, totalDamage, rolls, critRoll, dice, newHP);
         }
         #endregion PROCESS ROLL AND DAMAGE
-
-        #region MODIFIERS
-        /// <summary>
-        /// Calculates the proficiency bonus for a player or creature based on their 
-        /// level (for players) or Challenge Rating (CR) (for creatures) according to D&D 5e rules.
-        /// </summary>
-        /// <param name="levelOrCR">
-        /// The level of the player or the Challenge Rating of the creature.
-        /// </param>
-        /// <returns>
-        /// The proficiency bonus as an integer.
-        /// </returns>
-        public static int GetModifier(int levelOrCR)
-        {
-            if (levelOrCR >= 1 && levelOrCR <= 4) return 2; // Level 1–4 or CR 1–4 → ability/proficiency +2
-
-            else if (levelOrCR <= 8) return 3;              // Level 5–8 → ability/proficiency +3
-
-            else if (levelOrCR <= 12)return 4;              // Level 9–12 → ability/proficiency +4
-
-            else if (levelOrCR <= 16) return 5;             // Level 13–16 → ability/proficiency +5
-
-            else if (levelOrCR <= 20) return 6;             // Level 17–20 → ability/proficiency +6
-
-            else if (levelOrCR <= 24) return 7;             // Level 21–24 → ability/proficiency +7
-
-            else if (levelOrCR <= 28) return 8;             // Level 25–28 → ability/proficiency +8
-
-            else return 9;                                  // Level 29–30 → ability/proficiency +9
-        }
-        #endregion MODIFIERS
     }
 }
