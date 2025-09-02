@@ -18,8 +18,8 @@ namespace Adventure.Models.Items
         [JsonPropertyName("description")]
         public string Description { get; set; } = string.Empty;
 
-        [JsonPropertyName("ac_bonus")]
-        public int AC_Bonus { get; set; }
+        [JsonPropertyName("armor_class")]
+        public int ArmorClass { get; set; }
 
         [JsonPropertyName("weight")]
         public double Weight { get; set; }

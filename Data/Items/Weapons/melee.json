@@ -2,7 +2,7 @@
   {
     "id": "weapon_dagger",
     "name": "Dagger",
-    "description": "*\"A small, easily concealed blade suitable for quick strikes.\"*",
+    "description": "A small, easily concealed blade suitable for quick strikes.",
     "weight": 1,
     "range": 1,
     "damage": {
@@ -16,7 +16,7 @@
   {
     "id": "weapon_short_sword",
     "name": "Short Sword",
-    "description": "*\"Just 70 cm of steel.. Quick, quiet, and lethal. When in the right hands that is.\"*",
+    "description": "Just 70 cm of steel.. Quick, quiet, and lethal. When in the right hands that is.",
     "weight": 5,
     "range": 1.5,
     "damage": {
@@ -30,7 +30,7 @@
   {
     "id": "weapon_long_sword",
     "name": "Long Sword",
-    "description": "*\"Roughly 100 cm long, crafted for balanced, deadly blows in the hands of a trained warrior.\"*",
+    "description": "Roughly 100 cm long, crafted for balanced, deadly blows in the hands of a trained warrior.",
     "weight": 8,
     "range": 1.5,
     "damage": {
@@ -44,7 +44,7 @@
   {
     "id": "weapon_great_axe",
     "name": "Great Axe",
-    "description": "*\"A heavy, brutal weapon designed to cleave through armor with powerful, sweeping strikes.\"*",
+    "description": "A heavy, brutal weapon designed to cleave through armor with powerful, sweeping strikes.",
     "weight": 3.2,
     "range": 1,
     "damage": {

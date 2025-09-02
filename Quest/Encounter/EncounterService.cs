@@ -72,7 +72,7 @@ namespace Adventure.Quest.Encounter
                     {
                         embed.AddField($"**[{armor.Name}]**\n",
                             $"Type: {armor.Type} armor\n" +
-                            $"AC Bonus: +{armor.AC_Bonus}\n" +
+                            $"AC: +{armor.ArmorClass}\n" +
                             $"Weight: {armor.Weight}kg\n" +
                             $"*\"{armor.Description}\"*", false);
                     }
@@ -199,7 +199,7 @@ namespace Adventure.Quest.Encounter
             // Add armors to embed
             foreach (var armor in armors!)
             {
-                string acNotation = $"AC: +{armor.AC_Bonus}";
+                string acNotation = $"AC: +{armor.ArmorClass}";
                 string nameNotation = $"{armor.Name} ({acNotation})";
                 embed.AddField(nameNotation, $"*{armor.Description}*");
             }
@@ -209,7 +209,7 @@ namespace Adventure.Quest.Encounter
             {
                 string diceNotation = $"{item.Effect.DiceCount}d{item.Effect.DiceValue}+{item.Effect.BonusHP}";
                 string nameNotation = $"{item.Name} ({diceNotation})";
-                embed.AddField(nameNotation, $"* {item.Description} *");
+                embed.AddField(nameNotation, $"*{item.Description}*");
             }
 
             // Update the interaction response with new embed and buttons

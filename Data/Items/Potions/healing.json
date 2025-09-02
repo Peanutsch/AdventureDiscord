@@ -3,7 +3,6 @@
     "id": "potion_small_healing",
     "name": "Potion of small healing",
     "description": "A small vial containing a mild restorative liquid that heals minor amount of health.",
-    "points": 5,
     "weight": 0.5,
     "effect": 
       {
@@ -16,8 +15,7 @@
     "id": "potion_greater_healing",
     "name": "Potion of greater healing",
     "description": "A standard healing potion, effective at mending moderate injuries quickly.",
-    "points": 10,
-    "weight": 0.05,
+    "weight": 0.5,
     "effect":
       {
         "diceCount": 4,
@@ -29,8 +27,7 @@
     "id": "potion_superior_healing",
     "name": "Potion of superior healing",
     "description": "A potent elixir that rapidly restores a significant amount of health.",
-    "points": 25,
-    "weight": 0.05,
+    "weight": 0.5,
     "effect":
       {
         "diceCount": 8,
