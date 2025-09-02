@@ -72,7 +72,7 @@ namespace Adventure.Quest.Encounter
                     {
                         embed.AddField($"**[{armor.Name}]**\n",
                             $"Type: {armor.Type} armor\n" +
-                            $"AC: +{armor.ArmorClass}\n" +
+                            $"Armor Class: +{armor.ArmorClass}\n" +
                             $"Weight: {armor.Weight}kg\n" +
                             $"*\"{armor.Description}\"*", false);
                     }
@@ -138,7 +138,7 @@ namespace Adventure.Quest.Encounter
                 .WithColor(Color.Red)
                 .WithTitle($"{player.Name} ⚔️ {npc.Name}")
                 .AddField("[HP before attack]",
-                    $"\n{player.Name}: {prePlayerHP}\n{npc.Name}: {preNpcHP}", false)
+                    $"\n{player.Name}: {prePlayerHP} VS {npc.Name}: {preNpcHP}", false)
                 .AddField("[Battle Log]",
                     $"{attackSummary}", false);
 
@@ -181,9 +181,9 @@ namespace Adventure.Quest.Encounter
             }
 
                 var embed = new EmbedBuilder()
-                    .WithTitle("🔪 Make your choice!")
+                    .WithTitle($"**{state!.Player.Name}** prepares for battle...")
                     .WithColor(Color.DarkRed)
-                    .WithDescription($"**{state!.Player.Name}** prepares for battle...");
+                    .WithDescription($"🔪 Make your choice!");
 
             // Add weapons to embed
             foreach (var weapon in weapons!)
@@ -199,7 +199,7 @@ namespace Adventure.Quest.Encounter
             // Add armors to embed
             foreach (var armor in armors!)
             {
-                string acNotation = $"AC: +{armor.ArmorClass}";
+                string acNotation = $"Armor Class: +{armor.ArmorClass}";
                 string nameNotation = $"{armor.Name} ({acNotation})";
                 embed.AddField(nameNotation, $"*{armor.Description}*");
             }

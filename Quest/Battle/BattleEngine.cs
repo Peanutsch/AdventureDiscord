@@ -299,7 +299,7 @@ namespace Adventure.Quest.Battle
             int preCreatureHP = state.Creatures.Hitpoints;
 
             // ⚔️ Speler valt aan
-            string playerAttackResult = BattleEngineHelpers.ProcessPlayerAttack(userId, weapon);
+            string playerAttackResult = ProcessBattle.ProcessPlayerAttack(userId, weapon);
 
             if (state.Creatures.Hitpoints <= 0)
             {
@@ -328,7 +328,7 @@ namespace Adventure.Quest.Battle
             }
 
             // 💥 Creature valt terug aan
-            string creatureAttackResult = BattleEngineHelpers.ProcessCreatureAttack(userId, creatureWeapon);
+            string creatureAttackResult = ProcessBattle.ProcessCreatureAttack(userId, creatureWeapon);
 
             // 📦 Combineer output
             string fullAttackLog = $"{playerAttackResult}\n\n{creatureAttackResult}";

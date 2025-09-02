@@ -1,0 +1,203 @@
+﻿using Adventure.Models.BattleState;
+using Adventure.Models.Items;
+using Adventure.Quest.Battle;
+using Adventure.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Adventure.Quest.Rolls
+{
+    class ProcessRollsAndDamage
+    {
+        #region VALIDATE HIT
+        /// <summary>
+        /// Represents the result of an attack attempt.
+        /// </summary>
+        public enum HitResult
+        {
+            IsCriticalHit,
+            IsCriticalMiss,
+            IsValidHit,
+            IsMiss
+        }
+
+        /// <summary>
+        /// Performs an attack roll to determine whether the hit is successful, critical, or missed.
+        /// </summary>
+        /// <param name="userId">The Discord user ID of the attacker.</param>
+        /// <param name="isPlayerAttacker">True if the player is attacking, false if the creature is attacking.</param>
+        /// <returns>The result of the hit attempt (hit, miss, critical, etc.).</returns>
+        public static HitResult ValidateHit(ulong userId, bool isPlayerAttacker)
+        {
+            var state = BattleEngine.GetBattleState(userId);
+
+            // Perform the attack roll (1d20)
+            int attackRoll = DiceRoller.RollWithoutDetails(1, 20);
+
+            int attackStrength;
+            int defenderAC;
+
+            // Determine attacking and defending stats based on who is attacking
+            if (isPlayerAttacker)
+            {
+                // Ensure the creature has valid armor
+                state.Creatures.ArmorElements = state.CreatureArmor.FirstOrDefault() ?? new ArmorModel();
+                attackStrength = state.Player.Attributes.Strength;
+                defenderAC = state.Creatures.ArmorElements.ArmorClass;
+            }
+            else
+            {
+                // Ensure the player has valid armor
+                state.Player.ArmorElements = state.PlayerArmor.FirstOrDefault() ?? new ArmorModel();
+                attackStrength = state.Creatures.Attributes.Strength;
+                defenderAC = state.Player.ArmorElements.ArmorClass;
+            }
+
+            // Get ability modifier
+            int abilityMod = GetModifier(attackStrength);
+
+            // Calculate total attack value
+            int totalRoll = attackRoll + abilityMod;
+
+            // Store relevant data in the battle state
+            state.AttackRoll = attackRoll;
+            state.AbilityMod = abilityMod;
+            state.TotalRoll = totalRoll;
+            state.ArmorElements.ArmorClass = defenderAC;
+            state.IsCriticalHit = attackRoll == 20;   // Natural 20 = critical hit
+            state.IsCriticalMiss = attackRoll == 1;   // Natural 1 = critical miss
+
+            // Log the calculation details for debugging
+            LogService.Info($"[BattleEngineHelpers.ValidateHit]\n" +
+                            $"attackRoll: {attackRoll}\n" +
+                            $"attackModifier: {attackStrength}\n" +
+                            $"totalRoll: {totalRoll}\n" +
+                            $"defenderAC: {defenderAC}");
+
+            // Determine and return the hit result
+            if (state.IsCriticalHit)
+                return HitResult.IsCriticalHit;
+            else if (state.IsCriticalMiss)
+                return HitResult.IsCriticalMiss;
+            else if (totalRoll >= defenderAC)
+                return HitResult.IsValidHit;
+            else
+                return HitResult.IsMiss;
+        }
+        #endregion VALIDATE HIT
+
+        #region PROCESS ROLL AND DAMAGE
+        /// <summary>
+        /// Rolls weapon damage and applies it to the target. 
+        /// Handles critical hits (double damage) and critical misses (no damage).
+        /// </summary>
+        /// <param name="state">The current battle state of the player and creature.</param>
+        /// <param name="weapon">The weapon being used to attack.</param>
+        /// <param name="attackerStrength">The strength modifier of the attacker.</param>
+        /// <param name="currentHitpoints">The current HP of the defender before damage is applied.</param>
+        /// <param name="isPlayerAttacker">True if the player is attacking, false if the creature is attacking.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - Raw damage roll
+        /// - Total damage after strength modifier (and critical adjustments)
+        /// - List of individual damage dice rolls
+        /// - Additional critical roll (only used if critical hit)
+        /// - Dice notation string
+        /// - New HP of the defender after damage
+        /// </returns>
+        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string diceNotation, int newHP) RollAndApplyDamage(
+                        BattleStateModel state,
+                        WeaponModel weapon,
+                        int attackerStrength,
+                        int currentHitpoints,
+                        bool isPlayerAttacker)
+        {
+            // Get weapon damage dice config
+            var diceCount = weapon.Damage.DiceCount;
+            var diceValue = weapon.Damage.DiceValue;
+
+            // Roll normal damage and store individual dice results
+            var (damage, rolls) = DiceRoller.RollWithDetails(diceCount, diceValue);
+
+            // Roll additional damage for critical hit (same dice as base damage)
+            var critRoll = DiceRoller.RollWithoutDetails(diceCount, diceValue);
+
+            // Format dice notation, e.g., "1d8"
+            var dice = $"{diceCount}d{diceValue}";
+
+            // Get level/challenge rating
+            var bonusModifier = GetModifier(attackerStrength);
+
+            // Base damage: normal roll + strength modifier
+            var totalDamage = damage + bonusModifier;
+
+            // Critical hit: add extra dice roll to damage
+            var totalCritDamage = damage + critRoll + bonusModifier;
+
+            // Apply critical hit rules
+            if (state.IsCriticalHit)
+            {
+                totalDamage = totalCritDamage;
+            }
+
+            // Apply critical miss rules (no damage)
+            if (state.IsCriticalMiss)
+            {
+                totalDamage = 0;
+            }
+
+            // Store pre-damage HP for logging/visualization
+            if (isPlayerAttacker)
+                state.PreCreatureHP = currentHitpoints + totalDamage;
+            else
+                state.PrePlayerHP = currentHitpoints + totalDamage;
+
+            // Calculate new HP, ensuring it doesn't go below 0
+            var newHP = currentHitpoints - totalDamage;
+            if (newHP < 0)
+                newHP = 0;
+
+            // Store damage and weapon used in the battle state
+            state.Damage = totalDamage;
+            state.LastUsedWeapon = weapon.Name!;
+
+            // Return tuple with detailed damage info
+            return (damage, totalDamage, rolls, critRoll, dice, newHP);
+        }
+        #endregion PROCESS ROLL AND DAMAGE
+
+        #region MODIFIERS
+        /// <summary>
+        /// Calculates the proficiency bonus for a player or creature based on their 
+        /// level (for players) or Challenge Rating (CR) (for creatures) according to D&D 5e rules.
+        /// </summary>
+        /// <param name="levelOrCR">
+        /// The level of the player or the Challenge Rating of the creature.
+        /// </param>
+        /// <returns>
+        /// The proficiency bonus as an integer.
+        /// </returns>
+        public static int GetModifier(int levelOrCR)
+        {
+            if (levelOrCR >= 1 && levelOrCR <= 4) return 2; // Level 1–4 or CR 1–4 → ability/proficiency +2
+
+            else if (levelOrCR <= 8) return 3;              // Level 5–8 → ability/proficiency +3
+
+            else if (levelOrCR <= 12)return 4;              // Level 9–12 → ability/proficiency +4
+
+            else if (levelOrCR <= 16) return 5;             // Level 13–16 → ability/proficiency +5
+
+            else if (levelOrCR <= 20) return 6;             // Level 17–20 → ability/proficiency +6
+
+            else if (levelOrCR <= 24) return 7;             // Level 21–24 → ability/proficiency +7
+
+            else if (levelOrCR <= 28) return 8;             // Level 25–28 → ability/proficiency +8
+
+            else return 9;                                  // Level 29–30 → ability/proficiency +9
+        }
+        #endregion MODIFIERS
+    }
+}
