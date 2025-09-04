@@ -48,7 +48,7 @@ namespace Adventure.Modules
         }
         */
 
-        public static void SetupBattleState(ulong userId, CreaturesModel creature)
+        public static void SetupBattleState(ulong userId, NpcModel creature)
         {
             BattleEngine.SetCreature(userId, creature);
             BattleEngine.SetStep(userId, "start");

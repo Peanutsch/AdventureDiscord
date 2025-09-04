@@ -4,7 +4,7 @@
     "name": "Goblin",
     "level":  1,
     "description": "A small, wiry creature with green skin, sharp teeth, and a mischievous grin.\n More cunning than brave, and more annoying than deadly—unless you turn your back.",
-    "hitpoints": 12,
+    "hitpoints": 7,
     "attributes": {
       "strength": 8,
       "dexterity": 14,
@@ -20,7 +20,7 @@
   {
     "id": "orc",
     "name": "Orc",
-    "level":  3,
+    "level": 3,
     "description": "A hulking brute with jagged armor and a thirst for blood.\n Not known for brains, but definitely for breaking bones.",
     "hitpoints": 1000,
     "attributes": {
@@ -33,6 +33,24 @@
     },
     "armor": [ "armor_hide_armor" ],
     "weapons": [ "weapon_great_axe" ],
+    "loot": []
+  },
+  {
+    "id": "skeleton",
+    "name": "Skeleton",
+    "level": 1,
+    "description": "A rattling undead warrior held together by dark magic. Empty eye sockets glow with malevolent light.",
+    "hitpoints": 13,
+    "attributes": {
+      "strength": 10,
+      "dexterity": 14,
+      "constitution": 15,
+      "intelligence": 6,
+      "wisdom": 8,
+      "charisma": 5
+    },
+    "armor": [ "armor_scrap" ],
+    "weapons": [ "weapon_short_sword" ],
     "loot": []
   }
 ]

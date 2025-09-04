@@ -4,7 +4,7 @@ namespace Adventure.Loaders
 {
     public static class AnimalLoader
     {
-        public static List<CreaturesModel>? Load() =>
-            JsonDataManager.LoadListFromJson<CreaturesModel>("Data/Creatures/animals.json");
+        public static List<NpcModel>? Load() =>
+            JsonDataManager.LoadListFromJson<NpcModel>("Data/Creatures/animals.json");
     }
 }

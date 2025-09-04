@@ -23,23 +23,23 @@ namespace Adventure.Data
             set => _player = value;
         }
 
-        private static List<CreaturesModel>? _humanoids;
+        private static List<NpcModel>? _humanoids;
 
         /// <summary>
         /// Gets or sets the list of humanoid creatures in the game.
         /// </summary>
-        public static List<CreaturesModel>? Humanoids
+        public static List<NpcModel>? Humanoids
         {
             get => _humanoids;
             set => _humanoids = value;
         }
 
-        public static List<CreaturesModel>? _animals;
+        public static List<NpcModel>? _animals;
 
         /// <summary>
         /// Gets or sets the list of animal creatures in the game.
         /// </summary>
-        public static List<CreaturesModel>? Animals
+        public static List<NpcModel>? Animals
         {
             get => _animals;
             set => _animals = value;

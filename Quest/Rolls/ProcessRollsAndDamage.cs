@@ -45,17 +45,17 @@ namespace Adventure.Quest.Rolls
             if (isPlayerAttacker)
             {
                 // Ensure the creature has valid armor
-                state.Creatures.ArmorElements = state.CreatureArmor.FirstOrDefault() ?? new ArmorModel();
+                state.Npc.ArmorElements = state.NpcArmor.FirstOrDefault() ?? new ArmorModel();
                 levelCR = state.Player.LevelCR;
                 abilityStrength = state.Player.Attributes.Strength;
-                defenderAC = state.Creatures.ArmorElements.ArmorClass;
+                defenderAC = state.Npc.ArmorElements.ArmorClass;
             }
             else
             {
                 // Ensure the player has valid armor
                 state.Player.ArmorElements = state.PlayerArmor.FirstOrDefault() ?? new ArmorModel();
-                abilityStrength = state.Creatures.Attributes.Strength;
-                levelCR = state.Creatures.LevelCR;
+                abilityStrength = state.Npc.Attributes.Strength;
+                levelCR = state.Npc.LevelCR;
                 defenderAC = state.Player.ArmorElements.ArmorClass;
             }
 
@@ -154,7 +154,7 @@ namespace Adventure.Quest.Rolls
 
             // Store pre-damage HP for logging/visualization
             if (isPlayerAttacker)
-                state.PreCreatureHP = currentHitpoints + totalDamage;
+                state.PreNpcHP = currentHitpoints + totalDamage;
             else
                 state.PrePlayerHP = currentHitpoints + totalDamage;
 
@@ -164,7 +164,7 @@ namespace Adventure.Quest.Rolls
                 newHP = 0;
 
             // Store damage and weapon used in the battle state
-            state.Damage = totalDamage;
+            state.TotalDamage = totalDamage;
             state.LastUsedWeapon = weapon.Name!;
 
             // Return tuple with detailed damage info

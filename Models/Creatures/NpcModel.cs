@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Creatures
 {
-    public class CreaturesModel
+    public class NpcModel
     {
         [JsonPropertyName("id")]
         public string Id { get; set; } = "";

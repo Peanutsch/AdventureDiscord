@@ -28,17 +28,13 @@ namespace Adventure.Quest.Battle
             var hitResult = ProcessRollsAndDamage.ValidateHit(userId, isPlayerAttacker: true);
 
             // Get combat state and both combatants
-            var (state, player, creature, strength) = GetBattleStateData.GetBattleParticipants(userId, playerIsAttacker: true);
-
-            int critRoll = 0, damage = 0, totalDamage = 0;
-            List<int> rolls = new();
-            string dice = "";
+            var (state, player, npc, strength) = GetBattleStateData.GetBattleParticipants(userId, playerIsAttacker: true);
 
             // If hit is successful or critical, calculate damage
             if (hitResult == ProcessRollsAndDamage.HitResult.IsValidHit || hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit)
             {
-                (damage, totalDamage, rolls, critRoll, dice, creature.Hitpoints) =
-                    ProcessSuccesAttack.ProcessSuccessfulHit(userId, state, weapon, strength, creature.Hitpoints, isPlayerAttacker: true);
+                (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, npc.Hitpoints) =
+                    ProcessSuccesAttack.ProcessSuccessfulHit(userId, state, weapon, strength, npc.Hitpoints, isPlayerAttacker: true);
             }
 
             string result;
@@ -49,25 +45,25 @@ namespace Adventure.Quest.Battle
                 case ProcessRollsAndDamage. HitResult.IsCriticalHit:
                     LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack] isCriticalHit");
 
-                    if (creature.Hitpoints <= 0)
+                    if (npc.Hitpoints <= 0)
                     {
                         result =
-                            $"🗡️ **{player.Name} lands a Critical Hit on {creature.Name} with {weapon.Name}, dealing `{totalDamage}` damage!**\n----------\n" +
+                            $"🗡️ **{player.Name} lands a Critical Hit on {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 **[CRITICAL HIT]** Attack Roll [{state.AttackRoll}] vs AC [{state.ArmorElements.ArmorClass}]\n" +
-                            $"🎲 {player.Name} rolls for **damage** ({dice}): `{string.Join(", ", rolls)}`\n" +
-                            $"💥 Critical Hit extra roll ({dice}): `{critRoll}`\n" +
-                            $"🎯 Total = Damage( {damage} ) + Critical( {critRoll} ) + {state.AbilityModifier} (STR( {strength} )) = `{totalDamage}`\n\n" +
-                            $"💀 **{creature.Name} is defeated!**\n";
+                            $"🎲 {player.Name} rolls for **damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
+                            $"💥 Critical Hit extra roll ({state.Dice}): `{state.CritRoll}`\n" +
+                            $"🎯 Total = Damage( {state.Damage} ) + Critical( {state.CritRoll} ) + {state.AbilityModifier} (STR( {strength} )) = `{state.TotalDamage}`\n\n" +
+                            $"💀 **{npc.Name} is defeated!**\n";
                     }
                     else
                     {
                         result =
-                            $"🗡️ **{player.Name} lands a Critical Hit on {creature.Name} with {weapon.Name}, dealing `{totalDamage}` damage!**\n----------\n" +
+                            $"🗡️ **{player.Name} lands a Critical Hit on {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 **[CRITICAL HIT]** Attack Roll [{state.AttackRoll}] vs AC [{state.ArmorElements.ArmorClass}]\n" +
-                            $"🎲 {player.Name} rolls for **damage** ({dice}): `{string.Join(", ", rolls)}`\n" +
-                            $"💥 Critical Hit extra roll ({dice}): `{critRoll}`\n" +
-                            $"🎯 Total = Damage( {damage} ) + Critical( {critRoll} ) + {state.AbilityModifier} (STR( {strength} )) = `{totalDamage}`\n\n" +
-                            $"🧟 **{creature.Name}** has **{creature.Hitpoints} HP** left.\n";
+                            $"🎲 {player.Name} rolls for **damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
+                            $"💥 Critical Hit extra roll ({state.Dice}): `{state.CritRoll}`\n" +
+                            $"🎯 Total = Damage( {state.Damage} ) + Critical( {state.CritRoll} ) + {state.AbilityModifier} (STR( {strength} )) = `{state.TotalDamage}`\n\n" +
+                            $"🧟 **{npc.Name}** has **{npc.Hitpoints} HP** left.\n";
                     }
                     break;
                 
@@ -76,34 +72,34 @@ namespace Adventure.Quest.Battle
                     LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack] isCriticalMiss");
 
                     result =
-                        $"🗡️ **{player.Name} attacks {creature.Name}, but critically misses!**\n----------\n" +
+                        $"🗡️ **{player.Name} attacks {npc.Name}, but critically misses!**\n----------\n" +
                         $"🎯 **[CRITICAL MISS]** Attack Roll [{state.AttackRoll}] vs AC [{state.ArmorElements.ArmorClass}]\n\n" +
-                        $"🧟 **{creature.Name}** remains unscathed with **{creature.Hitpoints} HP**!";
+                        $"🧟 **{npc.Name}** remains unscathed with **{npc.Hitpoints} HP**!";
                     break;
 
                 // HIT
                 case ProcessRollsAndDamage.HitResult.IsValidHit:
                     LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack] isValidHit");
 
-                    if (creature.Hitpoints <= 0)
+                    if (npc.Hitpoints <= 0)
                     {
                         BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
                         result =
-                            $"🗡️ **{player.Name} attacks {creature.Name} with {weapon.Name}, dealing `{totalDamage}` damage!**\n----------\n" +
+                            $"🗡️ **{player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 **[HIT]** Attack Roll( { state.AttackRoll } ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.LevelCR}) = [  {state.TotalRoll}  ] vs AC [  {state.ArmorElements.ArmorClass}  ]\n" +
-                            $"🎲 {player.Name} rolls for **damage** ({dice}): `{string.Join(", ", rolls)}`\n" +
-                            $"🎯 Total = Damage( {damage} ) + {state.AbilityModifier}(STR( {strength} )) = `{totalDamage}`\n\n" +
-                            $"💀 **{creature.Name} is defeated!**";
+                            $"🎲 {player.Name} rolls for **damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
+                            $"🎯 Total = Damage( {state.Damage} ) + {state.AbilityModifier}(STR( {strength} )) = `{state.TotalDamage}`\n\n" +
+                            $"💀 **{npc.Name} is defeated!**";
                     }
                     else
                     {
                         BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
                         result =
-                            $"🗡️ **{player.Name} attacks {creature.Name} with {weapon.Name}, dealing `{totalDamage}` damage!**\n----------\n" +
+                            $"🗡️ **{player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 **[HIT]** Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.LevelCR}) = [  {state.TotalRoll}  ] vs AC [  {state.ArmorElements.ArmorClass}  ]\n" +
-                            $"🎲 {player.Name} rolls for **damage** ({dice}): `{string.Join(", ", rolls)}`\n" +
-                            $"🎯 Total = Damage( {damage} ) + {state.AbilityModifier}(STR( {strength} )) = `{totalDamage}`\n\n" +
-                            $"🧟 **{creature.Name}** has **{creature.Hitpoints} HP** left.";
+                            $"🎲 {player.Name} rolls for **damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
+                            $"🎯 Total = Damage( {state.Damage} ) + {state.AbilityModifier}(STR( {strength} )) = `{state.TotalDamage}`\n\n" +
+                            $"🧟 **{npc.Name}** has **{npc.Hitpoints} HP** left.";
                     }
                     break;
 
@@ -113,9 +109,9 @@ namespace Adventure.Quest.Battle
                     LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack] IsMiss");
 
                     result =
-                        $"🗡️ **{player.Name} attacks {creature.Name}, but the {weapon.Name} bounces off!**\n----------\n" +
+                        $"🗡️ **{player.Name} attacks {npc.Name}, but the {weapon.Name} bounces off!**\n----------\n" +
                         $"🎯 **[MISS]** Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.LevelCR}) = [ {state.TotalRoll} ] vs AC [ {state.ArmorElements.ArmorClass} ]\n\n" +
-                        $"🧟 **{creature.Name}** has **{creature.Hitpoints}** HP left.";
+                        $"🧟 **{npc.Name}** has **{npc.Hitpoints}** HP left.";
                     break;
             }
 

@@ -44,7 +44,7 @@ namespace Adventure.Quest.Battle
                 return 8;             // Level 25–28 → ability/proficiency +8
 
             else
-                return 9;                                  // Level 29–30 → ability/proficiency +9
+                return 9;             // Level 29–30 → ability/proficiency +9
         }
 
         public static int GetAbilityModifier(int abilityScore)

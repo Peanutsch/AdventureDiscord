@@ -18,10 +18,10 @@ namespace Adventure.Quest.Encounter
     public class EncounterService
     {
         /// <summary>
-        /// Randomly selects a creature from the humanoids list.
+        /// Randomly selects a npc from the humanoids list.
         /// </summary>
-        /// <returns>A random CreaturesModel instance or null if an error occurs.</returns>
-        public static CreaturesModel? CreatureRandomizer()
+        /// <returns>A random NpcModel instance or null if an error occurs.</returns>
+        public static NpcModel? NpcRandomizer()
         {
             try
             {
@@ -46,26 +46,26 @@ namespace Adventure.Quest.Encounter
         /// </summary>
         /// <param name="creature">The creature to display in the encounter embed.</param>
         /// <returns>An EmbedBuilder with creature details formatted.</returns>
-        public static EmbedBuilder BuildEmbedRandomEncounter(CreaturesModel creature)
+        public static EmbedBuilder BuildEmbedRandomEncounter(NpcModel npc)
         {
             LogService.DividerParts(1, "Data NPC");
 
-            LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{creature.Name}]");
+            LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{npc.Name}]");
 
-            var HitpointsLevelCrFormat = $"{creature.Hitpoints} / {creature.LevelCR}";
+            var HitpointsLevelCrFormat = $"{npc.Hitpoints} / {npc.LevelCR}";
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
-                .WithDescription($"**[{creature.Name!.ToUpper()}]** appears!\n*\"{creature.Description}\"*")
+                .WithDescription($"**[{npc.Name!.ToUpper()}]** appears!\n*\"{npc.Description}\"*")
                 .AddField("Hit Points / Challenge Rate", HitpointsLevelCrFormat, false);
 
-            LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", creature.Armor ?? new())}");
+            LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", npc.Armor ?? new())}");
 
-            if (creature.Armor?.Any() == true)
+            if (npc.Armor?.Any() == true)
             {
                 // Retrieve detailed armor info based on armor IDs/names
-                var armorList = GameEntityFetcher.RetrieveArmorAttributes(creature.Armor);
+                var armorList = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
 
                 if (armorList.Count > 0)
                 {
@@ -86,12 +86,12 @@ namespace Adventure.Quest.Encounter
                 }
             }
 
-            LogService.Info($"[EncounterService.GetRandomEncounter] > Weapons: {string.Join(",", creature.Weapons ?? new())}");
+            LogService.Info($"[EncounterService.GetRandomEncounter] > Weapons: {string.Join(",", npc.Weapons ?? new())}");
 
-            if (creature.Weapons?.Any() == true)
+            if (npc.Weapons?.Any() == true)
             {
                 // Retrieve detailed weapon info based on weapon IDs/names
-                var weaponList = GameEntityFetcher.RetrieveWeaponAttributes(creature.Weapons!);
+                var weaponList = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons!);
                 if (weaponList.Count > 0)
                 {
                     // Add each weapon as a separate field with details
@@ -134,11 +134,11 @@ namespace Adventure.Quest.Encounter
         {
             var state = BattleEngine.GetBattleState(userId);
             var player = state.Player;
-            var npc = state.Creatures;
+            var npc = state.Npc;
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithTitle($"{player.Name} (Level: {state.Player.LevelCR}) ⚔️ {npc.Name} (CR: {state.Creatures.LevelCR})")
+                .WithTitle($"{player.Name} (Level: {state.Player.LevelCR}) ⚔️ {npc.Name} (CR: {state.Npc.LevelCR})")
                 .AddField("[HP before attack]",
                     $"\n{player.Name}: {prePlayerHP} VS {npc.Name}: {preNpcHP}", false)
                 .AddField("[Battle Log]",

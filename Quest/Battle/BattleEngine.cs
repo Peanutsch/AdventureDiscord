@@ -109,16 +109,16 @@ namespace Adventure.Quest.Battle
                 state = new BattleStateModel
                 {
                     Player = player,
-                    Creatures = new CreaturesModel(),
+                    Npc = new NpcModel(),
                     PlayerWeapons = playerWeapons,
                     PlayerArmor = playerArmor,
                     Items = playerItems,
-                    CreatureWeapons = new List<WeaponModel>(),
-                    CreatureArmor = new List<ArmorModel>(),
+                    NpcWeapons = new List<WeaponModel>(),
+                    NpcArmor = new List<ArmorModel>(),
                     PrePlayerHP = player.Hitpoints,
-                    PreCreatureHP = 0,
+                    PreNpcHP = 0,
                     LastUsedWeapon = "",
-                    Damage = 0
+                    TotalDamage = 0
                 };
             }
 
@@ -138,16 +138,16 @@ namespace Adventure.Quest.Battle
         /// <summary>
         /// Assigns the creature for the current encounter and loads its weapons and armor.
         /// </summary>
-        public static void SetCreature(ulong userId, CreaturesModel creature)
+        public static void SetCreature(ulong userId, NpcModel creature)
         {
             var state = GetBattleState(userId);
-            state.Creatures = creature;
+            state.Npc = creature;
 
             if (creature.Weapons != null)
-                state.CreatureWeapons = GameEntityFetcher.RetrieveWeaponAttributes(creature.Weapons);
+                state.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(creature.Weapons);
 
             if (creature.Armor != null)
-                state.CreatureArmor = GameEntityFetcher.RetrieveArmorAttributes(creature.Armor);
+                state.NpcArmor = GameEntityFetcher.RetrieveArmorAttributes(creature.Armor);
 
             battleStates[userId] = state;
         }
@@ -278,13 +278,13 @@ namespace Adventure.Quest.Battle
         {
             ulong userId = interaction.User.Id;
             var state = GetBattleState(userId);
-            var creature = state.Creatures;
+            var npc = state.Npc;
 
             LogService.DividerParts(1, "HandleStepBattle");
 
             await interaction.DeferAsync();
 
-            var preAttackInfo = $"HP before attack:\nPlayer = {state.Player.Hitpoints}\nCreature = {creature.Hitpoints}";
+            var preAttackInfo = $"HP before attack:\nPlayer = {state.Player.Hitpoints}\nCreature = {npc.Hitpoints}";
 
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
@@ -296,17 +296,17 @@ namespace Adventure.Quest.Battle
 
             // 📌 HP opslaan vóór de gevechten
             int prePlayerHP = state.Player.Hitpoints;
-            int preCreatureHP = state.Creatures.Hitpoints;
+            int preNpcHP = state.Npc.Hitpoints;
 
             // ⚔️ Speler valt aan
             string playerAttackResult = PlayerAttack.ProcessPlayerAttack(userId, weapon);
 
-            if (state.Creatures.Hitpoints <= 0)
+            if (state.Npc.Hitpoints <= 0)
             {
                 var embed = EncounterService.RebuildBattleEmbed(
                     userId,
                     prePlayerHP,
-                    preCreatureHP,
+                    preNpcHP,
                     playerAttackResult);
 
                 await interaction.ModifyOriginalResponseAsync(msg => msg.Embed = embed.Build());
@@ -314,30 +314,30 @@ namespace Adventure.Quest.Battle
             }
 
             // 📌 Creature heeft geen wapen
-            var creatureWeapon = state.CreatureWeapons.FirstOrDefault();
-            if (creatureWeapon == null)
+            var npcWeapon = state.NpcWeapons.FirstOrDefault();
+            if (npcWeapon == null)
             {
                 var embed = EncounterService.RebuildBattleEmbed(
                     userId,
                     prePlayerHP,
-                    preCreatureHP,
-                    $"{playerAttackResult}\n\n⚠️ {state.Creatures.Name} has nothing to attack with.");
+                    preNpcHP,
+                    $"{playerAttackResult}\n\n⚠️ {state.Npc.Name} has nothing to attack with.");
 
                 await interaction.ModifyOriginalResponseAsync(msg => msg.Embed = embed.Build());
                 return;
             }
 
             // 💥 Creature valt terug aan
-            string creatureAttackResult = NpcAttack.ProcessCreatureAttack(userId, creatureWeapon);
+            string npcAttackResult = NpcAttack.ProcessNpcAttack(userId, npcWeapon);
 
             // 📦 Combineer output
-            string fullAttackLog = $"{playerAttackResult}\n\n{creatureAttackResult}";
+            string fullAttackLog = $"{playerAttackResult}\n\n{npcAttackResult}";
 
             // 🧱 Bouw de embed met gecombineerde aanval
             var fullEmbed = EncounterService.RebuildBattleEmbed(
                 userId,
                 prePlayerHP,
-                preCreatureHP,
+                preNpcHP,
                 fullAttackLog);
 
             // 📬 Update bericht
@@ -369,7 +369,7 @@ namespace Adventure.Quest.Battle
             }
 
             var player = state.Player;
-            var npc = state.Creatures;
+            var npc = state.Npc;
 
             if (player.Hitpoints <= 0 && npc.Hitpoints <= 0)
                 SetStep(userId, StepEndBattle);

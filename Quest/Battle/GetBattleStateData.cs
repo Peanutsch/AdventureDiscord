@@ -18,11 +18,11 @@ namespace Adventure.Quest.Battle
         /// <param name="userId">The Discord user ID involved in the battle.</param>
         /// <param name="playerIsAttacker">True if the player is the attacker, false if the creature is.</param>
         /// <returns>A tuple containing the battle state, player model, creature model, and attacker strength.</returns>
-        public static (BattleStateModel state, PlayerModel player, CreaturesModel creature, int attackerStrength) GetBattleParticipants(ulong userId, bool playerIsAttacker)
+        public static (BattleStateModel state, PlayerModel player, NpcModel creature, int attackerStrength) GetBattleParticipants(ulong userId, bool playerIsAttacker)
         {
             var state = BattleEngine.GetBattleState(userId);
             var player = state.Player;
-            var creature = state.Creatures;
+            var creature = state.Npc;
 
             // Determine the strength value of the attacker (player or creature)
             int attackerStrength = playerIsAttacker ? player.Attributes.Strength : creature.Attributes.Strength;

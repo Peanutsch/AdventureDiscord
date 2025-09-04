@@ -14,5 +14,13 @@
     "armor_class": 12,
     "weight": 5.4,
     "type": "medium"
+  },
+  {
+    "id": "armor_scrap",
+    "name": "Scrap Armor",
+    "description": "A patchwork of metal plates, leather, and cloth cobbled together. Provides minimal protection but is better than nothing.",
+    "armor_class": 10,
+    "weight": 6.0,
+    "type": "light"
   }
 ]
