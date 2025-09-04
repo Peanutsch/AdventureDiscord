@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Adventure.Models.Creatures
+namespace Adventure.Models.NPC
 {
     public class NpcModel
     {

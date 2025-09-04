@@ -22,7 +22,7 @@
     "name": "Orc",
     "level": 3,
     "description": "A hulking brute with jagged armor and a thirst for blood.\n Not known for brains, but definitely for breaking bones.",
-    "hitpoints": 1000,
+    "hitpoints": 25,
     "attributes": {
       "strength": 16,
       "dexterity": 12,

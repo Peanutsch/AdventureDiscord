@@ -10,7 +10,7 @@ using Discord;
 using System.Numerics;
 using Adventure.Loaders;
 using Adventure.Models.BattleState;
-using Adventure.Models.Creatures;
+using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using System.Collections;
 
@@ -50,9 +50,9 @@ namespace Adventure.Quest.Battle
                         result =
                             $"🗡️ **{player.Name} lands a Critical Hit on {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 **[CRITICAL HIT]** Attack Roll [{state.AttackRoll}] vs AC [{state.ArmorElements.ArmorClass}]\n" +
-                            $"🎲 {player.Name} rolls for **damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
-                            $"💥 Critical Hit extra roll ({state.Dice}): `{state.CritRoll}`\n" +
-                            $"🎯 Total = Damage( {state.Damage} ) + Critical( {state.CritRoll} ) + {state.AbilityModifier} (STR( {strength} )) = `{state.TotalDamage}`\n\n" +
+                            $"🎲 {player.Name} rolls for **Damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
+                            $"💥 {player.Name} rolls for **Critical Damage** ({state.Dice}): `{state.CritRoll}`\n" +
+                            $"🎯 Total = Damage ( {state.Damage} ) + Critical Damage ( {state.CritRoll} ) + {state.AbilityModifier} (STR( {strength} )) = `{state.TotalDamage}`\n\n" +
                             $"💀 **{npc.Name} is defeated!**\n";
                     }
                     else
@@ -60,9 +60,9 @@ namespace Adventure.Quest.Battle
                         result =
                             $"🗡️ **{player.Name} lands a Critical Hit on {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 **[CRITICAL HIT]** Attack Roll [{state.AttackRoll}] vs AC [{state.ArmorElements.ArmorClass}]\n" +
-                            $"🎲 {player.Name} rolls for **damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
-                            $"💥 Critical Hit extra roll ({state.Dice}): `{state.CritRoll}`\n" +
-                            $"🎯 Total = Damage( {state.Damage} ) + Critical( {state.CritRoll} ) + {state.AbilityModifier} (STR( {strength} )) = `{state.TotalDamage}`\n\n" +
+                            $"🎲 {player.Name} rolls for **Damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
+                            $"💥 {player.Name} rolls for **Critical Damage** ({state.Dice}): `{state.CritRoll}`\n" +
+                            $"🎯 Total = Damage ( {state.Damage} ) + Critical Damage ( {state.CritRoll} ) + {state.AbilityModifier} (STR( {strength} )) = `{state.TotalDamage}`\n\n" +
                             $"🧟 **{npc.Name}** has **{npc.Hitpoints} HP** left.\n";
                     }
                     break;
@@ -87,8 +87,8 @@ namespace Adventure.Quest.Battle
                         result =
                             $"🗡️ **{player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 **[HIT]** Attack Roll( { state.AttackRoll } ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.LevelCR}) = [  {state.TotalRoll}  ] vs AC [  {state.ArmorElements.ArmorClass}  ]\n" +
-                            $"🎲 {player.Name} rolls for **damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
-                            $"🎯 Total = Damage( {state.Damage} ) + {state.AbilityModifier}(STR( {strength} )) = `{state.TotalDamage}`\n\n" +
+                            $"🎲 {player.Name} rolls for **Damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
+                            $"🎯 Total = Damage ( {state.Damage} ) + {state.AbilityModifier} (STR( {strength} )) = `{state.TotalDamage}`\n\n" +
                             $"💀 **{npc.Name} is defeated!**";
                     }
                     else
@@ -97,8 +97,8 @@ namespace Adventure.Quest.Battle
                         result =
                             $"🗡️ **{player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 **[HIT]** Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.LevelCR}) = [  {state.TotalRoll}  ] vs AC [  {state.ArmorElements.ArmorClass}  ]\n" +
-                            $"🎲 {player.Name} rolls for **damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
-                            $"🎯 Total = Damage( {state.Damage} ) + {state.AbilityModifier}(STR( {strength} )) = `{state.TotalDamage}`\n\n" +
+                            $"🎲 {player.Name} rolls for **Damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
+                            $"🎯 Total = Damage ( {state.Damage} ) + {state.AbilityModifier} (STR( {strength} )) = `{state.TotalDamage}`\n\n" +
                             $"🧟 **{npc.Name}** has **{npc.Hitpoints} HP** left.";
                     }
                     break;

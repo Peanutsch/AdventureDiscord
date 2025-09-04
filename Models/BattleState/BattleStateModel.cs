@@ -1,5 +1,5 @@
-﻿using Adventure.Models.Creatures;
-using Adventure.Models.Items;
+﻿using Adventure.Models.Items;
+using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using System;
 using System.Collections.Generic;

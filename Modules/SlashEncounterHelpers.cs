@@ -1,6 +1,5 @@
 ﻿using Adventure.Data;
 using Adventure.Loaders;
-using Adventure.Models.Creatures;
 using Adventure.Models.Player;
 using Adventure.Quest.Battle;
 using Adventure.Services;
@@ -11,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Adventure.Models.NPC;
 
 namespace Adventure.Modules
 {

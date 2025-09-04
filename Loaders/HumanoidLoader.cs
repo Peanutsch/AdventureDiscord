@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Adventure.Models.Creatures;
+using Adventure.Models.NPC;
 
 namespace Adventure.Loaders
 {

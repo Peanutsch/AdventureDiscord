@@ -1,4 +1,4 @@
-﻿using Adventure.Models.Creatures;
+﻿using Adventure.Models.NPC;
 
 namespace Adventure.Loaders
 {

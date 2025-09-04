@@ -67,16 +67,16 @@ namespace Adventure.Modules
 
             //SlashEncounterHelpers.EnsureInventoryLoaded(user.Id);
 
-            var creature = EncounterService.CreatureRandomizer();
-            if (creature == null)
+            var npc = EncounterService.NpcRandomizer();
+            if (npc == null)
             {
                 await FollowupAsync("⚠️ Could not pick a random creature.");
                 return;
             }
 
-            SlashEncounterHelpers.SetupBattleState(user.Id, creature);
+            SlashEncounterHelpers.SetupBattleState(user.Id, npc);
 
-            var embed = EncounterService.BuildEmbedRandomEncounter(creature);
+            var embed = EncounterService.BuildEmbedRandomEncounter(npc);
             var buttons = SlashEncounterHelpers.BuildEncounterButtons();
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());

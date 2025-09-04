@@ -1,7 +1,7 @@
 ﻿using Adventure.Loaders;
 using Adventure.Models;
-using Adventure.Models.Creatures;
 using Adventure.Models.Items;
+using Adventure.Models.NPC;
 using Adventure.Models.Player;
 
 namespace Adventure.Data

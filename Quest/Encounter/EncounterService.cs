@@ -1,6 +1,6 @@
 ﻿using Adventure.Data;
 using Adventure.Loaders;
-using Adventure.Models.Creatures;
+using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Modules;
 using Adventure.Quest.Battle;
@@ -58,7 +58,7 @@ namespace Adventure.Quest.Encounter
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
                 .WithDescription($"**[{npc.Name!.ToUpper()}]** appears!\n*\"{npc.Description}\"*")
-                .AddField("Hit Points / Challenge Rate", HitpointsLevelCrFormat, false);
+                .AddField("[Hit Points / Challenge Rate]", HitpointsLevelCrFormat, false);
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", npc.Armor ?? new())}");
 
@@ -185,13 +185,13 @@ namespace Adventure.Quest.Encounter
                 var embed = new EmbedBuilder()
                     .WithTitle($"**{state!.Player.Name}** prepares for battle...")
                     .WithColor(Color.DarkRed)
-                    .WithDescription($"🔪 Make your choice!");
+                    .WithDescription($"🔪 Your Inventory:");
 
             // Add weapons to embed
             foreach (var weapon in weapons!)
             {
                 string diceNotation = $"{weapon.Damage.DiceCount}d{weapon.Damage.DiceValue}";
-                string nameNotation = $"{weapon.Name!} ({diceNotation})";
+                string nameNotation = $"[{weapon.Name!} ({diceNotation}])";
                 embed.AddField(nameNotation, $"*{weapon.Description}*");
             }
 
@@ -202,7 +202,7 @@ namespace Adventure.Quest.Encounter
             foreach (var armor in armors!)
             {
                 string acNotation = $"Armor Class: +{armor.ArmorClass}";
-                string nameNotation = $"{armor.Name} ({acNotation})";
+                string nameNotation = $"[{armor.Name} ({acNotation}])";
                 embed.AddField(nameNotation, $"*{armor.Description}*");
             }
 
@@ -210,7 +210,7 @@ namespace Adventure.Quest.Encounter
             foreach (var item in items!)
             {
                 string diceNotation = $"{item.Effect.DiceCount}d{item.Effect.DiceValue}+{item.Effect.BonusHP}";
-                string nameNotation = $"{item.Name} ({diceNotation})";
+                string nameNotation = $"[{item.Name} ( {diceNotation}])";
                 embed.AddField(nameNotation, $"*{item.Description}*");
             }
 
