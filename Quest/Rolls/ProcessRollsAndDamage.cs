@@ -76,10 +76,10 @@ namespace Adventure.Quest.Rolls
             state.IsCriticalMiss = attackRoll == 1;   // Natural 1 = critical miss
 
             // Log the calculation details for debugging
-            LogService.Info($"[BattleEngineHelpers.ValidateHit]\n" +
+            LogService.Info($"[ProcessRollsAndDamage.ValidateHit]\n" +
                             $"attackRoll: {attackRoll}\n" +
                             $"attackModifier: {abilityStrength}\n" +
-                            $"proficiencyModifier: {proficiencyModifier}" +
+                            $"proficiencyModifier: {proficiencyModifier}\n" +
                             $"totalRoll: {totalRoll}\n" +
                             $"defenderAC: {defenderAC}");
 
