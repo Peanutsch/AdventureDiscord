@@ -1,13 +1,14 @@
 ﻿using Adventure.Models.BattleState;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
+using Adventure.Quest.Battle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Quest.Battle
+namespace Adventure.Quest.Helpers
 {
     class GetBattleStateData
     {

@@ -42,11 +42,15 @@ namespace Adventure.Quest.Rolls
             int levelCR;
             int defenderAC;
 
+            string turn;
+
             // Determine attacking and defending stats based on who is attacking
             if (isPlayerAttacker)
             {
                 // Ensure the creature has valid armor
                 state.Npc.ArmorElements = state.NpcArmor.FirstOrDefault() ?? new ArmorModel();
+
+                turn = "Player's";
                 levelCR = state.Player.Level;
                 abilityStrength = state.Player.Attributes.Strength;
                 defenderAC = state.Npc.ArmorElements.ArmorClass;
@@ -55,6 +59,8 @@ namespace Adventure.Quest.Rolls
             {
                 // Ensure the player has valid armor
                 state.Player.ArmorElements = state.PlayerArmor.FirstOrDefault() ?? new ArmorModel();
+
+                turn = "NPC's";
                 abilityStrength = state.Npc.Attributes.Strength;
                 levelCR = (int)state.Npc.CR;
                 defenderAC = state.Player.ArmorElements.ArmorClass;
@@ -77,7 +83,7 @@ namespace Adventure.Quest.Rolls
             state.IsCriticalMiss = attackRoll == 1;   // Natural 1 = critical miss
 
             // Log the calculation details for debugging
-            LogService.Info($"[ProcessRollsAndDamage.ValidateHit]\n" +
+            LogService.Info($"[ProcessRollsAndDamage.ValidateHit] {turn} turn:\n" +
                             $"attackRoll: {attackRoll}\n" +
                             $"attackModifier: {abilityStrength}\n" +
                             $"proficiencyModifier: {proficiencyModifier}\n" +

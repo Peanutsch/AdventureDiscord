@@ -1,11 +1,6 @@
 ﻿using Adventure.Models.Items;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Models.BattleState
 {
@@ -52,6 +47,7 @@ namespace Adventure.Models.BattleState
         public int PreNpcHP { get; set; }
 
         // XP Reward
-        public int XP { get; set; }
+        public int RewardXP { get; set; }
+        public int NewTotalXP { get; set; }
     }
 }

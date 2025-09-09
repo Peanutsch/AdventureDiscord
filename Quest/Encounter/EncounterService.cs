@@ -54,13 +54,15 @@ namespace Adventure.Quest.Encounter
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{npc.Name}]");
 
-            var HitpointsCrFormat = $"HP: {npc.Hitpoints} ({state.DiceCountHP}d{state.DiceValueHP}) / CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)}";
+            //var HitpointsCrFormat = $"HP: {state.HitpointsNPC} ({state.DiceCountHP}d{state.DiceValueHP}) / CR: {ChallengeRatingHelpers.DisplayCR(npc.CR) ({state.DiceCountHP}d{state.DiceValueHP})}";
+            var HitpointsCrFormat = $"HP: {state.HitpointsNPC}";
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
-                .WithDescription($"**[{npc.Name!.ToUpper()}]** appears!\n*\"{npc.Description}\"*")
-                .AddField($"[Hit Points / Challenge Rate]", HitpointsCrFormat, false);
+                .WithDescription($"**[{npc.Name!.ToUpper()}]** appears!\n*\"{npc.Description}\"*");
+                //.AddField($"[Hit Points]", HitpointsCrFormat, false);
+            //.AddField($"[Hit Points / Challenge Rate]", HitpointsCrFormat, false);
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", npc.Armor ?? new())}");
 
@@ -76,7 +78,7 @@ namespace Adventure.Quest.Encounter
                     {
                         embed.AddField($"**[{armor.Name}]**\n",
                             $"Type: {armor.Type} armor\n" +
-                            $"Armor Class: {armor.ArmorClass}\n" +
+                            //$"Armor Class: {armor.ArmorClass}\n" +
                             $"Weight: {armor.Weight}kg\n" +
                             $"*\"{armor.Description}\"*", false);
                     }
@@ -140,9 +142,9 @@ namespace Adventure.Quest.Encounter
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithTitle($"{player.Name} (Level: {state.Player.Level}) ⚔️ {npc.Name} (CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)})")
+                .WithTitle($"{player.Name} (Level: {state.Player.Level}) ⚔️ {npc.Name}") //(CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)})")
                 .AddField("[HP before attack]",
-                    $"\n{player.Name}: {prePlayerHP} VS {npc.Name}: {preNpcHP}", false)
+                    $"\n{player.Name}: {prePlayerHP} HP", false)// VS {npc.Name}: {preNpcHP}", false)
                 .AddField("[Battle Log]",
                     $"{attackSummary}", false);
 
@@ -193,7 +195,7 @@ namespace Adventure.Quest.Encounter
             foreach (var weapon in weapons!)
             {
                 string diceNotation = $"{weapon.Damage.DiceCount}d{weapon.Damage.DiceValue}";
-                string nameNotation = $"[{weapon.Name!} ({diceNotation}])";
+                string nameNotation = $"[{weapon.Name!} ({diceNotation})]";
                 embed.AddField(nameNotation, $"*{weapon.Description}*");
             }
 
@@ -204,7 +206,7 @@ namespace Adventure.Quest.Encounter
             foreach (var armor in armors!)
             {
                 string acNotation = $"Armor Class: {armor.ArmorClass}";
-                string nameNotation = $"[{armor.Name} ({acNotation}])";
+                string nameNotation = $"[{armor.Name} ({acNotation})]";
                 embed.AddField(nameNotation, $"*{armor.Description}*");
             }
 
@@ -212,7 +214,7 @@ namespace Adventure.Quest.Encounter
             foreach (var item in items!)
             {
                 string diceNotation = $"{item.Effect.DiceCount}d{item.Effect.DiceValue}+{item.Effect.BonusHP}";
-                string nameNotation = $"[{item.Name} ( {diceNotation}])";
+                string nameNotation = $"[{item.Name} ( {diceNotation} )]";
                 embed.AddField(nameNotation, $"*{item.Description}*");
             }
 

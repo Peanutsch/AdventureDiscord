@@ -9,6 +9,7 @@ using Adventure.Models.BattleState;
 using Adventure.Models.Items;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
+using Adventure.Quest.Battle.Attack;
 using Adventure.Quest.Encounter;
 using Adventure.Quest.Helpers;
 using Adventure.Services;
@@ -135,9 +136,9 @@ namespace Adventure.Quest.Battle
             state.Npc = npc;
 
             // Save NPC stats to BattleState
-            state.Npc.Hitpoints = ChallengeRatingHelpers.GetNpcHitpoints(npc, npc.CR, userId);
-            state.XP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
-            LogService.Info($"[BattleEngine.SetNpc] NPC: {npc.Name} HP: {npc.Hitpoints}");
+            state.HitpointsNPC = ChallengeRatingHelpers.GetNpcHitpoints(npc, npc.CR, userId);
+            state.RewardXP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
+            LogService.Info($"[BattleEngine.SetNpc] NPC: {npc.Name} HP: {state.HitpointsNPC}");
 
             if (npc.Weapons != null)
                 state.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);
@@ -280,7 +281,7 @@ namespace Adventure.Quest.Battle
 
             await interaction.DeferAsync();
 
-            var preAttackInfo = $"HP before attack:\nPlayer = {state.Player.Hitpoints}\nCreature = {npc.Hitpoints}";
+            var preAttackInfo = $"HP before attack:\nPlayer = {state.Player.Hitpoints}\nCreature = {state.HitpointsNPC}";
 
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
@@ -292,12 +293,12 @@ namespace Adventure.Quest.Battle
 
             // 📌 HP opslaan vóór de gevechten
             int prePlayerHP = state.Player.Hitpoints;
-            int preNpcHP = state.Npc.Hitpoints;
+            int preNpcHP = state.HitpointsNPC;
 
             // ⚔️ Speler valt aan
             string playerAttackResult = PlayerAttack.ProcessPlayerAttack(userId, weapon);
 
-            if (state.Npc.Hitpoints <= 0)
+            if (state.HitpointsNPC <= 0)
             {
                 var embed = EncounterService.RebuildBattleEmbed(
                     userId,
@@ -367,11 +368,11 @@ namespace Adventure.Quest.Battle
             var player = state.Player;
             var npc = state.Npc;
 
-            if (player.Hitpoints <= 0 && npc.Hitpoints <= 0)
+            if (player.Hitpoints <= 0 && state.HitpointsNPC  <= 0)
                 SetStep(userId, StepEndBattle);
             else if (player.Hitpoints <= 0)
                 SetStep(userId, StepEndBattle);
-            else if (npc.Hitpoints <= 0)
+            else if (state.HitpointsNPC <= 0)
                 SetStep(userId, StepEndBattle);
             else
                 SetStep(userId, StepWeaponChoice);

@@ -21,7 +21,7 @@ namespace Adventure.Models.NPC
         [JsonPropertyName("description")]
         public string? Description { get; set; }
 
-        public int Hitpoints { get; set; }
+        //public int Hitpoints { get; set; }
 
         [JsonPropertyName("challengeRate")]
         public double CR { get; set; }
