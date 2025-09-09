@@ -13,6 +13,8 @@ using Adventure.Models.BattleState;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using System.Collections;
+using Adventure.Quest.Battle.Process;
+using Adventure.Quest.Helpers;
 
 namespace Adventure.Quest.Battle
 {
@@ -29,6 +31,9 @@ namespace Adventure.Quest.Battle
 
             // Get combat state and both combatants
             var (state, player, npc, strength) = GetBattleStateData.GetBattleParticipants(userId, playerIsAttacker: true);
+
+            // Get NPC related XP reward
+            var rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
 
             // If hit is successful or critical, calculate damage
             if (hitResult == ProcessRollsAndDamage.HitResult.IsValidHit || hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit)
@@ -47,13 +52,16 @@ namespace Adventure.Quest.Battle
 
                     if (npc.Hitpoints <= 0)
                     {
+                        BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
+                        ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
+
                         result =
                             $"🗡️ **{player.Name} lands a Critical Hit on {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 **[CRITICAL HIT]** Attack Roll [{state.AttackRoll}] vs AC [{state.ArmorElements.ArmorClass}]\n" +
                             $"🎲 {player.Name} rolls for **Damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
                             $"💥 {player.Name} rolls for **Critical Damage** ({state.Dice}): `{state.CritRoll}`\n" +
                             $"🎯 Total = Damage ( {state.Damage} ) + Critical Damage ( {state.CritRoll} ) + {state.AbilityModifier} (STR( {strength} )) = `{state.TotalDamage}`\n\n" +
-                            $"💀 **{npc.Name} is defeated!**\n";
+                            $"💀 **{npc.Name} is defeated!**\n\n**{player.Name}** is rewarded with **{state.XP} XP** and has now a total of **{state.Player.XP} XP**!";
                     }
                     else
                     {
@@ -84,12 +92,14 @@ namespace Adventure.Quest.Battle
                     if (npc.Hitpoints <= 0)
                     {
                         BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
+                        ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
+
                         result =
                             $"🗡️ **{player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 **[HIT]** Attack Roll( { state.AttackRoll } ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = [  {state.TotalRoll}  ] vs AC [  {state.ArmorElements.ArmorClass}  ]\n" +
                             $"🎲 {player.Name} rolls for **Damage** ({state.Dice}): `{string.Join(", ", state.Rolls)}`\n" +
                             $"🎯 Total = Damage ( {state.Damage} ) + {state.AbilityModifier} (STR( {strength} )) = `{state.TotalDamage}`\n\n" +
-                            $"💀 **{npc.Name} is defeated!**";
+                            $"💀 **{npc.Name} is defeated!**\n\n**{player.Name}** is rewarded with **{state.XP} XP** and has now a total of **{state.Player.XP} XP**!";
                     }
                     else
                     {

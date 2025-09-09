@@ -5,7 +5,7 @@ using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Modules;
 using Adventure.Quest.Battle;
-using Adventure.Quest.NpcHelpers;
+using Adventure.Quest.Helpers;
 using Adventure.Services;
 using Discord;
 using Discord.WebSocket;
@@ -54,7 +54,7 @@ namespace Adventure.Quest.Encounter
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{npc.Name}]");
 
-            var HitpointsCrFormat = $"HP: {npc.Hitpoints} ({state.DiceCountHP}d{state.DiceValueHP}) / CR: {NpcDisplayCR.DisplayCR(npc.CR)}";
+            var HitpointsCrFormat = $"HP: {npc.Hitpoints} ({state.DiceCountHP}d{state.DiceValueHP}) / CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)}";
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
@@ -140,7 +140,7 @@ namespace Adventure.Quest.Encounter
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithTitle($"{player.Name} (Level: {state.Player.Level}) ⚔️ {npc.Name} (CR: {NpcDisplayCR.DisplayCR(npc.CR)})")
+                .WithTitle($"{player.Name} (Level: {state.Player.Level}) ⚔️ {npc.Name} (CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)})")
                 .AddField("[HP before attack]",
                     $"\n{player.Name}: {prePlayerHP} VS {npc.Name}: {preNpcHP}", false)
                 .AddField("[Battle Log]",

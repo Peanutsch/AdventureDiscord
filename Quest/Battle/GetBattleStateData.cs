@@ -22,12 +22,12 @@ namespace Adventure.Quest.Battle
         {
             var state = BattleEngine.GetBattleState(userId);
             var player = state.Player;
-            var creature = state.Npc;
+            var npc = state.Npc;
 
             // Determine the strength value of the attacker (player or creature)
-            int attackerStrength = playerIsAttacker ? player.Attributes.Strength : creature.Attributes.Strength;
+            int attackerStrength = playerIsAttacker ? player.Attributes.Strength : npc.Attributes.Strength;
 
-            return (state, player, creature, attackerStrength);
+            return (state, player, npc, attackerStrength);
         }
         #endregion GET DATA
     }

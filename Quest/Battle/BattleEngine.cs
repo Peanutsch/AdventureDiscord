@@ -10,7 +10,7 @@ using Adventure.Models.Items;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Quest.Encounter;
-using Adventure.Quest.NpcHelpers;
+using Adventure.Quest.Helpers;
 using Adventure.Services;
 using Discord;
 using Discord.Interactions;
@@ -127,25 +127,16 @@ namespace Adventure.Quest.Battle
         }
 
         /// <summary>
-        /// Saves a user's battle state to userId json file.
-        /// </summary>
-        public static void SaveBattleState(ulong userId, BattleStateModel newState)
-        {
-            string json = JsonSerializer.Serialize(newState, new JsonSerializerOptions { WriteIndented = true });
-            string path = $"Data/Player/{userId}.json";
-            File.WriteAllText(path, json);
-        }
-
-        /// <summary>
         /// Assigns the creature for the current encounter and loads its weapons and armor.
         /// </summary>
-        public static void SetNpc(ulong userId, NpcModel npc)
+        public static void SetupNpc(ulong userId, NpcModel npc)
         {
             var state = GetBattleState(userId);
             state.Npc = npc;
 
-            // Set NPC HP
-            state.Npc.Hitpoints = NpcHitpoints.GetNpcHitpoints(npc, npc.CR, userId);
+            // Save NPC stats to BattleState
+            state.Npc.Hitpoints = ChallengeRatingHelpers.GetNpcHitpoints(npc, npc.CR, userId);
+            state.XP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
             LogService.Info($"[BattleEngine.SetNpc] NPC: {npc.Name} HP: {npc.Hitpoints}");
 
             if (npc.Weapons != null)

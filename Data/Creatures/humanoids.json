@@ -4,7 +4,7 @@
     "name": "Goblin",
     "description": "A small, wiry creature with green skin, sharp teeth, and a mischievous grin.\n More cunning than brave, and more annoying than deadly—unless you turn your back.",
     "hitpoints": 7,
-    "challengeRate":  0.125,
+    "challengeRate": 0.125,
     "attributes": {
       "strength": 8,
       "dexterity": 14,

@@ -184,5 +184,48 @@ namespace Adventure.Loaders
                 LogService.Error($"[UpdatePlayerItemsInJson] Exception: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Updates the XP value in the player's JSON file.
+        /// </summary>
+        /// <param name="userId">Discord user ID.</param>
+        /// <param name="newXP">New hitpoints value to set.</param>
+        public static void UpdatePlayerXPInJson(ulong userId, string playerName, int newXP)
+        {
+            string path = Path.Combine("Data", "Player", $"{userId}.json");
+
+            if (!File.Exists(path))
+            {
+                LogService.Error($"[UpdatePlayerHitpointsInJson] File not found: {path}");
+                return;
+            }
+
+            try
+            {
+                string json = File.ReadAllText(path);
+                var player = JsonSerializer.Deserialize<PlayerModel>(json);
+
+                if (player == null)
+                {
+                    LogService.Error("[UpdatePlayerHitpointsInJson] Failed to deserialize PlayerModel.");
+                    return;
+                }
+
+                player.XP = newXP;
+
+                string updatedJson = JsonSerializer.Serialize(player, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+                File.WriteAllText(path, updatedJson);
+
+                LogService.Info($"[UpdatePlayerHitpointsInJson] Player XP updated to {newXP} for userId {userId} ({playerName})");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[UpdatePlayerHitpointsInJson] Exception: {ex.Message}");
+            }
+        }
     }
 }

@@ -50,7 +50,7 @@ namespace Adventure.Modules
 
         public static void SetupBattleState(ulong userId, NpcModel npc)
         {
-            BattleEngine.SetNpc(userId, npc);
+            BattleEngine.SetupNpc(userId, npc);
             BattleEngine.SetStep(userId, "start");
         }
 

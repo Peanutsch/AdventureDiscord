@@ -1,5 +1,6 @@
 ﻿using Adventure.Models.Items;
-using Adventure.Quest.NpcHelpers;
+using Adventure.Quest.Battle.Process;
+using Adventure.Quest.Helpers;
 using Adventure.Quest.Rolls;
 using Adventure.Services;
 using System;
@@ -20,7 +21,7 @@ namespace Adventure.Quest.Battle
         {
             var hitResult = ProcessRollsAndDamage.ValidateHit(userId, isPlayerAttacker: false);
             var (state, player, npc, strength) = GetBattleStateData.GetBattleParticipants(userId, playerIsAttacker: false);
-            var npcCR = NpcDisplayCR.DisplayCR(npc.CR);
+            var npcCR = ChallengeRatingHelpers.DisplayCR(npc.CR);
 
             if (hitResult == ProcessRollsAndDamage.HitResult.IsValidHit || hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit)
             {

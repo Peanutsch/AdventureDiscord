@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Quest.Battle
+namespace Adventure.Quest.Battle.Process
 {
     class ProcessSuccesAttack
     {
@@ -70,5 +70,18 @@ namespace Adventure.Quest.Battle
             return (damage, totalDamage, rolls, critRoll, dice, newHP);
         }
         #endregion PROCESS SUCCESFULL ATTACK
+
+        #region PROCESS XP
+        public static void ProcessSaveXPReward(int rewardedXP, BattleStateModel state)
+        {
+            var currentXP = state.Player.XP;
+            var newXP =  currentXP + rewardedXP;
+
+            LogService.Info($"[ProcessSuccesAttack.ProcessSaveXPReward] Player: {state.Player.Name} XP Reward: {rewardedXP} Current XP: {state.Player.XP} New XP: {newXP}");
+
+            // Update player's XP in JSON
+            JsonDataManager.UpdatePlayerXPInJson(state.Player.Id, state.Player.Name!, newXP);
+        }
+        #endregion PROCESS XP
     }
 }
