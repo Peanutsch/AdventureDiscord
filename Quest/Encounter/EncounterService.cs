@@ -1,9 +1,11 @@
 ﻿using Adventure.Data;
 using Adventure.Loaders;
+using Adventure.Models.BattleState;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Modules;
 using Adventure.Quest.Battle;
+using Adventure.Quest.NpcHelpers;
 using Adventure.Services;
 using Discord;
 using Discord.WebSocket;
@@ -46,19 +48,19 @@ namespace Adventure.Quest.Encounter
         /// </summary>
         /// <param name="creature">The creature to display in the encounter embed.</param>
         /// <returns>An EmbedBuilder with creature details formatted.</returns>
-        public static EmbedBuilder BuildEmbedRandomEncounter(NpcModel npc)
+        public static EmbedBuilder BuildEmbedRandomEncounter(NpcModel npc, BattleStateModel state)
         {
             LogService.DividerParts(1, "Data NPC");
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{npc.Name}]");
 
-            var HitpointsLevelCrFormat = $"{npc.Hitpoints} / {npc.LevelCR}";
+            var HitpointsCrFormat = $"HP: {npc.Hitpoints} ({state.DiceCountHP}d{state.DiceValueHP}) / CR: {NpcDisplayCR.DisplayCR(npc.CR)}";
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
                 .WithDescription($"**[{npc.Name!.ToUpper()}]** appears!\n*\"{npc.Description}\"*")
-                .AddField("[Hit Points / Challenge Rate]", HitpointsLevelCrFormat, false);
+                .AddField($"[Hit Points / Challenge Rate]", HitpointsCrFormat, false);
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", npc.Armor ?? new())}");
 
@@ -74,7 +76,7 @@ namespace Adventure.Quest.Encounter
                     {
                         embed.AddField($"**[{armor.Name}]**\n",
                             $"Type: {armor.Type} armor\n" +
-                            $"Armor Class: +{armor.ArmorClass}\n" +
+                            $"Armor Class: {armor.ArmorClass}\n" +
                             $"Weight: {armor.Weight}kg\n" +
                             $"*\"{armor.Description}\"*", false);
                     }
@@ -138,7 +140,7 @@ namespace Adventure.Quest.Encounter
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithTitle($"{player.Name} (Level: {state.Player.LevelCR}) ⚔️ {npc.Name} (CR: {state.Npc.LevelCR})")
+                .WithTitle($"{player.Name} (Level: {state.Player.Level}) ⚔️ {npc.Name} (CR: {NpcDisplayCR.DisplayCR(npc.CR)})")
                 .AddField("[HP before attack]",
                     $"\n{player.Name}: {prePlayerHP} VS {npc.Name}: {preNpcHP}", false)
                 .AddField("[Battle Log]",
@@ -201,7 +203,7 @@ namespace Adventure.Quest.Encounter
             // Add armors to embed
             foreach (var armor in armors!)
             {
-                string acNotation = $"Armor Class: +{armor.ArmorClass}";
+                string acNotation = $"Armor Class: {armor.ArmorClass}";
                 string nameNotation = $"[{armor.Name} ({acNotation}])";
                 embed.AddField(nameNotation, $"*{armor.Description}*");
             }

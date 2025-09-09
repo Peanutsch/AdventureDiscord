@@ -9,6 +9,7 @@ using Adventure.Loaders;
 using Adventure.Data;
 using Microsoft.VisualBasic;
 using Adventure.Quest.Encounter;
+using Adventure.Models.BattleState;
 
 namespace Adventure.Modules
 {
@@ -20,7 +21,7 @@ namespace Adventure.Modules
         [SlashCommand("start", "Start the adventure.")]
         public async Task SlashCommandStartHandler()
         {
-            var user = Context.Client.GetUser(Context.User.Id); // Of gewoon: Context.User
+            var user = Context.Client.GetUser(Context.User.Id); 
             if (user != null)
             {
                 string username = user.Username;
@@ -65,9 +66,8 @@ namespace Adventure.Modules
                 return;
             }
 
-            //SlashEncounterHelpers.EnsureInventoryLoaded(user.Id);
-
             var npc = EncounterService.NpcRandomizer();
+            var state = BattleEngine.GetBattleState(Context.User.Id);
             if (npc == null)
             {
                 await FollowupAsync("⚠️ Could not pick a random creature.");
@@ -76,7 +76,7 @@ namespace Adventure.Modules
 
             SlashEncounterHelpers.SetupBattleState(user.Id, npc);
 
-            var embed = EncounterService.BuildEmbedRandomEncounter(npc);
+            var embed = EncounterService.BuildEmbedRandomEncounter(npc, state);
             var buttons = SlashEncounterHelpers.BuildEncounterButtons();
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());

@@ -19,7 +19,7 @@ namespace Adventure.Models.Player
         public string? Name { get; set; }
 
         [JsonPropertyName("level")]
-        public int LevelCR { get; set; }
+        public int Level { get; set; }
 
         [JsonPropertyName("description")]
         public string? Description { get; set; }

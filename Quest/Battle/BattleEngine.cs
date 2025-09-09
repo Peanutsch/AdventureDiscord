@@ -10,6 +10,7 @@ using Adventure.Models.Items;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Quest.Encounter;
+using Adventure.Quest.NpcHelpers;
 using Adventure.Services;
 using Discord;
 using Discord.Interactions;
@@ -126,7 +127,7 @@ namespace Adventure.Quest.Battle
         }
 
         /// <summary>
-        /// Saves a user's battle state to disk.
+        /// Saves a user's battle state to userId json file.
         /// </summary>
         public static void SaveBattleState(ulong userId, BattleStateModel newState)
         {
@@ -138,16 +139,20 @@ namespace Adventure.Quest.Battle
         /// <summary>
         /// Assigns the creature for the current encounter and loads its weapons and armor.
         /// </summary>
-        public static void SetCreature(ulong userId, NpcModel creature)
+        public static void SetNpc(ulong userId, NpcModel npc)
         {
             var state = GetBattleState(userId);
-            state.Npc = creature;
+            state.Npc = npc;
 
-            if (creature.Weapons != null)
-                state.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(creature.Weapons);
+            // Set NPC HP
+            state.Npc.Hitpoints = NpcHitpoints.GetNpcHitpoints(npc, npc.CR, userId);
+            LogService.Info($"[BattleEngine.SetNpc] NPC: {npc.Name} HP: {npc.Hitpoints}");
 
-            if (creature.Armor != null)
-                state.NpcArmor = GameEntityFetcher.RetrieveArmorAttributes(creature.Armor);
+            if (npc.Weapons != null)
+                state.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);
+
+            if (npc.Armor != null)
+                state.NpcArmor = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
 
             battleStates[userId] = state;
         }

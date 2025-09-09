@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Adventure.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +26,10 @@ namespace Adventure.Quest.Rolls
             var rolls = new List<int>();
             for (int i = 0; i < diceCount; i++)
             {
-                rolls.Add(rng.Next(1, diceValue + 1));
+                var roll = rng.Next(1, diceValue + 1);
+                rolls.Add(roll);
+
+                LogService.Info($"[DiceRoller.RollWithDetails] Rolling {roll}");
             }
 
             return (rolls.Sum(), rolls);
@@ -39,7 +43,9 @@ namespace Adventure.Quest.Rolls
             var rolls = new List<int>();
             for (int i = 0; i < diceCount; i++)
             {
-                rolls.Add(rng.Next(1, diceValue + 1));
+                var roll = rng.Next(1, diceValue + 1);
+                rolls.Add(roll);
+                LogService.Info($"[DiceRoller.RollWithoutDetails] Rolling {roll}");
             }
 
             return rolls.Sum();

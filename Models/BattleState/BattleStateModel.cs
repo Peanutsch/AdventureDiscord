@@ -23,6 +23,11 @@ namespace Adventure.Models.BattleState
 
         public ArmorModel ArmorElements { get; set; } = new();
 
+        // Roll NPC Stats
+        public int DiceCountHP { get; set; }
+        public int DiceValueHP { get; set; }
+        public string DisplayCR { get; set; } = string.Empty;
+
         // Battle roll states
         public bool Hit { get; set; }
         public bool IsCriticalHit { get; set; }

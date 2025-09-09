@@ -2,6 +2,7 @@
 using Adventure.Models.Items;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -17,14 +18,13 @@ namespace Adventure.Models.NPC
         [JsonPropertyName("name")]
         public string? Name { get; set; }
 
-        [JsonPropertyName("level")]
-        public int LevelCR { get; set; }
-
         [JsonPropertyName("description")]
         public string? Description { get; set; }
 
-        [JsonPropertyName("hitpoints")]
         public int Hitpoints { get; set; }
+
+        [JsonPropertyName("challengeRate")]
+        public double CR { get; set; }
 
         [JsonPropertyName("attributes")]
         public AttributesModel Attributes { get; set; } = new();
@@ -41,4 +41,6 @@ namespace Adventure.Models.NPC
         [JsonPropertyName("armor_class")]
         public ArmorModel ArmorElements { get; set; } = new();
     }
+
+
 }
