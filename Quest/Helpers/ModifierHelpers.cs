@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Quest.Helpers
 {
-    class Modifiers
+    class ModifierHelpers
     {
         #region MODIFIERS
         /// <summary>

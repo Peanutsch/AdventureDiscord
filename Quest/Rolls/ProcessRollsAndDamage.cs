@@ -67,8 +67,8 @@ namespace Adventure.Quest.Rolls
             }
 
             // Get modifiers
-            int proficiencyModifier = Modifiers.GetProficiencyModifier(levelCR);
-            int abilityModifier = Modifiers.GetAbilityModifier(abilityStrength);
+            int proficiencyModifier = ModifierHelpers.GetProficiencyModifier(levelCR);
+            int abilityModifier = ModifierHelpers.GetAbilityModifier(abilityStrength);
 
             // Calculate total attack value
             int totalRoll = attackRoll + abilityModifier + proficiencyModifier;

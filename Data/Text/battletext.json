@@ -1,0 +1,28 @@
+[
+  {
+    "criticalHit": [
+      "💥 {attacker} lands a devastating strike on {defender} with {weapon}, dealing `{damage}` damage!",
+      "💥 {attacker}'s {weapon} tears into {defender}, causing `{damage}` damage in a brutal blow!",
+      "💥 {attacker} delivers a deadly hit to {defender} with {weapon}, inflicting `{damage}` damage!"
+    ],
+    "hit": [
+      "⚔️ {attacker} strikes {defender} with {weapon}, dealing `{damage}` damage.",
+      "⚔️ {attacker} lands a solid blow on {defender} using {weapon}, inflicting `{damage}` damage.",
+      "⚔️ {attacker}'s {weapon} connects with {defender}, causing `{damage}` damage.",
+      "⚔️ {attacker} hits {defender} cleanly with {weapon}, dealing `{damage}` damage.",
+      "⚔️ {attacker} slashes {defender} with {weapon}, inflicting `{damage}` damage.",
+      "⚔️ {attacker} delivers a powerful strike to {defender}, dealing `{damage}` damage.",
+      "⚔️ {attacker}'s attack with {weapon} lands true, hitting {defender} for `{damage}` damage!"
+    ],
+    "criticalMiss": [
+      "🤦 {attacker} stumbles and completely botches the attack against {defender}!",
+      "🤦 {attacker} slips, leaving an opening while trying to hit {defender}!",
+      "🤦 {attacker}'s {weapon} swings wildly and misses {defender} by a mile!"
+    ],
+    "miss": [
+      "🗡️ {attacker} swings {weapon}, but misses {defender} completely!",
+      "🗡️ {attacker} tries to hit {defender} with {weapon}, but fails miserably.",
+      "🗡️ {defender} deflects {attacker}'s attack with ease!"
+    ]
+  }
+]

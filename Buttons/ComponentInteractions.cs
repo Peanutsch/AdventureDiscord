@@ -18,9 +18,10 @@ namespace Adventure.Buttons
             if (weaponId.StartsWith("weapon_"))
             {
                 await HandleWeaponButton(weaponId);
+                return;
             }
                 
-            await RespondAsync($"You clicked: {weaponId}\nNo ComponentInteraction match found...");
+            //await FollowupAsync($"You clicked: {weaponId}\nNo ComponentInteraction match found...");
         }
 
         public async Task HandleWeaponButton(string weaponId)

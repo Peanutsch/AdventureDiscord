@@ -2,7 +2,7 @@
   {
     "id": "armor_leather_armor",
     "name": "Leather Armor",
-    "description": "Light armor made from toughened leather. Flexible and quiet.",
+    "description": "A light armor made from toughened leather. Flexible and quiet.",
     "armor_class": 11,
     "weight": 4.5,
     "type": "light"
@@ -10,7 +10,7 @@
   {
     "id": "armor_hide_armor",
     "name": "Hide Armor",
-    "description": "Thick cured animal furs and pelts stitched together. Offers modest protection.",
+    "description": "Thick cured animal furs and pelts stitched together to a fine piece of medium armor. Offers modest protection.",
     "armor_class": 12,
     "weight": 5.4,
     "type": "medium"
@@ -18,7 +18,7 @@
   {
     "id": "armor_scrap",
     "name": "Scrap Armor",
-    "description": "A patchwork of metal plates, leather, and cloth cobbled together. Provides minimal protection but is better than nothing.",
+    "description": "A patchwork of metal plates, leather, and cloth cobbled together.\nThis light armor provides minimal protection but is better than nothing.",
     "armor_class": 10,
     "weight": 6.0,
     "type": "light"

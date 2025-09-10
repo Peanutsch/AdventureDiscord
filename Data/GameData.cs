@@ -1,8 +1,9 @@
 ﻿using Adventure.Loaders;
-using Adventure.Models;
+using Adventure.Models.Inventory;
 using Adventure.Models.Items;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
+using Adventure.Models.Text;
 
 namespace Adventure.Data
 {
@@ -92,6 +93,14 @@ namespace Adventure.Data
         {
             get => _inventory;
             set => _inventory = value;
+        }
+
+        public static List<TextModel>? _text;
+
+        public static List<TextModel>? Text
+        {
+            get => _text;
+            set => _text = value;
         }
     }
 }
