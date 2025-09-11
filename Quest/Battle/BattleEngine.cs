@@ -136,9 +136,12 @@ namespace Adventure.Quest.Battle
             state.Npc = npc;
 
             // Save NPC stats to BattleState
-            state.HitpointsNPC = ChallengeRatingHelpers.GetNpcHitpoints(npc, npc.CR, userId);
+            var RollHitpointsNPC = ChallengeRatingHelpers.GetNpcHitpoints(npc, npc.CR, userId);
+            state.HitpointsAtStartNPC = RollHitpointsNPC; // Store start NPC HP
+            state.HitpointsNPC = RollHitpointsNPC; // Track NPC HP
+            state.StateOfNPC = "Healthy";
             state.RewardXP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
-            LogService.Info($"[BattleEngine.SetNpc] NPC: {npc.Name} HP: {state.HitpointsNPC}");
+            LogService.Info($"\n[BattleEngine.SetNpc] NPC: {npc.Name} HP: {state.HitpointsNPC}\n");
 
             if (npc.Weapons != null)
                 state.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);

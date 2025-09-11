@@ -161,9 +161,17 @@ namespace Adventure.Quest.Rolls
 
             // Store pre-damage HP for logging/visualization
             if (isPlayerAttacker)
+            {
                 state.PreNpcHP = currentHitpoints + totalDamage;
+                state.StateOfPlayer = TrackHP.GetHPStatus(state.HitpointsAtStartNPC, state.PreNpcHP, TrackHP.TargetType.NPC, state);
+
+            }
             else
+            {
                 state.PrePlayerHP = currentHitpoints + totalDamage;
+                state.StateOfPlayer = TrackHP.GetHPStatus(1000, state.PrePlayerHP, TrackHP.TargetType.Player, state);
+            }
+                
 
             // Calculate new HP, ensuring it doesn't go below 0
             var newHP = currentHitpoints - totalDamage;

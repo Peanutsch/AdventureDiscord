@@ -25,6 +25,9 @@ namespace Adventure.Models.BattleState
 
         // Battle roll states
         public int HitpointsNPC { get; set; }
+        public int HitpointsAtStartNPC { get; set; }
+        public string StateOfNPC { get; set; } = "UNKNOWN";
+        public string StateOfPlayer { get; set; } = "UNKNOWN";
         public bool IsCriticalHit { get; set; }
         public bool IsCriticalMiss { get; set; }
 

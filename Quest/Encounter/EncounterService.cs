@@ -60,7 +60,7 @@ namespace Adventure.Quest.Encounter
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
-                .WithDescription($"**[{npc.Name!.ToUpper()}]** appears!\n*\"{npc.Description}\"*");
+                .WithDescription($"**[{npc.Name!.ToUpper()}]**\n*\"{npc.Description}\"*");
                 //.AddField($"[Hit Points]", HitpointsCrFormat, false);
             //.AddField($"[Hit Points / Challenge Rate]", HitpointsCrFormat, false);
 
@@ -142,7 +142,7 @@ namespace Adventure.Quest.Encounter
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithTitle($"{player.Name} (Level: {state.Player.Level}) ⚔️ {npc.Name}") //(CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)})")
+                .WithTitle($"{player.Name} ⚔️ {npc.Name} ({state.StateOfNPC} {preNpcHP} HP)") //(CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)})")
                 .AddField("[HP before attack]",
                     $"\n{player.Name}: {prePlayerHP} HP", false)// VS {npc.Name}: {preNpcHP}", false)
                 .AddField("[Battle Log]",
