@@ -1,6 +1,8 @@
 {
   "id": 0,
-  "name": "default",
+  "name": "",
+  "level": 1,
+  "xp": 0,
   "description": "A brave soul starting their journey.",
   "hitpoints": 100,
   "maxCarry": 70,

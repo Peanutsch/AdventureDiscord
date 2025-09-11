@@ -48,38 +48,10 @@ namespace Adventure.Models.Player
         [JsonPropertyName("loot")]
         public List<PlayerInventoryItemModel> Loot { get; set; } = new();
 
-        [JsonPropertyName("armor_class")]
         public ArmorModel ArmorElements { get; set; } = new();
 
         [JsonIgnore]
         public string? Step { get; set; }
-    }
-
-    public class PlayerInventoryItemModel
-    {
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
-
-        [JsonPropertyName("value")]
-        public int Value { get; set; }
-    }
-
-    public class PlayerInventoryWeaponsModel
-    {
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
-
-        [JsonPropertyName("value")]
-        public int Value { get; set; }
-    }
-
-    public class PlayerInventoryArmorModel
-    {
-        [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
-
-        [JsonPropertyName("value")]
-        public int Value { get; set; }
     }
 }
 
