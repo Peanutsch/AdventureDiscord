@@ -23,17 +23,24 @@ namespace Adventure.Models.BattleState
         public int DiceValueHP { get; set; }
         public string DisplayCR { get; set; } = "UNKNOWN";
 
-        // Battle roll states
+        // Battle roll tracking
         public int CurrentHitpointsNPC { get; set; }
         public int HitpointsAtStartNPC { get; set; }
+        public int PreHpPlayer { get; set; }
+        public int PreHpNPC { get; set; }
+        public int PercentageHpPlayer { get; set; }
+        public int PercentageHpNpc { get; set; }
+
         public string StateOfNPC { get; set; } = "UNKNOWN";
         public string StateOfPlayer { get; set; } = "UNKNOWN";
-        public bool IsCriticalHit { get; set; }
-        public bool IsCriticalMiss { get; set; }
 
+
+        // Battle roll attack
         public int AttackRoll { get; set; }
         public int AbilityModifier { get; set; }
         public int ProficiencyModifier { get; set; }
+        public bool IsCriticalHit { get; set; }
+        public bool IsCriticalMiss { get; set; }
         public int TotalRoll { get; set; }
 
         public int CritRoll { get; set; }
@@ -44,10 +51,6 @@ namespace Adventure.Models.BattleState
 
         // Weapon Tracking
         public string LastUsedWeapon { get; set; } = "UNKNOWN";
-
-        // HP Tracking
-        public int PreHPPlayer { get; set; }
-        public int PreHPNPC { get; set; }
 
         // XP Reward
         public int RewardXP { get; set; }

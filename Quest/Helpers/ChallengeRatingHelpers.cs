@@ -1,5 +1,5 @@
 ﻿using Adventure.Models.NPC;
-using Adventure.Quest.Battle;
+using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Rolls;
 using Adventure.Services;
 using System;
@@ -38,7 +38,7 @@ namespace Adventure.Quest.Helpers
             (int diceCount, int diceValue) = GetHitDie(cr);
 
             // Save Dice to BattleState
-            var state = BattleEngine.GetBattleState(userId);
+            var state = BattleMethods.GetBattleState(userId);
             state.Npc = npc;
             state.DiceCountHP = diceCount;
             state.DiceValueHP = diceValue;

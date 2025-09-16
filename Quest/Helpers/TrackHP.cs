@@ -16,21 +16,21 @@ namespace Adventure.Quest.Helpers
             NPC
         }
 
-
-        public static string GetAndSetHPStatus(int startHP, int currentHP, TargetType target, BattleStateModel battleState)
+        public static void GetAndSetHPStatus(int startHP, int currentHP, TargetType target, BattleStateModel battleState)
         {
+            string result;
+
             if (startHP <= 0)
             {
-                return target == TargetType.Player
-                    ? battleState.StateOfPlayer = ""
-                    : battleState.StateOfNPC = "";
+                if (target == TargetType.Player)
+                    battleState.StateOfPlayer = "UNKNOWN: startHP <= 0";
+                else
+                    battleState.StateOfNPC = "UNKNOWN: startHP <= 0";
+
+                return;
             }
 
-            string result;
             double percentHP = (double)currentHP / startHP * 100;
-            //double percentHP = (double)battleState.CurrentHitpointsNPC / battleState.HitpointsAtStartNPC * 100;
-            //LogService.Info($"[TrackHP.GetHPStatus]\npercentHP = (double){battleState.CurrentHitpointsNPC} / {battleState.HitpointsAtStartNPC} * 100 = {percentHP}");
-            LogService.Info($"[TrackHP.GetHPStatus]\npercentHP = (double){currentHP} / {startHP} * 100 = {percentHP}");
 
             if (percentHP > 50 && percentHP <= 75)
                 result = "Lightly Wounded";
@@ -46,16 +46,13 @@ namespace Adventure.Quest.Helpers
             if (target == TargetType.Player)
             {
                 battleState.StateOfPlayer = result;
+                battleState.PercentageHpNpc = (int)Math.Round(percentHP);
             }
             else
             {
-                LogService.Info($"[TrackHP.GetHPStatus] StateOfNPC BEFORE: {percentHP}% {battleState.StateOfNPC}");
-                //battleState.StateOfNPC = result;
-                LogService.Info($"[TrackHP.GetHPStatus] StateOfNPC UPDATED: {percentHP}% {battleState.StateOfNPC}\n");
+                battleState.StateOfNPC = result;
             }
-
-            LogService.Info($"[[TrackHP.GetHPStatus]] Returning {result}");
-            return result;
+                
         }
     }
 }

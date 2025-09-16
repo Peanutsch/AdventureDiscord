@@ -18,14 +18,14 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.VisualBasic;
 
-namespace Adventure.Quest.Battle
+namespace Adventure.Quest.Battle.BattleEngine
 {
     /// <summary>
     /// The BattleEngine manages the turn-based combat system between players and creatures.
     /// It maintains battle state per user and handles key steps such as starting the battle,
     /// selecting weapons, processing attacks, and post-battle outcomes.
     /// </summary>
-    public static class BattleEngine
+    public static class BattleMethods
     {
         // Constants for different stages in the battle flow
         public const string StepStart = "start";
@@ -117,8 +117,8 @@ namespace Adventure.Quest.Battle
                     Items = playerItems,
                     NpcWeapons = new List<WeaponModel>(),
                     NpcArmor = new List<ArmorModel>(),
-                    PreHPPlayer = player.Hitpoints,
-                    PreHPNPC = 0,
+                    PreHpPlayer = player.Hitpoints,
+                    PreHpNPC = 0,
                     LastUsedWeapon = "",
                     TotalDamage = 0
                 };
@@ -139,7 +139,7 @@ namespace Adventure.Quest.Battle
             var RollHitpointsNPC = ChallengeRatingHelpers.GetNpcHitpoints(npc, npc.CR, userId);
             state.HitpointsAtStartNPC = RollHitpointsNPC; // Store start NPC HP
             state.CurrentHitpointsNPC = RollHitpointsNPC; // Track NPC HP
-            state.PreHPNPC = RollHitpointsNPC;            // 
+            state.PreHpNPC = RollHitpointsNPC;            // 
             //state.StateOfNPC = "Healthy";
             state.RewardXP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
             LogService.Info($"\n[BattleEngine.SetNpc] NPC: {npc.Name} HP: {state.CurrentHitpointsNPC}\n");

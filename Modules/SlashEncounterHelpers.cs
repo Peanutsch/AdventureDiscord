@@ -1,7 +1,6 @@
 ﻿using Adventure.Data;
 using Adventure.Loaders;
 using Adventure.Models.Player;
-using Adventure.Quest.Battle;
 using Adventure.Services;
 using Discord.Interactions;
 using Discord;
@@ -11,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Adventure.Models.NPC;
+using Adventure.Quest.Battle.BattleEngine;
 
 namespace Adventure.Modules
 {
@@ -50,8 +50,8 @@ namespace Adventure.Modules
 
         public static void SetupBattleState(ulong userId, NpcModel npc)
         {
-            BattleEngine.SetupNpc(userId, npc);
-            BattleEngine.SetStep(userId, "start");
+            BattleMethods.SetupNpc(userId, npc);
+            BattleMethods.SetStep(userId, "start");
         }
 
         public static ComponentBuilder BuildEncounterButtons()

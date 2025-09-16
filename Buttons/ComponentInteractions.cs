@@ -2,9 +2,9 @@
 using Discord;
 using Adventure.Data;
 using Adventure.Services;
-using Adventure.Quest.Battle;
 using Adventure.Quest.Encounter;
 using Discord.WebSocket;
+using Adventure.Quest.Battle.BattleEngine;
 
 namespace Adventure.Buttons
 {
@@ -30,7 +30,7 @@ namespace Adventure.Buttons
 
             ulong userId = Context.User.Id;
 
-            var state = BattleEngine.GetBattleState(Context.User.Id);
+            var state = BattleMethods.GetBattleState(Context.User.Id);
             if (state == null)
             {
                 await RespondAsync("❌ No active battle found.");
@@ -50,23 +50,23 @@ namespace Adventure.Buttons
 
             LogService.Info($"[ComponentInteractions.HandleWeaponButton] > Player choose: {weapon.Name}\n");
 
-            var step = BattleEngine.GetStep(userId);
+            var step = BattleMethods.GetStep(userId);
             LogService.Info($"[HandleWeaponButton] Current battle step: {step}");
 
             // Direct call BattleEngine.HandleStepBattle
-            await BattleEngine.HandleStepBattle(Context.Interaction, weaponId);           
+            await BattleMethods.HandleStepBattle(Context.Interaction, weaponId);           
         }
 
         [ComponentInteraction("btn_attack")]
         public async Task ButtonAttackHandler()
         {
-            await BattleEngine.HandleEncounterAction(Context.Interaction, "attack", "none");
+            await BattleMethods.HandleEncounterAction(Context.Interaction, "attack", "none");
         }
 
         [ComponentInteraction("btn_flee")]
         public async Task ButtonFleeHandler()
         {
-            await BattleEngine.HandleEncounterAction(Context.Interaction, "flee", "none");
+            await BattleMethods.HandleEncounterAction(Context.Interaction, "flee", "none");
         }
 
         [ComponentInteraction("battle_continue_*")]
@@ -81,7 +81,7 @@ namespace Adventure.Buttons
             }
 
             // Zet de battle-stap terug naar de wapenkeuze
-            BattleEngine.SetStep(Context.User.Id, BattleEngine.StepWeaponChoice);
+            BattleMethods.SetStep(Context.User.Id, BattleMethods.StepWeaponChoice);
 
             // Toon opnieuw de wapenkeuze
             await EncounterService.PrepareForBattleChoices((SocketMessageComponent)Context.Interaction);
@@ -98,7 +98,7 @@ namespace Adventure.Buttons
                 return;
             }
 
-            await BattleEngine.HandleEncounterAction(Context.Interaction, "flee", "none");
+            await BattleMethods.HandleEncounterAction(Context.Interaction, "flee", "none");
         }
 
     }

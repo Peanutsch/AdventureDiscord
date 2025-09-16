@@ -15,6 +15,7 @@ using Adventure.Models.Player;
 using System.Collections;
 using Adventure.Quest.Battle.Process;
 using Adventure.Quest.Helpers;
+using Adventure.Quest.Battle.BattleEngine;
 
 namespace Adventure.Quest.Battle.Attack
 {
@@ -52,7 +53,7 @@ namespace Adventure.Quest.Battle.Attack
 
                     if (state.CurrentHitpointsNPC <= 0)
                     {
-                        BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
+                        BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
                         ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
 
                         result =
@@ -91,7 +92,7 @@ namespace Adventure.Quest.Battle.Attack
 
                     if (state.CurrentHitpointsNPC <= 0)
                     {
-                        BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
+                        BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
                         ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
 
                         result =
@@ -103,7 +104,7 @@ namespace Adventure.Quest.Battle.Attack
                     }
                     else
                     {
-                        BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
+                        BattleMethods.SetStep(userId, BattleMethods.StepPostBattle);
                         result =
                             $"🗡️ **[HIT] {player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +// ----------\n" +
                             $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = **{state.TotalRoll}**\n" +// vs AC [  {state.ArmorElements.ArmorClass}  ]\n" +

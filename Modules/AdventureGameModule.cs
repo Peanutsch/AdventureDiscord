@@ -4,12 +4,12 @@ using Adventure.Models.Player;
 using Discord.Interactions;
 using System.Collections.Concurrent;
 using Discord;
-using Adventure.Quest.Battle;
 using Adventure.Loaders;
 using Adventure.Data;
 using Microsoft.VisualBasic;
 using Adventure.Quest.Encounter;
 using Adventure.Models.BattleState;
+using Adventure.Quest.Battle.BattleEngine;
 
 namespace Adventure.Modules
 {
@@ -67,7 +67,7 @@ namespace Adventure.Modules
             }
 
             var npc = EncounterService.NpcRandomizer();
-            var state = BattleEngine.GetBattleState(Context.User.Id);
+            var state = BattleMethods.GetBattleState(Context.User.Id);
             if (npc == null)
             {
                 await FollowupAsync("⚠️ Could not pick a random creature.");

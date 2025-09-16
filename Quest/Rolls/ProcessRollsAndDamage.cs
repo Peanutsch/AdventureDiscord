@@ -1,6 +1,6 @@
 ﻿using Adventure.Models.BattleState;
 using Adventure.Models.Items;
-using Adventure.Quest.Battle;
+using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Helpers;
 using Adventure.Services;
 using System;
@@ -33,7 +33,7 @@ namespace Adventure.Quest.Rolls
         /// <returns>The result of the hit attempt (hit, miss, critical, etc.).</returns>
         public static HitResult ValidateHit(ulong userId, bool isPlayerAttacker)
         {
-            var state = BattleEngine.GetBattleState(userId);
+            var state = BattleMethods.GetBattleState(userId);
 
             // Perform the attack roll (1d20)
             int attackRoll = DiceRoller.RollWithoutDetails(1, 20);
@@ -171,16 +171,16 @@ namespace Adventure.Quest.Rolls
             // Store pre-damage HP for logging/visualization
             if (isPlayerAttacker)
             {
-                var preSavedHPNpc = state.PreHPNPC;
-                state.PreHPNPC = currentHitpoints - totalDamage;
-                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\npre HP NPC: {preSavedHPNpc}\nUpdated state.PreHPNPC to: {state.PreHPNPC}");
+                var preSavedHPNpc = state.PreHpNPC;
+                state.PreHpNPC = currentHitpoints - totalDamage;
+                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\npre HP NPC: {preSavedHPNpc}\nUpdated state.PreHPNPC to: {state.PreHpNPC}");
 
             }
             else
             {
-                var preSavedHPPlayer = state.PreHPPlayer;
-                state.PreHPPlayer = currentHitpoints - totalDamage;
-                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\npre HP Player: {preSavedHPPlayer}\nUpdated state.PreHPPlayer to: {state.PreHPPlayer}");
+                var preSavedHPPlayer = state.PreHpPlayer;
+                state.PreHpPlayer = currentHitpoints - totalDamage;
+                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\npre HP Player: {preSavedHPPlayer}\nUpdated state.PreHPPlayer to: {state.PreHpPlayer}");
             }
 
             // Return tuple with detailed damage info

@@ -4,7 +4,7 @@ using Adventure.Models.BattleState;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Modules;
-using Adventure.Quest.Battle;
+using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Helpers;
 using Adventure.Services;
 using Discord;
@@ -136,19 +136,22 @@ namespace Adventure.Quest.Encounter
         /// <returns>An EmbedBuilder summarizing the battle.</returns>
         public static EmbedBuilder RebuildBattleEmbed(ulong userId, int preHPPlayer, int preHPNPC, string attackSummary)
         {
-            var state = BattleEngine.GetBattleState(userId);
+            var state = BattleMethods.GetBattleState(userId);
             var player = state.Player;
             var npc = state.Npc;
 
             // Set current State of NPC
-            state.StateOfNPC = TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
+            //state.StateOfNPC = TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
+            TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
             LogService.Info($"[EncounterService.RebuildBattleEmbed] {npc.Name} HP at Start: {state.HitpointsAtStartNPC} {npc.Name} current HP: {state.CurrentHitpointsNPC} {npc.Name} State: {state.StateOfNPC}");
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle($"{player.Name} ({state.Player.Hitpoints} HP) ⚔️ {npc.Name} ({state.StateOfNPC})") // {state.CurrentHitpointsNPC} HP)") //(CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)})")
+                /*
                 .AddField("[HP before attack]",
                     $"\n{player.Name}: {preHPPlayer} HP", false) // VS {npc.Name}: {preHPNPC}", false)
+                */
                 .AddField("[Battle Log]",
                     $"{attackSummary}", false);
 
@@ -161,7 +164,7 @@ namespace Adventure.Quest.Encounter
         /// <param name="component">The component interaction from Discord (button click).</param>
         public static async Task PrepareForBattleChoices(SocketMessageComponent component)
         {
-            var state = BattleEngine.GetBattleState(component.User.Id);
+            var state = BattleMethods.GetBattleState(component.User.Id);
             var weapons = state?.PlayerWeapons;
             var items = state?.Items;
             var armors = state?.PlayerArmor;

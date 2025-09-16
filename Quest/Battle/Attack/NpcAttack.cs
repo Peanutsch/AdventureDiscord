@@ -2,6 +2,7 @@
 using Adventure.Quest.Battle.Process;
 using Adventure.Quest.Helpers;
 using Adventure.Quest.Rolls;
+using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Services;
 using System;
 using System.Collections.Generic;
@@ -75,7 +76,7 @@ namespace Adventure.Quest.Battle.Attack
 
                     if (player.Hitpoints <= 0)
                     {
-                        BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
+                        BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
                         result =
                             $"🗡️ **[HIT] {npc.Name} attacks {player.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!\n----------\n" +
                             $"🎯 Attack Roll ( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} ))  + {state.ProficiencyModifier} (CR: {npcCR} = [ {state.TotalRoll} ] vs AC [ {state.ArmorElements.ArmorClass} ]\n" +
@@ -85,7 +86,7 @@ namespace Adventure.Quest.Battle.Attack
                     }
                     else
                     {
-                        BattleEngine.SetStep(userId, BattleEngine.StepPostBattle);
+                        BattleMethods.SetStep(userId, BattleMethods.StepPostBattle);
                         result =
                             $"🗡️ **[HIT] {npc.Name} attacks {player.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n----------\n" +
                             $"🎯 Attack Roll ( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} ))  + {state.ProficiencyModifier} (CR: {npcCR}) = [ {state.TotalRoll} ] vs AC [ {state.ArmorElements.ArmorClass} ]\n" +
