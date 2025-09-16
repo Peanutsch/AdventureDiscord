@@ -45,7 +45,7 @@ namespace Adventure.Quest.Battle.Process
                 LogService.Info($"Player's turn > Dice: {dice} {rolls} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}");
 
                 // Player attacks, update NPC HP
-                state.HitpointsNPC = newHP;
+                state.CurrentHitpointsNPC = newHP;
 
                 // Update player's HP in JSON file (even if unchanged) for consistency
                 JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Name!, state.Player.Hitpoints);
@@ -53,7 +53,7 @@ namespace Adventure.Quest.Battle.Process
                 // Log HP status after player's attack
                 LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After player attack\n" +
                                 $"HP {state.Player.Name}: {state.Player.Hitpoints}\n" +
-                                $"HP Creature: {state.HitpointsNPC}");
+                                $"HP Creature: {state.CurrentHitpointsNPC}");
             }
             else
             {
@@ -67,7 +67,7 @@ namespace Adventure.Quest.Battle.Process
 
                 // Log HP status after creature's attack
                 LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After NPC attack\n" +
-                                $"HP Player: {state.Player.Hitpoints} VS HP NPC: {state.HitpointsNPC}");
+                                $"HP Player: {state.Player.Hitpoints} VS HP NPC: {state.CurrentHitpointsNPC}");
             }
 
             // Return detailed result of the damage roll

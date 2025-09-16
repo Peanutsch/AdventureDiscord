@@ -38,8 +38,8 @@ namespace Adventure.Quest.Battle.Attack
             // If hit is successful or critical, calculate damage
             if (hitResult == ProcessRollsAndDamage.HitResult.IsValidHit || hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit)
             {
-                (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, state.HitpointsNPC) =
-                    ProcessSuccesAttack.ProcessSuccessfulHit(userId, state, weapon, strength, state.HitpointsNPC, isPlayerAttacker: true);
+                (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, state.CurrentHitpointsNPC) =
+                    ProcessSuccesAttack.ProcessSuccessfulHit(userId, state, weapon, strength, state.CurrentHitpointsNPC, isPlayerAttacker: true);
             }
 
             string result;
@@ -50,7 +50,7 @@ namespace Adventure.Quest.Battle.Attack
                 case ProcessRollsAndDamage. HitResult.IsCriticalHit:
                     LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack] isCriticalHit");
 
-                    if (state.HitpointsNPC <= 0)
+                    if (state.CurrentHitpointsNPC <= 0)
                     {
                         BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
                         ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
@@ -89,7 +89,7 @@ namespace Adventure.Quest.Battle.Attack
                 case ProcessRollsAndDamage.HitResult.IsValidHit:
                     LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack] isValidHit");
 
-                    if (state.HitpointsNPC <= 0)
+                    if (state.CurrentHitpointsNPC <= 0)
                     {
                         BattleEngine.SetStep(userId, BattleEngine.StepEndBattle);
                         ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);

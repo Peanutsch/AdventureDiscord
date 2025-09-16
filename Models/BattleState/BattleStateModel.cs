@@ -24,7 +24,7 @@ namespace Adventure.Models.BattleState
         public string DisplayCR { get; set; } = "UNKNOWN";
 
         // Battle roll states
-        public int HitpointsNPC { get; set; }
+        public int CurrentHitpointsNPC { get; set; }
         public int HitpointsAtStartNPC { get; set; }
         public string StateOfNPC { get; set; } = "UNKNOWN";
         public string StateOfPlayer { get; set; } = "UNKNOWN";
@@ -43,11 +43,11 @@ namespace Adventure.Models.BattleState
         public int TotalDamage { get; set; }
 
         // Weapon Tracking
-        public string LastUsedWeapon { get; set; } = string.Empty;
+        public string LastUsedWeapon { get; set; } = "UNKNOWN";
 
         // HP Tracking
-        public int PrePlayerHP { get; set; }
-        public int PreNpcHP { get; set; }
+        public int PreHPPlayer { get; set; }
+        public int PreHPNPC { get; set; }
 
         // XP Reward
         public int RewardXP { get; set; }

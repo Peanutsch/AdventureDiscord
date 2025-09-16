@@ -117,8 +117,8 @@ namespace Adventure.Quest.Battle
                     Items = playerItems,
                     NpcWeapons = new List<WeaponModel>(),
                     NpcArmor = new List<ArmorModel>(),
-                    PrePlayerHP = player.Hitpoints,
-                    PreNpcHP = 0,
+                    PreHPPlayer = player.Hitpoints,
+                    PreHPNPC = 0,
                     LastUsedWeapon = "",
                     TotalDamage = 0
                 };
@@ -138,10 +138,11 @@ namespace Adventure.Quest.Battle
             // Save NPC stats to BattleState
             var RollHitpointsNPC = ChallengeRatingHelpers.GetNpcHitpoints(npc, npc.CR, userId);
             state.HitpointsAtStartNPC = RollHitpointsNPC; // Store start NPC HP
-            state.HitpointsNPC = RollHitpointsNPC; // Track NPC HP
-            state.StateOfNPC = "Healthy";
+            state.CurrentHitpointsNPC = RollHitpointsNPC; // Track NPC HP
+            state.PreHPNPC = RollHitpointsNPC;            // 
+            //state.StateOfNPC = "Healthy";
             state.RewardXP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
-            LogService.Info($"\n[BattleEngine.SetNpc] NPC: {npc.Name} HP: {state.HitpointsNPC}\n");
+            LogService.Info($"\n[BattleEngine.SetNpc] NPC: {npc.Name} HP: {state.CurrentHitpointsNPC}\n");
 
             if (npc.Weapons != null)
                 state.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);
@@ -284,7 +285,7 @@ namespace Adventure.Quest.Battle
 
             await interaction.DeferAsync();
 
-            var preAttackInfo = $"HP before attack:\nPlayer = {state.Player.Hitpoints}\nCreature = {state.HitpointsNPC}";
+            var preAttackInfo = $"HP before attack:\nPlayer = {state.Player.Hitpoints}\nCreature = {state.CurrentHitpointsNPC}";
 
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
@@ -296,12 +297,12 @@ namespace Adventure.Quest.Battle
 
             // 📌 HP opslaan vóór de gevechten
             int prePlayerHP = state.Player.Hitpoints;
-            int preNpcHP = state.HitpointsNPC;
+            int preNpcHP = state.CurrentHitpointsNPC;
 
             // ⚔️ Speler valt aan
             string playerAttackResult = PlayerAttack.ProcessPlayerAttack(userId, weapon);
 
-            if (state.HitpointsNPC <= 0)
+            if (state.CurrentHitpointsNPC <= 0)
             {
                 var embed = EncounterService.RebuildBattleEmbed(
                     userId,
@@ -371,11 +372,11 @@ namespace Adventure.Quest.Battle
             var player = state.Player;
             var npc = state.Npc;
 
-            if (player.Hitpoints <= 0 && state.HitpointsNPC  <= 0)
+            if (player.Hitpoints <= 0 && state.CurrentHitpointsNPC  <= 0)
                 SetStep(userId, StepEndBattle);
             else if (player.Hitpoints <= 0)
                 SetStep(userId, StepEndBattle);
-            else if (state.HitpointsNPC <= 0)
+            else if (state.CurrentHitpointsNPC <= 0)
                 SetStep(userId, StepEndBattle);
             else
                 SetStep(userId, StepWeaponChoice);

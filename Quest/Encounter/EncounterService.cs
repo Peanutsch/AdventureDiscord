@@ -55,7 +55,7 @@ namespace Adventure.Quest.Encounter
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{npc.Name}]");
 
             //var HitpointsCrFormat = $"HP: {state.HitpointsNPC} ({state.DiceCountHP}d{state.DiceValueHP}) / CR: {ChallengeRatingHelpers.DisplayCR(npc.CR) ({state.DiceCountHP}d{state.DiceValueHP})}";
-            var HitpointsCrFormat = $"HP: {state.HitpointsNPC}";
+            var HitpointsCrFormat = $"HP: {state.CurrentHitpointsNPC}";
 
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
@@ -130,21 +130,25 @@ namespace Adventure.Quest.Encounter
         /// Rebuilds an embed summarizing the current battle state including HP before attack and attack log.
         /// </summary>
         /// <param name="userId">User ID of the player in battle.</param>
-        /// <param name="prePlayerHP">Player's HP before the attack.</param>
+        /// <param name="preHPPlayer">Player's HP before the attack.</param>
         /// <param name="preNpcHP">NPC's HP before the attack.</param>
         /// <param name="attackSummary">Text describing the attack results.</param>
         /// <returns>An EmbedBuilder summarizing the battle.</returns>
-        public static EmbedBuilder RebuildBattleEmbed(ulong userId, int prePlayerHP, int preNpcHP, string attackSummary)
+        public static EmbedBuilder RebuildBattleEmbed(ulong userId, int preHPPlayer, int preHPNPC, string attackSummary)
         {
             var state = BattleEngine.GetBattleState(userId);
             var player = state.Player;
             var npc = state.Npc;
 
-            var embed = new EmbedBuilder()
+            // Set current State of NPC
+            state.StateOfNPC = TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
+            LogService.Info($"[EncounterService.RebuildBattleEmbed] {npc.Name} HP at Start: {state.HitpointsAtStartNPC} {npc.Name} current HP: {state.CurrentHitpointsNPC} {npc.Name} State: {state.StateOfNPC}");
+
+            EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithTitle($"{player.Name} ⚔️ {npc.Name} ({state.StateOfNPC} {preNpcHP} HP)") //(CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)})")
+                .WithTitle($"{player.Name} ({state.Player.Hitpoints} HP) ⚔️ {npc.Name} ({state.StateOfNPC})") // {state.CurrentHitpointsNPC} HP)") //(CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)})")
                 .AddField("[HP before attack]",
-                    $"\n{player.Name}: {prePlayerHP} HP", false)// VS {npc.Name}: {preNpcHP}", false)
+                    $"\n{player.Name}: {preHPPlayer} HP", false) // VS {npc.Name}: {preHPNPC}", false)
                 .AddField("[Battle Log]",
                     $"{attackSummary}", false);
 

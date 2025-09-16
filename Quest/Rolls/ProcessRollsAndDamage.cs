@@ -153,6 +153,15 @@ namespace Adventure.Quest.Rolls
                 totalDamage = totalCritDamage;
             }
 
+            // Calculate new HP, ensuring it doesn't go below 0
+            var newHP = currentHitpoints - totalDamage;
+            if (newHP < 0)
+                newHP = 0;
+
+            // Store damage and weapon used in the battle state
+            state.TotalDamage = totalDamage;
+            state.LastUsedWeapon = weapon.Name!;
+
             // Apply critical miss rules (no damage)
             if (state.IsCriticalMiss)
             {
@@ -162,25 +171,17 @@ namespace Adventure.Quest.Rolls
             // Store pre-damage HP for logging/visualization
             if (isPlayerAttacker)
             {
-                state.PreNpcHP = currentHitpoints + totalDamage;
-                state.StateOfPlayer = TrackHP.GetHPStatus(state.HitpointsAtStartNPC, state.PreNpcHP, TrackHP.TargetType.NPC, state);
+                var preSavedHPNpc = state.PreHPNPC;
+                state.PreHPNPC = currentHitpoints - totalDamage;
+                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\npre HP NPC: {preSavedHPNpc}\nUpdated state.PreHPNPC to: {state.PreHPNPC}");
 
             }
             else
             {
-                state.PrePlayerHP = currentHitpoints + totalDamage;
-                state.StateOfPlayer = TrackHP.GetHPStatus(1000, state.PrePlayerHP, TrackHP.TargetType.Player, state);
+                var preSavedHPPlayer = state.PreHPPlayer;
+                state.PreHPPlayer = currentHitpoints - totalDamage;
+                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\npre HP Player: {preSavedHPPlayer}\nUpdated state.PreHPPlayer to: {state.PreHPPlayer}");
             }
-                
-
-            // Calculate new HP, ensuring it doesn't go below 0
-            var newHP = currentHitpoints - totalDamage;
-            if (newHP < 0)
-                newHP = 0;
-
-            // Store damage and weapon used in the battle state
-            state.TotalDamage = totalDamage;
-            state.LastUsedWeapon = weapon.Name!;
 
             // Return tuple with detailed damage info
             return (damage, totalDamage, rolls, critRoll, dice, newHP);
