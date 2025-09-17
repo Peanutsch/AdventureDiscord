@@ -137,12 +137,12 @@ namespace Adventure.Quest.Battle.BattleEngine
 
             // Save NPC stats to BattleState
             var RollHitpointsNPC = ChallengeRatingHelpers.GetNpcHitpoints(npc, npc.CR, userId);
-            state.HitpointsAtStartNPC = RollHitpointsNPC; // Store start NPC HP
-            state.CurrentHitpointsNPC = RollHitpointsNPC; // Track NPC HP
-            state.PreHpNPC = RollHitpointsNPC;            // 
-            //state.StateOfNPC = "Healthy";
+            state.HitpointsAtStartNPC = RollHitpointsNPC; 
+            state.CurrentHitpointsNPC = RollHitpointsNPC; 
+            state.PreHpNPC = RollHitpointsNPC;            
             state.RewardXP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
-            LogService.Info($"\n[BattleEngine.SetNpc] NPC: {npc.Name} HP: {state.CurrentHitpointsNPC}\n");
+            
+            LogService.Info($"[BattleEngine.SetNpc]\nNPC: {npc.Name} HP: {state.CurrentHitpointsNPC} RewardXP: {state.RewardXP}\n");
 
             if (npc.Weapons != null)
                 state.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);
@@ -204,7 +204,7 @@ namespace Adventure.Quest.Battle.BattleEngine
                 await component.UpdateAsync(msg =>
                 {
                     msg.Content = MsgFlee;
-                    msg.Components = new ComponentBuilder().Build(); // knoppen verwijderen
+                    msg.Components = new ComponentBuilder().Build(); // Remove buttons
                     msg.Embed = null;
                 });
 
@@ -214,7 +214,6 @@ namespace Adventure.Quest.Battle.BattleEngine
             {
                 LogService.Info("[BattleEngine.HandleStepStart] Player choose attack. Calling EncounterService.ShowWeaponChoices...");
 
-                //await component.DeferAsync();
                 await EncounterService.PrepareForBattleChoices(component);
 
                 SetStep(userId, StepWeaponChoice);
@@ -234,7 +233,6 @@ namespace Adventure.Quest.Battle.BattleEngine
             ulong userId = interaction.User.Id;
             var state = GetBattleState(userId);
             var ownedWeaponIds = state.Player.Weapons.Select(w => w.Id).ToHashSet();
-            //var inventory = InventoryStateService.GetState(userId).Inventory;
 
             LogService.DividerParts(1, "HandleStepWeaponChoice");
 
@@ -285,7 +283,7 @@ namespace Adventure.Quest.Battle.BattleEngine
 
             await interaction.DeferAsync();
 
-            var preAttackInfo = $"HP before attack:\nPlayer = {state.Player.Hitpoints}\nCreature = {state.CurrentHitpointsNPC}";
+            var preAttackInfo = $"HP before attack:\nPlayer = {state.Player.Hitpoints}\nNPC = {state.CurrentHitpointsNPC}";
 
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
