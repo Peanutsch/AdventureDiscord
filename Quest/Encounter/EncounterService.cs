@@ -54,15 +54,10 @@ namespace Adventure.Quest.Encounter
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{npc.Name}]");
 
-            //var HitpointsCrFormat = $"HP: {state.HitpointsNPC} ({state.DiceCountHP}d{state.DiceValueHP}) / CR: {ChallengeRatingHelpers.DisplayCR(npc.CR) ({state.DiceCountHP}d{state.DiceValueHP})}";
-            var HitpointsCrFormat = $"HP: {state.CurrentHitpointsNPC}";
-
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
                 .WithDescription($"**[{npc.Name!.ToUpper()}]**\n*\"{npc.Description}\"*");
-                //.AddField($"[Hit Points]", HitpointsCrFormat, false);
-            //.AddField($"[Hit Points / Challenge Rate]", HitpointsCrFormat, false);
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", npc.Armor ?? new())}");
 
@@ -141,17 +136,12 @@ namespace Adventure.Quest.Encounter
             var npc = state.Npc;
 
             // Set current State of NPC
-            //state.StateOfNPC = TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
             TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
-            LogService.Info($"[EncounterService.RebuildBattleEmbed] {npc.Name} HP at Start: {state.HitpointsAtStartNPC} {npc.Name} current HP: {state.CurrentHitpointsNPC} {npc.Name} State: {state.StateOfNPC}");
+            LogService.Info($"[EncounterService.RebuildBattleEmbed] {npc.Name} HP at Start: {state.HitpointsAtStartNPC} {npc.Name} current HP: {state.CurrentHitpointsNPC} {npc.Name} Health: {state.PercentageHpNpc}% State: {state.StateOfNPC}");
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithTitle($"{player.Name} ({state.Player.Hitpoints} HP) ⚔️ {npc.Name} ({state.StateOfNPC})") // {state.CurrentHitpointsNPC} HP)") //(CR: {ChallengeRatingHelpers.DisplayCR(npc.CR)})")
-                /*
-                .AddField("[HP before attack]",
-                    $"\n{player.Name}: {preHPPlayer} HP", false) // VS {npc.Name}: {preHPNPC}", false)
-                */
+                .WithTitle($"{player.Name} ({state.Player.Hitpoints} HP) ⚔️ {npc.Name} ({state.PercentageHpNpc}% {state.StateOfNPC})")
                 .AddField("[Battle Log]",
                     $"{attackSummary}", false);
 

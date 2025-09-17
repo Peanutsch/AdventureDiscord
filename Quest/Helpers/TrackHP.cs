@@ -31,6 +31,7 @@ namespace Adventure.Quest.Helpers
             }
 
             double percentHP = (double)currentHP / startHP * 100;
+            var roundedPercentHP = (int)Math.Round(percentHP);
 
             if (percentHP > 50 && percentHP <= 75)
                 result = "Lightly Wounded";
@@ -46,11 +47,12 @@ namespace Adventure.Quest.Helpers
             if (target == TargetType.Player)
             {
                 battleState.StateOfPlayer = result;
-                battleState.PercentageHpNpc = (int)Math.Round(percentHP);
+                battleState.PercentageHpNpc = roundedPercentHP;
             }
             else
             {
                 battleState.StateOfNPC = result;
+                battleState.PercentageHpNpc = roundedPercentHP;
             }
                 
         }
