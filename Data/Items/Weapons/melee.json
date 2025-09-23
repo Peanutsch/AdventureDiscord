@@ -88,7 +88,7 @@
     "name": "Staff",
     "description": "A simple wooden staff. Serves as a walking stick, a focus for spells, and a blunt weapon when needed.",
     "weight": 4,
-    "range": 2,
+    "range": 1.5,
     "damage": {
       "diceCount": 1,
       "diceValue": 6,
@@ -97,7 +97,48 @@
       "display": "1d6 Bludgeoning"
     }
   },
-
+  {
+    "id": "weapon_rapier",
+    "name": "Rapier",
+    "description": "A slender, sharply pointed sword designed for thrusting. Favored by duelists and nobles.",
+    "weight": 1.0,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 8,
+      "modifier": 0,
+      "type": "bludgeoning",
+      "display": "1d8 bludgeoning"
+    }
+  },
+  {
+    "id": "weapon_club",
+    "name": "Club",
+    "description": "A simple wooden bludgeon, easy to wield but not especially powerful.",
+    "weight": 1.0,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "bludgeoning",
+      "display": "1d4 bludgeoning"
+    }
+  },
+  {
+    "id": "weapon_magic_staff",
+    "name": "Magic Staff",
+    "description": "An enchanted staff infused with arcane power. Can be used both as a melee weapon and a focus for spells.",
+    "weight": 2.0,
+    "range": 1.5,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "bludgeoning",
+      "display": "1d6 bludgeoning"
+    }
+  },
   {
     "id": "weapon_wolf_claw",
     "name": "Wolf Claw",

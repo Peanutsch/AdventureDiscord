@@ -17,10 +17,27 @@
     "loot": []
   },
   {
+    "id": "hobgoblin",
+    "name": "Hobgoblin",
+    "description": "A disciplined, militaristic goblinoid known for cunning tactics and strict hierarchy. Often leads goblin raiding parties.",
+    "challengeRate": 0.5,
+    "attributes": {
+      "strength": 13,
+      "dexterity": 12,
+      "constitution": 12,
+      "intelligence": 10,
+      "wisdom": 10,
+      "charisma": 9
+    },
+    "armor": [ "armor_chain_shirt" ],
+    "weapons": [ "weapon_spear", "weapon_long_sword" ],
+    "loot": []
+  },
+  {
     "id": "orc",
     "name": "Orc",
     "description": "A hulking brute with jagged armor and a thirst for blood. Not known for brains, but definitely for breaking bones.",
-    "challengeRate": 3,
+    "challengeRate": 0.5,
     "attributes": {
       "strength": 16,
       "dexterity": 12,
@@ -29,8 +46,59 @@
       "wisdom": 11,
       "charisma": 10
     },
-    "armor": [ "armor_chain_mail" ],
+    "armor": [ "armor_hide_armor" ],
     "weapons": [ "weapon_great_axe" ],
+    "loot": []
+  },
+  {
+    "id": "bugbear",
+    "name": "Bugbear",
+    "description": "A large and brutish goblinoid that stalks its prey in the shadows. Bugbears rely on surprise and sheer strength to overwhelm foes.",
+    "challengeRate": 1,
+    "attributes": {
+      "strength": 16,
+      "dexterity": 14,
+      "constitution": 14,
+      "intelligence": 8,
+      "wisdom": 11,
+      "charisma": 9
+    },
+    "armor": [ "armor_chain_shirt" ],
+    "weapons": [ "weapon_morningstar", "weapon_club" ],
+    "loot": []
+  },
+  {
+    "id": "gnoll",
+    "name": "Gnoll",
+    "description": "A savage hyena-like humanoid, feared for its bloodlust and pack hunting. Gnolls are relentless and cruel predators.",
+    "challengeRate": 1,
+    "attributes": {
+      "strength": 15,
+      "dexterity": 14,
+      "constitution": 14,
+      "intelligence": 7,
+      "wisdom": 11,
+      "charisma": 6
+    },
+    "armor": [ "armor_hide_armor" ],
+    "weapons": [ "weapon_glaive", "weapon_javelin" ],
+    "loot": []
+  },
+  {
+    "id": "kobold",
+    "name": "Kobold",
+    "description": "A small, reptilian humanoid, often found in tunnels and mines. Kobolds are cunning, crafty, and numerous, but individually weak.",
+    "challengeRate": 0.125,
+    "attributes": {
+      "strength": 7,
+      "dexterity": 15,
+      "constitution": 9,
+      "intelligence": 8,
+      "wisdom": 7,
+      "charisma": 8
+    },
+    "armor": [ "armor_leather_armor" ],
+    "weapons": [ "weapon_spear", "weapon_dagger" ],
     "loot": []
   },
   {
@@ -51,37 +119,20 @@
     "loot": []
   },
   {
-    "id": "bandit",
-    "name": "Bandit",
-    "description": "A lawless raider wearing light armor, always looking for an opportunity to snatch coin or cause trouble.",
+    "id": "zombie",
+    "name": "Zombie",
+    "description": "A slow, shambling corpse risen by dark magic. Driven by hunger for living flesh, it is relentless and terrifying in groups.",
     "challengeRate": 0.25,
     "attributes": {
-      "strength": 11,
-      "dexterity": 13,
-      "constitution": 12,
-      "intelligence": 10,
-      "wisdom": 9,
-      "charisma": 10
-    },
-    "armor": [ "armor_leather_armor" ],
-    "weapons": [ "weapon_dagger", "weapon_short_sword" ],
-    "loot": []
-  },
-  {
-    "id": "hobgoblin",
-    "name": "Hobgoblin",
-    "description": "A disciplined, militaristic goblinoid. Wears medium armor and fights in organized units with precision.",
-    "challengeRate": 0.5,
-    "attributes": {
       "strength": 13,
-      "dexterity": 12,
-      "constitution": 14,
-      "intelligence": 10,
-      "wisdom": 11,
-      "charisma": 9
+      "dexterity": 6,
+      "constitution": 16,
+      "intelligence": 3,
+      "wisdom": 6,
+      "charisma": 5
     },
-    "armor": [ "armor_chain_shirt" ],
-    "weapons": [ "weapon_spear", "weapon_short_sword" ],
+    "armor": [ "armor_scrap" ],
+    "weapons": [ "weapon_club" ],
     "loot": []
   },
   {
@@ -116,6 +167,142 @@
     },
     "armor": [ "armor_cloth_robe" ],
     "weapons": [ "weapon_staff", "weapon_dagger" ],
+    "loot": []
+  },
+  {
+    "id": "gnome_wizard",
+    "name": "Gnome Wizard",
+    "description": "A tiny, clever spellcaster with a fondness for illusions and elemental magic. Often underestimated until the first spell hits.",
+    "challengeRate": 0.5,
+    "attributes": {
+      "strength": 8,
+      "dexterity": 14,
+      "constitution": 10,
+      "intelligence": 16,
+      "wisdom": 12,
+      "charisma": 10
+    },
+    "armor": [ "armor_cloth_robe" ],
+    "weapons": [ "weapon_dagger", "weapon_magic_staff" ],
+    "loot": []
+  },
+  {
+    "id": "human_bandit",
+    "name": "Human Bandit",
+    "description": "A greedy rogue who preys on travelers. Quick and cunning, but weak in single combat without ambush or numbers.",
+    "challengeRate": 0.25,
+    "attributes": {
+      "strength": 11,
+      "dexterity": 14,
+      "constitution": 12,
+      "intelligence": 10,
+      "wisdom": 10,
+      "charisma": 10
+    },
+    "armor": [ "armor_leather_armor" ],
+    "weapons": [ "weapon_short_sword", "weapon_dagger" ],
+    "loot": []
+  },
+  {
+    "id": "human_warrior",
+    "name": "Human Warrior",
+    "description": "A trained fighter with a shield and sword. They patrol roads or serve local lords, often organized but not particularly cunning.",
+    "challengeRate": 0.5,
+    "attributes": {
+      "strength": 14,
+      "dexterity": 12,
+      "constitution": 14,
+      "intelligence": 10,
+      "wisdom": 11,
+      "charisma": 12
+    },
+    "armor": [ "armor_chain_mail" ],
+    "weapons": [ "weapon_longsword", "weapon_shield" ],
+    "loot": []
+  },
+  {
+    "id": "elf_archer",
+    "name": "Elf Archer",
+    "description": "A lithe and graceful humanoid with exceptional marksmanship. Masters of the bow, elves often fight from the shadows or treetops.",
+    "challengeRate": 1,
+    "attributes": {
+      "strength": 12,
+      "dexterity": 18,
+      "constitution": 12,
+      "intelligence": 12,
+      "wisdom": 14,
+      "charisma": 12
+    },
+    "armor": [ "armor_leather_armor" ],
+    "weapons": [ "weapon_longbow", "weapon_dagger" ],
+    "loot": []
+  },
+  {
+    "id": "dwarf_warrior",
+    "name": "Dwarf Warrior",
+    "description": "A sturdy and resilient fighter, often armored head to toe. Dwarves are known for their courage in battle and loyalty to allies.",
+    "challengeRate": 1,
+    "attributes": {
+      "strength": 16,
+      "dexterity": 12,
+      "constitution": 16,
+      "intelligence": 10,
+      "wisdom": 12,
+      "charisma": 10
+    },
+    "armor": [ "armor_chain_mail" ],
+    "weapons": [ "weapon_warhammer", "weapon_shield" ],
+    "loot": []
+  },
+  {
+    "id": "dark_elf",
+    "name": "Dark Elf",
+    "description": "A cunning and dangerous elf from the shadows. Known for poisons, traps, and dark magic, they rarely fight fair.",
+    "challengeRate": 2,
+    "attributes": {
+      "strength": 12,
+      "dexterity": 18,
+      "constitution": 12,
+      "intelligence": 14,
+      "wisdom": 12,
+      "charisma": 14
+    },
+    "armor": [ "armor_leather_armor" ],
+    "weapons": [ "weapon_rapier", "weapon_shortbow" ],
+    "loot": []
+  },
+  {
+    "id": "half_orc",
+    "name": "Half-Orc",
+    "description": "A hulking mix of human and orc, fierce and strong. Often feared for their strength and savagery in battle.",
+    "challengeRate": 1,
+    "attributes": {
+      "strength": 17,
+      "dexterity": 12,
+      "constitution": 16,
+      "intelligence": 10,
+      "wisdom": 11,
+      "charisma": 9
+    },
+    "armor": [ "armor_chain_mail" ],
+    "weapons": [ "weapon_great_axe", "weapon_shield" ],
+    "loot": []
+  },
+  {
+    "id": "manbearpig",
+    "name": "ManBearPig",
+    "description": "A terrifying hybrid of half man, half bear and half pig! Extremely strong and fast, capable of crushing enemies with brute force and tusks. A rare and dangerous creature.",
+    "challengeRate": 5,
+    "attributes": {
+      "strength": 20,
+      "dexterity": 12,
+      "constitution": 18,
+      "intelligence": 8,
+      "wisdom": 10,
+      "charisma": 6
+    },
+    "armor": [ "armor_natural_hide" ],
+    "weapons": [ "weapon_gore", "weapon_club" ],
     "loot": []
   }
 ]

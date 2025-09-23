@@ -1,6 +1,5 @@
 ﻿using Adventure.Models.BattleState;
 using Adventure.Models.Items;
-using Adventure.Models.Items.Armor;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Helpers;
 using Adventure.Services;

@@ -67,9 +67,9 @@ namespace Adventure.Modules
                 return;
             }
 
-            //var npc = EncounterRandomizer.NpcRandomizer();
+            var npc = EncounterRandomizer.NpcRandomizer();
             // TEMP SPAWN ONLY BEASTS
-            var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.HighCR, CreatureListPreference.Bestiary);
+            //var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.HighCR, CreatureListPreference.Bestiary);
             var state = BattleMethods.GetBattleState(Context.User.Id);
 
             if (npc == null)

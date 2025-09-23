@@ -9,7 +9,7 @@
       "diceCount": 1,
       "diceValue": 6,
       "modifier": 0,
-      "type": "piercing",
+      "type": "ranged",
       "display": "1d6 Piercing"
     }
   },
@@ -23,7 +23,7 @@
       "diceCount": 1,
       "diceValue": 8,
       "modifier": 0,
-      "type": "piercing",
+      "type": "ranged",
       "display": "1d8 Piercing"
     }
   },
@@ -37,7 +37,7 @@
       "diceCount": 1,
       "diceValue": 8,
       "modifier": 0,
-      "type": "piercing",
+      "type": "ranged",
       "display": "1d8 Piercing"
     }
   },
@@ -51,7 +51,7 @@
       "diceCount": 1,
       "diceValue": 10,
       "modifier": 0,
-      "type": "piercing",
+      "type": "ranged",
       "display": "1d10 Piercing"
     }
   },
@@ -65,7 +65,7 @@
       "diceCount": 1,
       "diceValue": 4,
       "modifier": 0,
-      "type": "piercing",
+      "type": "ranged",
       "display": "1d4 Piercing"
     }
   }
