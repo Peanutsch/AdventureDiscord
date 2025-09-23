@@ -13,13 +13,13 @@ namespace Adventure.Quest.Encounter
          * How to call NpcRandomizer:
          * 
          * Low CR, but only humanoids
-         * var npc1 = EncounterRandomizer.NpcRandomizer(CRWeightMode.LowCR, CreatureListPreference.Humanoids);
+         * var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.LowCR, CreatureListPreference.Humanoids);
          * 
          * High CR, but always bestiary
-         * var npc2 = EncounterRandomizer.NpcRandomizer(CRWeightMode.HighCR, CreatureListPreference.Bestiary);
+         * var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.HighCR, CreatureListPreference.Bestiary);
          * 
          * 50/50 chance, random lijst
-         * var npc3 = EncounterRandomizer.NpcRandomizer();
+         * var npc = EncounterRandomizer.NpcRandomizer();
          */
 
         /// <summary>

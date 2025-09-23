@@ -1,5 +1,5 @@
 {
-  "id": 0,
+  "id": ,
   "name": "",
   "level": 1,
   "xp": 0,
@@ -26,14 +26,23 @@
   ],
   "armor": [
     {
-      "id": "",
-      "value": 0
+      "id": "armor_hide_armor",
+      "value": 1
     }
   ],
   "items": [
     {
-      "id": "",
-      "value": 0
+      "id": "potion_small_healing",
+      "value": 1
     }
-  ]
+  ],
+  "loot": [],
+  "ArmorElements": {
+    "id": "",
+    "name": "",
+    "description": "",
+    "armor_class": 0,
+    "weight": 0,
+    "type": "light"
+  }
 }

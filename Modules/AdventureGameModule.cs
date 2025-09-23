@@ -10,6 +10,7 @@ using Microsoft.VisualBasic;
 using Adventure.Quest.Encounter;
 using Adventure.Models.BattleState;
 using Adventure.Quest.Battle.BattleEngine;
+using static Adventure.Quest.Encounter.EncounterRandomizer;
 
 namespace Adventure.Modules
 {
@@ -66,8 +67,11 @@ namespace Adventure.Modules
                 return;
             }
 
-            var npc = EncounterRandomizer.NpcRandomizer();
+            //var npc = EncounterRandomizer.NpcRandomizer();
+            // TEMP SPAWN ONLY BEASTS
+            var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.HighCR, CreatureListPreference.Bestiary);
             var state = BattleMethods.GetBattleState(Context.User.Id);
+
             if (npc == null)
             {
                 await FollowupAsync("⚠️ Could not pick a random creature.");

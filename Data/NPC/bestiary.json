@@ -3,7 +3,7 @@
     {
       "id": "wolf",
       "name": "Wolf",
-      "description": "Wolves are cunning predators that hunt in coordinated packs. Travelers often fear their howls echoing through the night, a sign that prey has already been chosen. Adventurers may encounter them guarding their territory or ambushing stragglers on the road.",
+      "description": "Wolves are cunning predators that hunt in coordinated packs. Their fur offers minor protection, but their agility and pack tactics make them formidable foes in the wild.",
       "challengeRate": 0.25,
       "attributes": {
         "strength": 12,
@@ -13,6 +13,7 @@
         "wisdom": 12,
         "charisma": 6
       },
+      "armor": [ "armor_wolf_fur" ],
       "weapons": [ "weapon_wolf_claw", "weapon_wolf_fangs" ],
       "loot": [
         {
@@ -25,7 +26,7 @@
     {
       "id": "wolf_dire",
       "name": "Dire Wolf",
-      "description": "Dire wolves are massive, primeval beasts that tower over normal wolves. Their terrifying size and ferocity make them feared hunters of the wilds. They are often found as companions of orcs or in ancient forests where nature’s power runs strong.",
+      "description": "Dire wolves are massive and fearsome predators. Their thick fur protects them in combat, and they hunt in coordinated packs to take down large prey.",
       "challengeRate": 1,
       "attributes": {
         "strength": 17,
@@ -35,6 +36,7 @@
         "wisdom": 12,
         "charisma": 7
       },
+      "armor": [ "armor_dire_wolf_fur" ],
       "weapons": [ "weapon_wolf_claw", "weapon_wolf_fangs" ],
       "loot": [
         {
@@ -47,6 +49,7 @@
     {
       "id": "bear_black",
       "name": "Black Bear",
+      "description": "Black bears are solitary mammals with dense fur that provides minor protection. They are strong and agile, capable of climbing and swimming to hunt or escape danger.",
       "challengeRate": 0.5,
       "attributes": {
         "strength": 15,
@@ -56,6 +59,7 @@
         "wisdom": 12,
         "charisma": 7
       },
+      "armor": [ "armor_bear_fur_black" ],
       "weapons": [ "weapon_bear_claw", "weapon_bear_bite" ],
       "loot": [
         {
@@ -68,6 +72,7 @@
     {
       "id": "bear_brown",
       "name": "Brown Bear",
+      "description": "Brown bears are powerful mammals with thick fur offering protection. They dominate forests and mountains, attacking anything that threatens their territory.",
       "challengeRate": 1,
       "attributes": {
         "strength": 19,
@@ -77,6 +82,7 @@
         "wisdom": 13,
         "charisma": 7
       },
+      "armor": [ "armor_bear_fur_brown" ],
       "weapons": [ "weapon_bear_claw", "weapon_bear_bite" ],
       "loot": [
         {
@@ -89,6 +95,7 @@
     {
       "id": "bear_polar",
       "name": "Polar Bear",
+      "description": "Polar bears are apex predators of the frozen north, with thick white fur providing significant protection. They are solitary hunters capable of overpowering large prey.",
       "challengeRate": 2,
       "attributes": {
         "strength": 20,
@@ -98,6 +105,7 @@
         "wisdom": 13,
         "charisma": 7
       },
+      "armor": [ "armor_bear_fur_polar" ],
       "weapons": [ "weapon_bear_claw", "weapon_bear_bite" ],
       "loot": [
         {
@@ -110,6 +118,7 @@
     {
       "id": "lion",
       "name": "Lion",
+      "description": "Lions are powerful predators with sleek hides that offer limited protection. They hunt in prides, relying on coordination and strength to take down large prey.",
       "challengeRate": 1,
       "attributes": {
         "strength": 17,
@@ -119,6 +128,7 @@
         "wisdom": 12,
         "charisma": 8
       },
+      "armor": [ "armor_lion_hide" ],
       "weapons": [ "weapon_lion_claw", "weapon_lion_bite" ],
       "loot": [
         {
@@ -131,6 +141,7 @@
     {
       "id": "tiger",
       "name": "Tiger",
+      "description": "Tigers are solitary hunters with striped hides providing camouflage. Their natural armor is minimal, but they rely on speed and strength to ambush prey.",
       "challengeRate": 1,
       "attributes": {
         "strength": 17,
@@ -140,6 +151,7 @@
         "wisdom": 12,
         "charisma": 8
       },
+      "armor": [ "armor_tiger_hide" ],
       "weapons": [ "weapon_tiger_claw", "weapon_tiger_bite" ],
       "loot": [
         {
@@ -152,6 +164,7 @@
     {
       "id": "saber_tiger",
       "name": "Saber-Toothed Tiger",
+      "description": "Saber-toothed tigers are prehistoric predators with thick hides and massive fangs. Their natural armor provides modest protection, while their hunting prowess is deadly.",
       "challengeRate": 2,
       "attributes": {
         "strength": 18,
@@ -161,6 +174,7 @@
         "wisdom": 12,
         "charisma": 8
       },
+      "armor": [ "armor_saber_tiger_hide" ],
       "weapons": [ "weapon_tiger_claw", "weapon_tiger_bite" ],
       "loot": [
         {
@@ -173,6 +187,7 @@
     {
       "id": "horse_riding",
       "name": "Riding Horse",
+      "description": "Riding horses are domesticated mammals with hides that provide minor protection. They are agile and used for transportation or light combat support.",
       "challengeRate": 0.25,
       "attributes": {
         "strength": 16,
@@ -182,6 +197,7 @@
         "wisdom": 11,
         "charisma": 7
       },
+      "armor": [ "armor_horse_hide" ],
       "weapons": [ "weapon_hooves" ],
       "loot": [
         {
@@ -194,6 +210,7 @@
     {
       "id": "horse_war",
       "name": "Warhorse",
+      "description": "Warhorses are strong, trained animals with tough hides for battlefield survival. They are capable of charging into combat and trampling foes.",
       "challengeRate": 0.5,
       "attributes": {
         "strength": 18,
@@ -203,6 +220,7 @@
         "wisdom": 12,
         "charisma": 7
       },
+      "armor": [ "armor_warhorse_hide" ],
       "weapons": [ "weapon_hooves" ],
       "loot": [
         {
@@ -215,6 +233,7 @@
     {
       "id": "elephant",
       "name": "Elephant",
+      "description": "Elephants are massive mammals with thick hides offering significant protection. They use their tusks and weight to defend themselves, capable of devastating attacks.",
       "challengeRate": 4,
       "attributes": {
         "strength": 22,
@@ -224,6 +243,7 @@
         "wisdom": 11,
         "charisma": 6
       },
+      "armor": [ "armor_elephant_hide" ],
       "weapons": [ "weapon_gore", "weapon_stomp" ],
       "loot": [
         {
@@ -236,6 +256,7 @@
     {
       "id": "mammoth",
       "name": "Mammoth",
+      "description": "Mammoths are enormous prehistoric mammals with thick hides and fur for natural armor. Their size and strength make them nearly unstoppable in combat.",
       "challengeRate": 6,
       "attributes": {
         "strength": 24,
@@ -245,6 +266,7 @@
         "wisdom": 11,
         "charisma": 6
       },
+      "armor": [ "armor_mammoth_hide" ],
       "weapons": [ "weapon_gore", "weapon_stomp" ],
       "loot": [
         {
@@ -259,6 +281,7 @@
     {
       "id": "eagle",
       "name": "Eagle",
+      "description": "Eagles are small but agile birds of prey with feathers providing minor protection. They strike with talons and beaks from the air, often scouting from high perches.",
       "challengeRate": 0,
       "attributes": {
         "strength": 6,
@@ -268,6 +291,7 @@
         "wisdom": 14,
         "charisma": 7
       },
+      "armor": [ "armor_eagle_feather" ],
       "weapons": [ "weapon_talons", "weapon_beak" ],
       "loot": [
         {
@@ -280,6 +304,7 @@
     {
       "id": "giant_eagle",
       "name": "Giant Eagle",
+      "description": "Giant eagles are majestic predators with thick feathers that offer minor protection. They dominate the skies and strike swiftly with talons and beak.",
       "challengeRate": 1,
       "attributes": {
         "strength": 16,
@@ -289,6 +314,7 @@
         "wisdom": 14,
         "charisma": 10
       },
+      "armor": [ "armor_giant_eagle_feather" ],
       "weapons": [ "weapon_talons", "weapon_beak" ],
       "loot": [
         {
@@ -301,6 +327,7 @@
     {
       "id": "owl",
       "name": "Owl",
+      "description": "Owls are stealthy nocturnal hunters with feathers that provide light protection. They strike silently from the night sky using talons.",
       "challengeRate": 0,
       "attributes": {
         "strength": 3,
@@ -310,6 +337,7 @@
         "wisdom": 12,
         "charisma": 7
       },
+      "armor": [ "armor_owl_feather" ],
       "weapons": [ "weapon_talons" ],
       "loot": [
         {
@@ -324,6 +352,7 @@
     {
       "id": "snake_poison",
       "name": "Poisonous Snake",
+      "description": "Poisonous snakes are small, agile reptiles. Their scaled skin provides minor protection, and their fangs deliver venom to incapacitate prey.",
       "challengeRate": 0.125,
       "attributes": {
         "strength": 2,
@@ -333,18 +362,25 @@
         "wisdom": 10,
         "charisma": 3
       },
+      "armor": [ "armor_snake_skin" ],
       "weapons": [ "weapon_snake_fangs" ],
       "loot": [
         {
           "id": "snake_venom_gland",
           "amount": 1,
           "weight": 0.02
+        },
+        {
+          "id": "snake_skin_small",
+          "amount": 1,
+          "weight": 2
         }
       ]
     },
     {
       "id": "snake_constrictor",
       "name": "Constrictor Snake",
+      "description": "Constrictor snakes are large reptiles with thicker scales offering moderate protection. They overpower prey by constriction and are formidable even without venom.",
       "challengeRate": 0.25,
       "attributes": {
         "strength": 15,
@@ -354,18 +390,20 @@
         "wisdom": 10,
         "charisma": 3
       },
+      "armor": [ "armor_snake_skin" ],
       "weapons": [ "weapon_snake_bite", "weapon_snake_constrict" ],
       "loot": [
         {
-          "id": "snake_skin",
+          "id": "snake_skin_medium",
           "amount": 1,
-          "weight": 2
+          "weight": 4
         }
       ]
     },
     {
       "id": "crocodile",
       "name": "Crocodile",
+      "description": "Crocodiles are stealthy ambush predators with thick, scaly hides that act as natural armor. They strike powerfully from rivers or swamps to capture prey.",
       "challengeRate": 0.5,
       "attributes": {
         "strength": 15,
@@ -375,6 +413,7 @@
         "wisdom": 10,
         "charisma": 5
       },
+      "armor": [ "armor_crocodile_hide" ],
       "weapons": [ "weapon_crocodile_bite" ],
       "loot": [
         {
@@ -387,6 +426,7 @@
     {
       "id": "crocodile_giant",
       "name": "Giant Crocodile",
+      "description": "Giant crocodiles are enormous reptiles with extremely thick hides providing substantial natural armor. They are deadly ambush predators in rivers and marshes.",
       "challengeRate": 5,
       "attributes": {
         "strength": 21,
@@ -396,6 +436,7 @@
         "wisdom": 10,
         "charisma": 7
       },
+      "armor": [ "armor_giant_crocodile_hide" ],
       "weapons": [ "weapon_crocodile_bite", "weapon_crocodile_tail" ],
       "loot": [
         {
@@ -410,7 +451,7 @@
     {
       "id": "griffon",
       "name": "Griffon",
-      "description": "Griffons are majestic creatures with the body of a lion and the wings and head of an eagle. They are proud and territorial, often nesting in high mountains. Adventurers may find them guarding treasures or patrolling their skies with deadly precision.",
+      "description": "Griffons are majestic creatures with the body of a lion and wings of an eagle. Their feathers provide moderate protection, and they patrol the skies hunting prey.",
       "challengeRate": 2,
       "attributes": {
         "strength": 18,
@@ -420,6 +461,7 @@
         "wisdom": 14,
         "charisma": 8
       },
+      "armor": [ "armor_griffon_feather" ],
       "weapons": [ "weapon_beak", "weapon_claws" ],
       "loot": [
         {
@@ -432,7 +474,7 @@
     {
       "id": "owlbear",
       "name": "Owlbear",
-      "description": "Owlbears are ferocious hybrids with the body of a bear and the head of a giant owl. Known for their violent tempers, they attack anything that comes too close. They are feared in dense forests, where their cries echo like thunder.",
+      "description": "Owlbears are ferocious hybrids with thick hides and feathers that provide good natural armor. They are aggressive hunters, attacking anything that comes too close.",
       "challengeRate": 3,
       "attributes": {
         "strength": 20,
@@ -442,6 +484,7 @@
         "wisdom": 12,
         "charisma": 6
       },
+      "armor": [ "armor_owlbear_hide" ],
       "weapons": [ "weapon_beak", "weapon_claws" ],
       "loot": [
         {
@@ -459,7 +502,7 @@
     {
       "id": "wyvern",
       "name": "Wyvern",
-      "description": "Wyverns are terrifying dragon-like creatures with venomous tails and powerful wings. They often nest in high cliffs or desolate mountains and are formidable predators, striking with both claws and a deadly tail sting.",
+      "description": "Wyverns are dragon-like predators with thick scales that serve as natural armor. Their venomous tail and claws make them lethal hunters of cliffs and mountains.",
       "challengeRate": 6,
       "attributes": {
         "strength": 19,
@@ -469,6 +512,7 @@
         "wisdom": 12,
         "charisma": 7
       },
+      "armor": [ "armor_wyvern_scale" ],
       "weapons": [ "weapon_claws", "weapon_tail_sting", "weapon_bite" ],
       "loot": [
         {
@@ -486,7 +530,7 @@
     {
       "id": "chimera",
       "name": "Chimera",
-      "description": "Chimeras are monstrous hybrids with the heads of a lion, a goat, and a dragon, and the wings of a dragon. They are cunning and vicious, capable of attacking with multiple forms simultaneously, and are often found in remote wilderness or cursed lands.",
+      "description": "Chimeras are monstrous hybrids with multiple heads and dragon-like wings. Their scales and hides provide strong natural armor, and they can attack with multiple forms at once.",
       "challengeRate": 7,
       "attributes": {
         "strength": 21,
@@ -496,6 +540,7 @@
         "wisdom": 13,
         "charisma": 8
       },
+      "armor": [ "armor_chimera_scale" ],
       "weapons": [ "weapon_lion_claw", "weapon_goat_bite", "weapon_dragon_breath" ],
       "loot": [
         {

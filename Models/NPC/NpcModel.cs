@@ -33,9 +33,6 @@ namespace Adventure.Models.NPC
         [JsonPropertyName("armor")]
         public List<string> Armor { get; set; } = new();
 
-        [JsonPropertyName("naturalArmorClass")]
-        public int NaturalArmorClass { get; set; } = 0;
-
         [JsonPropertyName("loot")]
         public List<LootItemModel> Loot { get; set; } = new();
 

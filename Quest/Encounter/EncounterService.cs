@@ -74,7 +74,7 @@ namespace Adventure.Quest.Encounter
                         embed.AddField($"**[{armor.Name}]**\n",
                             $"Type: {armor.Type} armor\n" +
                             //$"Armor Class: {armor.ArmorClass}\n" +
-                            $"Weight: {armor.Weight}kg\n" +
+                            //$"Weight: {armor.Weight}kg\n" +
                             $"*\"{armor.Description}\"*", false);
                     }
                 }
@@ -98,7 +98,7 @@ namespace Adventure.Quest.Encounter
                     {
                         embed.AddField($"**[{weapon.Name}]**",
                             $"Range: {weapon.Range} meter\n" +
-                            $"Weight: {weapon.Weight}kg\n" +
+                            //$"Weight: {weapon.Weight}kg\n" +
                             $"*\"{weapon.Description}\"*", false);
                     }
                 }
