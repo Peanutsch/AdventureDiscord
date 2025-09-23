@@ -1,24 +1,8 @@
 [
   {
-    "id": "weapon_crossbow_standard",
-    "name": "Standard Crossbow",
-    "description": "*\"Favored by soldiers and hunters alike, this crossbow combines raw power with mechanical reliability. Ideal for those who prefer precision from a distance.\"*",
-    "weight": 4,
-    "range": 8,
-    "damage": {
-      "ranged": {
-        "diceCount": 1,
-        "diceValue": 8,
-        "modifier": 0,
-        "type": "piercing",
-        "display": "1d8 Piercing"
-      }
-    }
-  },
-  {
     "id": "weapon_shortbow",
     "name": "Shortbow",
-    "description": "*\"Compact and lightweight, the shortbow is favored by scouts, rangers, and skirmishers who rely on speed and stealth. Though it lacks the range of larger bows, it excels in tight quarters and rapid engagements.\"*",
+    "description": "Compact and lightweight, favored by scouts, bandits, and nimble archers. Effective for quick shots in tight spaces.",
     "weight": 2,
     "range": 5,
     "damage": {
@@ -32,7 +16,7 @@
   {
     "id": "weapon_longbow",
     "name": "Longbow",
-    "description": "*\"This tall, finely crafted bow delivers powerful shots over vast distances. Preferred by elite archers and war-trained rangers, the longbow demands strength and skill, but rewards with deadly precision from afar.\"*",
+    "description": "Tall, finely crafted bow that delivers powerful shots over great distances. Preferred by elite archers and rangers.",
     "weight": 2,
     "range": 10,
     "damage": {
@@ -41,6 +25,48 @@
       "modifier": 0,
       "type": "piercing",
       "display": "1d8 Piercing"
+    }
+  },
+  {
+    "id": "weapon_crossbow_light",
+    "name": "Light Crossbow",
+    "description": "A simple mechanical bow that fires bolts with deadly accuracy. Easy to use but slower to reload than bows.",
+    "weight": 4,
+    "range": 6,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 8,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d8 Piercing"
+    }
+  },
+  {
+    "id": "weapon_crossbow_heavy",
+    "name": "Heavy Crossbow",
+    "description": "A powerful crossbow that can pierce armor, favored by well-trained mercenaries. Requires both strength and time to reload.",
+    "weight": 7,
+    "range": 10,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 10,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d10 Piercing"
+    }
+  },
+  {
+    "id": "weapon_throwing_knife",
+    "name": "Throwing Knife",
+    "description": "Balanced for tossing with precision. Effective for rogues and sneaky attackers at short distances.",
+    "weight": 0.5,
+    "range": 3,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d4 Piercing"
     }
   }
 ]

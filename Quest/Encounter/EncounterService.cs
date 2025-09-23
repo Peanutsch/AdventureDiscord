@@ -29,7 +29,7 @@ namespace Adventure.Quest.Encounter
             {
                 // Get the list of humanoid creatures
                 var humanoids = GameData.Humanoids;
-                var animals = GameData.Animals; 
+                var bestiary = GameData.Bestiary; 
 
                 var random = new Random();
 
@@ -183,10 +183,10 @@ namespace Adventure.Quest.Encounter
                 LogService.Info("[EncounterService.ShowWeaponChoices] items == 0");
             }
 
-                var embed = new EmbedBuilder()
-                    .WithTitle($"**{state!.Player.Name}** prepares for battle...")
-                    .WithColor(Color.DarkRed)
-                    .WithDescription($"🔪 Your Inventory:");
+            var embed = new EmbedBuilder()
+                .WithTitle($"**{state!.Player.Name}** ({state.Player.Hitpoints} HP) prepares for battle...")
+                .WithColor(Color.DarkRed)
+                .WithDescription($"🔪 Your Inventory:");
 
             // Add weapons to embed
             foreach (var weapon in weapons!)

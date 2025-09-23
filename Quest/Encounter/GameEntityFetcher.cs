@@ -37,7 +37,7 @@ namespace Adventure.Quest.Encounter
                 int counter = 1;
                 foreach (var item in armors)
                 {
-                    LogService.Info($"Item #{counter}: {item}");
+                    LogService.Info($"Armor Item #{counter}: {item}");
                     counter++;
                 }
 
@@ -75,7 +75,7 @@ namespace Adventure.Quest.Encounter
             int counter = 1;
             foreach (var item in weapons)
             {
-                LogService.Info($"Item #{counter}: {item!.Name}");
+                LogService.Info($"Weapon Item #{counter}: {item!.Name}");
                 counter++;
             }
 

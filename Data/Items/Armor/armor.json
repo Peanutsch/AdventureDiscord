@@ -18,9 +18,57 @@
   {
     "id": "armor_scrap",
     "name": "Scrap Armor",
-    "description": "A patchwork of metal plates, leather, and cloth cobbled together.\nThis light armor provides minimal protection but is better than nothing.",
+    "description": "A patchwork of metal plates, leather, and cloth cobbled together. This light armor provides minimal protection but is better than nothing.",
     "armor_class": 10,
     "weight": 6.0,
     "type": "light"
+  },
+  {
+    "id": "armor_chain_shirt",
+    "name": "Chain Shirt",
+    "description": "A finely made chain mail shirt that offers moderate protection without sacrificing mobility. Ideal for disciplined warriors.",
+    "armor_class": 13,
+    "weight": 13.0,
+    "type": "medium"
+  },
+  {
+    "id": "armor_chain_mail",
+    "name": "Chain Mail",
+    "description": "A full set of interlocking metal rings providing solid defense. Heavy but reliable against most melee attacks.",
+    "armor_class": 16,
+    "weight": 18.0,
+    "type": "heavy"
+  },
+  {
+    "id": "armor_cloth_robe",
+    "name": "Cloth Robe",
+    "description": "A simple cloth robe, often worn by spellcasters. Provides no physical protection but allows free movement for casting.",
+    "armor_class": 10,
+    "weight": 2.0,
+    "type": "light"
+  },
+  {
+    "id": "armor_plate",
+    "name": "Plate Armor",
+    "description": "Heavy plates of metal protecting the entire body. Extremely durable, but encumbers the wearer and reduces mobility.",
+    "armor_class": 18,
+    "weight": 30.0,
+    "type": "heavy"
+  },
+  {
+    "id": "armor_shield",
+    "name": "Shield",
+    "description": "A sturdy shield made of wood or metal. Can be carried to increase the wearer's defense in combat.",
+    "armor_class": 2,
+    "weight": 6.0,
+    "type": "shield"
+  },
+  {
+    "id": "armor_natural",
+    "name": "Natural Armor",
+    "description": "Innate protection provided by the creature's body—thick skin, scales, or hide. Varies per creature.",
+    "armor_class": 0,
+    "weight": 0.0,
+    "type": "natural"
   }
 ]

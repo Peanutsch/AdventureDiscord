@@ -2,7 +2,7 @@
   {
     "id": "weapon_dagger",
     "name": "Dagger",
-    "description": "A small, easily concealed blade suitable for quick strikes.",
+    "description": "A small, easily concealed blade suitable for quick strikes. Ideal for rogues and nimble fighters.",
     "weight": 1,
     "range": 1,
     "damage": {
@@ -16,7 +16,7 @@
   {
     "id": "weapon_short_sword",
     "name": "Short Sword",
-    "description": "Just 70 cm of steel.. Quick, quiet, and lethal. When in the right hands that is.",
+    "description": "Just 70 cm of steel. Quick, quiet, and lethal in the right hands.",
     "weight": 5,
     "range": 1.5,
     "damage": {
@@ -28,9 +28,9 @@
     }
   },
   {
-    "id": "weapon_long_sword",
-    "name": "Long Sword",
-    "description": "Roughly 100 cm long, crafted for balanced, deadly blows in the hands of a trained warrior.",
+    "id": "weapon_longsword",
+    "name": "Longsword",
+    "description": "A balanced, deadly blade favored by knights. Effective in both cutting and thrusting.",
     "weight": 8,
     "range": 1.5,
     "damage": {
@@ -38,21 +38,386 @@
       "diceValue": 8,
       "modifier": 0,
       "type": "slashing",
-      "display": "1d8 Normal Slashing"
+      "display": "1d8 Slashing"
     }
   },
   {
     "id": "weapon_great_axe",
     "name": "Great Axe",
     "description": "A heavy, brutal weapon designed to cleave through armor with powerful, sweeping strikes.",
-    "weight": 3.2,
-    "range": 1,
+    "weight": 12,
+    "range": 1.5,
     "damage": {
       "diceCount": 1,
       "diceValue": 12,
       "modifier": 0,
       "type": "slashing",
       "display": "1d12 Slashing"
+    }
+  },
+  {
+    "id": "weapon_spear",
+    "name": "Spear",
+    "description": "A versatile polearm, suitable for thrusting or throwing. Commonly used by disciplined infantry.",
+    "weight": 6,
+    "range": 2,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d6 Piercing"
+    }
+  },
+  {
+    "id": "weapon_lance",
+    "name": "Lance",
+    "description": "A long polearm designed for mounted combat, capable of delivering devastating charges.",
+    "weight": 12,
+    "range": 3,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 12,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d12 Piercing"
+    }
+  },
+  {
+    "id": "weapon_staff",
+    "name": "Staff",
+    "description": "A simple wooden staff. Serves as a walking stick, a focus for spells, and a blunt weapon when needed.",
+    "weight": 4,
+    "range": 2,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "bludgeoning",
+      "display": "1d6 Bludgeoning"
+    }
+  },
+
+  {
+    "id": "weapon_wolf_claw",
+    "name": "Wolf Claw",
+    "description": "Sharp claws used by wolves to slash at prey.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "slashing",
+      "display": "1d4 Slashing"
+    }
+  },
+  {
+    "id": "weapon_wolf_fangs",
+    "name": "Wolf Fangs",
+    "description": "Fangs used by wolves to bite and tear flesh.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d4 Piercing"
+    }
+  },
+  {
+    "id": "weapon_bear_claw",
+    "name": "Bear Claw",
+    "description": "Powerful claws of a bear used to slash and maul.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "slashing",
+      "display": "2d6 Slashing"
+    }
+  },
+  {
+    "id": "weapon_bear_bite",
+    "name": "Bear Bite",
+    "description": "Strong jaws of a bear for crushing and tearing.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "2d4 Piercing"
+    }
+  },
+  {
+    "id": "weapon_lion_claw",
+    "name": "Lion Claw",
+    "description": "Deadly claw slashes of a lion.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "slashing",
+      "display": "2d6 Slashing"
+    }
+  },
+  {
+    "id": "weapon_lion_bite",
+    "name": "Lion Bite",
+    "description": "Powerful jaws of a lion for tearing flesh.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "2d4 Piercing"
+    }
+  },
+  {
+    "id": "weapon_tiger_claw",
+    "name": "Tiger Claw",
+    "description": "Sharp claws of a tiger used to rend enemies.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "slashing",
+      "display": "2d6 Slashing"
+    }
+  },
+  {
+    "id": "weapon_tiger_bite",
+    "name": "Tiger Bite",
+    "description": "Fangs of a tiger delivering piercing damage.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "2d4 Piercing"
+    }
+  },
+  {
+    "id": "weapon_hooves",
+    "name": "Hooves",
+    "description": "Strong hooves used to kick opponents.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "bludgeoning",
+      "display": "1d6 Bludgeoning"
+    }
+  },
+  {
+    "id": "weapon_gore",
+    "name": "Gore",
+    "description": "Tusks used to gore enemies.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "2d6 Piercing"
+    }
+  },
+  {
+    "id": "weapon_stomp",
+    "name": "Stomp",
+    "description": "Heavy stomp of an elephant or mammoth.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 8,
+      "modifier": 0,
+      "type": "bludgeoning",
+      "display": "2d8 Bludgeoning"
+    }
+  },
+  {
+    "id": "weapon_talons",
+    "name": "Talons",
+    "description": "Sharp talons of a bird of prey.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "slashing",
+      "display": "1d4 Slashing"
+    }
+  },
+  {
+    "id": "weapon_beak",
+    "name": "Beak",
+    "description": "Beak used by birds to peck or bite.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d4 Piercing"
+    }
+  },
+  {
+    "id": "weapon_snake_fangs",
+    "name": "Snake Fangs",
+    "description": "Poisonous fangs of a snake.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 3,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d3 Piercing"
+    }
+  },
+  {
+    "id": "weapon_snake_bite",
+    "name": "Snake Bite",
+    "description": "Bite of a constrictor snake.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d4 Piercing"
+    }
+  },
+  {
+    "id": "weapon_snake_constrict",
+    "name": "Snake Constriction",
+    "description": "Constriction attack of a large snake.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "bludgeoning",
+      "display": "2d4 Bludgeoning"
+    }
+  },
+  {
+    "id": "weapon_crocodile_bite",
+    "name": "Crocodile Bite",
+    "description": "Powerful jaws of a crocodile used to crush prey.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "2d6 Piercing"
+    }
+  },
+  {
+    "id": "weapon_crocodile_tail",
+    "name": "Crocodile Tail",
+    "description": "Heavy tail used to strike enemies.",
+    "weight": 0,
+    "range": 1.5,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "bludgeoning",
+      "display": "2d4 Bludgeoning"
+    }
+  },
+  {
+    "id": "weapon_claws",
+    "name": "Claws",
+    "description": "General claw attack used by magical beasts.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "slashing",
+      "display": "2d6 Slashing"
+    }
+  },
+  {
+    "id": "weapon_tail_sting",
+    "name": "Tail Sting",
+    "description": "Venomous tail sting used by wyverns.",
+    "weight": 0,
+    "range": 2,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 8,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d8 Piercing"
+    }
+  },
+  {
+    "id": "weapon_bite",
+    "name": "Bite",
+    "description": "General bite attack used by magical beasts.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 2,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "2d6 Piercing"
+    }
+  },
+  {
+    "id": "weapon_goat_bite",
+    "name": "Goat Bite",
+    "description": "Bite of a goat head on a chimera.",
+    "weight": 0,
+    "range": 1,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 4,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d4 Piercing"
+    }
+  },
+  {
+    "id": "weapon_dragon_breath",
+    "name": "Dragon Breath",
+    "description": "Fire breath attack from a chimera's dragon head.",
+    "weight": 0,
+    "range": 5,
+    "damage": {
+      "diceCount": 3,
+      "diceValue": 6,
+      "modifier": 0,
+      "type": "fire",
+      "display": "3d6 Fire"
     }
   }
 ]

@@ -1,0 +1,121 @@
+[
+  {
+    "id": "goblin",
+    "name": "Goblin",
+    "description": "A small, wiry creature with green skin, sharp teeth, and a mischievous grin. More cunning than brave, and more annoying than deadly—unless you turn your back.",
+    "challengeRate": 0.125,
+    "attributes": {
+      "strength": 8,
+      "dexterity": 14,
+      "constitution": 10,
+      "intelligence": 10,
+      "wisdom": 8,
+      "charisma": 8
+    },
+    "armor": [ "armor_leather_armor" ],
+    "weapons": [ "weapon_short_sword", "weapon_dagger" ],
+    "loot": []
+  },
+  {
+    "id": "orc",
+    "name": "Orc",
+    "description": "A hulking brute with jagged armor and a thirst for blood. Not known for brains, but definitely for breaking bones.",
+    "challengeRate": 3,
+    "attributes": {
+      "strength": 16,
+      "dexterity": 12,
+      "constitution": 16,
+      "intelligence": 7,
+      "wisdom": 11,
+      "charisma": 10
+    },
+    "armor": [ "armor_chain_mail" ],
+    "weapons": [ "weapon_great_axe" ],
+    "loot": []
+  },
+  {
+    "id": "skeleton",
+    "name": "Skeleton",
+    "description": "A rattling undead warrior held together by dark magic. Empty eye sockets glow with malevolent light.",
+    "challengeRate": 0.25,
+    "attributes": {
+      "strength": 10,
+      "dexterity": 14,
+      "constitution": 15,
+      "intelligence": 6,
+      "wisdom": 8,
+      "charisma": 5
+    },
+    "armor": [ "armor_scrap" ],
+    "weapons": [ "weapon_short_sword" ],
+    "loot": []
+  },
+  {
+    "id": "bandit",
+    "name": "Bandit",
+    "description": "A lawless raider wearing light armor, always looking for an opportunity to snatch coin or cause trouble.",
+    "challengeRate": 0.25,
+    "attributes": {
+      "strength": 11,
+      "dexterity": 13,
+      "constitution": 12,
+      "intelligence": 10,
+      "wisdom": 9,
+      "charisma": 10
+    },
+    "armor": [ "armor_leather_armor" ],
+    "weapons": [ "weapon_dagger", "weapon_short_sword" ],
+    "loot": []
+  },
+  {
+    "id": "hobgoblin",
+    "name": "Hobgoblin",
+    "description": "A disciplined, militaristic goblinoid. Wears medium armor and fights in organized units with precision.",
+    "challengeRate": 0.5,
+    "attributes": {
+      "strength": 13,
+      "dexterity": 12,
+      "constitution": 14,
+      "intelligence": 10,
+      "wisdom": 11,
+      "charisma": 9
+    },
+    "armor": [ "armor_chain_shirt" ],
+    "weapons": [ "weapon_spear", "weapon_short_sword" ],
+    "loot": []
+  },
+  {
+    "id": "knight",
+    "name": "Knight",
+    "description": "A heavily armored warrior sworn to uphold honor and defend the realm. Moves slower but strikes with devastating force.",
+    "challengeRate": 3,
+    "attributes": {
+      "strength": 18,
+      "dexterity": 11,
+      "constitution": 16,
+      "intelligence": 10,
+      "wisdom": 12,
+      "charisma": 14
+    },
+    "armor": [ "armor_plate", "armor_shield" ],
+    "weapons": [ "weapon_longsword", "weapon_lance" ],
+    "loot": []
+  },
+  {
+    "id": "mage",
+    "name": "Mage",
+    "description": "A spellcaster wearing light robes, relying on magic rather than physical defenses. Vulnerable up close, dangerous at a distance.",
+    "challengeRate": 2,
+    "attributes": {
+      "strength": 8,
+      "dexterity": 12,
+      "constitution": 10,
+      "intelligence": 17,
+      "wisdom": 14,
+      "charisma": 12
+    },
+    "armor": [ "armor_cloth_robe" ],
+    "weapons": [ "weapon_staff", "weapon_dagger" ],
+    "loot": []
+  }
+]

@@ -35,15 +35,15 @@ namespace Adventure.Data
             set => _humanoids = value;
         }
 
-        public static List<NpcModel>? _animals;
+        private static List<NpcModel>? _bestiary;
 
         /// <summary>
         /// Gets or sets the list of animal creatures in the game.
         /// </summary>
-        public static List<NpcModel>? Animals
+        public static List<NpcModel>? Bestiary 
         {
-            get => _animals;
-            set => _animals = value;
+            get => _bestiary;
+            set => _bestiary = value;
         }
 
         private static List<WeaponModel>? _weapons;

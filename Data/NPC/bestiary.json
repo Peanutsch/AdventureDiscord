@@ -1,0 +1,509 @@
+{
+  "mammals": [
+    {
+      "id": "wolf",
+      "name": "Wolf",
+      "description": "Wolves are cunning predators that hunt in coordinated packs. Travelers often fear their howls echoing through the night, a sign that prey has already been chosen. Adventurers may encounter them guarding their territory or ambushing stragglers on the road.",
+      "challengeRate": 0.25,
+      "attributes": {
+        "strength": 12,
+        "dexterity": 15,
+        "constitution": 12,
+        "intelligence": 3,
+        "wisdom": 12,
+        "charisma": 6
+      },
+      "weapons": [ "weapon_wolf_claw", "weapon_wolf_fangs" ],
+      "loot": [
+        {
+          "id": "wolf_fur",
+          "amount": 1,
+          "weight": 1.7
+        }
+      ]
+    },
+    {
+      "id": "wolf_dire",
+      "name": "Dire Wolf",
+      "description": "Dire wolves are massive, primeval beasts that tower over normal wolves. Their terrifying size and ferocity make them feared hunters of the wilds. They are often found as companions of orcs or in ancient forests where nature’s power runs strong.",
+      "challengeRate": 1,
+      "attributes": {
+        "strength": 17,
+        "dexterity": 15,
+        "constitution": 15,
+        "intelligence": 3,
+        "wisdom": 12,
+        "charisma": 7
+      },
+      "weapons": [ "weapon_wolf_claw", "weapon_wolf_fangs" ],
+      "loot": [
+        {
+          "id": "wolf_fur_large",
+          "amount": 1,
+          "weight": 2.5
+        }
+      ]
+    },
+    {
+      "id": "bear_black",
+      "name": "Black Bear",
+      "challengeRate": 0.5,
+      "attributes": {
+        "strength": 15,
+        "dexterity": 10,
+        "constitution": 14,
+        "intelligence": 2,
+        "wisdom": 12,
+        "charisma": 7
+      },
+      "weapons": [ "weapon_bear_claw", "weapon_bear_bite" ],
+      "loot": [
+        {
+          "id": "bear_fur_black",
+          "amount": 1,
+          "weight": 5
+        }
+      ]
+    },
+    {
+      "id": "bear_brown",
+      "name": "Brown Bear",
+      "challengeRate": 1,
+      "attributes": {
+        "strength": 19,
+        "dexterity": 10,
+        "constitution": 16,
+        "intelligence": 2,
+        "wisdom": 13,
+        "charisma": 7
+      },
+      "weapons": [ "weapon_bear_claw", "weapon_bear_bite" ],
+      "loot": [
+        {
+          "id": "bear_fur_brown",
+          "amount": 1,
+          "weight": 8
+        }
+      ]
+    },
+    {
+      "id": "bear_polar",
+      "name": "Polar Bear",
+      "challengeRate": 2,
+      "attributes": {
+        "strength": 20,
+        "dexterity": 10,
+        "constitution": 16,
+        "intelligence": 2,
+        "wisdom": 13,
+        "charisma": 7
+      },
+      "weapons": [ "weapon_bear_claw", "weapon_bear_bite" ],
+      "loot": [
+        {
+          "id": "bear_fur_polar",
+          "amount": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "id": "lion",
+      "name": "Lion",
+      "challengeRate": 1,
+      "attributes": {
+        "strength": 17,
+        "dexterity": 15,
+        "constitution": 13,
+        "intelligence": 2,
+        "wisdom": 12,
+        "charisma": 8
+      },
+      "weapons": [ "weapon_lion_claw", "weapon_lion_bite" ],
+      "loot": [
+        {
+          "id": "lion_hide",
+          "amount": 1,
+          "weight": 6
+        }
+      ]
+    },
+    {
+      "id": "tiger",
+      "name": "Tiger",
+      "challengeRate": 1,
+      "attributes": {
+        "strength": 17,
+        "dexterity": 15,
+        "constitution": 14,
+        "intelligence": 3,
+        "wisdom": 12,
+        "charisma": 8
+      },
+      "weapons": [ "weapon_tiger_claw", "weapon_tiger_bite" ],
+      "loot": [
+        {
+          "id": "tiger_hide",
+          "amount": 1,
+          "weight": 7
+        }
+      ]
+    },
+    {
+      "id": "saber_tiger",
+      "name": "Saber-Toothed Tiger",
+      "challengeRate": 2,
+      "attributes": {
+        "strength": 18,
+        "dexterity": 14,
+        "constitution": 15,
+        "intelligence": 3,
+        "wisdom": 12,
+        "charisma": 8
+      },
+      "weapons": [ "weapon_tiger_claw", "weapon_tiger_bite" ],
+      "loot": [
+        {
+          "id": "saber_teeth",
+          "amount": 2,
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "id": "horse_riding",
+      "name": "Riding Horse",
+      "challengeRate": 0.25,
+      "attributes": {
+        "strength": 16,
+        "dexterity": 10,
+        "constitution": 12,
+        "intelligence": 2,
+        "wisdom": 11,
+        "charisma": 7
+      },
+      "weapons": [ "weapon_hooves" ],
+      "loot": [
+        {
+          "id": "horse_hide",
+          "amount": 1,
+          "weight": 15
+        }
+      ]
+    },
+    {
+      "id": "horse_war",
+      "name": "Warhorse",
+      "challengeRate": 0.5,
+      "attributes": {
+        "strength": 18,
+        "dexterity": 12,
+        "constitution": 13,
+        "intelligence": 2,
+        "wisdom": 12,
+        "charisma": 7
+      },
+      "weapons": [ "weapon_hooves" ],
+      "loot": [
+        {
+          "id": "horse_hide_war",
+          "amount": 1,
+          "weight": 20
+        }
+      ]
+    },
+    {
+      "id": "elephant",
+      "name": "Elephant",
+      "challengeRate": 4,
+      "attributes": {
+        "strength": 22,
+        "dexterity": 9,
+        "constitution": 17,
+        "intelligence": 3,
+        "wisdom": 11,
+        "charisma": 6
+      },
+      "weapons": [ "weapon_gore", "weapon_stomp" ],
+      "loot": [
+        {
+          "id": "ivory_tusk",
+          "amount": 2,
+          "weight": 25
+        }
+      ]
+    },
+    {
+      "id": "mammoth",
+      "name": "Mammoth",
+      "challengeRate": 6,
+      "attributes": {
+        "strength": 24,
+        "dexterity": 9,
+        "constitution": 21,
+        "intelligence": 3,
+        "wisdom": 11,
+        "charisma": 6
+      },
+      "weapons": [ "weapon_gore", "weapon_stomp" ],
+      "loot": [
+        {
+          "id": "mammoth_tusk",
+          "amount": 2,
+          "weight": 45
+        }
+      ]
+    }
+  ],
+  "birds": [
+    {
+      "id": "eagle",
+      "name": "Eagle",
+      "challengeRate": 0,
+      "attributes": {
+        "strength": 6,
+        "dexterity": 15,
+        "constitution": 10,
+        "intelligence": 2,
+        "wisdom": 14,
+        "charisma": 7
+      },
+      "weapons": [ "weapon_talons", "weapon_beak" ],
+      "loot": [
+        {
+          "id": "eagle_feather",
+          "amount": 1,
+          "weight": 0.01
+        }
+      ]
+    },
+    {
+      "id": "giant_eagle",
+      "name": "Giant Eagle",
+      "challengeRate": 1,
+      "attributes": {
+        "strength": 16,
+        "dexterity": 17,
+        "constitution": 13,
+        "intelligence": 8,
+        "wisdom": 14,
+        "charisma": 10
+      },
+      "weapons": [ "weapon_talons", "weapon_beak" ],
+      "loot": [
+        {
+          "id": "giant_eagle_feather",
+          "amount": 3,
+          "weight": 0.05
+        }
+      ]
+    },
+    {
+      "id": "owl",
+      "name": "Owl",
+      "challengeRate": 0,
+      "attributes": {
+        "strength": 3,
+        "dexterity": 13,
+        "constitution": 8,
+        "intelligence": 2,
+        "wisdom": 12,
+        "charisma": 7
+      },
+      "weapons": [ "weapon_talons" ],
+      "loot": [
+        {
+          "id": "owl_feather",
+          "amount": 1,
+          "weight": 0.01
+        }
+      ]
+    }
+  ],
+  "reptiles": [
+    {
+      "id": "snake_poison",
+      "name": "Poisonous Snake",
+      "challengeRate": 0.125,
+      "attributes": {
+        "strength": 2,
+        "dexterity": 16,
+        "constitution": 11,
+        "intelligence": 1,
+        "wisdom": 10,
+        "charisma": 3
+      },
+      "weapons": [ "weapon_snake_fangs" ],
+      "loot": [
+        {
+          "id": "snake_venom_gland",
+          "amount": 1,
+          "weight": 0.02
+        }
+      ]
+    },
+    {
+      "id": "snake_constrictor",
+      "name": "Constrictor Snake",
+      "challengeRate": 0.25,
+      "attributes": {
+        "strength": 15,
+        "dexterity": 14,
+        "constitution": 12,
+        "intelligence": 1,
+        "wisdom": 10,
+        "charisma": 3
+      },
+      "weapons": [ "weapon_snake_bite", "weapon_snake_constrict" ],
+      "loot": [
+        {
+          "id": "snake_skin",
+          "amount": 1,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "crocodile",
+      "name": "Crocodile",
+      "challengeRate": 0.5,
+      "attributes": {
+        "strength": 15,
+        "dexterity": 10,
+        "constitution": 13,
+        "intelligence": 2,
+        "wisdom": 10,
+        "charisma": 5
+      },
+      "weapons": [ "weapon_crocodile_bite" ],
+      "loot": [
+        {
+          "id": "croc_skin",
+          "amount": 1,
+          "weight": 7
+        }
+      ]
+    },
+    {
+      "id": "crocodile_giant",
+      "name": "Giant Crocodile",
+      "challengeRate": 5,
+      "attributes": {
+        "strength": 21,
+        "dexterity": 9,
+        "constitution": 17,
+        "intelligence": 2,
+        "wisdom": 10,
+        "charisma": 7
+      },
+      "weapons": [ "weapon_crocodile_bite", "weapon_crocodile_tail" ],
+      "loot": [
+        {
+          "id": "croc_skin_large",
+          "amount": 1,
+          "weight": 15
+        }
+      ]
+    }
+  ],
+  "magicalBeasts": [
+    {
+      "id": "griffon",
+      "name": "Griffon",
+      "description": "Griffons are majestic creatures with the body of a lion and the wings and head of an eagle. They are proud and territorial, often nesting in high mountains. Adventurers may find them guarding treasures or patrolling their skies with deadly precision.",
+      "challengeRate": 2,
+      "attributes": {
+        "strength": 18,
+        "dexterity": 16,
+        "constitution": 17,
+        "intelligence": 2,
+        "wisdom": 14,
+        "charisma": 8
+      },
+      "weapons": [ "weapon_beak", "weapon_claws" ],
+      "loot": [
+        {
+          "id": "griffon_feather",
+          "amount": 2,
+          "weight": 0.2
+        }
+      ]
+    },
+    {
+      "id": "owlbear",
+      "name": "Owlbear",
+      "description": "Owlbears are ferocious hybrids with the body of a bear and the head of a giant owl. Known for their violent tempers, they attack anything that comes too close. They are feared in dense forests, where their cries echo like thunder.",
+      "challengeRate": 3,
+      "attributes": {
+        "strength": 20,
+        "dexterity": 12,
+        "constitution": 18,
+        "intelligence": 2,
+        "wisdom": 12,
+        "charisma": 6
+      },
+      "weapons": [ "weapon_beak", "weapon_claws" ],
+      "loot": [
+        {
+          "id": "owlbear_feather",
+          "amount": 3,
+          "weight": 0.5
+        },
+        {
+          "id": "owlbear_hide",
+          "amount": 1,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "id": "wyvern",
+      "name": "Wyvern",
+      "description": "Wyverns are terrifying dragon-like creatures with venomous tails and powerful wings. They often nest in high cliffs or desolate mountains and are formidable predators, striking with both claws and a deadly tail sting.",
+      "challengeRate": 6,
+      "attributes": {
+        "strength": 19,
+        "dexterity": 15,
+        "constitution": 17,
+        "intelligence": 4,
+        "wisdom": 12,
+        "charisma": 7
+      },
+      "weapons": [ "weapon_claws", "weapon_tail_sting", "weapon_bite" ],
+      "loot": [
+        {
+          "id": "wyvern_scale",
+          "amount": 5,
+          "weight": 0.5
+        },
+        {
+          "id": "wyvern_venom_sac",
+          "amount": 1,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "chimera",
+      "name": "Chimera",
+      "description": "Chimeras are monstrous hybrids with the heads of a lion, a goat, and a dragon, and the wings of a dragon. They are cunning and vicious, capable of attacking with multiple forms simultaneously, and are often found in remote wilderness or cursed lands.",
+      "challengeRate": 7,
+      "attributes": {
+        "strength": 21,
+        "dexterity": 14,
+        "constitution": 19,
+        "intelligence": 5,
+        "wisdom": 13,
+        "charisma": 8
+      },
+      "weapons": [ "weapon_lion_claw", "weapon_goat_bite", "weapon_dragon_breath" ],
+      "loot": [
+        {
+          "id": "chimera_scale",
+          "amount": 6,
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

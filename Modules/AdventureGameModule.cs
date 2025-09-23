@@ -66,7 +66,7 @@ namespace Adventure.Modules
                 return;
             }
 
-            var npc = EncounterService.NpcRandomizer();
+            var npc = EncounterRandomizer.NpcRandomizer();
             var state = BattleMethods.GetBattleState(Context.User.Id);
             if (npc == null)
             {
