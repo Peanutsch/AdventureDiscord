@@ -26,7 +26,14 @@ namespace Adventure.Models.Items
 
         [JsonPropertyName("type")]
         public string Type { get; set; } = "light"; // light, medium, heavy
+    }
 
+    public class ArmorContainer 
+    {
+        [JsonPropertyName("crafted_armor")]
+        public List<ArmorModel>? CraftedArmor { get; set; }
 
+        [JsonPropertyName("natural_armor")]
+        public List<ArmorModel>? NaturalArmor { get; set; }
     }
 }

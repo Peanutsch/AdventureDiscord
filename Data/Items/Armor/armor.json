@@ -1,242 +1,273 @@
-[
-  {
-    "id": "armor_leather_armor",
-    "name": "Leather Armor",
-    "description": "A light armor made from toughened leather. Flexible and quiet.",
-    "armor_class": 11,
-    "weight": 4.5,
-    "type": "light"
-  },
-  {
-    "id": "armor_hide_armor",
-    "name": "Hide Armor",
-    "description": "Thick cured animal furs and pelts stitched together to a fine piece of medium armor. Offers modest protection.",
-    "armor_class": 12,
-    "weight": 5.4,
-    "type": "medium"
-  },
-  {
-    "id": "armor_scrap",
-    "name": "Scrap Armor",
-    "description": "A patchwork of metal plates, leather, and cloth cobbled together. This light armor provides minimal protection but is better than nothing.",
-    "armor_class": 10,
-    "weight": 6.0,
-    "type": "light"
-  },
-  {
-    "id": "armor_chain_shirt",
-    "name": "Chain Shirt",
-    "description": "A finely made chain mail shirt that offers moderate protection without sacrificing mobility. Ideal for disciplined warriors.",
-    "armor_class": 13,
-    "weight": 13.0,
-    "type": "medium"
-  },
-  {
-    "id": "armor_chain_mail",
-    "name": "Chain Mail",
-    "description": "A full set of interlocking metal rings providing solid defense. Heavy but reliable against most melee attacks.",
-    "armor_class": 16,
-    "weight": 18.0,
-    "type": "heavy"
-  },
-  {
-    "id": "armor_cloth_robe",
-    "name": "Cloth Robe",
-    "description": "A simple cloth robe, often worn by spellcasters. Provides no physical protection but allows free movement for casting.",
-    "armor_class": 10,
-    "weight": 2.0,
-    "type": "light"
-  },
-  {
-    "id": "armor_plate",
-    "name": "Plate Armor",
-    "description": "Heavy plates of metal protecting the entire body. Extremely durable, but encumbers the wearer and reduces mobility.",
-    "armor_class": 18,
-    "weight": 30.0,
-    "type": "heavy"
-  },
-  {
-    "id": "armor_shield",
-    "name": "Shield",
-    "description": "A sturdy shield made of wood or metal. Can be carried to increase the wearer's defense in combat.",
-    "armor_class": 2,
-    "weight": 6.0,
-    "type": "shield"
-  },
-  {
-    "id": "armor_wolf_fur",
-    "name": "Wolf Fur",
-    "description": "A wolf’s thick fur provides minimal protection against attacks.",
-    "armor_class": 11,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_dire_wolf_fur",
-    "name": "Dire Wolf Fur",
-    "description": "Dense, coarse fur of a dire wolf. Offers modest protection.",
-    "armor_class": 12,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_bear_fur_black",
-    "name": "Black Bear Fur",
-    "description": "Thick fur of a black bear. Provides moderate protection.",
-    "armor_class": 12,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_bear_fur_brown",
-    "name": "Brown Bear Fur",
-    "description": "Dense, tough brown bear fur. Offers slightly better protection.",
-    "armor_class": 13,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_bear_fur_polar",
-    "name": "Polar Bear Fur",
-    "description": "Thick, insulating polar bear fur that also protects against attacks.",
-    "armor_class": 13,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_lion_hide",
-    "name": "Lion Hide",
-    "description": "Tough hide of a lion. Provides modest natural protection.",
-    "armor_class": 12,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_tiger_hide",
-    "name": "Tiger Hide",
-    "description": "Dense fur and muscular build of a tiger. Provides moderate defense.",
-    "armor_class": 12,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_saber_tiger_hide",
-    "name": "Saber-Toothed Tiger Hide",
-    "description": "Thick hide of a saber-toothed tiger. Offers decent protection.",
-    "armor_class": 13,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_horse_hide",
-    "name": "Riding Horse Hide",
-    "description": "Strong hide of a riding horse. Offers minor protection.",
-    "armor_class": 11,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_warhorse_hide",
-    "name": "Warhorse Hide",
-    "description": "Thicker hide of a warhorse, providing moderate defense.",
-    "armor_class": 12,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_elephant_hide",
-    "name": "Elephant Hide",
-    "description": "Tough, thick skin of an elephant. Offers good protection.",
-    "armor_class": 14,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_mammoth_hide",
-    "name": "Mammoth Hide",
-    "description": "Dense, layered hide of a mammoth. Provides substantial defense.",
-    "armor_class": 15,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_eagle_feather",
-    "name": "Eagle Feathers",
-    "description": "Light feather covering. Provides almost no protection.",
-    "armor_class": 10,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_giant_eagle_feather",
-    "name": "Giant Eagle Feathers",
-    "description": "Dense feathers of a giant eagle. Offers minimal natural protection.",
-    "armor_class": 11,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_owl_feather",
-    "name": "Owl Feather",
-    "description": "Soft feathers of an owl. Minimal defense against attacks.",
-    "armor_class": 10,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_snake_skin",
-    "name": "Snake Skin",
-    "description": "Flexible scales of a snake. Offers minor natural protection.",
-    "armor_class": 11,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_crocodile_hide",
-    "name": "Crocodile Hide",
-    "description": "Thick, scaly hide of a crocodile, providing solid protection.",
-    "armor_class": 12,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_giant_crocodile_hide",
-    "name": "Giant Crocodile Hide",
-    "description": "Extra thick hide of a giant crocodile. Provides strong protection.",
-    "armor_class": 14,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_griffon_feather",
-    "name": "Griffon Feathers",
-    "description": "Sturdy feathers and partial hide of a griffon. Provides decent protection.",
-    "armor_class": 13,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_owlbear_hide",
-    "name": "Owlbear Hide",
-    "description": "Dense fur and muscular torso of an owlbear. Provides good natural armor.",
-    "armor_class": 14,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_wyvern_scale",
-    "name": "Wyvern Scales",
-    "description": "Tough scales covering a wyvern’s body, providing reliable defense.",
-    "armor_class": 15,
-    "weight": 0.0,
-    "type": "natural"
-  },
-  {
-    "id": "armor_chimera_scale",
-    "name": "Chimera Scales",
-    "description": "Multi-headed chimera with tough scales. Strong natural protection.",
-    "armor_class": 16,
-    "weight": 0.0,
-    "type": "natural"
-  }
-]
+{
+  "crafted_armor": [
+    {
+      "id": "armor_leather_armor",
+      "name": "Leather Armor",
+      "description": "A light armor made from toughened leather. Flexible and quiet.",
+      "armor_class": 11,
+      "weight": 4.5,
+      "type": "light",
+      "category": "crafted"
+    },
+    {
+      "id": "armor_hide_armor",
+      "name": "Hide Armor",
+      "description": "Thick cured animal furs and pelts stitched together to a fine piece of medium armor. Offers modest protection.",
+      "armor_class": 12,
+      "weight": 5.4,
+      "type": "medium",
+      "category": "crafted"
+    },
+    {
+      "id": "armor_scrap",
+      "name": "Scrap Armor",
+      "description": "A patchwork of metal plates, leather, and cloth cobbled together. This light armor provides minimal protection but is better than nothing.",
+      "armor_class": 10,
+      "weight": 6.0,
+      "type": "light",
+      "category": "crafted"
+    },
+    {
+      "id": "armor_chain_shirt",
+      "name": "Chain Shirt",
+      "description": "A finely made chain mail shirt that offers moderate protection without sacrificing mobility. Ideal for disciplined warriors.",
+      "armor_class": 13,
+      "weight": 13.0,
+      "type": "medium",
+      "category": "crafted"
+    },
+    {
+      "id": "armor_chain_mail",
+      "name": "Chain Mail",
+      "description": "A full set of interlocking metal rings providing solid defense. Heavy but reliable against most melee attacks.",
+      "armor_class": 16,
+      "weight": 18.0,
+      "type": "heavy",
+      "category": "crafted"
+    },
+    {
+      "id": "armor_cloth_robe",
+      "name": "Cloth Robe",
+      "description": "A simple cloth robe, often worn by spellcasters. Provides no physical protection but allows free movement for casting.",
+      "armor_class": 10,
+      "weight": 2.0,
+      "type": "light",
+      "category": "crafted"
+    },
+    {
+      "id": "armor_plate",
+      "name": "Plate Armor",
+      "description": "Heavy plates of metal protecting the entire body. Extremely durable, but encumbers the wearer and reduces mobility.",
+      "armor_class": 18,
+      "weight": 30.0,
+      "type": "heavy",
+      "category": "crafted"
+    },
+    {
+      "id": "armor_shield",
+      "name": "Shield",
+      "description": "A sturdy shield made of wood or metal. Can be carried to increase the wearer's defense in combat.",
+      "armor_class": 2,
+      "weight": 6.0,
+      "type": "shield",
+      "category": "crafted"
+    }
+  ],
+  "natural_armor": [
+    {
+      "id": "armor_wolf_fur",
+      "name": "Wolf Fur",
+      "description": "A wolf’s thick fur provides minimal protection against attacks.",
+      "armor_class": 11,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_dire_wolf_fur",
+      "name": "Dire Wolf Fur",
+      "description": "Dense, coarse fur of a dire wolf. Offers modest protection.",
+      "armor_class": 12,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_bear_fur_black",
+      "name": "Black Bear Fur",
+      "description": "Thick fur of a black bear. Provides moderate protection.",
+      "armor_class": 12,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_bear_fur_brown",
+      "name": "Brown Bear Fur",
+      "description": "Dense, tough brown bear fur. Offers slightly better protection.",
+      "armor_class": 13,
+      "weight": 0.0,
+      "type": "natural"
+    },
+    {
+      "id": "armor_bear_fur_polar",
+      "name": "Polar Bear Fur",
+      "description": "Thick, insulating polar bear fur that also protects against attacks.",
+      "armor_class": 13,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_lion_hide",
+      "name": "Lion Hide",
+      "description": "Tough hide of a lion. Provides modest natural protection.",
+      "armor_class": 12,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_tiger_hide",
+      "name": "Tiger Hide",
+      "description": "Dense fur and muscular build of a tiger. Provides moderate defense.",
+      "armor_class": 12,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_saber_tiger_hide",
+      "name": "Saber-Toothed Tiger Hide",
+      "description": "Thick hide of a saber-toothed tiger. Offers decent protection.",
+      "armor_class": 13,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_horse_hide",
+      "name": "Riding Horse Hide",
+      "description": "Strong hide of a riding horse. Offers minor protection.",
+      "armor_class": 11,
+      "weight": 0.0,
+      "type": "natural"
+    },
+    {
+      "id": "armor_warhorse_hide",
+      "name": "Warhorse Hide",
+      "description": "Thicker hide of a warhorse, providing moderate defense.",
+      "armor_class": 12,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_elephant_hide",
+      "name": "Elephant Hide",
+      "description": "Tough, thick skin of an elephant. Offers good protection.",
+      "armor_class": 14,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_mammoth_hide",
+      "name": "Mammoth Hide",
+      "description": "Dense, layered hide of a mammoth. Provides substantial defense.",
+      "armor_class": 15,
+      "weight": 0.0,
+      "type": "natural"
+    },
+    {
+      "id": "armor_eagle_feather",
+      "name": "Eagle Feathers",
+      "description": "Light feather covering. Provides almost no protection.",
+      "armor_class": 10,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_giant_eagle_feather",
+      "name": "Giant Eagle Feathers",
+      "description": "Dense feathers of a giant eagle. Offers minimal natural protection.",
+      "armor_class": 11,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_owl_feather",
+      "name": "Owl Feather",
+      "description": "Soft feathers of an owl. Minimal defense against attacks.",
+      "armor_class": 10,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_snake_skin",
+      "name": "Snake Skin",
+      "description": "Flexible scales of a snake. Offers minor natural protection.",
+      "armor_class": 11,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_crocodile_hide",
+      "name": "Crocodile Hide",
+      "description": "Thick, scaly hide of a crocodile, providing solid protection.",
+      "armor_class": 12,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_giant_crocodile_hide",
+      "name": "Giant Crocodile Hide",
+      "description": "Extra thick hide of a giant crocodile. Provides strong protection.",
+      "armor_class": 14,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_griffon_feather",
+      "name": "Griffon Feathers",
+      "description": "Sturdy feathers and partial hide of a griffon. Provides decent protection.",
+      "armor_class": 13,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_owlbear_hide",
+      "name": "Owlbear Hide",
+      "description": "Dense fur and muscular torso of an owlbear. Provides good natural armor.",
+      "armor_class": 14,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_wyvern_scale",
+      "name": "Wyvern Scales",
+      "description": "Tough scales covering a wyvern’s body, providing reliable defense.",
+      "armor_class": 15,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    },
+    {
+      "id": "armor_chimera_scale",
+      "name": "Chimera Scales",
+      "description": "Multi-headed chimera with tough scales. Strong natural protection.",
+      "armor_class": 16,
+      "weight": 0.0,
+      "type": "natural",
+      "category": "natural"
+    }
+  ]
+}

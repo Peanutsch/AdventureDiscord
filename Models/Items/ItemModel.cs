@@ -31,10 +31,10 @@ namespace Adventure.Models.Items
         public double Value { get; set; }
 
         [JsonPropertyName("effect")]
-        public EffectModel Effect { get; set; } = new();
+        public EffectItems Effect { get; set; } = new();
     }
 
-    public class EffectModel
+    public class EffectItems
     {
         [JsonPropertyName("diceCount")]
         public int DiceCount { get; set; }
