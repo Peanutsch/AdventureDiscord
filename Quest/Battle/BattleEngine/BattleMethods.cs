@@ -142,7 +142,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             state.PreHpNPC = RollHitpointsNPC;            
             state.RewardXP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
             
-            LogService.Info($"[BattleEngine.SetNpc]\nNPC: {npc.Name} HP: {state.CurrentHitpointsNPC} RewardXP: {state.RewardXP}\n");
+            LogService.Info($"[BattleMethod.SetNpc]\n\n>NPC: {npc.Name} HP: {state.CurrentHitpointsNPC} RewardXP: {state.RewardXP}\n\n");
 
             if (npc.Weapons != null)
                 state.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);

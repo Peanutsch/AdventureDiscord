@@ -42,7 +42,7 @@ namespace Adventure.Quest.Battle.Process
 
             if (isPlayerAttacker)
             {
-                LogService.Info($"\nPlayer's turn > Dice: {dice} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}\n");
+                LogService.Info($"\n\nPlayer's turn > Dice: {dice} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}\n\n");
 
                 // Player attacks, update NPC HP
                 state.CurrentHitpointsNPC = newHP;
@@ -51,12 +51,12 @@ namespace Adventure.Quest.Battle.Process
                 JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Name!, state.Player.Hitpoints);
 
                 // Log HP status after player's attack
-                LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit]\nAfter player attack\n" +
-                                $"HP {state.Player.Name}: {state.Player.Hitpoints} HP NPC: {state.CurrentHitpointsNPC}\n");
+                LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After player attack:\n\n" +
+                                $"HP {state.Player.Name}: {state.Player.Hitpoints} HP NPC: {state.CurrentHitpointsNPC}\n\n");
             }
             else
             {
-                LogService.Info($"\nNPC's turn > Dice: {dice} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}\n");
+                LogService.Info($"\n\nNPC's turn > Dice: {dice} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}\n\n");
 
                 // NPC attacks, update player HP
                 state.Player.Hitpoints = newHP;
@@ -65,8 +65,8 @@ namespace Adventure.Quest.Battle.Process
                 JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Name!, state.Player.Hitpoints);
 
                 // Log HP status after creature's attack
-                LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit]\nAfter NPC attack\n" +
-                                $"HP Player: {state.Player.Hitpoints} HP NPC: {state.CurrentHitpointsNPC}\n");
+                LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After NPC attack:\n\n" +
+                                $"HP Player: {state.Player.Hitpoints} HP NPC: {state.CurrentHitpointsNPC}\n\n");
             }
 
             // Return detailed result of the damage roll
@@ -80,7 +80,7 @@ namespace Adventure.Quest.Battle.Process
             var currentXP = state.Player.XP;
             var newXP =  currentXP + rewardedXP;
 
-            LogService.Info($"[ProcessSuccesAttack.ProcessSaveXPReward] Player: {state.Player.Name} XP Reward: {rewardedXP} Current XP: {state.Player.XP} New XP: {newXP}");
+            LogService.Info($"[ProcessSuccesAttack.ProcessSaveXPReward] Player: {state.Player.Name} defeated {state.Npc.Name} XP Reward: {rewardedXP} Current XP: {state.Player.XP} New XP: {newXP}");
 
             // Update player's XP in JSON and BattleState
             state.NewTotalXP = newXP;

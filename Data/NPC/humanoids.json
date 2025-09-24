@@ -301,7 +301,7 @@
       "wisdom": 10,
       "charisma": 6
     },
-    "armor": [ "armor_natural_hide" ],
+    "armor": [ "armor_hide_armor" ],
     "weapons": [ "weapon_gore", "weapon_club" ],
     "loot": []
   }

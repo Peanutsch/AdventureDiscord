@@ -20,30 +20,6 @@ namespace Adventure.Quest.Encounter
     public class EncounterService
     {
         /// <summary>
-        /// Randomly selects a npc from the humanoids list.
-        /// </summary>
-        /// <returns>A random NpcModel instance or null if an error occurs.</returns>
-        public static NpcModel? NpcRandomizer()
-        {
-            try
-            {
-                // Get the list of humanoid creatures
-                var humanoids = GameData.Humanoids;
-                var bestiary = GameData.Bestiary; 
-
-                var random = new Random();
-
-                // Return a random humanoid creature from the list
-                return humanoids![random.Next(humanoids.Count)];
-            }
-            catch (Exception ex)
-            {
-                LogService.Error($"[EncounterService.CreatureRandomizer] > Error:\n{ex.Message}");
-                return null;
-            }
-        }
-
-        /// <summary>
         /// Builds an embed describing the randomly encountered creature with stats and equipment.
         /// </summary>
         /// <param name="creature">The creature to display in the encounter embed.</param>
@@ -137,7 +113,7 @@ namespace Adventure.Quest.Encounter
 
             // Set current State of NPC
             TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
-            LogService.Info($"[EncounterService.RebuildBattleEmbed] {npc.Name} HP at Start: {state.HitpointsAtStartNPC} {npc.Name} current HP: {state.CurrentHitpointsNPC} {npc.Name} Health: {state.PercentageHpNpc}% State: {state.StateOfNPC}");
+            LogService.Info($"[EncounterService.RebuildBattleEmbed]\n\n{npc.Name} HP at Start: {state.HitpointsAtStartNPC} {npc.Name} current HP: {state.CurrentHitpointsNPC} {npc.Name} Health: {state.PercentageHpNpc}% State: {state.StateOfNPC}\n\n");
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Red)

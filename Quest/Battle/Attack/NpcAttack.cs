@@ -4,11 +4,6 @@ using Adventure.Quest.Helpers;
 using Adventure.Quest.Rolls;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Quest.Battle.Attack
 {
@@ -36,7 +31,7 @@ namespace Adventure.Quest.Battle.Attack
             {
                 // CRITICAL HIT
                 case ProcessRollsAndDamage.HitResult.IsCriticalHit:
-                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack] IsCriticalHit");
+                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack]\n\n>Result attack: IsCriticalHit\n\n");
 
                     if (player.Hitpoints <= 0)
                     {
@@ -62,7 +57,7 @@ namespace Adventure.Quest.Battle.Attack
 
                 // CRITICAL MISS
                 case ProcessRollsAndDamage.HitResult.IsCriticalMiss:
-                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack] IsCriticalMiss");
+                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack]\n\n> Result attack: IsCriticalMiss\n\n");
 
                     result =
                         $"🗡️ **[MISS] {npc.Name} attacks {player.Name} with {weapon.Name}, but critically misses!**\n\n" +
@@ -72,7 +67,7 @@ namespace Adventure.Quest.Battle.Attack
 
                 // HIT
                 case ProcessRollsAndDamage.HitResult.IsValidHit:
-                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack] IsValidHit");
+                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack]\n\n> Result attack: IsValidHit\n\n");
 
                     if (player.Hitpoints <= 0)
                     {
@@ -99,7 +94,7 @@ namespace Adventure.Quest.Battle.Attack
                 // MISS
                 case ProcessRollsAndDamage.HitResult.IsMiss:
                 default:
-                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack] IsMiss");
+                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack]\n\n> Result attack: IsMiss\n\n");
 
                     result =
                         $"🗡️ **[MISS] {npc.Name} attacks {player.Name}, but the {weapon.Name} bounces off!**\n\n" +

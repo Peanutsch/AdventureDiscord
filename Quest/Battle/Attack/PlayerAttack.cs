@@ -1,18 +1,6 @@
 ﻿using Adventure.Models.Items;
 using Adventure.Services;
 using Adventure.Quest.Rolls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Discord;
-using System.Numerics;
-using Adventure.Loaders;
-using Adventure.Models.BattleState;
-using Adventure.Models.NPC;
-using Adventure.Models.Player;
-using System.Collections;
 using Adventure.Quest.Battle.Process;
 using Adventure.Quest.Helpers;
 using Adventure.Quest.Battle.BattleEngine;
@@ -49,7 +37,7 @@ namespace Adventure.Quest.Battle.Attack
             {
                 // CRITICAL HIT
                 case ProcessRollsAndDamage. HitResult.IsCriticalHit:
-                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack] isCriticalHit");
+                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack]\n\n>Result attack: isCriticalHit\n\n");
 
                     if (state.CurrentHitpointsNPC <= 0)
                     {
@@ -78,7 +66,7 @@ namespace Adventure.Quest.Battle.Attack
                 
                 // CRITICAL MISS
                 case ProcessRollsAndDamage.HitResult.IsCriticalMiss:
-                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack] isCriticalMiss");
+                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack]\n\n> Result attack: isCriticalMiss\n\n");
 
                     result =
                         $"🗡️ **[MISS] {player.Name} attacks {npc.Name}, but critically misses!**\n" +
@@ -88,7 +76,7 @@ namespace Adventure.Quest.Battle.Attack
 
                 // HIT
                 case ProcessRollsAndDamage.HitResult.IsValidHit:
-                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack] isValidHit");
+                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack]\n\n>Result attack: isValidHit\n\n");
 
                     if (state.CurrentHitpointsNPC <= 0)
                     {
@@ -97,7 +85,7 @@ namespace Adventure.Quest.Battle.Attack
 
                         result =
                             $"🗡️ **[HIT] {player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" + 
-                            $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = **{state.TotalRoll}**\n" +// vs AC [  {state.ArmorElements.ArmorClass}  ]\n" +
+                            $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = **{state.TotalRoll}**\n" +
                             $"🎲 Damage ({state.Dice}): ** {string.Join(", ", state.Rolls)} **\n" +
                             $"🎯 Total = Damage ( {state.Damage} ) + {state.AbilityModifier} (STR( {strength} )) = **{state.TotalDamage}**\n\n" +
                             $"💀 **{npc.Name} is defeated!**\n\n**{player.Name}** is rewarded with **{state.RewardXP} XP** and has now a total of **{state.NewTotalXP} XP**!";
@@ -107,7 +95,7 @@ namespace Adventure.Quest.Battle.Attack
                         BattleMethods.SetStep(userId, BattleMethods.StepPostBattle);
                         result =
                             $"🗡️ **[HIT] {player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +
-                            $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = **{state.TotalRoll}**\n" +// vs AC [  {state.ArmorElements.ArmorClass}  ]\n" +
+                            $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = **{state.TotalRoll}**\n" +
                             $"🎲 Damage ({state.Dice}): **{string.Join(", ", state.Rolls)}**\n" +
                             $"🎯 Total = Damage ( {state.Damage} ) + {state.AbilityModifier} (STR( {strength} )) = **{state.TotalDamage}**\n\n" +
                             $"🧟 Some text with damage degree like just scratched or severe wound...\n"; 
@@ -117,7 +105,7 @@ namespace Adventure.Quest.Battle.Attack
                 // MISS
                 case ProcessRollsAndDamage.HitResult.IsMiss:
                 default:
-                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack] IsMiss");
+                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack]\n\n>Result attack: IsMiss\n\n");
 
                     result =
                         $"🗡️ **[MISS] {player.Name} attacks {npc.Name}, but the {weapon.Name} bounces off!**\n" +
