@@ -10,7 +10,8 @@ using Microsoft.VisualBasic;
 using Adventure.Quest.Encounter;
 using Adventure.Models.BattleState;
 using Adventure.Quest.Battle.BattleEngine;
-using static Adventure.Quest.Encounter.EncounterRandomizer;
+using static Adventure.Quest.Battle.BattleRandomizers.EncounterRandomizer;
+using Adventure.Quest.Battle.BattleRandomizers;
 
 namespace Adventure.Modules
 {

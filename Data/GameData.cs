@@ -79,7 +79,7 @@ namespace Adventure.Data
             set => _potions = value;
         }
 
-        public static List<ItemModel>? _items;
+        private static List<ItemModel>? _items;
 
         public static List<ItemModel>? Items
         {
@@ -87,7 +87,7 @@ namespace Adventure.Data
             set => _items = value;
         }
 
-        public static List<InventoryModel>? _inventory;
+        private static List<InventoryModel>? _inventory;
 
         public static List<InventoryModel>? Inventory
         {
@@ -95,7 +95,7 @@ namespace Adventure.Data
             set => _inventory = value;
         }
 
-        public static List<TextModel>? _text;
+        private static List<TextModel>? _text;
 
         public static List<TextModel>? Text
         {

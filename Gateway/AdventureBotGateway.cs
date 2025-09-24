@@ -36,7 +36,7 @@ namespace Adventure.Gateway
             //GameData.Player = PlayerLoader.Load(userId);
             GameData.Humanoids = HumanoidLoader.Load();
             GameData.Bestiary = BestiaryLoader.Load();
-            GameData.Text = TextLoader.Load();
+            //GameData.Text = TextLoader.Load();
 
             string discordToken = GetToken.GetTokenFromCSV();
 

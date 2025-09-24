@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Quest.Rolls
 {
-    class ProcessRollsAndDamage
+    public class ProcessRollsAndDamage
     {
         #region VALIDATE HIT
         /// <summary>
@@ -71,16 +71,16 @@ namespace Adventure.Quest.Rolls
             int abilityModifier = ModifierHelpers.GetAbilityModifier(abilityStrength);
 
             // Calculate total attack value
-            int totalRoll = attackRoll + abilityModifier + proficiencyModifier;
+            int totalAttackRoll = attackRoll + abilityModifier + proficiencyModifier;
 
             LogService.Info($"[ProcessRollsAndDamage.ValidateHit] Calculating totalRoll:\n\n" +
-                            $"> totalRoll({totalRoll}) = attackRoll(+{attackRoll}) + abilityModifier[{abilityStrength}](+{abilityModifier}) + proficiencyModifier(+{proficiencyModifier})\n\n");
+                            $"> totalRoll({totalAttackRoll}) = attackRoll(+{attackRoll}) + abilityModifier[{abilityStrength}](+{abilityModifier}) + proficiencyModifier(+{proficiencyModifier})\n\n");
 
             // Store relevant data in the battle state
             state.AttackRoll = attackRoll;
             state.ProficiencyModifier = proficiencyModifier;
             state.AbilityModifier = abilityModifier;
-            state.TotalRoll = totalRoll;
+            state.TotalRoll = totalAttackRoll;
             state.ArmorElements.ArmorClass = defenderAC;
             state.IsCriticalHit = attackRoll == 20;   // Natural 20 = critical hit
             state.IsCriticalMiss = attackRoll == 1;   // Natural 1 = critical miss
@@ -90,7 +90,7 @@ namespace Adventure.Quest.Rolls
                             $"abilityStrength: {abilityStrength}\n" +
                             $"attackRoll: +{attackRoll}\n" +
                             $"proficiencyModifier: +{proficiencyModifier}\n\n" +
-                            $"totalRoll: {totalRoll}\n" +
+                            $"totalRoll: {totalAttackRoll}\n" +
                             $"defenderAC: {defenderAC}\n\n");
 
             // Determine and return the hit result
@@ -98,7 +98,7 @@ namespace Adventure.Quest.Rolls
                 return HitResult.IsCriticalHit;
             else if (state.IsCriticalMiss)
                 return HitResult.IsCriticalMiss;
-            else if (totalRoll >= defenderAC)
+            else if (totalAttackRoll >= defenderAC)
                 return HitResult.IsValidHit;
             else
                 return HitResult.IsMiss;
@@ -180,14 +180,14 @@ namespace Adventure.Quest.Rolls
             {
                 var preSavedHPNpc = state.PreHpNPC;
                 state.PreHpNPC = currentHitpoints - totalDamage;
-                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\npre HP NPC: {preSavedHPNpc}\nUpdated state.PreHPNPC to: {state.PreHpNPC}");
+                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\n\npre HP NPC: {preSavedHPNpc}\nUpdated state.PreHPNPC to: {state.PreHpNPC}\n\n");
 
             }
             else
             {
                 var preSavedHPPlayer = state.PreHpPlayer;
                 state.PreHpPlayer = currentHitpoints - totalDamage;
-                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\npre HP Player: {preSavedHPPlayer}\nUpdated state.PreHPPlayer to: {state.PreHpPlayer}");
+                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\n\npre HP Player: {preSavedHPPlayer}\nUpdated state.PreHPPlayer to: {state.PreHpPlayer}\n\n");
             }
 
             // Return tuple with detailed damage info

@@ -9,6 +9,22 @@ namespace Adventure.Models.Text
 {
     public class TextModel
     {
-        public List<BattleTextModel> BattleText { get; set; } = new();
+        [JsonPropertyName("text")]
+        public string Text { get; set; } = string.Empty;
+    }
+
+    public class TextContainer
+    {
+        [JsonPropertyName("criticalHit")]
+        public List<TextModel>? CriticalHit { get; set; }
+
+        [JsonPropertyName("hit")]
+        public List<TextModel>? Hit { get; set; }
+
+        [JsonPropertyName("criticalMiss")]
+        public List<TextModel>? CriticalMiss { get; set; }
+
+        [JsonPropertyName("miss")]
+        public List<TextModel>? Miss { get; set; }
     }
 }
