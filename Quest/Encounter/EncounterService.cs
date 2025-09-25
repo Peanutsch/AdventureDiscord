@@ -49,8 +49,6 @@ namespace Adventure.Quest.Encounter
                     {
                         embed.AddField($"**[{armor.Name}]**\n",
                             $"Type: {armor.Type} armor\n" +
-                            //$"Armor Class: {armor.ArmorClass}\n" +
-                            //$"Weight: {armor.Weight}kg\n" +
                             $"*\"{armor.Description}\"*", false);
                     }
                 }
@@ -74,7 +72,6 @@ namespace Adventure.Quest.Encounter
                     {
                         embed.AddField($"**[{weapon.Name}]**",
                             $"Range: {weapon.Range} meter\n" +
-                            //$"Weight: {weapon.Weight}kg\n" +
                             $"*\"{weapon.Description}\"*", false);
                     }
                 }
@@ -105,7 +102,7 @@ namespace Adventure.Quest.Encounter
         /// <param name="preNpcHP">NPC's HP before the attack.</param>
         /// <param name="attackSummary">Text describing the attack results.</param>
         /// <returns>An EmbedBuilder summarizing the battle.</returns>
-        public static EmbedBuilder RebuildBattleEmbed(ulong userId, int preHPPlayer, int preHPNPC, string attackSummary)
+        public static EmbedBuilder RebuildBattleEmbed(ulong userId, string attackSummary)
         {
             var state = BattleMethods.GetBattleState(userId);
             var player = state.Player;
@@ -173,7 +170,7 @@ namespace Adventure.Quest.Encounter
             }
 
             // Add button "Flee" on same row as weapons
-            builder.WithButton("Flee!", "btn_flee", ButtonStyle.Secondary);
+            builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary);
 
             // Add armors to embed
             foreach (var armor in armors!)

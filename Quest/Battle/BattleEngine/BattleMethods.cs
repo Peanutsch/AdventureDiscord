@@ -302,11 +302,7 @@ namespace Adventure.Quest.Battle.BattleEngine
 
             if (state.CurrentHitpointsNPC <= 0)
             {
-                var embed = EncounterService.RebuildBattleEmbed(
-                    userId,
-                    prePlayerHP,
-                    preNpcHP,
-                    playerAttackResult);
+                var embed = EncounterService.RebuildBattleEmbed(userId, playerAttackResult);
 
                 await interaction.ModifyOriginalResponseAsync(msg => msg.Embed = embed.Build());
                 return;
@@ -316,11 +312,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             var npcWeapon = state.NpcWeapons.FirstOrDefault();
             if (npcWeapon == null)
             {
-                var embed = EncounterService.RebuildBattleEmbed(
-                    userId,
-                    prePlayerHP,
-                    preNpcHP,
-                    $"{playerAttackResult}\n\n⚠️ {state.Npc.Name} has nothing to attack with.");
+                var embed = EncounterService.RebuildBattleEmbed(userId, $"{playerAttackResult}\n\n⚠️ {state.Npc.Name} has nothing to attack with.");
 
                 await interaction.ModifyOriginalResponseAsync(msg => msg.Embed = embed.Build());
                 return;
@@ -333,11 +325,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             string fullAttackLog = $"{playerAttackResult}\n\n{npcAttackResult}";
 
             // 🧱 Bouw de embed met gecombineerde aanval
-            var fullEmbed = EncounterService.RebuildBattleEmbed(
-                userId,
-                prePlayerHP,
-                preNpcHP,
-                fullAttackLog);
+            var fullEmbed = EncounterService.RebuildBattleEmbed(userId, fullAttackLog);
 
             // 📬 Update bericht
             await interaction.ModifyOriginalResponseAsync(msg => msg.Embed = fullEmbed.Build());

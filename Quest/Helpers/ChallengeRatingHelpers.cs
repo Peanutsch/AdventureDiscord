@@ -76,11 +76,11 @@ namespace Adventure.Quest.Helpers
             else if (cr <= 0.25) return 50;
             else if (cr <= 0.5) return 100;
             else if (cr <= 1) return 200;
-            else if (cr <= 2) return 200;
-            else if (cr <= 3) return 300;
-            else if (cr <= 5)  return 500;
-            else if (cr <= 10) return 750;
-            else return 1000;
+            else if (cr <= 2) return 450;
+            else if (cr <= 3) return 700;
+            else if (cr <= 5)  return 1800;
+            else if (cr <= 10) return 5900;
+            else return 0;
         }
     }
 }

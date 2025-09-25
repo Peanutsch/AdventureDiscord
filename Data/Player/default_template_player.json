@@ -4,7 +4,7 @@
   "level": 1,
   "xp": 0,
   "description": "A brave soul starting their journey.",
-  "hitpoints": 1000,
+  "hitpoints": 50,
   "maxCarry": 70,
   "attributes": {
     "strength": 11,
