@@ -140,6 +140,21 @@
     }
   },
   {
+    "id": "weapon_warhammer",
+    "name": "Warhammer",
+    "description": "A solid hammer designed for crushing armor and bones.",
+    "weight": 2,
+    "range": 1.5,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 8,
+      "modifier": 0,
+      "type": "bludgeoning",
+      "display": "1d8 Bludgeoning"
+    }
+  },
+
+  {
     "id": "weapon_wolf_claw",
     "name": "Wolf Claw",
     "description": "Sharp claws used by wolves to slash at prey.",

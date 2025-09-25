@@ -37,8 +37,6 @@ namespace Adventure.Quest.Battle.Attack
             {
                 // CRITICAL HIT
                 case ProcessRollsAndDamage. HitResult.IsCriticalHit:
-                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack]\n\n>Result attack: isCriticalHit\n\n");
-
                     if (state.CurrentHitpointsNPC <= 0)
                     {
                         BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
@@ -66,8 +64,6 @@ namespace Adventure.Quest.Battle.Attack
                 
                 // CRITICAL MISS
                 case ProcessRollsAndDamage.HitResult.IsCriticalMiss:
-                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack]\n\n> Result attack: isCriticalMiss\n\n");
-
                     result =
                         $"🗡️ **[MISS] {player.Name} attacks {npc.Name}, but critically misses!**\n" +
                         $"🎯 Attack Roll [{state.AttackRoll}]\n\n" +
@@ -76,8 +72,6 @@ namespace Adventure.Quest.Battle.Attack
 
                 // HIT
                 case ProcessRollsAndDamage.HitResult.IsValidHit:
-                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack]\n\n>Result attack: isValidHit\n\n");
-
                     if (state.CurrentHitpointsNPC <= 0)
                     {
                         BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
@@ -105,8 +99,6 @@ namespace Adventure.Quest.Battle.Attack
                 // MISS
                 case ProcessRollsAndDamage.HitResult.IsMiss:
                 default:
-                    LogService.Info("[BattleEngineHelpers.ProcessPlayerAttack]\n\n>Result attack: IsMiss\n\n");
-
                     result =
                         $"🗡️ **[MISS] {player.Name} attacks {npc.Name}, but the {weapon.Name} bounces off!**\n" +
                         $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = **{state.TotalRoll}**\n\n" +// vs AC [ {state.ArmorElements.ArmorClass} ]\n\n" +

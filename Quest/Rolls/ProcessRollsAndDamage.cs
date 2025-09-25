@@ -73,8 +73,8 @@ namespace Adventure.Quest.Rolls
             // Calculate total attack value
             int totalAttackRoll = attackRoll + abilityModifier + proficiencyModifier;
 
-            LogService.Info($"[ProcessRollsAndDamage.ValidateHit] Calculating totalRoll:\n\n" +
-                            $"> totalRoll({totalAttackRoll}) = attackRoll(+{attackRoll}) + abilityModifier[{abilityStrength}](+{abilityModifier}) + proficiencyModifier(+{proficiencyModifier})\n\n");
+            LogService.Info($"[ProcessRollsAndDamage.ValidateHit] Calculating totalAttackRoll:\n\n" +
+                            $"> totalAttackRoll({totalAttackRoll}) = attackRoll(+{attackRoll}) + abilityModifier[{abilityStrength}](+{abilityModifier}) + proficiencyModifier(+{proficiencyModifier})\n\n");
 
             // Store relevant data in the battle state
             state.AttackRoll = attackRoll;
@@ -90,18 +90,26 @@ namespace Adventure.Quest.Rolls
                             $"abilityStrength: {abilityStrength}\n" +
                             $"attackRoll: +{attackRoll}\n" +
                             $"proficiencyModifier: +{proficiencyModifier}\n\n" +
-                            $"totalRoll: {totalAttackRoll}\n" +
-                            $"defenderAC: {defenderAC}\n\n");
+                            $"> totalRoll: {totalAttackRoll}\n" +
+                            $"> defenderAC: {defenderAC}\n\n");
 
             // Determine and return the hit result
-            if (state.IsCriticalHit)
+            if (state.IsCriticalHit) {
+                LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Critical Hit");
                 return HitResult.IsCriticalHit;
-            else if (state.IsCriticalMiss)
+            }
+            else if (state.IsCriticalMiss) {
+                LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Critical Miss");
                 return HitResult.IsCriticalMiss;
-            else if (totalAttackRoll >= defenderAC)
+            }
+            else if (totalAttackRoll >= defenderAC) {
+                LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Hit");
                 return HitResult.IsValidHit;
-            else
+            }
+            else {
+                LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Miss");
                 return HitResult.IsMiss;
+            }
         }
         #endregion VALIDATE HIT
 

@@ -39,14 +39,22 @@ namespace Adventure.Quest.Helpers
             else return 9;
         }
 
-        public static int GetAbilityModifier(int abilityScore)
-        {
+        /// <summary>
+        /// Calculates the ability modifier for a given ability score according to D&D 5e rules.
+        /// In D&D, the modifier is calculated as (Ability Score - 10) / 2, rounded down.
+        /// </summary>
+        /// <param name="abilityScore">The ability score (e.g., Strength, Dexterity) of the character.</param>
+        /// <returns>The corresponding ability modifier as an integer.</returns>
+        public static int GetAbilityModifier(int abilityScore) {
+            // Calculate the modifier by subtracting 10 from the ability score, dividing by 2, and rounding down
             var result = (int)Math.Floor((abilityScore - 10) / 2.0);
 
+            // Log the ability score and the calculated modifier for debugging purposes
             LogService.Info($"[Modifiers.GetAbilityModifier] Ability Score: {abilityScore} Modifier: {result}");
 
             return result;
         }
+
         #endregion MODIFIERS
     }
 }

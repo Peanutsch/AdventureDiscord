@@ -31,8 +31,6 @@ namespace Adventure.Quest.Battle.Attack
             {
                 // CRITICAL HIT
                 case ProcessRollsAndDamage.HitResult.IsCriticalHit:
-                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack]\n\n>Result attack: IsCriticalHit\n\n");
-
                     if (player.Hitpoints <= 0)
                     {
                         result =
@@ -57,8 +55,6 @@ namespace Adventure.Quest.Battle.Attack
 
                 // CRITICAL MISS
                 case ProcessRollsAndDamage.HitResult.IsCriticalMiss:
-                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack]\n\n> Result attack: IsCriticalMiss\n\n");
-
                     result =
                         $"🗡️ **[MISS] {npc.Name} attacks {player.Name} with {weapon.Name}, but critically misses!**\n\n" +
                         //$"🎯 Attack Roll [ {state.AttackRoll} ] vs AC [ {state.ArmorElements.ArmorClass} ]\n\n" +
@@ -94,8 +90,6 @@ namespace Adventure.Quest.Battle.Attack
                 // MISS
                 case ProcessRollsAndDamage.HitResult.IsMiss:
                 default:
-                    LogService.Info("[BattleEngineHelpers.ProcessCreatureAttack]\n\n> Result attack: IsMiss\n\n");
-
                     result =
                         $"🗡️ **[MISS] {npc.Name} attacks {player.Name}, but the {weapon.Name} bounces off!**\n\n" +
                         //$"🎯 Attack Roll ( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (CR: {npcCR}) = [ {state.TotalRoll} ] vs AC[{state.ArmorElements.ArmorClass} ]\n\n" +

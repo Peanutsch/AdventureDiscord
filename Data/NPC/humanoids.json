@@ -251,7 +251,7 @@
       "charisma": 10
     },
     "armor": [ "armor_chain_mail" ],
-    "weapons": [ "weapon_warhammer", "weapon_shield" ],
+    "weapons": [ "weapon_warhammer" ],
     "loot": []
   },
   {
