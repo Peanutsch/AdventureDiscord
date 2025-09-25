@@ -1,10 +1,10 @@
 {
-  "id": ,
+  "id": 0,
   "name": "",
   "level": 1,
   "xp": 0,
   "description": "A brave soul starting their journey.",
-  "hitpoints": 100,
+  "hitpoints": 1000,
   "maxCarry": 70,
   "attributes": {
     "strength": 11,
@@ -32,7 +32,7 @@
   ],
   "items": [
     {
-      "id": "potion_small_healing",
+      "id": "",
       "value": 1
     }
   ],
