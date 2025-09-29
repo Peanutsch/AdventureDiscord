@@ -9,7 +9,7 @@ namespace Adventure.Quest.Helpers
     public static class LevelHelpers 
     {
         // D&D 5e cumulative XP thresholds for each level
-        private static readonly int[] LevelXPThresholds = new int[]
+        public static readonly int[] LevelXPThresholds = new int[]
         {
         0,      // Level 1
         300,    // Level 2
@@ -32,18 +32,5 @@ namespace Adventure.Quest.Helpers
         305000, // Level 19
         355000  // Level 20
         };
-
-        /// <summary>
-        /// Calculates the player level based on cumulative XP.
-        /// </summary>
-        /// <param name="xp">The cumulative XP of the player.</param>
-        /// <returns>The player level (1–20).</returns>
-        public static int GetLevelFromXP(int xp) {
-            for (int level = LevelXPThresholds.Length; level > 0; level--) {
-                if (xp >= LevelXPThresholds[level - 1])
-                    return level;
-            }
-            return 1; // Minimum level
-        }
     }
 }

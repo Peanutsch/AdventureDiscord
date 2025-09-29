@@ -227,5 +227,43 @@ namespace Adventure.Loaders
                 LogService.Error($"[UpdatePlayerHitpointsInJson] Exception: {ex.Message}");
             }
         }
+
+        public static void UpdatePlayerLevelInJson(ulong userId, string playerName, int newLevel)
+        {
+            string path = Path.Combine("Data", "Player", $"{userId}.json");
+
+            if (!File.Exists(path))
+            {
+                LogService.Error($"[UpdatePlayerLevelInJson] File not found: {path}");
+                return;
+            }
+
+            try
+            {
+                string json = File.ReadAllText(path);
+                var player = JsonSerializer.Deserialize<PlayerModel>(json);
+
+                if (player == null)
+                {
+                    LogService.Error("[UpdatePlayerLevelInJson] Failed to deserialize PlayerModel.");
+                    return;
+                }
+
+                player.Level = newLevel;
+
+                string updatedJson = JsonSerializer.Serialize(player, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+                File.WriteAllText(path, updatedJson);
+
+                LogService.Info($"[UpdatePlayerLevelInJson] Player level updated to {newLevel} for userId {userId} ({playerName})");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[UpdatePlayerLevelInJson] Exception: {ex.Message}");
+            }
+        }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Adventure.Models.Items;
-using Adventure.Services;
-using Adventure.Quest.Rolls;
+using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Process;
 using Adventure.Quest.Helpers;
-using Adventure.Quest.Battle.BattleEngine;
+using Adventure.Quest.Rolls;
+using Adventure.Services;
+using Discord;
+using System.Numerics;
 
 namespace Adventure.Quest.Battle.Attack
 {
@@ -42,13 +44,20 @@ namespace Adventure.Quest.Battle.Attack
                         BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
                         ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
 
+                        var (leveledUp, oldLevel, newLevel) = ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
+
                         result =
                             $"🗡️ **[CRITICAL HIT] {player.Name} lands a [Critical Hit] on {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +
                             $"🎯 Attack Roll [{state.AttackRoll}]\n" +
                             $"🎲 Damage ({state.Dice}): **{string.Join(", ", state.Rolls)}**\n" +
                             $"💥 Critical Damage ({state.Dice}): **{state.CritRoll}**\n" +
                             $"🎯 Total = Damage ( {state.Damage} ) + Critical Damage ( {state.CritRoll} ) + {state.AbilityModifier} (STR( {strength} )) = **{state.TotalDamage}**\n\n" +
-                            $"💀 **{npc.Name} is defeated!**\n\n**{player.Name}** is rewarded with **{state.RewardXP} XP** and has now a total of **{state.NewTotalXP} XP**!";
+                            $"💀 **{npc.Name} is defeated!**\n\n🏆 **{player.Name}** is rewarded with **{state.RewardXP} XP** and has now a total of **{state.NewTotalXP} XP**!";
+
+                            if (leveledUp)
+                            {
+                                result += $"\n\n✨ **LEVEL UP!** {player.Name} advanced from **Level {oldLevel} → Level {newLevel}**!";
+                            }
                     }
                     else
                     {
@@ -77,12 +86,19 @@ namespace Adventure.Quest.Battle.Attack
                         BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
                         ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
 
+                        var (leveledUp, oldLevel, newLevel) = ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
+
                         result =
-                            $"🗡️ **[HIT] {player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" + 
+                            $"🗡️ **[HIT] {player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +
                             $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = **{state.TotalRoll}**\n" +
                             $"🎲 Damage ({state.Dice}): ** {string.Join(", ", state.Rolls)} **\n" +
                             $"🎯 Total = Damage ( {state.Damage} ) + {state.AbilityModifier} (STR( {strength} )) = **{state.TotalDamage}**\n\n" +
-                            $"💀 **{npc.Name} is defeated!**\n\n**{player.Name}** is rewarded with **{state.RewardXP} XP** and has now a total of **{state.NewTotalXP} XP**!";
+                            $"💀 **{npc.Name} is defeated!**\n\n🏆 **{player.Name}** is rewarded with **{state.RewardXP} XP** and has now a total of **{state.NewTotalXP} XP**!";
+
+                            if (leveledUp)
+                            {
+                                result += $"\n\n✨ **LEVEL UP!** {player.Name} advanced from **Level {oldLevel} → Level {newLevel}**!";
+                            }
                     }
                     else
                     {

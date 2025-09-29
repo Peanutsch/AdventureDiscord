@@ -30,7 +30,7 @@
       "charisma": 9
     },
     "armor": [ "armor_chain_shirt" ],
-    "weapons": [ "weapon_spear", "weapon_long_sword" ],
+    "weapons": [ "weapon_spear", "weapon_longsword" ],
     "loot": []
   },
   {
@@ -183,7 +183,7 @@
       "charisma": 10
     },
     "armor": [ "armor_cloth_robe" ],
-    "weapons": [ "weapon_dagger", "weapon_magic_staff" ],
+    "weapons": [ "weapon_magic_staff", "weapon_dagger" ],
     "loot": []
   },
   {

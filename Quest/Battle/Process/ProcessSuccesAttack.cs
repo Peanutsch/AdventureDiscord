@@ -1,6 +1,7 @@
 ﻿using Adventure.Loaders;
 using Adventure.Models.BattleState;
 using Adventure.Models.Items;
+using Adventure.Quest.Helpers;
 using Adventure.Quest.Rolls;
 using Adventure.Services;
 using System;
@@ -74,18 +75,72 @@ namespace Adventure.Quest.Battle.Process
         }
         #endregion PROCESS SUCCESFULL ATTACK
 
-        #region PROCESS XP
-        public static void ProcessSaveXPReward(int rewardedXP, BattleStateModel state)
+        #region PROCESS XP AND LEVEL
+        public static (bool leveledUp, int oldLevel, int newLevel) ProcessSaveXPReward(int rewardedXP, BattleStateModel state)
         {
             var currentXP = state.Player.XP;
-            var newXP =  currentXP + rewardedXP;
+            var newXP = currentXP + rewardedXP;
 
-            LogService.Info($"[ProcessSuccesAttack.ProcessSaveXPReward] Player: {state.Player.Name} defeated {state.Npc.Name} XP Reward: {rewardedXP} Current XP: {state.Player.XP} New XP: {newXP}");
-
-            // Update player's XP in JSON and BattleState
+            // Update XP in memory en JSON
             state.NewTotalXP = newXP;
+            state.Player.XP = newXP;
             JsonDataManager.UpdatePlayerXPInJson(state.Player.Id, state.Player.Name!, newXP);
+
+            // Bepaal huidig en nieuw level
+            int oldLevel = state.Player.Level;
+            int newLevel = 1;
+
+            for (int level = LevelHelpers.LevelXPThresholds.Length; level > 0; level--)
+            {
+                if (newXP >= LevelHelpers.LevelXPThresholds[level - 1])
+                {
+                    newLevel = level;
+                    break;
+                }
+            }
+
+            // Check of speler een level up heeft
+            if (newLevel > oldLevel)
+            {
+                state.Player.Level = newLevel;
+                JsonDataManager.UpdatePlayerLevelInJson(state.Player.Id, state.Player.Name!, newLevel);
+
+                return (true, oldLevel, newLevel);
+            }
+
+            return (false, oldLevel, oldLevel);
         }
-        #endregion PROCESS XP
+
+
+        /// <summary>
+        /// Updates the player's level in state and JSON based on their XP.
+        /// </summary>
+        public static void UpdateLevelFromXP(BattleStateModel state)
+        {
+            int xp = state.Player.XP;
+            int newLevel = 1;
+
+            for (int level = LevelHelpers.LevelXPThresholds.Length; level > 0; level--)
+            {
+                if (xp >= LevelHelpers.LevelXPThresholds[level - 1])
+                {
+                    newLevel = level;
+                    break;
+                }
+            }
+
+            if (newLevel > state.Player.Level)
+            {
+                //int oldLevel = state.Player.Level;
+                int oldLevel = state.Player.Level;
+                state.Player.Level = newLevel;
+
+                // Update JSON
+                JsonDataManager.UpdatePlayerLevelInJson(state.Player.Id, state.Player.Name!, newLevel);
+
+                LogService.Info($"[UpdateLevelFromXP] Player {state.Player.Name} leveled up from {oldLevel} → {newLevel}!");
+            }
+        }
+        #endregion PROCESS XP AND LEVEL
     }
 }

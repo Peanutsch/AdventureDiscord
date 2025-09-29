@@ -153,6 +153,35 @@
       "display": "1d8 Bludgeoning"
     }
   },
+  {
+    "id": "weapon_morningstar",
+    "name": "Morningstar",
+    "description": "A spiked club designed to crush armor and cause grievous wounds.",
+    "weight": 10,
+    "range": 1.5,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 8,
+      "modifier": 0,
+      "type": "piercing",
+      "display": "1d8 Piercing"
+    }
+  },
+  {
+    "id": "weapon_glaive",
+    "name": "Glaive",
+    "description": "A polearm with a single-edged blade at the end, allowing sweeping strikes and reach.",
+    "weight": 6,
+    "range": 2.5,
+    "damage": {
+      "diceCount": 1,
+      "diceValue": 10,
+      "modifier": 0,
+      "type": "slashing",
+      "display": "1d10 Slashing"
+    }
+  },
+
 
   {
     "id": "weapon_wolf_claw",
