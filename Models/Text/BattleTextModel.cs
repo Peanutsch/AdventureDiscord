@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -10,15 +11,23 @@ namespace Adventure.Models.Text
     public class BattleTextModel
     {
         [JsonPropertyName("criticalHit")]
-        public List<string> CriticalHit { get; set; } = new List<string>();
+        public List<TextEntry> CriticalHit { get; set; } = new();
 
         [JsonPropertyName("hit")]
-        public List<string> Hit { get; set; } = new List<string>();
+        public List<TextEntry> Hit { get; set; } = new();
 
         [JsonPropertyName("criticalMiss")]
-        public List<string> CriticalMiss { get; set; } = new List<string>();
+        public List<TextEntry> CriticalMiss { get; set; } = new();
 
         [JsonPropertyName("miss")]
-        public List<string> Miss { get; set; } = new List<string>();
+        public List<TextEntry> Miss { get; set; } = new();
+
+        [JsonPropertyName("hpStatus")]
+        public Dictionary<string, string> HpStatus { get; set; } = new Dictionary<string, string>();
+    }
+
+    public class TextEntry {
+        [JsonPropertyName("text")]
+        public string Text { get; set; } = "";
     }
 }

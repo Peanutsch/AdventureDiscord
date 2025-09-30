@@ -11,73 +11,65 @@ namespace Adventure.Quest.Battle.BattleEngine
 {
     public static class BattleTextGenerator
     {
-        private static readonly Random _rnd = new();
+        private static readonly Random rng = new Random();
 
-        /// <summary>
-        /// Generates a dynamic battle message for any attack.
-        /// </summary>
-        public static string GenerateAttackText(
-            string attackerName,
-            string defenderName,
-            WeaponModel weapon,
-            ProcessRollsAndDamage.HitResult hitResult,
+        public static string GenerateBattleLog(
+            string attackType,       // "criticalHit", "hit", "criticalMiss", "miss"
+            string attacker,
+            string defender,
+            string weapon,
             int damage,
-            int critDamage,
-            int totalDamage,
-            int attackRoll,
-            int abilityMod,
-            int proficiencyMod,
-            int currentDefenderHP,
-            int maxDefenderHP,
-            int cr,
-            List<string>? statusEffects = null)
+            string statusLabel,      // bijv. "Bloodied"
+            BattleTextModel battleText)   // je JSON object
         {
-            // Load text container once
-            var container = TextLoader.LoadContainer();
-            string message = string.Empty;
+            string attackText = "";
 
-            // Determine text category
-            Func<TextContainer, List<TextModel>?> selector = hitResult switch
-            {
-                ProcessRollsAndDamage.HitResult.IsCriticalHit => c => c.CriticalHit,
-                ProcessRollsAndDamage.HitResult.IsCriticalMiss => c => c.CriticalMiss,
-                ProcessRollsAndDamage.HitResult.IsValidHit => c => c.Hit,
-                _ => c => c.Miss
-            };
-
-            // Pick a random template
-            var template = container != null && selector(container) != null && selector(container)!.Count > 0
-                ? selector(container)![_rnd.Next(selector(container)!.Count)].Text
-                : "{attacker} attacks {defender} with {weapon}!";
-
-            // Replace placeholders
-            message = template
-                .Replace("{attacker}", attackerName)
-                .Replace("{defender}", defenderName)
-                .Replace("{weapon}", weapon.Name)
-                .Replace("{damage}", damage.ToString())
-                .Replace("{critDamage}", critDamage.ToString())
-                .Replace("{totalDamage}", totalDamage.ToString())
-                .Replace("{attackRoll}", attackRoll.ToString())
-                .Replace("{abilityMod}", abilityMod.ToString())
-                .Replace("{proficiencyMod}", proficiencyMod.ToString())
-                .Replace("{currentHP}", currentDefenderHP.ToString())
-                .Replace("{maxHP}", maxDefenderHP.ToString())
-                .Replace("{cr}", cr.ToString());
-
-            // Add optional status effects
-            if (statusEffects != null && statusEffects.Count > 0)
-            {
-                message += "\nStatus Effects: " + string.Join(", ", statusEffects);
+            // 1️⃣ Kies een willekeurige tekst voor het aanvalstype
+            switch (attackType) {
+                case "criticalHit":
+                    attackText = GetRandomText(battleText.CriticalHit, attacker, defender, weapon, damage);
+                    break;
+                case "hit":
+                    attackText = GetRandomText(battleText.Hit, attacker, defender, weapon, damage);
+                    break;
+                case "criticalMiss":
+                    attackText = GetRandomText(battleText.CriticalMiss, attacker, defender, weapon, damage);
+                    break;
+                case "miss":
+                    attackText = GetRandomText(battleText.Miss, attacker, defender, weapon, damage);
+                    break;
+                default:
+                    attackText = $"{attacker} does something unknown to {defender}.";
+                    break;
             }
 
-            // Optional: append outcome text based on HP
-            if (currentDefenderHP <= 0)
-            {
-                message += $"\n💀 {defenderName} is defeated!";
-            }
+            // 2️⃣ Voeg HP-status flavour text toe
+            string statusText = battleText.HpStatus.ContainsKey(statusLabel)
+                ? battleText.HpStatus[statusLabel]
+                : "has an unknown status.";
 
-            return message;
+            return $"{attackText}\n🧟 {defender} is **{statusLabel}** and {statusText}";
+        }
+
+        private static string GetRandomText(
+            List<TextEntry> entries,
+            string attacker,
+            string defender,
+            string weapon,
+            int damage) {
+            if (entries == null || entries.Count == 0)
+                return "";
+
+            int index = rng.Next(entries.Count);
+            string text = entries[index].Text;
+
+            // Plaatsvervanging
+            text = text.Replace("{attacker}", attacker)
+                       .Replace("{defender}", defender)
+                       .Replace("{weapon}", weapon)
+                       .Replace("{damage}", damage.ToString());
+
+            return text;
         }
     }
 }

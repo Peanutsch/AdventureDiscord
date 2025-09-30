@@ -1,4 +1,5 @@
-﻿using Adventure.Models.Items;
+﻿using Adventure.Loaders;
+using Adventure.Models.Items;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Process;
 using Adventure.Quest.Helpers;
@@ -11,6 +12,77 @@ namespace Adventure.Quest.Battle.Attack
 {
     class PlayerAttack
     {
+        /// <summary>
+        /// Processes the player's attack during battle, calculates hit or miss,
+        /// updates NPC HP status via TrackHP, handles XP reward and level-up,
+        /// and returns a descriptive battle log.
+        /// </summary>
+        public static string ProcessPlayerAttack(ulong userId, WeaponModel weapon) {
+            // 1️⃣ Determine hit result
+            var hitResult = ProcessRollsAndDamage.ValidateHit(userId, isPlayerAttacker: true);
+
+            // 2️⃣ Get battle participants and state
+            var (state, player, npc, strength) = GetBattleStateData.GetBattleParticipants(userId, playerIsAttacker: true);
+
+            // 3️⃣ Load battle texts (JSON)
+            var battleText = BattleTextLoader.Load() ?? throw new Exception("Failed to load battletext.json");
+
+            // 4️⃣ If hit or critical, calculate damage
+            if (hitResult == ProcessRollsAndDamage.HitResult.IsValidHit ||
+                hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit) {
+                (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, state.CurrentHitpointsNPC) =
+                    ProcessSuccesAttack.ProcessSuccessfulHit(
+                        userId,
+                        state,
+                        weapon,
+                        strength,
+                        state.CurrentHitpointsNPC,
+                        isPlayerAttacker: true
+                    );
+            }
+
+            // 5️⃣ Update NPC HP status using TrackHP
+            TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
+            string statusLabel = state.StateOfNPC;
+
+            // 6️⃣ Generate dynamic battle log using BattleTextGenerator
+            string battleLog = BattleTextGenerator.GenerateBattleLog(
+                attackType: hitResult switch {
+                    ProcessRollsAndDamage.HitResult.IsCriticalHit => "criticalHit",
+                    ProcessRollsAndDamage.HitResult.IsValidHit => "hit",
+                    ProcessRollsAndDamage.HitResult.IsCriticalMiss => "criticalMiss",
+                    ProcessRollsAndDamage.HitResult.IsMiss => "miss",
+                    _ => "hit"
+                },
+                attacker: player.Name!,
+                defender: npc.Name!,
+                weapon: weapon.Name!,
+                damage: state.TotalDamage,
+                statusLabel: statusLabel,
+                battleText: battleText
+            );
+
+            // 7️⃣ Handle defeated NPC: XP reward & level-up
+            if (state.CurrentHitpointsNPC <= 0) {
+                BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
+
+                var rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
+                var (leveledUp, oldLevel, newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
+
+                battleLog += $"\n\n💀 **{npc.Name} is defeated!**";
+                battleLog += $"\n🏆 **{player.Name}** gains **{state.RewardXP} XP** (Total: {state.NewTotalXP} XP)";
+
+                if (leveledUp)
+                    battleLog += $"\n\n✨ **LEVEL UP!** {player.Name} advanced from **Level {oldLevel} → Level {newLevel}**!";
+            }
+            else {
+                BattleMethods.SetStep(userId, BattleMethods.StepPostBattle);
+            }
+
+            return battleLog;
+        }
+
+        /*
         /// <summary>
         /// Processes the player's attack during battle, calculates hit or miss based on dice roll and strength modifier,
         /// handles critical hits/misses, and returns a descriptive battle message.
@@ -122,5 +194,6 @@ namespace Adventure.Quest.Battle.Attack
 
             return result;
         }
+        */
     }
 }

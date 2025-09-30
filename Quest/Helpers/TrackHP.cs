@@ -63,18 +63,6 @@ namespace Adventure.Quest.Helpers
                 result = "Badly Wounded";
             else // 1–29%
                 result = "Grievously Wounded";
-            /*
-            if (percentHP > 50 && percentHP <= 75)
-                result = "Lightly Wounded";
-            else if (percentHP > 25 && percentHP <= 50)
-                result = "Heavily Wounded";
-            else if (percentHP > 0 && percentHP <= 25)
-                result = "Deadly Wounded";
-            else if (percentHP <= 0)
-                result = "💀 DEAD";
-            else
-                result = "Healthy";
-            */
 
             // Update the battle state depending on target type
             if (target == TargetType.Player)
