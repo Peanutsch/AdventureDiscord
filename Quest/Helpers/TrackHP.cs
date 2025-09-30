@@ -43,6 +43,27 @@ namespace Adventure.Quest.Helpers
             var roundedPercentHP = (int)Math.Round(percentHP);
 
             // Determine status based on HP percentage
+            if (currentHP <= 0)
+                result = "💀 Dead";
+            else if (percentHP >= 100)
+                result = "Unscathed";
+            else if (percentHP >= 90)
+                result = "Healthy";
+            else if (percentHP >= 80)
+                result = "Scratched";
+            else if (percentHP >= 70)
+                result = "Bruised";
+            else if (percentHP >= 60)
+                result = "Wounded";
+            else if (percentHP >= 50)
+                result = "Injured";
+            else if (percentHP >= 40)
+                result = "Bloodied";
+            else if (percentHP >= 30)
+                result = "Badly Wounded";
+            else // 1–29%
+                result = "Grievously Wounded";
+            /*
             if (percentHP > 50 && percentHP <= 75)
                 result = "Lightly Wounded";
             else if (percentHP > 25 && percentHP <= 50)
@@ -53,6 +74,7 @@ namespace Adventure.Quest.Helpers
                 result = "💀 DEAD";
             else
                 result = "Healthy";
+            */
 
             // Update the battle state depending on target type
             if (target == TargetType.Player)

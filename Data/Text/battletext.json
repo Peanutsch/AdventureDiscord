@@ -5,12 +5,12 @@
     { "text": "💥 {attacker} delivers a deadly hit to {defender} with {weapon}, inflicting `{damage}` damage!" }
   ],
   "hit": [
-    { "text": "⚔️ {attacker} strikes {defender} with {weapon}, dealing `{damage}` damage."},
-    { "text": "⚔️ {attacker} lands a solid blow on {defender} using {weapon}, inflicting `{damage}` damage."},
-    { "text": "⚔️ {attacker}'s {weapon} connects with {defender}, causing `{damage}` damage."},
-    { "text": "⚔️ {attacker} hits {defender} cleanly with {weapon}, dealing `{damage}` damage."},
-    { "text": "⚔️ {attacker} slashes {defender} with {weapon}, inflicting `{damage}` damage."},
-    { "text": "⚔️ {attacker} delivers a powerful strike to {defender}, dealing `{damage}` damage."},
+    { "text": "⚔️ {attacker} strikes {defender} with {weapon}, dealing `{damage}` damage." },
+    { "text": "⚔️ {attacker} lands a solid blow on {defender} using {weapon}, inflicting `{damage}` damage." },
+    { "text": "⚔️ {attacker}'s {weapon} connects with {defender}, causing `{damage}` damage." },
+    { "text": "⚔️ {attacker} hits {defender} cleanly with {weapon}, dealing `{damage}` damage." },
+    { "text": "⚔️ {attacker} slashes {defender} with {weapon}, inflicting `{damage}` damage." },
+    { "text": "⚔️ {attacker} delivers a powerful strike to {defender}, dealing `{damage}` damage." },
     { "text": "⚔️ {attacker}'s attack with {weapon} lands true, hitting {defender} for `{damage}` damage!" }
   ],
   "criticalMiss": [
@@ -22,5 +22,17 @@
     { "text": "🗡️ {attacker} swings {weapon}, but misses {defender} completely!" },
     { "text": "🗡️ {attacker} tries to hit {defender} with {weapon}, but fails miserably." },
     { "text": "🗡️ {defender} deflects {attacker}'s attack with ease!" }
-  ]
+  ],
+  "hpStatus": {
+    "Unscathed": "shows no signs of injury, standing tall and unfazed.",
+    "Healthy": "has only minor scratches, barely slowing them down.",
+    "Scratched": "takes a few cuts and bruises, but fights on with confidence.",
+    "Bruised": "is clearly hurt, showing the first signs of wear in battle.",
+    "Wounded": "is bleeding and visibly weakened, though still dangerous.",
+    "Injured": "staggers slightly, their movements growing sluggish.",
+    "Bloodied": "is covered in blood and struggling to keep their footing.",
+    "Badly Wounded": "can barely hold on, every breath a desperate effort.",
+    "Grievously Wounded": "is on the verge of collapse, fighting only through sheer willpower.",
+    "💀 Dead": "falls lifeless to the ground, their fight ended."
+  }
 }
