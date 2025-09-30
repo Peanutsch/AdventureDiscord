@@ -207,7 +207,7 @@ namespace Adventure.Loaders
 
                 if (player == null)
                 {
-                    LogService.Error("[UpdatePlayerHitpointsInJson] Failed to deserialize PlayerModel.");
+                    LogService.Error("[UpdatePlayerXPInJson] Failed to deserialize PlayerModel.");
                     return;
                 }
 
@@ -220,7 +220,7 @@ namespace Adventure.Loaders
 
                 File.WriteAllText(path, updatedJson);
 
-                LogService.Info($"[UpdatePlayerHitpointsInJson] Player XP updated to {newXP} for userId {userId} ({playerName})");
+                LogService.Info($"[UpdatePlayerXPInJson] Player XP updated to {newXP} for userId {userId} ({playerName})");
             }
             catch (Exception ex)
             {

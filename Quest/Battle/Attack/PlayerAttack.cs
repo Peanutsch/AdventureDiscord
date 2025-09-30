@@ -42,9 +42,8 @@ namespace Adventure.Quest.Battle.Attack
                     if (state.CurrentHitpointsNPC <= 0)
                     {
                         BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
-                        ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
 
-                        var (leveledUp, oldLevel, newLevel) = ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
+                        (bool leveledUp, int oldLevel, int newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
 
                         result =
                             $"🗡️ **[CRITICAL HIT] {player.Name} lands a [Critical Hit] on {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +
@@ -84,9 +83,8 @@ namespace Adventure.Quest.Battle.Attack
                     if (state.CurrentHitpointsNPC <= 0)
                     {
                         BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
-                        ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
 
-                        var (leveledUp, oldLevel, newLevel) = ProcessSuccesAttack.ProcessSaveXPReward(rewardXP, state);
+                        var (leveledUp, oldLevel, newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
 
                         result =
                             $"🗡️ **[HIT] {player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +

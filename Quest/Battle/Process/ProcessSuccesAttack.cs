@@ -76,7 +76,7 @@ namespace Adventure.Quest.Battle.Process
         #endregion PROCESS SUCCESFULL ATTACK
 
         #region PROCESS XP AND LEVEL
-        public static (bool leveledUp, int oldLevel, int newLevel) ProcessSaveXPReward(int rewardedXP, BattleStateModel state)
+        public static (bool leveledUp, int oldLevel, int newLevel) ProcessXPReward(int rewardedXP, BattleStateModel state)
         {
             var currentXP = state.Player.XP;
             var newXP = currentXP + rewardedXP;
