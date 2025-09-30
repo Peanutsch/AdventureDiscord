@@ -88,7 +88,7 @@ namespace Adventure.Quest.Battle.Attack
 
                         result =
                             $"🗡️ **[HIT] {player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +
-                            $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = **{state.TotalRoll}**\n" +
+                            $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {oldLevel}) = **{state.TotalRoll}**\n" +
                             $"🎲 Damage ({state.Dice}): ** {string.Join(", ", state.Rolls)} **\n" +
                             $"🎯 Total = Damage ( {state.Damage} ) + {state.AbilityModifier} (STR( {strength} )) = **{state.TotalDamage}**\n\n" +
                             $"💀 **{npc.Name} is defeated!**\n\n🏆 **{player.Name}** is rewarded with **{state.RewardXP} XP** and has now a total of **{state.NewTotalXP} XP**!";

@@ -30,7 +30,6 @@ namespace Adventure.Models.BattleState
         public int PreHpNPC { get; set; }
         public int PercentageHpPlayer { get; set; }
         public int PercentageHpNpc { get; set; }
-        //public int PlayerLevelAtStart { get; set; }
 
         public string StateOfNPC { get; set; } = "UNKNOWN";
         public string StateOfPlayer { get; set; } = "UNKNOWN";

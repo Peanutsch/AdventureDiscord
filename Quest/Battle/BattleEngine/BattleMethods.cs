@@ -108,8 +108,7 @@ namespace Adventure.Quest.Battle.BattleEngine
 
 
                 // Create new battle state
-                state = new BattleStateModel
-                {
+                state = new BattleStateModel {
                     Player = player,
                     Npc = new NpcModel(),
                     PlayerWeapons = playerWeapons,
