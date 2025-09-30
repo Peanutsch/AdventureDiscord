@@ -80,7 +80,7 @@ namespace Adventure.Quest.Rolls
             state.AttackRoll = attackRoll;
             state.ProficiencyModifier = proficiencyModifier;
             state.AbilityModifier = abilityModifier;
-            state.TotalRoll = totalAttackRoll;
+            state.TotalAttackRoll = totalAttackRoll;
             state.ArmorElements.ArmorClass = defenderAC;
             state.IsCriticalHit = attackRoll == 20;   // Natural 20 = critical hit
             state.IsCriticalMiss = attackRoll == 1;   // Natural 1 = critical miss

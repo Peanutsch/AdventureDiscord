@@ -33,10 +33,14 @@ namespace Adventure.Gateway
             GameData.Weapons = WeaponLoader.Load();
             GameData.Armor = ArmorLoader.Load();
             GameData.Items = ItemLoader.Load();
-            //GameData.Player = PlayerLoader.Load(userId);
             GameData.Humanoids = HumanoidLoader.Load();
             GameData.Bestiary = BestiaryLoader.Load();
             //GameData.Text = TextLoader.Load();
+
+            // Load text data
+            var (battleText, rollText) = BattleTextLoader.Load();
+            GameData.BattleText = battleText;
+            GameData.RollText = rollText;
 
             string discordToken = GetToken.GetTokenFromCSV();
 

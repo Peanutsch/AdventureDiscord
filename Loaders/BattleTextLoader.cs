@@ -1,29 +1,29 @@
 ﻿using Adventure.Models.Text;
 using Adventure.Services;
+using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Adventure.Loaders {
     public static class BattleTextLoader {
         /// <summary>
-        /// Loads the battletext.json and returns a BattleTextModel instance.
+        /// Laadt battle flavor text en roll templates uit JSON.
         /// </summary>
-        /// <returns>BattleTextModel or null if loading fails</returns>
-        public static BattleTextModel? Load() {
-            try {
-                var battleText = JsonDataManager.LoadObjectFromJson<BattleTextModel>("Data/Text/battletext.json");
+        /// <param name="battleTextPath">Pad naar battletext.json</param>
+        /// <param name="rollTextPath">Pad naar battlerolldicetext.json</param>
+        /// <returns>Tuple van BattleTextModel en roll-text dictionary</returns>
+        public static (BattleTextModel battleText, Dictionary<string, string> rollText) Load() 
+        {
+            // 1️⃣ Flavor text
+            var battleText = JsonDataManager.LoadObjectFromJson<BattleTextModel>("Data/Text/battletext.json");
+            if (battleText == null)
+                throw new System.Exception($"Failed to load Data/Text/battletext.json...");
 
-                if (battleText == null) {
-                    LogService.Error("[BattleTextLoader] > Failed to load battletext.json");
-                    return null;
-                }
+            // 2️⃣ Roll text
+            var rollText = JsonDataManager.LoadObjectFromJson<Dictionary<string, string>>("Data/Text/battlerolldicetext.json");
+            if (rollText == null)
+                throw new System.Exception($"Failed to load Data/Text/battlerolldicetext.json...");
 
-                LogService.Info("[BattleTextLoader] > Successfully loaded battletext.json");
-                return battleText;
-            }
-            catch (System.Exception ex) {
-                LogService.Error($"[BattleTextLoader] > Error loading battletext.json: {ex.Message}");
-                return null;
-            }
+            return (battleText, rollText);
         }
     }
 }
-

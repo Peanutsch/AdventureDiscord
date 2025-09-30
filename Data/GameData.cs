@@ -4,6 +4,8 @@ using Adventure.Models.Items;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Models.Text;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Adventure.Data
 {
@@ -95,12 +97,20 @@ namespace Adventure.Data
             set => _inventory = value;
         }
 
-        private static List<TextModel>? _text;
+        private static BattleTextModel? _battleText;
 
-        public static List<TextModel>? Text
+        public static BattleTextModel? BattleText 
         {
-            get => _text;
-            set => _text = value;
+            get => _battleText;
+            set => _battleText = value;
+        }
+
+        private static Dictionary<string, string>? _rollText;
+
+        public static Dictionary<string, string>? RollText 
+        {
+            get => _rollText;
+            set => _rollText = value;
         }
     }
 }

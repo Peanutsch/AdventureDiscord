@@ -68,6 +68,9 @@
     <None Update="Data\Player\default_template_player.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Data\Text\battlerolldicetext.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Data\Text\battletext.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

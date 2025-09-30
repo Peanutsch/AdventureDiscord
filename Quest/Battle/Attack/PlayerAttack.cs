@@ -1,4 +1,5 @@
-﻿using Adventure.Loaders;
+﻿using Adventure.Data;
+using Adventure.Loaders;
 using Adventure.Models.Items;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Process;
@@ -10,13 +11,8 @@ using System.Numerics;
 
 namespace Adventure.Quest.Battle.Attack
 {
-    class PlayerAttack
+    class PlayerAttack 
     {
-        /// <summary>
-        /// Processes the player's attack during battle, calculates hit or miss,
-        /// updates NPC HP status via TrackHP, handles XP reward and level-up,
-        /// and returns a descriptive battle log.
-        /// </summary>
         public static string ProcessPlayerAttack(ulong userId, WeaponModel weapon) {
             // 1️⃣ Determine hit result
             var hitResult = ProcessRollsAndDamage.ValidateHit(userId, isPlayerAttacker: true);
@@ -24,10 +20,7 @@ namespace Adventure.Quest.Battle.Attack
             // 2️⃣ Get battle participants and state
             var (state, player, npc, strength) = GetBattleStateData.GetBattleParticipants(userId, playerIsAttacker: true);
 
-            // 3️⃣ Load battle texts (JSON)
-            var battleText = BattleTextLoader.Load() ?? throw new Exception("Failed to load battletext.json");
-
-            // 4️⃣ If hit or critical, calculate damage
+            // 3️⃣ If hit or critical, calculate damage
             if (hitResult == ProcessRollsAndDamage.HitResult.IsValidHit ||
                 hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit) {
                 (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, state.CurrentHitpointsNPC) =
@@ -41,28 +34,29 @@ namespace Adventure.Quest.Battle.Attack
                     );
             }
 
-            // 5️⃣ Update NPC HP status using TrackHP
+            // 4️⃣ Update NPC HP status
             TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
             string statusLabel = state.StateOfNPC;
 
-            // 6️⃣ Generate dynamic battle log using BattleTextGenerator
+            // 5️⃣ Bepaal attackResult via helper
+            string attackResult = AttackResultHelper.GetAttackResult(hitResult);
+
+            // 6️⃣ Generate battle log
             string battleLog = BattleTextGenerator.GenerateBattleLog(
-                attackType: hitResult switch {
-                    ProcessRollsAndDamage.HitResult.IsCriticalHit => "criticalHit",
-                    ProcessRollsAndDamage.HitResult.IsValidHit => "hit",
-                    ProcessRollsAndDamage.HitResult.IsCriticalMiss => "criticalMiss",
-                    ProcessRollsAndDamage.HitResult.IsMiss => "miss",
-                    _ => "hit"
-                },
+                attackResult: attackResult,
                 attacker: player.Name!,
                 defender: npc.Name!,
                 weapon: weapon.Name!,
                 damage: state.TotalDamage,
                 statusLabel: statusLabel,
-                battleText: battleText
+                battleText: GameData.BattleText!,
+                state: state,
+                rollText: GameData.RollText,
+                strength: strength,
+                isPlayerAttack: true
             );
 
-            // 7️⃣ Handle defeated NPC: XP reward & level-up
+            // 7️⃣ Handle defeated NPC
             if (state.CurrentHitpointsNPC <= 0) {
                 BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
 
@@ -81,119 +75,5 @@ namespace Adventure.Quest.Battle.Attack
 
             return battleLog;
         }
-
-        /*
-        /// <summary>
-        /// Processes the player's attack during battle, calculates hit or miss based on dice roll and strength modifier,
-        /// handles critical hits/misses, and returns a descriptive battle message.
-        /// </summary>
-        public static string ProcessPlayerAttack(ulong userId, WeaponModel weapon)
-        {
-            // Determine hit result from attack roll (miss, hit, critical, etc.)
-            var hitResult = ProcessRollsAndDamage.ValidateHit(userId, isPlayerAttacker: true);
-
-            // Get combat state and both combatants
-            var (state, player, npc, strength) = GetBattleStateData.GetBattleParticipants(userId, playerIsAttacker: true);
-
-            // Get NPC related XP reward
-            var rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
-
-            // If hit is successful or critical, calculate damage
-            if (hitResult == ProcessRollsAndDamage.HitResult.IsValidHit || hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit)
-            {
-                (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, state.CurrentHitpointsNPC) =
-                    ProcessSuccesAttack.ProcessSuccessfulHit(userId, state, weapon, strength, state.CurrentHitpointsNPC, isPlayerAttacker: true);
-            }
-
-            string result;
-
-            switch (hitResult)
-            {
-                // CRITICAL HIT
-                case ProcessRollsAndDamage. HitResult.IsCriticalHit:
-                    if (state.CurrentHitpointsNPC <= 0)
-                    {
-                        BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
-
-                        (bool leveledUp, int oldLevel, int newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
-
-                        result =
-                            $"🗡️ **[CRITICAL HIT] {player.Name} lands a [Critical Hit] on {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +
-                            $"🎯 Attack Roll [{state.AttackRoll}]\n" +
-                            $"🎲 Damage ({state.Dice}): **{string.Join(", ", state.Rolls)}**\n" +
-                            $"💥 Critical Damage ({state.Dice}): **{state.CritRoll}**\n" +
-                            $"🎯 Total = Damage ( {state.Damage} ) + Critical Damage ( {state.CritRoll} ) + {state.AbilityModifier} (STR( {strength} )) = **{state.TotalDamage}**\n\n" +
-                            $"💀 **{npc.Name} is defeated!**\n\n🏆 **{player.Name}** is rewarded with **{state.RewardXP} XP** and has now a total of **{state.NewTotalXP} XP**!";
-
-                            if (leveledUp)
-                            {
-                                result += $"\n\n✨ **LEVEL UP!** {player.Name} advanced from **Level {oldLevel} → Level {newLevel}**!";
-                            }
-                    }
-                    else
-                    {
-                        result =
-                            $"🗡️ **[CRITICAL HIT] {player.Name} lands a [Critical Hit] on {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +
-                            $"🎯 Attack Roll [{state.AttackRoll}]\n" +
-                            $"🎲 Damage ({state.Dice}): **{string.Join(", ", state.Rolls)}**\n" +
-                            $"💥 Critical Damage ({state.Dice}): **{state.CritRoll}**\n" +
-                            $"🎯 Total = Damage ( {state.Damage} ) + Critical Damage ( {state.CritRoll} ) + {state.AbilityModifier} (STR( {strength} )) = **{state.TotalDamage}**\n\n" +
-                            $"🧟 Some text with damage degree like scratched and severe wound...\n"; 
-                    }
-                    break;
-                
-                // CRITICAL MISS
-                case ProcessRollsAndDamage.HitResult.IsCriticalMiss:
-                    result =
-                        $"🗡️ **[MISS] {player.Name} attacks {npc.Name}, but critically misses!**\n" +
-                        $"🎯 Attack Roll [{state.AttackRoll}]\n\n" +
-                        $"🧟 **{npc.Name}** remains unscathed!"; 
-                    break;
-
-                // HIT
-                case ProcessRollsAndDamage.HitResult.IsValidHit:
-                    if (state.CurrentHitpointsNPC <= 0)
-                    {
-                        BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
-
-                        var (leveledUp, oldLevel, newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
-
-                        result =
-                            $"🗡️ **[HIT] {player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +
-                            $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {oldLevel}) = **{state.TotalRoll}**\n" +
-                            $"🎲 Damage ({state.Dice}): ** {string.Join(", ", state.Rolls)} **\n" +
-                            $"🎯 Total = Damage ( {state.Damage} ) + {state.AbilityModifier} (STR( {strength} )) = **{state.TotalDamage}**\n\n" +
-                            $"💀 **{npc.Name} is defeated!**\n\n🏆 **{player.Name}** is rewarded with **{state.RewardXP} XP** and has now a total of **{state.NewTotalXP} XP**!";
-
-                            if (leveledUp)
-                            {
-                                result += $"\n\n✨ **LEVEL UP!** {player.Name} advanced from **Level {oldLevel} → Level {newLevel}**!";
-                            }
-                    }
-                    else
-                    {
-                        BattleMethods.SetStep(userId, BattleMethods.StepPostBattle);
-                        result =
-                            $"🗡️ **[HIT] {player.Name} attacks {npc.Name} with {weapon.Name}, dealing `{state.TotalDamage}` damage!**\n" +
-                            $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = **{state.TotalRoll}**\n" +
-                            $"🎲 Damage ({state.Dice}): **{string.Join(", ", state.Rolls)}**\n" +
-                            $"🎯 Total = Damage ( {state.Damage} ) + {state.AbilityModifier} (STR( {strength} )) = **{state.TotalDamage}**\n\n" +
-                            $"🧟 Some text with damage degree like just scratched or severe wound...\n"; 
-                    }
-                    break;
-
-                // MISS
-                case ProcessRollsAndDamage.HitResult.IsMiss:
-                default:
-                    result =
-                        $"🗡️ **[MISS] {player.Name} attacks {npc.Name}, but the {weapon.Name} bounces off!**\n" +
-                        $"🎯 Attack Roll( {state.AttackRoll} ) + {state.AbilityModifier} (STR( {strength} )) + {state.ProficiencyModifier} (Level: {state.Player.Level}) = **{state.TotalRoll}**\n\n" +// vs AC [ {state.ArmorElements.ArmorClass} ]\n\n" +
-                        $"🧟 **{npc.Name}** remains unscathed!";
-                    break;
-            }
-
-            return result;
-        }
-        */
     }
 }

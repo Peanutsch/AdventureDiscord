@@ -41,7 +41,7 @@ namespace Adventure.Models.BattleState
         public int ProficiencyModifier { get; set; }
         public bool IsCriticalHit { get; set; }
         public bool IsCriticalMiss { get; set; }
-        public int TotalRoll { get; set; }
+        public int TotalAttackRoll { get; set; }
 
         public int CritRoll { get; set; }
         public int Damage { get; set; }
