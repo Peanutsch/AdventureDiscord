@@ -14,34 +14,27 @@ namespace Adventure.Quest.Battle.Attack
     class PlayerAttack 
     {
         public static string ProcessPlayerAttack(ulong userId, WeaponModel weapon) {
-            // 1️⃣ Determine hit result
+            // Determine hit result
             var hitResult = ProcessRollsAndDamage.ValidateHit(userId, isPlayerAttacker: true);
 
-            // 2️⃣ Get battle participants and state
+            // Get battle participants and state
             var (state, player, npc, strength) = GetBattleStateData.GetBattleParticipants(userId, playerIsAttacker: true);
 
-            // 3️⃣ If hit or critical, calculate damage
+            // If hit or critical, calculate damage
             if (hitResult == ProcessRollsAndDamage.HitResult.IsValidHit ||
-                hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit) {
-                (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, state.CurrentHitpointsNPC) =
-                    ProcessSuccesAttack.ProcessSuccessfulHit(
-                        userId,
-                        state,
-                        weapon,
-                        strength,
-                        state.CurrentHitpointsNPC,
-                        isPlayerAttacker: true
-                    );
+                hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit) 
+            {
+                (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, state.CurrentHitpointsNPC) = ProcessSuccesAttack.ProcessSuccessfulHit(userId, state, weapon, strength, state.CurrentHitpointsNPC, isPlayerAttacker: true);
             }
 
-            // 4️⃣ Update NPC HP status
+            // Update NPC HP status
             TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
             string statusLabel = state.StateOfNPC;
 
-            // 5️⃣ Bepaal attackResult via helper
+            // Bepaal attackResult via helper
             string attackResult = AttackResultHelper.GetAttackResult(hitResult);
 
-            // 6️⃣ Generate battle log
+            // Generate battle log
             string battleLog = BattleTextGenerator.GenerateBattleLog(
                 attackResult: attackResult,
                 attacker: player.Name!,
@@ -56,7 +49,7 @@ namespace Adventure.Quest.Battle.Attack
                 isPlayerAttack: true
             );
 
-            // 7️⃣ Handle defeated NPC
+            // Handle defeated NPC
             if (state.CurrentHitpointsNPC <= 0) {
                 BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
 

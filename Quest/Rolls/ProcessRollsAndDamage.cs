@@ -96,48 +96,51 @@ namespace Adventure.Quest.Rolls
             // Determine and return the hit result
             if (state.IsCriticalHit) {
                 LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Critical Hit");
+                state.HitResult = "isCriticalHit";
+
                 return HitResult.IsCriticalHit;
             }
             else if (state.IsCriticalMiss) {
                 LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Critical Miss");
+                state.HitResult = "isCriticalMiss";
+
                 return HitResult.IsCriticalMiss;
             }
             else if (totalAttackRoll >= defenderAC) {
                 LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Hit");
+                state.HitResult = "isHit";
+
                 return HitResult.IsValidHit;
             }
             else {
                 LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Miss");
+                state.HitResult = "isMiss";
+
                 return HitResult.IsMiss;
             }
         }
         #endregion VALIDATE HIT
 
-            #region PROCESS ROLL AND DAMAGE
-            /// <summary>
-            /// Rolls weapon damage and applies it to the target. 
-            /// Handles critical hits (double damage) and critical misses (no damage).
-            /// </summary>
-            /// <param name="state">The current battle state of the player and creature.</param>
-            /// <param name="weapon">The weapon being used to attack.</param>
-            /// <param name="attackerStrength">The strength modifier of the attacker.</param>
-            /// <param name="currentHitpoints">The current HP of the defender before damage is applied.</param>
-            /// <param name="isPlayerAttacker">True if the player is attacking, false if the creature is attacking.</param>
-            /// <returns>
-            /// A tuple containing:
-            /// - Raw damage roll
-            /// - Total damage after strength modifier (and critical adjustments)
-            /// - List of individual damage dice rolls
-            /// - Additional critical roll (only used if critical hit)
-            /// - Dice notation string
-            /// - New HP of the defender after damage
-            /// </returns>
-        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string diceNotation, int newHP) RollAndApplyDamage(
-                        BattleStateModel state,
-                        WeaponModel weapon,
-                        int attackerStrength,
-                        int currentHitpoints,
-                        bool isPlayerAttacker)
+        #region PROCESS ROLL AND DAMAGE
+        /// <summary>
+        /// Rolls weapon damage and applies it to the target. 
+        /// Handles critical hits (double damage) and critical misses (no damage).
+        /// </summary>
+        /// <param name="state">The current battle state of the player and creature.</param>
+        /// <param name="weapon">The weapon being used to attack.</param>
+        /// <param name="attackerStrength">The strength modifier of the attacker.</param>
+        /// <param name="currentHitpoints">The current HP of the defender before damage is applied.</param>
+        /// <param name="isPlayerAttacker">True if the player is attacking, false if the creature is attacking.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - Raw damage roll
+        /// - Total damage after strength modifier (and critical adjustments)
+        /// - List of individual damage dice rolls
+        /// - Additional critical roll (only used if critical hit)
+        /// - Dice notation string
+        /// - New HP of the defender after damage
+        /// </returns>
+        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string diceNotation, int newHP) RollAndApplyDamage(BattleStateModel state, WeaponModel weapon, int attackerStrength, int currentHitpoints, bool isPlayerAttacker)
         {
             // Get weapon damage dice config
             var diceCount = weapon.Damage.DiceCount;
@@ -152,20 +155,26 @@ namespace Adventure.Quest.Rolls
             // Format dice notation, e.g., "1d8"
             var dice = $"{diceCount}d{diceValue}";
 
-            // Base damage: normal roll + strength modifier
+            // Base damage: normal roll + strength/ability modifier
             var totalDamage = damage + state.AbilityModifier;
             LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] Calculating totalDamage:\n\n" +
                             $"totalDamage({totalDamage}) = damage({damage}) + abilityModifier({state.AbilityModifier})\n\n");
-            
-            // Critical hit: add extra dice roll to damage
+
+            // Critical extra damage
             var totalCritDamage = damage + critRoll + state.AbilityModifier;
             LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] Calculating totalCriticalDamage:\n\n" +
                             $"totalCritDamage({totalCritDamage}) = damage({damage}) + critRoll({critRoll}) + abilityModifier({state.AbilityModifier})\n\n");
 
-            // Apply critical hit rules
+            // Apply critical-hit rule first
             if (state.IsCriticalHit)
             {
                 totalDamage = totalCritDamage;
+            }
+
+            // Apply critical-miss rule (no damage)
+            if (state.IsCriticalMiss)
+            {
+                totalDamage = 0;
             }
 
             // Calculate new HP, ensuring it doesn't go below 0
@@ -173,15 +182,13 @@ namespace Adventure.Quest.Rolls
             if (newHP < 0)
                 newHP = 0;
 
-            // Store damage and weapon used in the battle state
+            // Store all derived values in state (after all adjustments)
+            state.Damage = damage;
+            state.CritRoll = critRoll;
+            state.Rolls = rolls;
+            state.Dice = dice;
             state.TotalDamage = totalDamage;
-            state.LastUsedWeapon = weapon.Name!;
-
-            // Apply critical miss rules (no damage)
-            if (state.IsCriticalMiss)
-            {
-                totalDamage = 0;
-            }
+            state.LastUsedWeapon = weapon.Name ?? state.LastUsedWeapon;
 
             // Store pre-damage HP for logging/visualization
             if (isPlayerAttacker)
@@ -189,7 +196,6 @@ namespace Adventure.Quest.Rolls
                 var preSavedHPNpc = state.PreHpNPC;
                 state.PreHpNPC = currentHitpoints - totalDamage;
                 LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\n\npre HP NPC: {preSavedHPNpc}\nUpdated state.PreHPNPC to: {state.PreHpNPC}\n\n");
-
             }
             else
             {
@@ -198,7 +204,7 @@ namespace Adventure.Quest.Rolls
                 LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage]\n\npre HP Player: {preSavedHPPlayer}\nUpdated state.PreHPPlayer to: {state.PreHpPlayer}\n\n");
             }
 
-            // Return tuple with detailed damage info
+            // Return tuple with detailed damage info (damage = raw dice sum, totalDamage = final after mods/crit/miss)
             return (damage, totalDamage, rolls, critRoll, dice, newHP);
         }
         #endregion PROCESS ROLL AND DAMAGE

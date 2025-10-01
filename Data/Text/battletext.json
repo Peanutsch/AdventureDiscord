@@ -21,7 +21,7 @@
   "miss": [
     { "text": "🗡️ {attacker} swings {weapon}, but misses {defender} completely!" },
     { "text": "🗡️ {attacker} tries to hit {defender} with {weapon}, but fails miserably." },
-    { "text": "🗡️ {defender} deflects {attacker}'s attack with ease!" }
+    { "text": "🗡️ {defender} deflects {attacker}'s attack with ease!**" }
   ],
   "hpStatus": {
     "Unscathed": "shows no signs of injury, standing tall and unfazed.",
@@ -33,6 +33,6 @@
     "Bloodied": "is covered in blood and struggling to keep their footing.",
     "Badly Wounded": "can barely hold on, every breath a desperate effort.",
     "Grievously Wounded": "is on the verge of collapse, fighting only through sheer willpower.",
-    "💀 Dead": "falls lifeless to the ground, their fight ended."
+    "Dead": "falls lifeless to the ground, their fight ended."
   }
 }

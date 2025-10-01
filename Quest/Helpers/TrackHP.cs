@@ -44,7 +44,7 @@ namespace Adventure.Quest.Helpers
 
             // Determine status based on HP percentage
             if (currentHP <= 0)
-                result = "💀 Dead";
+                result = "Dead";
             else if (percentHP >= 100)
                 result = "Unscathed";
             else if (percentHP >= 90)

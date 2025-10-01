@@ -35,16 +35,18 @@ namespace Adventure.Models.BattleState
         public string StateOfPlayer { get; set; } = "UNKNOWN";
 
 
-        // Battle roll attack
+        // Attack Roll
         public int AttackRoll { get; set; }
         public int AbilityModifier { get; set; }
         public int ProficiencyModifier { get; set; }
         public bool IsCriticalHit { get; set; }
         public bool IsCriticalMiss { get; set; }
+        public string HitResult { get; set; } = "UNKNOWN";
         public int TotalAttackRoll { get; set; }
 
-        public int CritRoll { get; set; }
+        // Damage + Critical Roll
         public int Damage { get; set; }
+        public int CritRoll { get; set; }
         public List<int> Rolls { get; set; } = new();
         public string Dice { get; set; } = "UNKNOWN";
         public int TotalDamage { get; set; }

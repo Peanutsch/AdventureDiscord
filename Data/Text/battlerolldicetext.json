@@ -1,6 +1,7 @@
 ﻿{
-  "attackRoll": "🎯 Total Atack Roll ({TotalAttackRoll}) = Attack Roll ({AttackRoll}) + {AbilityModifier} (STR( {Strength} )) + {ProficiencyModifier} (lvl. {PlayerLevel})",
-  "damageRoll": "🎲 Damage ({Dice}): **{Damage)**",
-  "criticalDamageRoll": "💥 Critical Damage ({Dice}): **{CritRoll}**",
-  "totalDamage": "🎯 Total Damage (**{TotalDamage}**) = Damage ( {Damage} ) + Critical Damage ( {CritRoll} ) + {AbilityModifier} (STR( {strength} ))"
+  "attackRoll": "**🎲 Atack Roll ({TotalAttackRoll}) = Attack Roll ({AttackRoll}) + {AbilityModifier} (STR( {Strength} )) + {ProficiencyModifier} (lvl. {PlayerLevel})**",
+  "damageRoll": "**🎲 Damage ({Dice}): {Damage}**",
+  "totalDamage": "**🎯 Total Damage (**{TotalDamage}**) = Damage ({Damage}) + {AbilityModifier} (STR({strength}))**",
+  "critDamageRoll": "**💥 Critical Damage ({Dice}): {CritRoll}**",
+  "totalDamageCriticalRoll": "**🎯 Total Damage (**{TotalDamage}**) = Damage ({Damage}) + Critical Damage ({CritRoll}) + {AbilityModifier} (STR({strength}))**"
 }

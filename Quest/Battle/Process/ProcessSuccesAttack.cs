@@ -15,7 +15,6 @@ namespace Adventure.Quest.Battle.Process
     class ProcessSuccesAttack
     {
         #region PROCESS SUCCESFULL ATTACK
-        // Add English comments and summaries
         /// <summary>
         /// Processes a successful hit by applying damage, updating hitpoints,
         /// logging the results, and returning detailed roll information.
