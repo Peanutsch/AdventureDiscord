@@ -1,7 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
-using System.Numerics;
-using System.Text.Json;
 using Adventure.Buttons;
 using Adventure.Data;
 using Adventure.Loaders;
@@ -16,18 +14,17 @@ using Adventure.Services;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Microsoft.VisualBasic;
 
 namespace Adventure.Quest.Battle.BattleEngine
 {
     /// <summary>
-    /// The BattleEngine manages the turn-based combat system between players and creatures.
-    /// It maintains battle state per user and handles key steps such as starting the battle,
-    /// selecting weapons, processing attacks, and post-battle outcomes.
+    /// Handles the step-by-step flow of an encounter battle.
+    /// Tracks battle state, processes player/NPC actions, weapon selection,
+    /// attacks, post-battle handling, and battle completion.
     /// </summary>
     public static class EncounterBattleStepsSetup
     {
-        // Constants for different stages in the battle flow
+        // Battle step constants
         public const string StepStart = "start";
         public const string StepFlee = "flee";
         public const string StepWeaponChoice = "weapon_choice";
@@ -35,17 +32,17 @@ namespace Adventure.Quest.Battle.BattleEngine
         public const string StepPostBattle = "post_battle";
         public const string StepEndBattle = "end_battle";
 
-        // Constants for actions
+        // Player actions
         public const string ActionFlee = "flee";
         public const string ActionAttack = "attack";
 
-        // Messages used in interactions
+        // Predefined messages
         public const string MsgFlee = "You fled. The forest grows quiet.";
         public const string MsgChooseWeapon = "Choose your weapon:";
         public const string MsgBattleOver = "Battle is over!";
         public const string MsgNothingHappens = "Nothing happens...";
 
-        // Tracks each user's active battle state
+        // Tracks active battle states per user
         public static readonly ConcurrentDictionary<ulong, BattleStateModel> battleStates = new();
 
         /// <summary>
@@ -55,7 +52,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             BattleStateSetup.GetBattleState(userId).Player.Step ?? StepStart;
 
         /// <summary>
-        /// Updates the battle step for a user.
+        /// Sets the current step for a user's battle.
         /// </summary>
         public static void SetStep(ulong userId, string step)
         {
@@ -65,7 +62,8 @@ namespace Adventure.Quest.Battle.BattleEngine
         }
 
         /// <summary>
-        /// Main handler for user actions during a battle (e.g., attack, flee).
+        /// Main handler for user actions during the battle.
+        /// Routes to appropriate step handler based on current step.
         /// </summary>
         public static async Task HandleEncounterAction(SocketInteraction interaction, string action, string weaponId)
         {
@@ -85,16 +83,15 @@ namespace Adventure.Quest.Battle.BattleEngine
                     break;
 
                 case StepBattle:
-                    // Called externally by button interaction handler
+                    // Battle handled externally via button interactions
                     break;
 
                 case StepPostBattle:
-                    LogService.Info("Calling Case HandleEncounterAction.StepPostBattle");
                     await HandleStepPostBattle(interaction);
                     break;
 
                 case StepEndBattle:
-                    await interaction.RespondAsync(MsgBattleOver);
+                    await EndBattle(interaction);
                     break;
 
                 default:
@@ -103,6 +100,9 @@ namespace Adventure.Quest.Battle.BattleEngine
             }
         }
 
+        /// <summary>
+        /// Handles the first step where the player chooses to attack or flee.
+        /// </summary>
         public static async Task HandleStepStart(SocketMessageComponent component, string action)
         {
             ulong userId = component.User.Id;
@@ -110,44 +110,38 @@ namespace Adventure.Quest.Battle.BattleEngine
 
             if (action == ActionFlee)
             {
-                LogService.Info("[BattleEngine.HandleStepStart] Player flees");
-
+                LogService.Info("[HandleStepStart] Player flees");
                 await component.UpdateAsync(msg =>
                 {
                     msg.Content = MsgFlee;
-                    msg.Components = new ComponentBuilder().Build(); // Remove buttons
+                    msg.Components = new ComponentBuilder().Build(); // remove buttons
                     msg.Embed = null;
                 });
-
                 SetStep(userId, StepFlee);
             }
             else if (action == ActionAttack)
             {
-                LogService.Info("[BattleEngine.HandleStepStart] Player choose attack. Calling EncounterService.ShowWeaponChoices...");
-
+                LogService.Info("[HandleStepStart] Player chooses attack, showing weapons...");
                 await EncounterService.PrepareForBattleChoices(component);
-
                 SetStep(userId, StepWeaponChoice);
             }
 
             LogService.DividerParts(2, "HandleStepStart");
         }
 
-
         /// <summary>
-        /// Handles the weapon selection step and transitions to the battle step.
+        /// Handles weapon selection and validates inventory.
+        /// Moves to battle step after selection.
         /// </summary>
         private static async Task HandleStepWeaponChoice(SocketInteraction interaction, string weaponId)
         {
-            LogService.Info("[Running BattleEngine.HandleStepWeaponChoice]");
-
             ulong userId = interaction.User.Id;
             var state = BattleStateSetup.GetBattleState(userId);
             var ownedWeaponIds = state.Player.Weapons.Select(w => w.Id).ToHashSet();
 
             LogService.DividerParts(1, "HandleStepWeaponChoice");
 
-            WeaponModel? weapon = GameEntityFetcher.RetrieveWeaponAttributes(new List<string> { weaponId }).FirstOrDefault();
+            var weapon = GameEntityFetcher.RetrieveWeaponAttributes(new List<string> { weaponId }).FirstOrDefault();
 
             if (weapon == null)
             {
@@ -158,7 +152,6 @@ namespace Adventure.Quest.Battle.BattleEngine
 
             if (ownedWeaponIds.Contains(weaponId))
             {
-                // Valid weapon from player's inventory
                 string message = $"You attack with your {weapon.Name}!";
                 if (interaction is SocketMessageComponent componentWeaponChoice)
                 {
@@ -173,7 +166,6 @@ namespace Adventure.Quest.Battle.BattleEngine
             }
             else
             {
-                // Weapon not in inventory (but exists)
                 SetStep(userId, StepBattle);
                 await interaction.RespondAsync($"You fumble with the unfamiliar {weapon.Name}...", ephemeral: false);
             }
@@ -182,65 +174,55 @@ namespace Adventure.Quest.Battle.BattleEngine
         }
 
         /// <summary>
-        /// Processes both player's and creature's attack and updates battle state accordingly.
+        /// Executes player and NPC attacks and updates the battle state.
         /// </summary>
         public static async Task HandleStepBattle(SocketInteraction interaction, string weaponId)
         {
             ulong userId = interaction.User.Id;
             var state = BattleStateSetup.GetBattleState(userId);
-            var npc = state.Npc;
 
             LogService.DividerParts(1, "HandleStepBattle");
 
-            await interaction.DeferAsync();
-
-            var preAttackInfo = $"HP before attack:\nPlayer = {state.Player.Hitpoints}\nNPC = {state.CurrentHitpointsNPC}";
+            await interaction.DeferAsync(); // Acknowledge interaction
 
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
             {
                 await interaction.ModifyOriginalResponseAsync(msg =>
-                    msg.Content = $"{preAttackInfo}\n\n⚠️ Weapon not found in your inventory.");
+                    msg.Content = $"⚠️ Weapon not found in your inventory.");
                 return;
             }
 
-            // 📌 HP opslaan vóór de gevechten
-            int prePlayerHP = state.Player.Hitpoints;
-            int preNpcHP = state.CurrentHitpointsNPC;
-
-            // ⚔️ Speler valt aan
+            // ⚔️ Player attacks
             string playerAttackResult = PlayerAttack.ProcessPlayerAttack(userId, weapon);
 
-            if (state.CurrentHitpointsNPC <= 0)
+            // Check if NPC died
+            if (state.StateOfNPC == "Dead")
             {
-                var embed = EncounterService.RebuildBattleEmbed(userId, playerAttackResult);
-
-                await interaction.ModifyOriginalResponseAsync(msg => msg.Embed = embed.Build());
+                await EndBattle(interaction, playerAttackResult);
                 return;
             }
 
-            // 📌 Creature heeft geen wapen
+            // 💥 NPC attacks only if alive
+            string npcAttackResult = "";
             var npcWeapon = state.NpcWeapons.FirstOrDefault();
-            if (npcWeapon == null)
+            if (npcWeapon != null)
             {
-                var embed = EncounterService.RebuildBattleEmbed(userId, $"{playerAttackResult}\n\n⚠️ {state.Npc.Name} has nothing to attack with.");
-
-                await interaction.ModifyOriginalResponseAsync(msg => msg.Embed = embed.Build());
-                return;
+                npcAttackResult = NpcAttack.ProcessNpcAttack(userId, npcWeapon);
+            }
+            else
+            {
+                npcAttackResult = $"⚠️ {state.Npc.Name} has nothing to attack with.";
             }
 
-            // 💥 Creature valt terug aan
-            string npcAttackResult = NpcAttack.ProcessNpcAttack(userId, npcWeapon);
-
-            // 📦 Combineer output
+            // 📦 Combine attack logs
             string fullAttackLog = $"{playerAttackResult}\n\n{npcAttackResult}";
 
-            // 🧱 Bouw de embed met gecombineerde aanval
+            // 🧱 Rebuild embed and update message
             var fullEmbed = EncounterService.RebuildBattleEmbed(userId, fullAttackLog);
-
-            // 📬 Update bericht
             await interaction.ModifyOriginalResponseAsync(msg => msg.Embed = fullEmbed.Build());
 
+            // Move to post-battle step
             SetStep(userId, StepPostBattle);
             await HandleStepPostBattle(interaction);
 
@@ -248,12 +230,11 @@ namespace Adventure.Quest.Battle.BattleEngine
         }
 
         /// <summary>
-        /// Handles post-battle state update and feedback message.
+        /// Handles post-battle state updates and moves to the next step.
+        /// Ends the battle if either player or NPC is dead.
         /// </summary>
         public static async Task HandleStepPostBattle(SocketInteraction interaction)
         {
-            LogService.Info("[RUNNING HandleStepPostBattle]");
-
             if (interaction == null)
                 return;
 
@@ -266,18 +247,41 @@ namespace Adventure.Quest.Battle.BattleEngine
                 return;
             }
 
-            var player = state.Player;
-            var npc = state.Npc;
+            // End battle if player or NPC is dead
+            if (state.Player.Hitpoints <= 0 || state.StateOfNPC == "Dead")
+            {
+                SetStep(userId, StepEndBattle);
+                await EndBattle(interaction);
+                return;
+            }
 
-            if (player.Hitpoints <= 0 && state.CurrentHitpointsNPC  <= 0)
-                SetStep(userId, StepEndBattle);
-            else if (player.Hitpoints <= 0)
-                SetStep(userId, StepEndBattle);
-            else if (state.CurrentHitpointsNPC <= 0)
-                SetStep(userId, StepEndBattle);
-            else
-                SetStep(userId, StepWeaponChoice);
+            // Otherwise, continue battle -> next weapon selection
+            SetStep(userId, StepWeaponChoice);
+        }
+
+        /// <summary>
+        /// Ends the battle: removes buttons and displays the battle-over message.
+        /// </summary>
+        /// <summary>
+        /// Ends the battle, removes buttons, and updates the message with the battle log and MsgBattleOver.
+        /// </summary>
+        public static async Task EndBattle(SocketInteraction interaction, string? extraMessage = null)
+        {
+            // Build final message content
+            string content = extraMessage != null ? $"{extraMessage}\n\n{EncounterBattleStepsSetup.MsgBattleOver}"
+                                                  : EncounterBattleStepsSetup.MsgBattleOver;
+
+            // Modify the original deferred response
+            await interaction.ModifyOriginalResponseAsync(msg =>
+            {
+                msg.Content = content;
+                msg.Components = new ComponentBuilder().Build(); // remove buttons
+                msg.Embed = null; // remove any embed if needed
+            });
+
+            // Update battle step to end
+            ulong userId = interaction.User.Id;
+            EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepEndBattle);
         }
     }
 }
-

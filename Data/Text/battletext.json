@@ -57,7 +57,7 @@
     "Injured": "staggers slightly, struggling to maintain focus as the fight wears on.",
     "Bloodied": "'s blood runs freely from the wounds, every motion costing visible effort.",
     "Badly Wounded": "sways on their feet, each breath shallow as they cling to survival.",
-    "Grievously Wounded": "is barely standing, their willpower the only thing keeping them in the fight.",
+    "Grievously Wounded": "is barely standing. Their willpower is the only thing keeping them in the fight...",
     "Dead": "collapses to the ground, lifeless... Another one bites the dust..."
   }
 }
