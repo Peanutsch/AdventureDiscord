@@ -1,4 +1,5 @@
-﻿using Adventure.Loaders;
+﻿using Adventure.Data;
+using Adventure.Loaders;
 using Adventure.Models.BattleState;
 using Adventure.Models.Items;
 using Adventure.Models.Text;
@@ -8,6 +9,7 @@ using Adventure.Quest.Rolls;
 using Adventure.Services;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace Adventure.Quest.Battle.TextGenerator
 {
@@ -31,11 +33,11 @@ namespace Adventure.Quest.Battle.TextGenerator
         /// <param name="isPlayerAttack">Whether the attack is performed by the player.</param>
         /// <returns>A formatted string describing the full battle log entry.</returns>
         public static string GenerateBattleLog(string attackResult, string attacker, string defender, string weapon, int damage, string statusLabel, BattleTextModel battleText,
-                                               BattleStateModel state, Dictionary<string, string>? rollText, int strength, bool isPlayerAttack = true)
+                                       BattleStateModel state, Dictionary<string, string>? rollText, int strength, bool isPlayerAttack = true)
         {
             string attackText = "";
 
-            // Select random flavor text depending on attack result
+            // Kies random tekst afhankelijk van het aanvalstype
             switch (attackResult)
             {
                 case "criticalHit":
@@ -55,20 +57,24 @@ namespace Adventure.Quest.Battle.TextGenerator
                     break;
             }
 
-            // Add roll details if the attack was made by the player
+            // Voeg roll details toe als speler aanvalt
             string? rollDetails = GetRollDetails(state, rollText, isPlayerAttack);
             if (!string.IsNullOrEmpty(rollDetails))
             {
                 attackText += $"\n{rollDetails}";
             }
 
-            // Add HP status flavour text for the defender
-            string statusText = battleText.HpStatus.ContainsKey(statusLabel)
-                ? battleText.HpStatus[statusLabel]
-                : "has an unknown status, because the Dev fvcked up...";
+            // HP-status: random keuze uit beschikbare variaties
+            string statusText = "has an unknown status, because the Dev fvcked up...";
+            if (battleText.HpStatus.TryGetValue(statusLabel, out var statusEntries) && statusEntries is List<TextEntry> entries && entries.Count > 0)
+            {
+                int index = new Random().Next(entries.Count);
+                statusText = entries[index].Text;
+            }
 
             return $"**{attackText}\n\n🧟 {defender} is {statusLabel} and {statusText}**";
         }
+
 
         /// <summary>
         /// Selects a random text entry from a list and replaces placeholders with actual values.

@@ -23,10 +23,11 @@ namespace Adventure.Models.Text
         public List<TextEntry> Miss { get; set; } = new();
 
         [JsonPropertyName("hpStatus")]
-        public Dictionary<string, string> HpStatus { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, List<TextEntry>> HpStatus { get; set; } = new();
     }
 
-    public class TextEntry {
+    public class TextEntry
+    {
         [JsonPropertyName("text")]
         public string Text { get; set; } = "";
     }
