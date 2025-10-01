@@ -153,6 +153,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             | `{Dice}`                | The dice result used for calculating damage (e.g., d6, d8).                    |
             | `{Damage}`              | The amount of damage dealt (before modifiers).                                 |
             | `{CritRoll}`            | The dice result used for critical hit damage (if applicable).                  |
+            | `{TotalDamage}`         | The final damage roll result after adding modifiers (damage roll + modifiers). |
          */
 
 
