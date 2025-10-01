@@ -104,7 +104,7 @@ namespace Adventure.Quest.Encounter
         /// <returns>An EmbedBuilder summarizing the battle.</returns>
         public static EmbedBuilder RebuildBattleEmbed(ulong userId, string attackSummary)
         {
-            var state = BattleMethods.GetBattleState(userId);
+            var state = BattleStateSetup.GetBattleState(userId);
             var player = state.Player;
             var npc = state.Npc;
 
@@ -114,7 +114,7 @@ namespace Adventure.Quest.Encounter
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Red)
-                .WithTitle($"{player.Name} (Lvl. {state.Player.Level}, {state.Player.Hitpoints} HP, {state.Player.XP} XP)\n = VS = \n{npc.Name} ({state.StateOfNPC})")
+                .WithTitle($"{player.Name} (Lvl. {state.Player.Level}, {state.Player.XP} XP, {state.Player.Hitpoints} HP)\n = VS = \n{npc.Name} ({state.StateOfNPC})")
                 .AddField("[Battle Log]",
                     $"{attackSummary}", false);
 
@@ -127,7 +127,7 @@ namespace Adventure.Quest.Encounter
         /// <param name="component">The component interaction from Discord (button click).</param>
         public static async Task PrepareForBattleChoices(SocketMessageComponent component)
         {
-            var state = BattleMethods.GetBattleState(component.User.Id);
+            var state = BattleStateSetup.GetBattleState(component.User.Id);
             var weapons = state?.PlayerWeapons;
             var items = state?.Items;
             var armors = state?.PlayerArmor;
@@ -157,7 +157,7 @@ namespace Adventure.Quest.Encounter
             }
 
             var embed = new EmbedBuilder()
-                .WithTitle($"**{state!.Player.Name}** (Lvl. {state.Player.Level}, {state.Player.Hitpoints} HP, {state.Player.XP} XP) prepares for battle...")
+                .WithTitle($"**{state!.Player.Name}** (Lvl. {state.Player.Level}, {state.Player.XP} XP, {state.Player.Hitpoints} HP) prepares for battle...")
                 .WithColor(Color.DarkRed)
                 .WithDescription($"🔪 Your Inventory:");
 

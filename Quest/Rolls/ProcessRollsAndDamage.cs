@@ -33,7 +33,7 @@ namespace Adventure.Quest.Rolls
         /// <returns>The result of the hit attempt (hit, miss, critical, etc.).</returns>
         public static HitResult ValidateHit(ulong userId, bool isPlayerAttacker)
         {
-            var state = BattleMethods.GetBattleState(userId);
+            var state = BattleStateSetup.GetBattleState(userId);
 
             // Perform the attack roll (1d20)
             int attackRoll = DiceRoller.RollWithoutDetails(1, 20);

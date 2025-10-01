@@ -1,6 +1,7 @@
 ﻿using Adventure.Data;
 using Adventure.Models.Items;
 using Adventure.Quest.Battle.BattleEngine;
+using Adventure.Quest.Battle.TextGenerator;
 using Adventure.Quest.Battle.Process;
 using Adventure.Quest.Helpers;
 using Adventure.Quest.Rolls;
@@ -60,12 +61,12 @@ namespace Adventure.Quest.Battle.Attack
             // Check if the Player is defeated
             if (player.Hitpoints <= 0)
             {
-                BattleMethods.SetStep(userId, BattleMethods.StepEndBattle);
+                EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepEndBattle);
                 battleLog += $"\n\n💀 **{player.Name} has been defeated by {npc.Name}!**";
             }
             else
             {
-                BattleMethods.SetStep(userId, BattleMethods.StepPostBattle);
+                EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepPostBattle);
             }
 
             return battleLog;

@@ -20,7 +20,7 @@ namespace Adventure.Quest.Helpers
             (int diceCount, int diceValue) = GetHitDie(cr);
 
             // Save Dice to BattleState
-            var state = BattleMethods.GetBattleState(userId);
+            var state = BattleStateSetup.GetBattleState(userId);
             state.Npc = npc;
             state.DiceCountHP = diceCount;
             state.DiceValueHP = diceValue;

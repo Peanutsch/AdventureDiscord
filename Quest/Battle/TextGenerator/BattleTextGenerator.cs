@@ -9,7 +9,7 @@ using Adventure.Services;
 using System;
 using System.Collections.Generic;
 
-namespace Adventure.Quest.Battle.BattleEngine
+namespace Adventure.Quest.Battle.TextGenerator
 {
     public static class BattleTextGenerator
     {

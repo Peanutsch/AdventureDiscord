@@ -21,7 +21,7 @@ namespace Adventure.Quest.Helpers
         /// <returns>A tuple containing the battle state, player model, creature model, and attacker strength.</returns>
         public static (BattleStateModel state, PlayerModel player, NpcModel creature, int attackerStrength) GetBattleParticipants(ulong userId, bool playerIsAttacker)
         {
-            var state = BattleMethods.GetBattleState(userId);
+            var state = BattleStateSetup.GetBattleState(userId);
             var player = state.Player;
             var npc = state.Npc;
 

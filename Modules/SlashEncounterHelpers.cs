@@ -50,8 +50,8 @@ namespace Adventure.Modules
 
         public static void SetupBattleState(ulong userId, NpcModel npc)
         {
-            BattleMethods.SetupNpc(userId, npc);
-            BattleMethods.SetStep(userId, "start");
+            NpcSetup.SetupNpc(userId, npc);
+            EncounterBattleStepsSetup.SetStep(userId, "start");
         }
 
         public static ComponentBuilder BuildEncounterButtons()

@@ -25,7 +25,7 @@ namespace Adventure.Quest.Battle.BattleEngine
     /// It maintains battle state per user and handles key steps such as starting the battle,
     /// selecting weapons, processing attacks, and post-battle outcomes.
     /// </summary>
-    public static class BattleMethods
+    public static class EncounterBattleStepsSetup
     {
         // Constants for different stages in the battle flow
         public const string StepStart = "start";
@@ -52,103 +52,15 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// Gets the current step of the user's battle.
         /// </summary>
         public static string GetStep(ulong userId) =>
-            GetBattleState(userId).Player.Step ?? StepStart;
+            BattleStateSetup.GetBattleState(userId).Player.Step ?? StepStart;
 
         /// <summary>
         /// Updates the battle step for a user.
         /// </summary>
         public static void SetStep(ulong userId, string step)
         {
-            var state = GetBattleState(userId);
+            var state = BattleStateSetup.GetBattleState(userId);
             state.Player.Step = step;
-            battleStates[userId] = state;
-        }
-
-        /// <summary>
-        /// Retrieves or initializes the battle state for the user.
-        /// </summary>
-        public static BattleStateModel GetBattleState(ulong userId)
-        {
-            if (!battleStates.TryGetValue(userId, out var state))
-            {
-                // Load player data and inventory
-                var player = PlayerDataManager.LoadByUserId(userId);
-
-                var weaponIds = player.Weapons.Select(w => w.Id).ToList();
-                var armorIds = player.Armor.Select(a => a.Id).ToList();
-                var itemIds = player.Items.Select(i => i.Id).ToList();
-
-                var playerWeapons = GameEntityFetcher.RetrieveWeaponAttributes(weaponIds);
-                var playerArmor = GameEntityFetcher.RetrieveArmorAttributes(armorIds);
-                var playerItems = GameEntityFetcher.RetrieveItemAttributes(itemIds);
-
-                // Add total ammount to Weapons
-                foreach (var weapon in player.Weapons)
-                {
-                    var match = player.Weapons.FirstOrDefault(w => w.Id == weapon.Id);
-                    if (match != null)
-                        weapon.Value = match.Value;
-                }
-
-                // Add total ammount to Armor
-                foreach (var armor in player.Armor)
-                {
-                    var match = player.Armor.FirstOrDefault(a => a.Id == armor.Id);
-                    if (match != null)
-                        armor.Value = match.Value;
-                }
-
-                // Add total ammount to Items
-                foreach (var item in player.Items)
-                {
-                    var match = player.Weapons.FirstOrDefault(i => i.Id == item.Id);
-                    if (match != null)
-                        item.Value = match.Value;
-                }
-
-
-                // Create new battle state
-                state = new BattleStateModel {
-                    Player = player,
-                    Npc = new NpcModel(),
-                    PlayerWeapons = playerWeapons,
-                    PlayerArmor = playerArmor,
-                    Items = playerItems,
-                    NpcWeapons = new List<WeaponModel>(),
-                    NpcArmor = new List<ArmorModel>(),
-                    PreHpPlayer = player.Hitpoints,
-                    PreHpNPC = 0,
-                    LastUsedWeapon = "",
-                    TotalDamage = 0
-                };
-            }
-
-            return battleStates.GetOrAdd(userId, state);
-        }
-
-        /// <summary>
-        /// Assigns the creature for the current encounter and loads its weapons and armor.
-        /// </summary>
-        public static void SetupNpc(ulong userId, NpcModel npc)
-        {
-            var state = GetBattleState(userId);
-            state.Npc = npc;
-
-            // Save NPC stats to BattleState
-            var RollHitpointsNPC = ChallengeRatingHelpers.GetNpcHitpoints(npc, npc.CR, userId);
-            state.HitpointsAtStartNPC = RollHitpointsNPC; 
-            state.CurrentHitpointsNPC = RollHitpointsNPC; 
-            state.PreHpNPC = RollHitpointsNPC;            
-            state.RewardXP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
-            
-            LogService.Info($"[BattleMethod.SetNpc]\n\n>NPC: {npc.Name} HP: {state.CurrentHitpointsNPC} RewardXP: {state.RewardXP}\n\n");
-
-            if (npc.Weapons != null)
-                state.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);
-
-            if (npc.Armor != null)
-                state.NpcArmor = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
-
             battleStates[userId] = state;
         }
 
@@ -191,7 +103,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             }
         }
 
-        private static async Task HandleStepStart(SocketMessageComponent component, string action)
+        public static async Task HandleStepStart(SocketMessageComponent component, string action)
         {
             ulong userId = component.User.Id;
             LogService.DividerParts(1, "HandleStepStart");
@@ -230,7 +142,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             LogService.Info("[Running BattleEngine.HandleStepWeaponChoice]");
 
             ulong userId = interaction.User.Id;
-            var state = GetBattleState(userId);
+            var state = BattleStateSetup.GetBattleState(userId);
             var ownedWeaponIds = state.Player.Weapons.Select(w => w.Id).ToHashSet();
 
             LogService.DividerParts(1, "HandleStepWeaponChoice");
@@ -275,7 +187,7 @@ namespace Adventure.Quest.Battle.BattleEngine
         public static async Task HandleStepBattle(SocketInteraction interaction, string weaponId)
         {
             ulong userId = interaction.User.Id;
-            var state = GetBattleState(userId);
+            var state = BattleStateSetup.GetBattleState(userId);
             var npc = state.Npc;
 
             LogService.DividerParts(1, "HandleStepBattle");
@@ -346,7 +258,7 @@ namespace Adventure.Quest.Battle.BattleEngine
                 return;
 
             ulong userId = interaction.User.Id;
-            var state = GetBattleState(userId);
+            var state = BattleStateSetup.GetBattleState(userId);
 
             if (state == null)
             {
