@@ -46,7 +46,7 @@
     { "text": "🗡️ {attacker} swings hard, but the attack glances past {defender} harmlessly." },
     { "text": "🗡️ The strike from {attacker}'s {weapon} whistles through the air, missing {defender}." },
     { "text": "🗡️ {defender} reacts just in time, slipping past {attacker}'s attack with {weapon}." },
-    { "text": "🗡️ A wild swing—{attacker}'s {weapon} cuts nothing but empty space as {defender} evades." }
+    { "text": "🗡️ A wild swing—{attacker}'s {weapon} cuts nothing but air as {defender} evades." }
   ],
   "hpStatus": {
     "Unscathed": "stands tall and confident, showing no sign of injury or fatigue.",
