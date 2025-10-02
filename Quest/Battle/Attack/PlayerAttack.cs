@@ -26,13 +26,13 @@ namespace Adventure.Quest.Battle.Attack
         /// <returns>A formatted string containing the battle log and status updates.</returns>
         public static string ProcessPlayerAttack(ulong userId, WeaponModel weapon)
         {
-            // Step 1: Determine the result of the attack (hit, miss, critical hit, critical miss)
+            // Determine the result of the attack (hit, miss, critical hit, critical miss)
             var hitResult = ProcessRollsAndDamage.ValidateHit(userId, isPlayerAttacker: true);
 
-            // Step 2: Retrieve battle participants and current state
+            // Retrieve battle participants and current state
             var (state, player, npc, strength) = GetBattleStateData.GetBattleParticipants(userId, playerIsAttacker: true);
 
-            // Step 3: If the attack hits, calculate the total damage (including criticals)
+            // If the attack hits, calculate the total damage (including criticals)
             if (hitResult == ProcessRollsAndDamage.HitResult.IsValidHit ||
                 hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit)
             {
@@ -40,7 +40,7 @@ namespace Adventure.Quest.Battle.Attack
                     ProcessSuccesAttack.ProcessSuccessfulHit(userId, state, weapon, strength, state.CurrentHitpointsNPC, isPlayerAttacker: true);
             }
 
-            // Step 4: Update NPC's HP status after the attack
+            // Update NPC's HP status after the attack
             TrackHP.GetAndSetHPStatus(
                 state.HitpointsAtStartNPC,
                 state.CurrentHitpointsNPC,
@@ -49,10 +49,10 @@ namespace Adventure.Quest.Battle.Attack
             );
             string statusLabel = state.StateOfNPC;
 
-            // Step 5: Map hit result to a text category (criticalHit, hit, miss, criticalMiss)
+            // Map hit result to a text category (criticalHit, hit, miss, criticalMiss)
             string attackResult = AttackResultHelper.GetAttackResult(hitResult);
 
-            // Step 6: Generate a battle log using the narrative text templates (JSON)
+            // Generate a battle log using the narrative text templates (JSON)
             string battleLog = BattleTextGenerator.GenerateBattleLog(
                 attackResult: attackResult,
                 attacker: player.Name!,
@@ -67,18 +67,21 @@ namespace Adventure.Quest.Battle.Attack
                 isPlayerAttack: true // Show dice rolls for player attacks
             );
 
-            // Step 7: Handle defeated NPCs, reward XP, and check for level up
+            // Handle defeated NPCs, reward XP, and check for level up
             if (state.CurrentHitpointsNPC <= 0)
             {
                 // Mark the battle as ended
                 EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepEndBattle);
+
+                // Set embed color to Purple
+                state.EmbedColor = Color.Purple;
 
                 // Calculate XP reward and check for level up
                 var rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
                 var (leveledUp, oldLevel, newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
 
                 // Add defeat and XP info to the battle log
-                battleLog += $"\n\n💀 **{npc.Name} is defeated!**";
+                battleLog += $"\n\n💀 **VICTORY!!! {npc.Name} is defeated!**";
                 battleLog += $"\n🏆 **{player.Name}** gains **{state.RewardXP} XP** (Total: {state.NewTotalXP} XP)";
 
                 if (leveledUp)
@@ -90,7 +93,7 @@ namespace Adventure.Quest.Battle.Attack
                 EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepPostBattle);
             }
 
-            // Step 8: Return the fully formatted battle log
+            // Return the fully formatted battle log
             return battleLog;
         }
     }

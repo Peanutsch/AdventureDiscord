@@ -72,7 +72,7 @@ namespace Adventure.Quest.Battle.TextGenerator
                 statusText = entries[index].Text;
             }
 
-            return $"**{attackText}\n\n🧟 {defender} is {statusLabel} and {statusText}**";
+            return $"{attackText}\n\n**{defender}** is **{statusLabel}** and {statusText}";
         }
 
 
@@ -95,10 +95,10 @@ namespace Adventure.Quest.Battle.TextGenerator
             string text = entries[index].Text;
 
             // Replace placeholders with actual values
-            text = text.Replace("{attacker}", attacker)
-                       .Replace("{defender}", defender)
-                       .Replace("{weapon}", weapon)
-                       .Replace("{damage}", damage.ToString());
+            text = text.Replace("{attacker}", $"**{attacker}**")
+                       .Replace("{defender}", $"**{defender}**")
+                       .Replace("{weapon}", $"**{weapon}**")
+                       .Replace("{damage}", $"{damage}");
 
             return text;
         }
@@ -106,6 +106,7 @@ namespace Adventure.Quest.Battle.TextGenerator
         /// <summary>
         /// Generates a formatted string describing the result of a player's roll in battle.
         /// Includes attack rolls, damage rolls, and total damage depending on the outcome.
+        /// String is returned with "> " to be used as blockquote in Discord Embed.
         /// </summary>
         /// <param name="state">The current battle state containing roll and damage info.</param>
         /// <param name="rollText">A dictionary of roll text templates loaded from JSON.</param>
@@ -124,12 +125,13 @@ namespace Adventure.Quest.Battle.TextGenerator
                 string critDamageRoll = ReplacePlaceholders(rollText["critDamageRoll"], state);
                 string totalDamageCriticalRoll = ReplacePlaceholders(rollText["totalDamageCriticalRoll"], state);
 
-                return $"{attackRoll}\n{damageRoll}\n{critDamageRoll}\n{totalDamageCriticalRoll}";
+                return $"> {attackRoll}\n> {damageRoll}\n> {critDamageRoll}\n> {totalDamageCriticalRoll}";
             }
             // (Critical) Miss: show only the attack roll
             else if (state.IsCriticalMiss || state.HitResult == "isMiss")
             {
-                return ReplacePlaceholders(rollText["attackRoll"], state);
+                string missRoll = ReplacePlaceholders(rollText["attackRoll"], state);
+                return $"> {missRoll}";
             }
             else
             {
@@ -138,7 +140,7 @@ namespace Adventure.Quest.Battle.TextGenerator
                 string damageRoll = ReplacePlaceholders(rollText["damageRoll"], state);
                 string total = ReplacePlaceholders(rollText["totalDamage"], state);
 
-                return $"{attackRoll}\n{damageRoll}\n{total}";
+                return $"> {attackRoll}\n> {damageRoll}\n> {total}";
             }
         }
 
@@ -149,7 +151,7 @@ namespace Adventure.Quest.Battle.TextGenerator
 
             | Placeholder            | Description                                                                     |
             |-------------------------|--------------------------------------------------------------------------------|
-            | `{TotalAttackRoll}`     | The final attack roll result after adding modifiers (attack roll + modifiers). |
+            | `{TotalAttackRoll}`     | The result of the attack roll after adding modifiers (attack roll + modifiers). |
             | `{AttackRoll}`          | The raw dice roll result for the attack.                                       |
             | `{AbilityModifier}`     | The attacker's ability modifier (e.g., from Strength or Dexterity).            |
             | `{Strength}`            | The attacker's strength attribute value.                                       |
@@ -159,7 +161,7 @@ namespace Adventure.Quest.Battle.TextGenerator
             | `{Dice}`                | The dice result used for calculating damage (e.g., d6, d8).                    |
             | `{Damage}`              | The amount of damage dealt (before modifiers).                                 |
             | `{CritRoll}`            | The dice result used for critical hit damage (if applicable).                  |
-            | `{TotalDamage}`         | The final damage roll result after adding modifiers (damage roll + modifiers). |
+            | `{TotalDamage}`         | The result of the damage roll after adding modifiers (damage roll + modifiers).|
          */
 
 
@@ -176,20 +178,20 @@ namespace Adventure.Quest.Battle.TextGenerator
 
             // Replace all placeholders with actual battle values
             return template
-                .Replace("{TotalAttackRoll}", state.TotalAttackRoll.ToString())
-                .Replace("{AttackRoll}", state.AttackRoll.ToString())
-                .Replace("{Attackroll}", state.AttackRoll.ToString())   // tolerantie
-                .Replace("{AbilityModifier}", state.AbilityModifier.ToString())
-                .Replace("{Strength}", state.Player.Attributes.Strength.ToString())
-                .Replace("{strength}", state.Player.Attributes.Strength.ToString())
-                .Replace("{ProficiencyModifier}", state.ProficiencyModifier.ToString())
-                .Replace("{PlayerLevel}", state.Player.Level.ToString())
-                .Replace("{Dice}", state.Dice.ToString())
-                .Replace("{Damage}", state.Damage.ToString())
-                .Replace("{damage}", state.Damage.ToString())
-                .Replace("{CritRoll}", state.CritRoll.ToString())
-                .Replace("{critRoll}", state.CritRoll.ToString())
-                .Replace("{TotalDamage}", state.TotalDamage.ToString());
+                .Replace("{TotalAttackRoll}", $"{state.TotalAttackRoll}")
+                .Replace("{AttackRoll}", $"{state.AttackRoll}")
+                .Replace("{Attackroll}", $"{state.AttackRoll}")
+                .Replace("{AbilityModifier}", $"{state.AbilityModifier}")
+                .Replace("{Strength}", $"{state.Player.Attributes.Strength}")
+                .Replace("{strength}", $"{state.Player.Attributes.Strength}")
+                .Replace("{ProficiencyModifier}", $"{state.ProficiencyModifier}")
+                .Replace("{PlayerLevel}", $"{state.Player.Level}")
+                .Replace("{Dice}", $"{state.Dice}")
+                .Replace("{Damage}", $"{state.Damage}")
+                .Replace("{damage}", $"{state.Damage}")
+                .Replace("{CritRoll}", $"{state.CritRoll}")
+                .Replace("{critRoll}", $"{state.CritRoll}")
+                .Replace("{TotalDamage}", $"{state.TotalDamage}");
         }
     }
 }

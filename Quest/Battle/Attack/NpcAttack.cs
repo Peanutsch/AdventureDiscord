@@ -6,6 +6,7 @@ using Adventure.Quest.Battle.Process;
 using Adventure.Quest.Battle.TextGenerator;
 using Adventure.Quest.Helpers;
 using Adventure.Quest.Rolls;
+using Discord;
 
 namespace Adventure.Quest.Battle.Attack
 {
@@ -46,6 +47,10 @@ namespace Adventure.Quest.Battle.Attack
             if (player.Hitpoints <= 0)
             {
                 EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepEndBattle);
+
+                // Set embed color to DarkRed
+                state.EmbedColor = Color.DarkRed;
+
                 battleLog += $"\n\n💀 **{player.Name} has been defeated by {npc.Name}!**";
             }
             else

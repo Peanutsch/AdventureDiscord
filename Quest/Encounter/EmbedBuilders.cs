@@ -17,14 +17,14 @@ using System.Threading.Tasks;
 
 namespace Adventure.Quest.Encounter
 {
-    public class EncounterService
+    public class EmbedBuilders
     {
         /// <summary>
         /// Builds an embed describing the randomly encountered creature with stats and equipment.
         /// </summary>
         /// <param name="creature">The creature to display in the encounter embed.</param>
         /// <returns>An EmbedBuilder with creature details formatted.</returns>
-        public static EmbedBuilder BuildEmbedRandomEncounter(NpcModel npc, BattleStateModel state)
+        public static EmbedBuilder EmbedRandomEncounter(NpcModel npc, BattleStateModel state)
         {
             LogService.DividerParts(1, "Data NPC");
 
@@ -33,7 +33,7 @@ namespace Adventure.Quest.Encounter
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
-                .WithDescription($"**[{npc.Name!.ToUpper()}]**\n*\"{npc.Description}\"*");
+                .WithDescription($"**[{npc.Name!.ToUpper()}]**\n*{npc.Description}*");
 
             LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", npc.Armor ?? new())}");
 
@@ -49,7 +49,7 @@ namespace Adventure.Quest.Encounter
                     {
                         embed.AddField($"**[{armor.Name}]**\n",
                             $"Type: {armor.Type} armor\n" +
-                            $"*\"{armor.Description}\"*", false);
+                            $"*{armor.Description}*", false);
                     }
                 }
                 else
@@ -72,7 +72,7 @@ namespace Adventure.Quest.Encounter
                     {
                         embed.AddField($"**[{weapon.Name}]**",
                             $"Range: {weapon.Range} meter\n" +
-                            $"*\"{weapon.Description}\"*", false);
+                            $"*{weapon.Description}*", false);
                     }
                 }
                 else
@@ -102,7 +102,7 @@ namespace Adventure.Quest.Encounter
         /// <param name="preNpcHP">NPC's HP before the attack.</param>
         /// <param name="attackSummary">Text describing the attack results.</param>
         /// <returns>An EmbedBuilder summarizing the battle.</returns>
-        public static EmbedBuilder RebuildBattleEmbed(ulong userId, string attackSummary)
+        public static EmbedBuilder EmbedBattle(ulong userId, string attackSummary)
         {
             var state = BattleStateSetup.GetBattleState(userId);
             var player = state.Player;
@@ -113,10 +113,10 @@ namespace Adventure.Quest.Encounter
             LogService.Info($"[EncounterService.RebuildBattleEmbed]\n\n{npc.Name} HP at Start: {state.HitpointsAtStartNPC} {npc.Name} current HP: {state.CurrentHitpointsNPC} {npc.Name} Health: {state.PercentageHpNpc}% State: {state.StateOfNPC}\n\n");
 
             EmbedBuilder embed = new EmbedBuilder()
-                .WithColor(Color.Red)
-                .WithTitle($"{player.Name} (Lvl. {state.Player.Level}, {state.Player.Hitpoints} HP, {state.Player.XP} XP)\n = VS = \n{npc.Name} ({state.StateOfNPC})")
-                .AddField("[Battle Log]",
-                    $"{attackSummary}", false);
+                .WithColor(state.EmbedColor)
+                .WithTitle("[Battle Report]")
+                .AddField($"{player.Name} ({state.Player.Hitpoints}) VS {npc.Name} ({state.StateOfNPC})", $"| Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP} |", inline: true)
+                .AddField("\u200B", $"{attackSummary}", false);
 
             return embed;
         }
@@ -125,7 +125,7 @@ namespace Adventure.Quest.Encounter
         /// Shows the player their weapon choices by updating the message with weapon buttons and embed.
         /// </summary>
         /// <param name="component">The component interaction from Discord (button click).</param>
-        public static async Task PrepareForBattleChoices(SocketMessageComponent component)
+        public static async Task EmbedPreBattle(SocketMessageComponent component)
         {
             var state = BattleStateSetup.GetBattleState(component.User.Id);
             var weapons = state?.PlayerWeapons;
@@ -157,9 +157,9 @@ namespace Adventure.Quest.Encounter
             }
 
             var embed = new EmbedBuilder()
-                .WithTitle($"**{state!.Player.Name}** (Lvl. {state.Player.Level}, {state.Player.Hitpoints} HP, {state.Player.XP} XP) prepares for battle...")
-                .WithColor(Color.DarkRed)
-                .WithDescription($"🔪 Your Inventory:");
+                .WithColor(Color.Blue)
+                .WithTitle("[Prepare for Battle]")
+                .AddField($"**{state!.Player.Name}** prepares for battle...", $"|Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP}|");
 
             // Add weapons to embed
             foreach (var weapon in weapons!)

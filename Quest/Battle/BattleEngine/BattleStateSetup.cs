@@ -57,8 +57,7 @@ namespace Adventure.Quest.Battle.BattleEngine
 
 
                 // Create new battle state
-                state = new BattleStateModel
-                {
+                state = new BattleStateModel {
                     Player = player,
                     Npc = new NpcModel(),
                     PlayerWeapons = playerWeapons,
@@ -69,7 +68,8 @@ namespace Adventure.Quest.Battle.BattleEngine
                     PreHpPlayer = player.Hitpoints,
                     PreHpNPC = 0,
                     LastUsedWeapon = "",
-                    TotalDamage = 0
+                    TotalDamage = 0,
+                    EmbedColor = Discord.Color.Red
                 };
             }
 

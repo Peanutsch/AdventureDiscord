@@ -84,7 +84,7 @@ namespace Adventure.Buttons
             EncounterBattleStepsSetup.SetStep(Context.User.Id, EncounterBattleStepsSetup.StepWeaponChoice);
 
             // Toon opnieuw de wapenkeuze
-            await EncounterService.PrepareForBattleChoices((SocketMessageComponent)Context.Interaction);
+            await EmbedBuilders.EmbedPreBattle((SocketMessageComponent)Context.Interaction);
         }
 
         [ComponentInteraction("battle_flee_*")]

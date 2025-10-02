@@ -172,8 +172,8 @@ namespace Adventure.Quest.Rolls
             }
 
             // Apply critical-miss rule (no damage)
-            if (state.IsCriticalMiss)
-            {
+            // Ensure TotalDamage is not less then 0, combined with when totalDamage and totalCritDamage < = 0
+            if (state.IsCriticalMiss || totalDamage <= 0 || totalCritDamage <= 0) {
                 totalDamage = 0;
             }
 

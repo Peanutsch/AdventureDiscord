@@ -1,6 +1,7 @@
 ﻿using Adventure.Models.Items;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
+using Discord;
 
 namespace Adventure.Models.BattleState
 {
@@ -59,5 +60,8 @@ namespace Adventure.Models.BattleState
         // XP Reward
         public int RewardXP { get; set; }
         public int NewTotalXP { get; set; }
+
+        // Embed
+        public Discord.Color EmbedColor { get; set; } = Color.Red;
     }
 }

@@ -4,64 +4,134 @@
     { "text": "💥 {attacker}'s {weapon} tears into {defender}, causing `{damage}` damage in a brutal blow!" },
     { "text": "💥 {attacker} delivers a deadly hit to {defender} with {weapon}, inflicting `{damage}` damage!" },
     { "text": "💥 With flawless precision, {attacker}'s {weapon} smashes into {defender}, dealing a devastating `{damage}` damage!" },
-    { "text": "💥 A brutal strike—{attacker} finds a weak spot in {defender}'s defense, inflicting `{damage}` damage!" }
+    { "text": "💥 A brutal strike—{attacker} finds a weak spot in {defender}'s defense, inflicting `{damage}` damage!" },
+    { "text": "💥 Lightning-fast! {attacker} pierces {defender} with {weapon}, causing `{damage}` damage!" },
+    { "text": "💥 Critical hit! {attacker}'s {weapon} obliterates {defender}, dealing `{damage}` damage!" },
+    { "text": "💥 {attacker} strikes with deadly accuracy, {weapon} leaving {defender} reeling for `{damage}` damage!" },
+    { "text": "💥 Devastating blow! {attacker}'s {weapon} crushes {defender} for `{damage}` damage!" },
+    { "text": "💥 {attacker}'s strike with {weapon} lands perfectly on {defender}, causing `{damage}` damage!" }
   ],
   "hit": [
     { "text": "⚔️ {attacker} strikes {defender} with {weapon}, dealing `{damage}` damage." },
     { "text": "⚔️ {attacker} lands a solid blow on {defender} using {weapon}, inflicting `{damage}` damage." },
-    { "text": "⚔️ {attacker}'s {weapon} connects with {defender}, causing `{damage}` damage." }
+    { "text": "⚔️ {attacker} hits {defender} with {weapon}, causing `{damage}` damage." },
+    { "text": "⚔️ With a clever feint, {attacker} hits {defender} with the {weapon}, causing `{damage}` damage." },
+    { "text": "⚔️ {attacker} slashes at {defender} with {weapon}, leaving a wound for `{damage}` damage." },
+    { "text": "⚔️ {attacker}'s {weapon} cuts into {defender}, dealing `{damage}` damage!" },
+    { "text": "⚔️ A swift strike from {attacker}'s {weapon} hits {defender} for `{damage}` damage." },
+    { "text": "⚔️ {attacker} unleashes a fierce attack on {defender} with {weapon}, dealing `{damage}` damage." },
+    { "text": "⚔️ {attacker} spins and strikes {defender} with {weapon}, causing `{damage}` damage." },
+    { "text": "⚔️{attacker} lands a precise blow on {defender} with {weapon}, inflicting `{damage}` damage." },
+    { "text": "⚔️ {attacker}'s {weapon} bites into {defender}, leaving `{damage}` damage behind." },
+    { "text": "⚔️ {attacker} sneaks a strike with {weapon} and hits {defender}, causing `{damage}` damage." },
+    { "text": "⚔️ {attacker} lunges at {defender}, the {weapon} finding its mark for `{damage}` damage." },
+    { "text": "⚔️ {attacker} swings wildly, but the {weapon} connects with {defender}, dealing `{damage}` damage." },
+    { "text": "⚔️ {attacker} executes a lightning-fast strike with {weapon} on {defender}, inflicting `{damage}` damage." },
+    { "text": "⚔️ {attacker} channels fury through {weapon}, hitting {defender} for `{damage}` damage." },
+    { "text": "⚔️ {attacker} spins gracefully, {weapon} slashing {defender} for `{damage}` damage." },
+    { "text": "⚔️ {attacker} finds an opening and strikes {defender} with {weapon}, causing `{damage}` damage." },
+    { "text": "⚔️ {attacker} delivers a crushing blow to {defender} with {weapon}, dealing `{damage}` damage." },
+    { "text": "⚔️ A sneaky strike! {attacker} hits {defender} with {weapon}, causing `{damage}` damage." },
+    { "text": "⚔️ With brute force, {attacker} smashes {defender} using {weapon}, dealing `{damage}` damage." },
+    { "text": "⚔️ Quick and sharp, {attacker}'s {weapon} strikes {defender} for `{damage}` damage." },
+    { "text": "⚔️ {attacker}'s rage manifests through {weapon}, hitting {defender} for `{damage}` damage." },
+    { "text": "⚔️ {attacker} twirls and lands {weapon} on {defender}, causing `{damage}` damage." },
+    { "text": "⚔️ The strike is clean! {attacker} hits {defender} with {weapon}, inflicting `{damage}` damage." },
+    { "text": "⚔️ {attacker} presses the attack, slashing {defender} with {weapon} for `{damage}` damage." },
+    { "text": "⚔️ {attacker} stealthily attacks {defender} with {weapon}, causing `{damage}` damage." },
+    { "text": "⚔️ {attacker} swings {weapon} with fury at {defender}, dealing `{damage}` damage." },
+    { "text": "⚔️ {attacker}'s {weapon} streaks through the air, striking {defender} for `{damage}` damage." },
+    { "text": "⚔️ {attacker} channels inner fire, {weapon} slicing {defender} for `{damage}` damage." },
+    { "text": "⚔️ A skillful strike! {attacker} hits {defender} with {weapon}, inflicting `{damage}` damage." },
+    { "text": "⚔️{attacker} finds a weak spot and strikes {defender} with {weapon}, causing `{damage}` damage." }
   ],
   "criticalMiss": [
-    { "text": "🤦 {attacker} stumbles and completely botches the attack against {defender}!" },
-    { "text": "🤦 {attacker} slips, leaving an opening while trying to hit {defender}!" }
+    { "text": "🤦 {attacker} completely botches the attack against {defender}!" },
+    { "text": "🤦 {attacker} slips disastrously while trying to hit {defender}!" },
+    { "text": "🤦 Oops! {attacker} swings wildly and misses {defender} entirely!" },
+    { "text": "🤦 {attacker}'s {weapon} misses {defender} by a mile!" },
+    { "text": "🤦 A blunder! {attacker} fails miserably to strike {defender}!" },
+    { "text": "🤦 {attacker} loses balance and {defender} dodges easily!" },
+    { "text": "🤦 The {weapon} slips from {attacker}'s hand, missing {defender} completely!" },
+    { "text": "🤦 {attacker} misjudges the swing and fails to connect with {defender}!" },
+    { "text": "🤦 {attacker} aims poorly, leaving {defender} unscathed!" },
+    { "text": "🤦 {attacker}'s attack fizzles, {defender} unharmed!" }
   ],
   "miss": [
-    { "text": "🗡️ {attacker} swings {weapon}, but misses {defender} completely!" },
-    { "text": "🗡️ {attacker} tries to hit {defender} with {weapon}, but fails miserably." }
+    { "text": "🗡️ {attacker} swings the {weapon}, but misses {defender} completely!" },
+    { "text": "🗡️ {attacker} tries to hit {defender} with {weapon}, but fails miserably." },
+    { "text": "🗡️ {attacker} lunges at {defender}, but the attack goes wide!" },
+    { "text": "🗡️ {attacker} attacks {defender}, but {defender} dodges with ease!" },
+    { "text": "🗡️ {attacker} misses {defender}, leaving an opening!" },
+    { "text": "🗡️ {attacker} swings {weapon} clumsily, {defender} is safe!" },
+    { "text": "🗡️ {attacker} strikes, but {weapon} fails to connect with {defender}!" },
+    { "text": "🗡️ {attacker}'s attack misses the mark, {defender} stays unharmed!" },
+    { "text": "🗡️ {attacker} attacks with intent, but {defender} evades skillfully!" },
+    { "text": "🗡️ {attacker}'s swing is off-target, {defender} dodges effortlessly!" }
   ],
   "hpStatus": {
     "Unscathed": [
       { "text": "stands tall and confident, showing no sign of injury or fatigue." },
       { "text": "looks ready for anything, completely unharmed." },
-      { "text": "moves gracefully, without any sign of damage." }
+      { "text": "moves gracefully, without any sign of damage." },
+      { "text": "glows with vitality, each movement precise and sharp." },
+      { "text": "shows no scratches or bruises, every action smooth and effortless." }
     ],
     "Healthy": [
       { "text": "bears a few scratches, but their stance remains firm and steady." },
       { "text": "has minor cuts but remains alert and prepared." },
-      { "text": "is slightly battered, yet continues to fight confidently." }
+      { "text": "is slightly battered, yet continues to fight confidently." },
+      { "text": "shrugs off minor blows, showing no concern for the damage taken." },
+      { "text": "keeps moving with energy, lightly marked by the fight." }
     ],
     "Scratched": [
       { "text": "has taken some minor cuts and bruises, yet still fights with vigor." },
-      { "text": "shows small scratches across their armor but remains determined." }
+      { "text": "shows small scratches across their armor but remains determined." },
+      { "text": "has tiny wounds but continues to engage fiercely." },
+      { "text": "appears slightly marked but is far from weakened." }
     ],
     "Bruised": [
       { "text": "shows the first signs of wear—strikes are beginning to take their toll." },
-      { "text": "takes hits that start to slow them down, but they keep going." }
+      { "text": "takes hits that start to slow them down, but they keep going." },
+      { "text": "moves with some difficulty, evidence of recent blows visible." },
+      { "text": "flinches occasionally, but maintains a fighting stance." }
     ],
     "Wounded": [
       { "text": "has blood seeping from the wounds. The movements are slower but still dangerous." },
-      { "text": "suffers from visible injuries, each move requires more effort." }
+      { "text": "suffers from visible injuries, each move requires more effort." },
+      { "text": "grimaces with each strike, yet refuses to back down." },
+      { "text": "bleeds from several wounds, making every action count." }
     ],
     "Injured": [
       { "text": "staggers slightly, struggling to maintain focus as the fight wears on." },
-      { "text": "moves with difficulty, clearly affected by the attacks." }
+      { "text": "moves with difficulty, clearly affected by the attacks." },
+      { "text": "breathing heavy, injuries clearly slowing down attacks." },
+      { "text": "takes careful steps, wounds making each motion taxing." }
     ],
     "Bloodied": [
-      { "text": "'s blood runs freely from the wounds, every motion costing visible effort." },
-      { "text": "is soaked in blood but refuses to give in." }
+      { "text": "blood runs freely from the wounds. Every motion costing visible effort." },
+      { "text": "is soaked in blood but refuses to give in." },
+      { "text": "looks battered and crimson-stained, still trying to fight back." },
+      { "text": "struggles under the weight of injuries, yet eyes remain defiant." }
     ],
     "Badly Wounded": [
       { "text": "sways on their feet, each breath shallow as they cling to survival." },
-      { "text": "is severely hurt, barely able to maintain balance." }
+      { "text": "is severely hurt, barely able to maintain balance." },
+      { "text": "every move is a struggle, injuries making attacks weak." },
+      { "text": "staggers dangerously, almost collapsing but fights on." }
     ],
     "Grievously Wounded": [
       { "text": "is barely standing. Their willpower is the only thing keeping them in the fight..." },
-      { "text": "teeters on the brink of collapse, fighting purely on determination." }
+      { "text": "teeters on the brink of collapse, fighting purely on determination." },
+      { "text": "struggles to stay upright, bloodied and exhausted." },
+      { "text": "moves almost unsteadily, survival driving their actions." }
     ],
     "Dead": [
       { "text": "collapses to the ground, lifeless... Another one bites the dust..." },
       { "text": "falls motionless, defeated by the battle." },
-      { "text": "breath ceases, leaving the battlefield forever silent." }
+      { "text": "breath ceases, leaving the battlefield forever silent." },
+      { "text": "slumps to the floor, the fight finally over for them." },
+      { "text": "is gone, leaving an eerie stillness behind." }
     ]
   }
 }
