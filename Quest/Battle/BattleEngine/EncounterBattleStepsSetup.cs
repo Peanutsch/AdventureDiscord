@@ -42,7 +42,7 @@ namespace Adventure.Quest.Battle.BattleEngine {
         public const string MsgNothingHappens = "Nothing happens...";
 
         // Tracks active battle states per user
-        public static readonly ConcurrentDictionary<ulong, BattleStateModel> battleStates = new();
+        public static readonly ConcurrentDictionary<ulong, BattleState> battleStates = new();
 
         /// <summary>
         /// Gets the current step of the user's battle.

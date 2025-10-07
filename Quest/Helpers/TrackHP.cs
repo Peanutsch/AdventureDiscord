@@ -17,13 +17,13 @@ namespace Adventure.Quest.Helpers
 
         /// <summary>
         /// Determines the HP status of a target (Player or NPC) based on starting HP and current HP.
-        /// Updates the corresponding state in the provided <see cref="BattleStateModel"/>.
+        /// Updates the corresponding state in the provided <see cref="BattleState"/>.
         /// </summary>
         /// <param name="startHP">The starting HP value of the target.</param>
         /// <param name="currentHP">The current HP value of the target.</param>
         /// <param name="target">The target type (Player or NPC).</param>
         /// <param name="battleState">The battle state model to update with HP status and percentage.</param>
-        public static void GetAndSetHPStatus(int startHP, int currentHP, TargetType target, BattleStateModel battleState)
+        public static void GetAndSetHPStatus(int startHP, int currentHP, TargetType target, BattleState battleState)
         {
             string result;
 

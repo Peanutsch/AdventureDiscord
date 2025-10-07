@@ -16,7 +16,7 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// <summary>
         /// Retrieves or initializes the battle state for the user.
         /// </summary>
-        public static BattleStateModel GetBattleState(ulong userId)
+        public static BattleState GetBattleState(ulong userId)
         {
             if (!EncounterBattleStepsSetup.battleStates.TryGetValue(userId, out var state))
             {
@@ -57,7 +57,7 @@ namespace Adventure.Quest.Battle.BattleEngine
 
 
                 // Create new battle state
-                state = new BattleStateModel {
+                state = new BattleState {
                     Player = player,
                     Npc = new NpcModel(),
                     PlayerWeapons = playerWeapons,

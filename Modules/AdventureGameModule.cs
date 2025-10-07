@@ -81,7 +81,7 @@ namespace Adventure.Modules
 
             SlashEncounterHelpers.SetupBattleState(user.Id, npc);
 
-            var embed = EmbedBuilders.EmbedRandomEncounter(npc, state);
+            var embed = EmbedBuilders.EmbedRandomEncounter(npc);
             var buttons = SlashEncounterHelpers.BuildEncounterButtons();
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());

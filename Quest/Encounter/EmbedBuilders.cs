@@ -1,6 +1,7 @@
 ﻿using Adventure.Data;
 using Adventure.Loaders;
 using Adventure.Models.BattleState;
+using Adventure.Models.Items;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Modules;
@@ -19,15 +20,16 @@ namespace Adventure.Quest.Encounter
 {
     public class EmbedBuilders
     {
+        
+        #region Embed Random Encounter
         /// <summary>
         /// Builds an embed describing the randomly encountered creature with stats and equipment.
         /// </summary>
         /// <param name="creature">The creature to display in the encounter embed.</param>
         /// <returns>An EmbedBuilder with creature details formatted.</returns>
-        public static EmbedBuilder EmbedRandomEncounter(NpcModel npc, BattleStateModel state)
+        public static EmbedBuilder EmbedRandomEncounter(NpcModel npc) 
         {
             LogService.DividerParts(1, "Data NPC");
-
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{npc.Name}]");
 
             var embed = new EmbedBuilder()
@@ -35,65 +37,221 @@ namespace Adventure.Quest.Encounter
                 .WithTitle("⚔️ Encounter")
                 .WithDescription($"**[{npc.Name!.ToUpper()}]**\n*{npc.Description}*");
 
-            LogService.Info($"[EncounterService.GetRandomEncounter] > Armor: {string.Join(",", npc.Armor ?? new())}");
+            AddArmorFields(embed, npc);
+            AddWeaponFields(embed, npc);
 
-            if (npc.Armor?.Any() == true)
+            LogService.DividerParts(2, "Data NPC");
+            return embed;
+        }
+
+        /// <summary>
+        /// Adds armor fields to the encounter embed, showing the NPC's equipped armor pieces.
+        /// </summary>
+        /// <param name="embed">The EmbedBuilder to which the armor fields will be added.</param>
+        /// <param name="npc">The NPC model containing armor data.</param>
+        private static void AddArmorFields(EmbedBuilder embed, NpcModel npc)
+        {
+            // Log armor data for debugging and tracking
+            LogService.Info($"[EncounterService.AddArmorFields] > Armor: {string.Join(",", npc.Armor ?? new())}");
+
+            // If the NPC has no armor data, display "None" in the embed
+            if (npc.Armor?.Any() != true)
             {
-                // Retrieve detailed armor info based on armor IDs/names
-                var armorList = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
-
-                if (armorList.Count > 0)
-                {
-                    // Add each armor piece as a separate field with details
-                    foreach (var armor in armorList)
-                    {
-                        embed.AddField($"**[{armor.Name}]**\n",
-                            $"Type: {armor.Type} armor\n" +
-                            $"*{armor.Description}*", false);
-                    }
-                }
-                else
-                {
-                    LogService.Error("[EncounterService.GetRandomEncounter] > No armor data resolved.");
-                    embed.AddField("Armor:", "None", false);
-                }
+                embed.AddField("Armor:", "None", false);
+                return;
             }
 
-            LogService.Info($"[EncounterService.GetRandomEncounter] > Weapons: {string.Join(",", npc.Weapons ?? new())}");
+            // Retrieve detailed armor attributes using the NPC's armor IDs/names
+            var armorList = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
 
-            if (npc.Weapons?.Any() == true)
+            // If no armor attributes could be found, log an error and add "None"
+            if (armorList.Count == 0)
             {
-                // Retrieve detailed weapon info based on weapon IDs/names
-                var weaponList = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons!);
-                if (weaponList.Count > 0)
-                {
-                    // Add each weapon as a separate field with details
-                    foreach (var weapon in weaponList)
-                    {
-                        embed.AddField($"**[{weapon.Name}]**",
-                            $"Range: {weapon.Range} meter\n" +
-                            $"*{weapon.Description}*", false);
-                    }
-                }
-                else
-                {
-                    LogService.Error($"[EncounterService.GetRandomEncounter] > weaponList = 0");
-                    embed.AddField("Weapons:", "None", false);
-                }
-
-                LogService.DividerParts(2, "Data NPC");
+                LogService.Error("[EncounterService.AddArmorFields] > No armor data resolved.");
+                embed.AddField("Armor:", "None", false);
+                return;
             }
 
-            /*
-            // Loot field is commented out but could be added in the future
-            LogService.Info($"[EncounterService.GetRandomEncounter] > Loot: {string.Join(",", creature.Loot ?? new())}");
-            if (creature.Loot?.Any() == true)
-                embed.AddField("Loot", string.Join(", ", creature.Loot), false);
-            */
+            // Add a separate field for each armor piece with its name, type, and description
+            foreach (var armor in armorList)
+            {
+                embed.AddField($"**[{armor.Name}]**",
+                    $"Type: {armor.Type} armor\n" +  // Display armor type (e.g., light, heavy)
+                    $"*{armor.Description}*", false); // Italicized description for flavor
+            }
+        }
+
+        /// <summary>
+        /// Adds weapon fields to the encounter embed, displaying each weapon's range and description.
+        /// </summary>
+        /// <param name="embed">The EmbedBuilder to which the weapon fields will be added.</param>
+        /// <param name="npc">The NPC model containing weapon data.</param>
+        private static void AddWeaponFields(EmbedBuilder embed, NpcModel npc)
+        {
+            // Log weapon data for debugging and tracking
+            LogService.Info($"[EncounterService.AddWeaponFields] > Weapons: {string.Join(",", npc.Weapons ?? new())}");
+
+            // If the NPC has no weapons, display "None" in the embed
+            if (npc.Weapons?.Any() != true)
+            {
+                embed.AddField("Weapons:", "None", false);
+                return;
+            }
+
+            // Retrieve detailed weapon attributes using the NPC's weapon IDs/names
+            var weaponList = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons!);
+
+            // If no weapon data was found, log an error and display "None"
+            if (weaponList.Count == 0)
+            {
+                LogService.Error("[EncounterService.AddWeaponFields] > weaponList = 0");
+                embed.AddField("Weapons:", "None", false);
+                return;
+            }
+
+            // Add a separate field for each weapon with its name, range, and description
+            foreach (var weapon in weaponList)
+            {
+                embed.AddField($"**[{weapon.Name}]**",
+                    //$"Range: {weapon.Range} meter\n" +  // Show attack range
+                    $"*{weapon.Description}*", false);  // Italicized description for style
+            }
+        }
+        #endregion Embed Random Encounter
+
+        #region Embed PreBattle
+        /// <summary>
+        /// Displays the pre-battle preparation screen where the player can view their equipment
+        /// and select a weapon or item before starting combat.
+        /// </summary>
+        /// <param name="component">The Discord component triggered by a player's button interaction.</param>
+        public static async Task EmbedPreBattle(SocketMessageComponent component)
+        {
+            // Retrieve the battle state for the current user
+            var state = BattleStateSetup.GetBattleState(component.User.Id);
+            if (state == null)
+            {
+                LogService.Error("[EmbedPreBattle] > Battle state not found.");
+                return;
+            }
+
+            // Build UI buttons for weapons, items, and flee action
+            var builder = BuildPreBattleButtons(state);
+
+            // Build the pre-battle embed displaying stats and available equipment
+            var embed = BuildPreBattleEmbed(state);
+
+            // Update the original Discord message with the new embed and components
+            await component.UpdateAsync(msg =>
+            {
+                msg.Content = string.Empty;
+                msg.Embed = embed.Build();
+                msg.Components = builder.Build();
+            });
+        }
+
+        /// <summary>
+        /// Builds all the interactive Discord buttons for the pre-battle screen,
+        /// including weapon, item, and flee options.
+        /// </summary>
+        /// <param name="state">The current player's battle state.</param>
+        /// <returns>A ComponentBuilder containing all buttons.</returns>
+        private static ComponentBuilder BuildPreBattleButtons(BattleState state)
+        {
+            var builder = new ComponentBuilder();
+
+            // Add a button for each weapon the player currently owns
+            if (state.PlayerWeapons != null && state.PlayerWeapons.Any())
+            {
+                foreach (var weapon in state.PlayerWeapons)
+                    builder.WithButton(weapon.Name, weapon.Id, ButtonStyle.Primary);
+            }
+
+            // Add a button for each item (like potions or consumables)
+            if (state.Items != null && state.Items.Any())
+            {
+                foreach (var item in state.Items)
+                    builder.WithButton(item.Name, item.Id, ButtonStyle.Success, row: 2);
+            }
+            else
+            {
+                LogService.Info("[EmbedPreBattle] > No items available.");
+            }
+
+            // Add the 'Flee' or 'Break' button to allow exiting the battle
+            builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary);
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Builds the pre-battle embed containing player stats, equipped weapons, armor, and items.
+        /// </summary>
+        /// <param name="state">The current player's battle state.</param>
+        /// <returns>An EmbedBuilder containing the formatted pre-battle view.</returns>
+        private static EmbedBuilder BuildPreBattleEmbed(BattleState state)
+        {
+            var embed = new EmbedBuilder()
+                .WithColor(Color.Blue)
+                .WithTitle("[Prepare for Battle]")
+                .AddField($"**{state.Player.Name}** prepares for battle...",
+                          $"| Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP} |");
+
+            // Add detailed sections for weapons, armor, and items
+            AddWeaponFields(embed, state);
+            AddArmorFields(embed, state);
+            AddItemFields(embed, state);
 
             return embed;
         }
 
+        /// <summary>
+        /// Adds weapon details to the pre-battle embed, including damage dice and descriptions.
+        /// </summary>
+        /// <param name="embed">The embed builder to append fields to.</param>
+        /// <param name="state">The current player's battle state.</param>
+        private static void AddWeaponFields(EmbedBuilder embed, BattleState state)
+        {
+            foreach (var weapon in state.PlayerWeapons ?? Enumerable.Empty<WeaponModel>())
+            {
+                string diceNotation = $"{weapon.Damage.DiceCount}d{weapon.Damage.DiceValue}";
+                string nameNotation = $"[{weapon.Name} ({diceNotation})]";
+                embed.AddField(nameNotation, $"*{weapon.Description}*");
+            }
+        }
+
+        /// <summary>
+        /// Adds armor details to the pre-battle embed, showing the armor class and description.
+        /// </summary>
+        /// <param name="embed">The embed builder to append fields to.</param>
+        /// <param name="state">The current player's battle state.</param>
+        private static void AddArmorFields(EmbedBuilder embed, BattleState state)
+        {
+            foreach (var armor in state.PlayerArmor ?? Enumerable.Empty<ArmorModel>())
+            {
+                string acNotation = $"Armor Class: {armor.ArmorClass}";
+                string nameNotation = $"[{armor.Name} ({acNotation})]";
+                embed.AddField(nameNotation, $"*{armor.Description}*");
+            }
+        }
+
+        /// <summary>
+        /// Adds item details to the pre-battle embed, including healing or bonus effects.
+        /// </summary>
+        /// <param name="embed">The embed builder to append fields to.</param>
+        /// <param name="state">The current player's battle state.</param>
+        private static void AddItemFields(EmbedBuilder embed, BattleState state)
+        {
+            foreach (var item in state.Items ?? Enumerable.Empty<ItemModel>())
+            {
+                string diceNotation = $"{item.Effect.DiceCount}d{item.Effect.DiceValue}+{item.Effect.BonusHP}";
+                string nameNotation = $"[{item.Name} ({diceNotation})]";
+                embed.AddField(nameNotation, $"*{item.Description}*");
+            }
+        }
+        #endregion Embed PreBattle
+
+        #region Embed Battle
         /// <summary>
         /// Rebuilds an embed summarizing the current battle state including HP before attack and attack log.
         /// </summary>
@@ -120,81 +278,6 @@ namespace Adventure.Quest.Encounter
 
             return embed;
         }
-
-        /// <summary>
-        /// Shows the player their weapon choices by updating the message with weapon buttons and embed.
-        /// </summary>
-        /// <param name="component">The component interaction from Discord (button click).</param>
-        public static async Task EmbedPreBattle(SocketMessageComponent component)
-        {
-            var state = BattleStateSetup.GetBattleState(component.User.Id);
-            var weapons = state?.PlayerWeapons;
-            var items = state?.Items;
-            var armors = state?.PlayerArmor;
-
-            var builder = new ComponentBuilder();
-
-            // Create a button for each weapon in the player's inventory
-            if (weapons != null)
-            {
-                foreach (var weapon in weapons)
-                {
-                    builder.WithButton(weapon.Name, weapon.Id, ButtonStyle.Primary);
-                }
-            }
-
-            // Create a button for each item in the player's inventory
-            if (items!.Count > 0)
-            {
-                foreach (var item in items)
-                {
-                    builder.WithButton(item.Name, item.Id, ButtonStyle.Success, row: 2);
-                }
-            }
-            else
-            {
-                LogService.Info("[EncounterService.ShowWeaponChoices] items == 0");
-            }
-
-            var embed = new EmbedBuilder()
-                .WithColor(Color.Blue)
-                .WithTitle("[Prepare for Battle]")
-                .AddField($"**{state!.Player.Name}** prepares for battle...", $"|Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP}|");
-
-            // Add weapons to embed
-            foreach (var weapon in weapons!)
-            {
-                string diceNotation = $"{weapon.Damage.DiceCount}d{weapon.Damage.DiceValue}";
-                string nameNotation = $"[{weapon.Name!} ({diceNotation})]";
-                embed.AddField(nameNotation, $"*{weapon.Description}*");
-            }
-
-            // Add button "Flee" on same row as weapons
-            builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary);
-
-            // Add armors to embed
-            foreach (var armor in armors!)
-            {
-                string acNotation = $"Armor Class: {armor.ArmorClass}";
-                string nameNotation = $"[{armor.Name} ({acNotation})]";
-                embed.AddField(nameNotation, $"*{armor.Description}*");
-            }
-
-            // Add items to embed
-            foreach (var item in items!)
-            {
-                string diceNotation = $"{item.Effect.DiceCount}d{item.Effect.DiceValue}+{item.Effect.BonusHP}";
-                string nameNotation = $"[{item.Name} ( {diceNotation} )]";
-                embed.AddField(nameNotation, $"*{item.Description}*");
-            }
-
-            // Update the interaction response with new embed and buttons
-            await component.UpdateAsync(msg =>
-            {
-                msg.Content = "";
-                msg.Embed = embed.Build();
-                msg.Components = builder.Build();
-            });
-        }
+        #endregion Embed Battle
     }
 }

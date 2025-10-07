@@ -33,7 +33,7 @@ namespace Adventure.Quest.Battle.TextGenerator
         /// <param name="isPlayerAttack">Whether the attack is performed by the player.</param>
         /// <returns>A formatted string describing the full battle log entry.</returns>
         public static string GenerateBattleLog(string attackResult, string attacker, string defender, string weapon, int damage, string statusLabel, BattleTextModel battleText,
-                                       BattleStateModel state, Dictionary<string, string>? rollText, int strength, bool isPlayerAttack = true)
+                                       BattleState state, Dictionary<string, string>? rollText, int strength, bool isPlayerAttack = true)
         {
             string attackText = "";
 
@@ -112,7 +112,7 @@ namespace Adventure.Quest.Battle.TextGenerator
         /// <param name="rollText">A dictionary of roll text templates loaded from JSON.</param>
         /// <param name="isPlayerAttack">Indicates whether the attack is from the player.</param>
         /// <returns>A formatted string describing the roll, or null if not applicable.</returns>
-        public static string? GetRollDetails(BattleStateModel state, Dictionary<string, string>? rollText, bool isPlayerAttack = true)
+        public static string? GetRollDetails(BattleState state, Dictionary<string, string>? rollText, bool isPlayerAttack = true)
         {
             if (!isPlayerAttack || rollText == null)
                 return null;
@@ -171,7 +171,7 @@ namespace Adventure.Quest.Battle.TextGenerator
         /// <param name="template">The template string containing placeholders (e.g., {TotalAttackRoll}, {Damage}).</param>
         /// <param name="state">The current battle state containing all relevant values.</param>
         /// <returns>A string with placeholders replaced by their corresponding values.</returns>
-        public static string ReplacePlaceholders(string template, BattleStateModel state)
+        public static string ReplacePlaceholders(string template, BattleState state)
         {
             if (template == null)
                 return string.Empty;

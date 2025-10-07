@@ -5,7 +5,7 @@ using Discord;
 
 namespace Adventure.Models.BattleState
 {
-    public class BattleStateModel
+    public class BattleState
     {
         public PlayerModel Player { get; set; } = new();
         public NpcModel Npc { get; set; } = new();
