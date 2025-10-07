@@ -3,22 +3,24 @@ using Adventure.Services;
 using System.Collections.Generic;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace Adventure.Loaders {
-    public static class BattleTextLoader {
+namespace Adventure.Loaders 
+{
+    public static class BattleTextLoader 
+    {
         /// <summary>
-        /// Laadt battle flavor text en roll templates uit JSON.
+        /// Load battle flavor text and roll templates from JSON.
         /// </summary>
-        /// <param name="battleTextPath">Pad naar battletext.json</param>
-        /// <param name="rollTextPath">Pad naar battlerolldicetext.json</param>
-        /// <returns>Tuple van BattleTextModel en roll-text dictionary</returns>
+        /// <param name="battleTextPath">Path to battletext.json</param>
+        /// <param name="rollTextPath">Path to battlerolldicetext.json</param>
+        /// <returns>Tuple of BattleTextModel and roll-text dictionary</returns>
         public static (BattleTextModel battleText, Dictionary<string, string> rollText) Load() 
         {
-            // 1️⃣ Flavor text
+            // Flavor text
             var battleText = JsonDataManager.LoadObjectFromJson<BattleTextModel>("Data/Text/battletext.json");
             if (battleText == null)
                 throw new System.Exception($"Failed to load Data/Text/battletext.json...");
 
-            // 2️⃣ Roll text
+            // Roll text
             var rollText = JsonDataManager.LoadObjectFromJson<Dictionary<string, string>>("Data/Text/battlerolldicetext.json");
             if (rollText == null)
                 throw new System.Exception($"Failed to load Data/Text/battlerolldicetext.json...");

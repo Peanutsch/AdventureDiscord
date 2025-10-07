@@ -10,11 +10,15 @@ namespace Adventure.Gateway
 {
     public class AdventureBotGateway
     {
-        private readonly DiscordSocketClient _client; // Main client used to connect to Discord
-        private readonly InteractionService _interactions; // Handles interaction modules (e.g., slash commands)
-        private readonly IServiceProvider _provider; // Provides access to registered services via dependency injection
+        #region === Field ===
+        private readonly DiscordSocketClient _client;       // Main client used to connect to Discord
+        private readonly InteractionService _interactions;  // Handles interaction modules (e.g., slash commands)
+        private readonly IServiceProvider _provider;        // Provides access to registered services via dependency injection
 
         private readonly CancellationTokenSource _cancellationTokenSource; // Used to cancel async tasks when closing
+        #endregion 
+
+        #region === Constructor ===
         public AdventureBotGateway(DiscordSocketClient client, InteractionService interactions, IServiceProvider provider)
         {
             _client = client;
@@ -26,7 +30,9 @@ namespace Adventure.Gateway
             // Register event handler to cleanly shut down the bot when the program exits
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
         }
+        #endregion Constructor
 
+        #region === Bot Startup ===
         public async Task StartBotAsync()
         {
             // Load GameData
@@ -35,7 +41,6 @@ namespace Adventure.Gateway
             GameData.Items = ItemLoader.Load();
             GameData.Humanoids = HumanoidLoader.Load();
             GameData.Bestiary = BestiaryLoader.Load();
-            //GameData.Text = TextLoader.Load();
 
             // Load text data
             var (battleText, rollText) = BattleTextLoader.Load();
@@ -62,13 +67,23 @@ namespace Adventure.Gateway
                 LogService.Info("Bot offline");
             }
         }
+        #endregion Bot Startup
 
+        #region === Event Handlers ===
         private async Task ReadyAsync()
         {
             // Add modules (commands) and register them globally
             await _interactions.RegisterCommandsGloballyAsync(); 
         }
 
+        private async Task HandleInteractionAsync(SocketInteraction interaction)
+        {
+            var context = new SocketInteractionContext(_client, interaction);
+            await _interactions.ExecuteCommandAsync(context, null);
+        }
+        #endregion Event Handlers
+
+        #region === Logging ===
         private Task LogAsync(LogMessage log)
         {
             if (!string.IsNullOrEmpty(log.Message) &&
@@ -83,13 +98,9 @@ namespace Adventure.Gateway
 
             return Task.CompletedTask;
         }
+        #endregion Logging
 
-        private async Task HandleInteractionAsync(SocketInteraction interaction)
-        {
-            var context = new SocketInteractionContext(_client, interaction);
-            await _interactions.ExecuteCommandAsync(context, null);
-        }
-
+        #region === Shutdown ===
         /// <summary>
         /// Handles the shutdown process when the program exits.
         /// </summary>
@@ -123,7 +134,9 @@ namespace Adventure.Gateway
                 LogService.Error($"Error while shutting down the bot: {ex.Message}\n{ex}");
             }
         }
+        #endregion Shutdown
 
+        #region === Permission Messaging ===
         /// <summary>
         /// Controleert of de bot berichten kan versturen in een specifiek kanaal.
         /// </summary>
@@ -141,5 +154,6 @@ namespace Adventure.Gateway
 
             return false;
         }
+        #endregion Permission Messaging
     }
 }

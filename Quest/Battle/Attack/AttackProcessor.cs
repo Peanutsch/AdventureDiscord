@@ -42,15 +42,16 @@ namespace Adventure.Quest.Battle.Attack
 
             // Update HP status for correct target
             if (isPlayerAttacker)
-                TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
+                TrackHP.GetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
             else
-                TrackHP.GetAndSetHPStatus(state.HitpointsAtStartPlayer, player.Hitpoints, TrackHP.TargetType.Player, state);
+                TrackHP.GetHPStatus(state.HitpointsAtStartPlayer, player.Hitpoints, TrackHP.TargetType.Player, state);
 
             // Map hit result to attack category
             string attackResult = AttackResultHelper.GetAttackResult(hitResult);
 
             // Generate battle log text
-            string battleLog = BattleTextGenerator.GenerateBattleLog(
+            string battleLog = BattleTextGenerator.GenerateBattleLog
+            (
                 attackResult,
                 isPlayerAttacker ? player.Name! : npc.Name!,
                 isPlayerAttacker ? npc.Name! : player.Name!,
@@ -60,7 +61,6 @@ namespace Adventure.Quest.Battle.Attack
                 GameData.BattleText!,
                 state,
                 GameData.RollText,
-                strength,
                 isPlayerAttacker // Only show dice rolls for player
             );
 

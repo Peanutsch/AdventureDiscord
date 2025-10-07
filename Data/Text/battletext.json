@@ -127,9 +127,9 @@
       { "text": "struggles to stay upright, bloodied and exhausted." },
       { "text": "moves almost unsteadily, survival driving their actions." }
     ],
-    "Dead": [
+    "Defeated": [
       { "text": "collapses to the ground, lifeless... Another one bites the dust..." },
-      { "text": "falls motionless, defeated by the battle." },
+      { "text": "falls motionless and is defeated by the battle." },
       { "text": "breath ceases, leaving the battlefield forever silent." },
       { "text": "slumps to the floor, the fight finally over for them." },
       { "text": "is gone, leaving an eerie stillness behind." }

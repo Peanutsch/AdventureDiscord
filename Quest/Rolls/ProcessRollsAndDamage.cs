@@ -147,9 +147,11 @@ namespace Adventure.Quest.Rolls
             var diceValue = weapon.Damage.DiceValue;
 
             // Roll normal damage and store individual dice results
+            LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] Rolling for Damage...");
             var (damage, rolls) = DiceRoller.RollWithDetails(diceCount, diceValue);
 
             // Roll additional damage for critical hit (same dice as base damage)
+            LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] Rolling for Critical Damage...");
             var critRoll = DiceRoller.RollWithoutDetails(diceCount, diceValue);
 
             // Format dice notation, e.g., "1d8"

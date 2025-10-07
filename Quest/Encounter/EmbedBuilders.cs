@@ -20,7 +20,6 @@ namespace Adventure.Quest.Encounter
 {
     public class EmbedBuilders
     {
-        
         #region Embed Random Encounter
         /// <summary>
         /// Builds an embed describing the randomly encountered creature with stats and equipment.
@@ -195,6 +194,7 @@ namespace Adventure.Quest.Encounter
             var embed = new EmbedBuilder()
                 .WithColor(Color.Blue)
                 .WithTitle("[Prepare for Battle]")
+                .WithThumbnailUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1425077955121381427/weaponrack2.jpg?ex=68e646c5&is=68e4f545&hm=0f79e4a059c952bda3811786473f42769493eaea55fc71105b2925024727022c&")
                 .AddField($"**{state.Player.Name}** prepares for battle...",
                           $"| Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP} |");
 
@@ -268,17 +268,52 @@ namespace Adventure.Quest.Encounter
             var npc = state.Npc;
 
             // Set current State of NPC
-            TrackHP.GetAndSetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
+            TrackHP.GetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC, TrackHP.TargetType.NPC, state);
             LogService.Info($"[EncounterService.RebuildBattleEmbed]\n\n{npc.Name} HP at Start: {state.HitpointsAtStartNPC} {npc.Name} current HP: {state.CurrentHitpointsNPC} {npc.Name} Health: {state.PercentageHpNpc}% State: {state.StateOfNPC}\n\n");
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(state.EmbedColor)
                 .WithTitle("[Battle Report]")
+                .WithThumbnailUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1425076544141004882/battle_heroes_by_kuzinskiy-d8yfm97-310337191.png?ex=68e64574&is=68e4f3f4&hm=4147d5b36b46ea1383a4b088f13189d9ebf2a574fe997633631a34a5564cbb73&")
                 .AddField($"{player.Name} ({state.StateOfPlayer}) VS {npc.Name} ({state.StateOfNPC})", $"| Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP} |", inline: true)
                 .AddField("\u200B", $"{attackSummary}", false);
 
             return embed;
         }
         #endregion Embed Battle
+
+        #region Embed End Battle
+        /// <summary>
+        /// Ends the battle.
+        /// Removes buttons and replaces the original message with
+        /// a final embed containing player stats and battle log.
+        /// </summary>
+        public static async Task EmbedEndBattle(SocketInteraction interaction, string? extraMessage = null)
+        {
+            ulong userId = interaction.User.Id;
+            var state = BattleStateSetup.GetBattleState(userId);
+
+            // Collect final log + summary
+            string finalLog = extraMessage ?? "";
+            string battleOverText = $"{EncounterBattleStepsSetup.MsgBattleOver}";
+
+            var embed = new EmbedBuilder()
+                .WithColor(state.EmbedColor) // Use of different colours in PlayerAttack and NpcAttack
+                .WithTitle("[Battle Report]")
+                .WithThumbnailUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&")
+                .AddField($"{state.Player.Name} (HP: {state.Player.Hitpoints}) VS {state.Npc.Name} ({state.StateOfNPC})", $"| Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP} |", inline: true)
+                .AddField($"\u200B", $"{finalLog}\n\n{battleOverText}");
+
+            // Update the original message
+            await interaction.ModifyOriginalResponseAsync(msg => {
+                msg.Content = ""; // clear plain text
+                msg.Components = new ComponentBuilder().Build(); // remove buttons
+                msg.Embed = embed.Build();
+            });
+
+            // Update battle step to "end"
+            EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepEndBattle);
+        }
+        #endregion Embed End Battle
     }
 }

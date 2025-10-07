@@ -9,12 +9,22 @@ using System.Threading.Tasks;
 
 namespace Adventure.Quest.Encounter
 {
+    /// <summary>
+    /// Provides helper methods to resolve game entity IDs into their full attribute models,
+    /// such as armor, weapons, and items.
+    /// </summary>
     public static class GameEntityFetcher
     {
+        /// <summary>
+        /// Resolves a list of armor IDs into their corresponding ArmorModel objects.
+        /// </summary>
+        /// <param name="armorIds">List of armor IDs to resolve.</param>
+        /// <returns>List of ArmorModel objects corresponding to the provided IDs.</returns>
         public static List<ArmorModel> RetrieveArmorAttributes(List<string> armorIds)
         {
-            LogService.Info($"[GameEntityFetcher.RetrieveArmorAttributes] > Resolving armor names for IDs: {string.Join(", ", armorIds)}:");
+            LogService.Info($"[GameEntityFetcher.RetrieveArmorAttributes] > Resolving armor names for IDs: {string.Join(", ", armorIds)}");
 
+            // Return empty list if there are no IDs provided
             if (armorIds.Count >= 1)
             {
                 if (GameData.Armor == null)
@@ -23,6 +33,7 @@ namespace Adventure.Quest.Encounter
                     return new List<ArmorModel>();
                 }
 
+                // Match each ID to an armor model in GameData.Armor
                 var armors = armorIds
                     .Select(id =>
                     {
@@ -31,9 +42,10 @@ namespace Adventure.Quest.Encounter
                             LogService.Error($"[GameEntityFetcher.RetrieveArmorAttributes] > Armor with ID '{id}' not found.");
                         return armor;
                     })
-                    .Where(a => a != null)
+                    .Where(a => a != null) // Filter out nulls
                     .ToList();
 
+                // Log each resolved armor for debugging
                 int counter = 1;
                 foreach (var item in armors)
                 {
@@ -48,12 +60,18 @@ namespace Adventure.Quest.Encounter
             return new List<ArmorModel>();
         }
 
+        /// <summary>
+        /// Resolves a list of weapon IDs into their corresponding WeaponModel objects.
+        /// </summary>
+        /// <param name="weaponIds">List of weapon IDs to resolve.</param>
+        /// <returns>List of WeaponModel objects corresponding to the provided IDs.</returns>
         public static List<WeaponModel> RetrieveWeaponAttributes(List<string> weaponIds)
         {
+            // Return empty list if null or empty
             if (weaponIds == null || weaponIds.Count == 0)
                 return new List<WeaponModel>();
 
-            LogService.Info($"[GameEntityFetcher.RetrieveWeaponAttributes] > Resolving weapon data for IDs: {string.Join(", ", weaponIds)}:");
+            LogService.Info($"[GameEntityFetcher.RetrieveWeaponAttributes] > Resolving weapon data for IDs: {string.Join(", ", weaponIds)}");
 
             if (GameData.Weapons == null)
             {
@@ -61,17 +79,19 @@ namespace Adventure.Quest.Encounter
                 return new List<WeaponModel>();
             }
 
+            // Match each ID to a weapon model in GameData.Weapons
             var weapons = weaponIds
                 .Select(id =>
                 {
                     var weapon = GameData.Weapons!.FirstOrDefault(w => w.Id == id);
                     if (weapon == null)
-                        LogService.Error($"[EntityResolver.RetrieveWeaponAttributes] > Weapon with ID '{id}' not found.");
+                        LogService.Error($"[GameEntityFetcher.RetrieveWeaponAttributes] > Weapon with ID '{id}' not found.");
                     return weapon;
                 })
-                .Where(w => w != null)
+                .Where(w => w != null) // Filter out nulls
                 .ToList()!;
 
+            // Log each resolved weapon for debugging
             int counter = 1;
             foreach (var item in weapons)
             {
@@ -82,12 +102,18 @@ namespace Adventure.Quest.Encounter
             return weapons!;
         }
 
+        /// <summary>
+        /// Resolves a list of item IDs into their corresponding ItemModel objects.
+        /// </summary>
+        /// <param name="itemIds">List of item IDs to resolve.</param>
+        /// <returns>List of ItemModel objects corresponding to the provided IDs.</returns>
         public static List<ItemModel> RetrieveItemAttributes(List<string> itemIds)
         {
+            // Return empty list if null or empty
             if (itemIds == null || itemIds.Count == 0)
                 return new List<ItemModel>();
 
-            LogService.Info($"[GameEntityFetcher.RetrieveItemAttributes] > Resolving Item data for IDs: {string.Join(", ", itemIds)}:");
+            LogService.Info($"[GameEntityFetcher.RetrieveItemAttributes] > Resolving Item data for IDs: {string.Join(", ", itemIds)}");
 
             if (GameData.Items == null)
             {
@@ -95,17 +121,19 @@ namespace Adventure.Quest.Encounter
                 return new List<ItemModel>();
             }
 
+            // Match each ID to an item model in GameData.Items
             var items = itemIds
                 .Select(id =>
                 {
                     var item = GameData.Items!.FirstOrDefault(i => i.Id == id);
                     if (item == null)
-                        LogService.Error($"[EntityResolver.RetrieveItemAttributes] > Item with ID '{id}' not found.");
+                        LogService.Error($"[GameEntityFetcher.RetrieveItemAttributes] > Item with ID '{id}' not found.");
                     return item;
                 })
-                .Where(i => i != null)
+                .Where(i => i != null) // Filter out nulls
                 .ToList()!;
 
+            // Log each resolved item for debugging
             int counter = 1;
             foreach (var item in items)
             {

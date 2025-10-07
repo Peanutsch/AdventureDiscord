@@ -36,6 +36,7 @@ namespace Adventure.Modules
         }
 
         /*
+         * Temp setup method loading Inventory
         public static void EnsureInventoryLoaded(ulong userId)
         {
             if (GameData.Inventory == null)

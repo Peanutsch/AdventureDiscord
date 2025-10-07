@@ -23,46 +23,42 @@ namespace Adventure.Quest.Helpers
         /// <param name="currentHP">The current HP value of the target.</param>
         /// <param name="target">The target type (Player or NPC).</param>
         /// <param name="battleState">The battle state model to update with HP status and percentage.</param>
-        public static void GetAndSetHPStatus(int startHP, int currentHP, TargetType target, BattleState battleState)
+        public static void GetHPStatus(int startHP, int currentHP, TargetType target, BattleState battleState)
         {
-            string result;
-
             // If starting HP is invalid (0 or less), mark the state as unknown
             if (startHP <= 0)
             {
                 if (target == TargetType.Player)
-                    battleState.StateOfPlayer = "UNKNOWN: startHP <= 0";
+                    battleState.StateOfPlayer = "UNKNOWN: Player's startHP <= 0";
                 else
-                    battleState.StateOfNPC = "UNKNOWN: startHP <= 0";
+                    battleState.StateOfNPC = "UNKNOWN: NPC's startHP <= 0";
 
                 return;
             }
 
             // Calculate HP percentage
             double percentHP = (double)currentHP / startHP * 100;
-            var roundedPercentHP = (int)Math.Round(percentHP);
 
             // Determine status based on HP percentage
-            if (currentHP <= 0)
-                result = "Dead";
-            else if (percentHP >= 100)
-                result = "Unscathed";
-            else if (percentHP >= 90)
-                result = "Healthy";
-            else if (percentHP >= 80)
-                result = "Scratched";
-            else if (percentHP >= 70)
-                result = "Bruised";
-            else if (percentHP >= 60)
-                result = "Wounded";
-            else if (percentHP >= 50)
-                result = "Injured";
-            else if (percentHP >= 40)
-                result = "Bloodied";
-            else if (percentHP >= 30)
-                result = "Badly Wounded";
-            else // 1–29%
-                result = "Grievously Wounded";
+            string result = currentHP <= 0 ? "Defeated" : percentHP switch
+            {
+                >= 100 => "Unscathed",
+                >= 90 => "Healthy",
+                >= 80 => "Scratched",
+                >= 70 => "Bruised",
+                >= 60 => "Wounded",
+                >= 50 => "Injured",
+                >= 40 => "Bloodied",
+                >= 30 => "Badly Wounded",
+                _ => "Grievously Wounded"
+            };
+
+            SetStatus(percentHP, target, result, battleState);
+        }
+
+        public static void SetStatus(double percentHP, TargetType target, string result, BattleState battleState)
+        {
+            int roundedPercentHP = (int)Math.Round(percentHP);
 
             // Update the battle state depending on target type
             if (target == TargetType.Player)
