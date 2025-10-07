@@ -273,7 +273,7 @@ namespace Adventure.Quest.Encounter
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(state.EmbedColor)
                 .WithTitle("[Battle Report]")
-                .AddField($"{player.Name} ({state.Player.Hitpoints}) VS {npc.Name} ({state.StateOfNPC})", $"| Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP} |", inline: true)
+                .AddField($"{player.Name} ({state.StateOfPlayer}) VS {npc.Name} ({state.StateOfNPC})", $"| Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP} |", inline: true)
                 .AddField("\u200B", $"{attackSummary}", false);
 
             return embed;
