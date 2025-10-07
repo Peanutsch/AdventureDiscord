@@ -27,7 +27,7 @@ namespace Adventure.Quest.Encounter
         /// </summary>
         /// <param name="creature">The creature to display in the encounter embed.</param>
         /// <returns>An EmbedBuilder with creature details formatted.</returns>
-        public static EmbedBuilder EmbedRandomEncounter(NpcModel npc) 
+        public static EmbedBuilder EmbedRandomEncounter(NpcModel npc)
         {
             LogService.DividerParts(1, "Data NPC");
             LogService.Info($"[EncounterService.GetRandomEncounter] > Encountered: [{npc.Name}]");
@@ -35,6 +35,7 @@ namespace Adventure.Quest.Encounter
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
+                .WithThumbnailUrl($"{npc.ThumbnailNpc}")
                 .WithDescription($"**[{npc.Name!.ToUpper()}]**\n*{npc.Description}*");
 
             AddArmorFields(embed, npc);

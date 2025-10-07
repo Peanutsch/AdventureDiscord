@@ -12,6 +12,7 @@
       "wisdom": 8,
       "charisma": 8
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425062584960286821/goblin.png?ex=68e63874&is=68e4e6f4&hm=3acd4e47c61a9375a5760e405b884038738f3b7195397c037c9af02820cf6b0d&",
     "armor": [ "armor_leather_armor" ],
     "weapons": [ "weapon_short_sword", "weapon_dagger" ],
     "loot": []
@@ -29,6 +30,7 @@
       "wisdom": 10,
       "charisma": 9
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425061495506731060/hobgoblin.gif?ex=68e63770&is=68e4e5f0&hm=74137c7034fce1fbdd67cab37065a549a6caac339c3b4204d13a86deef0b3aa8&",
     "armor": [ "armor_chain_shirt" ],
     "weapons": [ "weapon_spear", "weapon_longsword" ],
     "loot": []
@@ -46,6 +48,7 @@
       "wisdom": 11,
       "charisma": 10
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425060865346113538/orc.gif?ex=68e636da&is=68e4e55a&hm=fee3f766bdf1d547afb0138a0d864c04930220d38322d79a199423234c7343b6&",
     "armor": [ "armor_hide_armor" ],
     "weapons": [ "weapon_great_axe" ],
     "loot": []
@@ -63,6 +66,7 @@
       "wisdom": 11,
       "charisma": 9
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425062307272327271/bugbear.png?ex=68e63832&is=68e4e6b2&hm=61fdb0f7b8c9fb580d06a74a472ec2fd181ff92496ea48fa752f29b31beb5ddb&",
     "armor": [ "armor_chain_shirt" ],
     "weapons": [ "weapon_morningstar", "weapon_club" ],
     "loot": []
@@ -80,6 +84,7 @@
       "wisdom": 11,
       "charisma": 6
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425063206182981712/gnoll.jpg?ex=68e63908&is=68e4e788&hm=60a8594dfb6b6ef7e03234f9f97c0aa7cd599b3c1620df38f7079c1bcc415b23&",
     "armor": [ "armor_hide_armor" ],
     "weapons": [ "weapon_glaive", "weapon_javelin" ],
     "loot": []
@@ -97,6 +102,7 @@
       "wisdom": 7,
       "charisma": 8
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425063533426774187/Kobold.jpg?ex=68e63956&is=68e4e7d6&hm=956186e0eb25342d07b3540b12eadd2c1c2a7387566d7f48bad22e616ae6bb1b&",
     "armor": [ "armor_leather_armor" ],
     "weapons": [ "weapon_spear", "weapon_dagger" ],
     "loot": []
@@ -114,6 +120,7 @@
       "wisdom": 8,
       "charisma": 5
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425063774393466922/skeleton.jpeg?ex=68e63990&is=68e4e810&hm=c6c5e95c4b9a2d198168979f07b62c2cf93a8eeb0b5b1ba6417ea8d49d858ae8&",
     "armor": [ "armor_scrap" ],
     "weapons": [ "weapon_short_sword" ],
     "loot": []
@@ -131,6 +138,7 @@
       "wisdom": 6,
       "charisma": 5
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425068289318719488/zombie.png?ex=68e63dc4&is=68e4ec44&hm=7cbf9d7fd416c3aeb63c474fbf5cd48e66bd22ff19ba7b76722dd2fac2939132&",
     "armor": [ "armor_scrap" ],
     "weapons": [ "weapon_club" ],
     "loot": []
@@ -148,6 +156,7 @@
       "wisdom": 12,
       "charisma": 14
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425068614494453851/knight.jpg?ex=68e63e12&is=68e4ec92&hm=441582d512fd57d1a451afb6415c0753bcf8f0f9892f108b17d69933f03f5a28&",
     "armor": [ "armor_plate", "armor_shield" ],
     "weapons": [ "weapon_longsword", "weapon_lance" ],
     "loot": []
@@ -165,6 +174,7 @@
       "wisdom": 14,
       "charisma": 12
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425068889309577236/mage.png?ex=68e63e53&is=68e4ecd3&hm=f86a92805ae1d7502c71de36a3165702d5be03feeeb5caf2d936c84947a7543a&",
     "armor": [ "armor_cloth_robe" ],
     "weapons": [ "weapon_staff", "weapon_dagger" ],
     "loot": []
@@ -182,6 +192,7 @@
       "wisdom": 12,
       "charisma": 10
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425069173436059668/gnome_wizard.jpg?ex=68e63e97&is=68e4ed17&hm=dac4485efb126291aa1fad31eaef11736d8196ae0cd9c38ec727b00f67451d23&",
     "armor": [ "armor_cloth_robe" ],
     "weapons": [ "weapon_magic_staff", "weapon_dagger" ],
     "loot": []
@@ -199,6 +210,7 @@
       "wisdom": 10,
       "charisma": 10
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425069466605060187/human_bandit.png?ex=68e63edd&is=68e4ed5d&hm=dd3ca2350140732b43281085fd955bc2c147146fa4100ec369c71ec00d032378&",
     "armor": [ "armor_leather_armor" ],
     "weapons": [ "weapon_short_sword", "weapon_dagger" ],
     "loot": []
@@ -216,6 +228,7 @@
       "wisdom": 11,
       "charisma": 12
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425069762928709632/human_warrior.jpg?ex=68e63f23&is=68e4eda3&hm=302ab77e668eff3bcf3126c340a943c8329a2dc844ddcdb820c408c1d8d4a5b3&",
     "armor": [ "armor_chain_mail" ],
     "weapons": [ "weapon_longsword", "weapon_shield" ],
     "loot": []
@@ -233,6 +246,7 @@
       "wisdom": 14,
       "charisma": 12
     },
+    "thumbnail": "",
     "armor": [ "armor_leather_armor" ],
     "weapons": [ "weapon_longbow", "weapon_dagger" ],
     "loot": []
@@ -250,6 +264,7 @@
       "wisdom": 12,
       "charisma": 10
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425070122380427324/elf_archer.jpg?ex=68e63f79&is=68e4edf9&hm=47d3bf31ac086dfc284e25be60fbf14d4381d410d271ad7fe111f94c02bc3f7d&",
     "armor": [ "armor_chain_mail" ],
     "weapons": [ "weapon_warhammer" ],
     "loot": []
@@ -267,6 +282,7 @@
       "wisdom": 12,
       "charisma": 14
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425070405084909609/dark_elf.jpg?ex=68e63fbd&is=68e4ee3d&hm=93fbdd48f03f7208708b994f204c3fb75ed9bc3d0254132079ef8572db13df92&",
     "armor": [ "armor_leather_armor" ],
     "weapons": [ "weapon_rapier", "weapon_shortbow" ],
     "loot": []
@@ -284,6 +300,7 @@
       "wisdom": 11,
       "charisma": 9
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425070819314372658/half_orc.jpg?ex=68e6401f&is=68e4ee9f&hm=36a6a99c99e61071a0fdd0c59afe64dd126fe07c2dce1f5d6f443707af8d3a64&",
     "armor": [ "armor_chain_mail" ],
     "weapons": [ "weapon_great_axe", "weapon_shield" ],
     "loot": []
@@ -301,6 +318,7 @@
       "wisdom": 10,
       "charisma": 6
     },
+    "thumbnail": "https://cdn.discordapp.com/attachments/1425057075314167839/1425071405786988684/manbearpig.jpg?ex=68e640ab&is=68e4ef2b&hm=c98dbd5cad99ea6ca870a58c7ee56c417554e8f4b12ce42808295a11f8db1d2f&",
     "armor": [ "armor_hide_armor" ],
     "weapons": [ "weapon_gore", "weapon_club" ],
     "loot": []

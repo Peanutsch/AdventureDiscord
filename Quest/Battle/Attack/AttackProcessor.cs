@@ -16,10 +16,7 @@ namespace Adventure.Quest.Battle.Attack
         /// Core shared attack logic for both players and NPCs.
         /// Determines hit/miss, calculates damage, updates HP, and generates a battle log.
         /// </summary>
-        public static (string battleLog, BattleStateModel state) ProcessAttack(
-            ulong userId,
-            WeaponModel weapon,
-            bool isPlayerAttacker)
+        public static (string battleLog, BattleState state) ProcessAttack(ulong userId, WeaponModel weapon, bool isPlayerAttacker)
         {
             // Validate hit/miss/crit outcome
             var hitResult = ProcessRollsAndDamage.ValidateHit(userId, isPlayerAttacker);
