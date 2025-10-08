@@ -7,7 +7,7 @@ namespace Adventure.Quest.Helpers
 {
     public class NpcHelpers
     {
-        #region HITPOINTS
+        #region === HITPOINTS ===
         /// <summary>
         /// Determines the hitpoints for an NPC based on its challenge rating.
         /// Rolls the appropriate dice and stores the results in the battle state.
@@ -33,7 +33,7 @@ namespace Adventure.Quest.Helpers
         }
         #endregion HITPOINTS
 
-        #region CR
+        #region === Challenge Rating ===
         /// <summary>
         /// Returns a formatted string for a fractional or whole challenge rating.
         /// </summary>

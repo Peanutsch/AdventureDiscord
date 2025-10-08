@@ -27,8 +27,17 @@ namespace Adventure.Models.NPC
         [JsonPropertyName("attributes")]
         public AttributesModel Attributes { get; set; } = new();
 
-        [JsonPropertyName("thumbnail")]
-        public string ThumbnailNpc { get; set; } = $"Error loading Thumbnail";
+        [JsonPropertyName("thumbnail_100")]
+        public string ThumbnailNpc_100 { get; set; } = $"Error loading Thumbnail_100";
+
+        [JsonPropertyName("thumbnail_50")]
+        public string ThumbnailNpc_50 { get; set; } = $"Error loading Thumbnail_50";
+
+        [JsonPropertyName("thumbnail_10")]
+        public string ThumbnailNpc_10 { get; set; } = $"Error loading Thumbnail_10";
+
+        [JsonPropertyName("thumbnail_0")]
+        public string ThumbnailNpc_0 { get; set; } = $"Error loading Thumbnail_0";
 
 
         [JsonPropertyName("weapons")]

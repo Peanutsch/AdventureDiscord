@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Adventure.Quest.Battle.BattleRandomizers
+namespace Adventure.Quest.Battle.Randomizers
 {
     /// <summary>
     /// Provides functionality to randomly select NPCs for encounters.
@@ -16,19 +16,19 @@ namespace Adventure.Quest.Battle.BattleRandomizers
     public class EncounterRandomizer
     {
         /*
-         * Usage Examples:
-         *
-         * Low CR preference, but only from humanoids:
-         * var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.LowCR, CreatureListPreference.Humanoids);
-         *
-         * Hig:h CR preference, but always from bestiary
-         * var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.HighCR, CreatureListPreference.Bestiary);
-         *
-         * Balanced CR, 50/50 chance between humanoids and bestiary:
-         * var npc = EncounterRandomizer.NpcRandomizer();
+           Usage Examples:
+         
+           Low CR preference, but only from humanoids:
+           var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.LowCR, CreatureListPreference.Humanoids);
+          
+           High CR preference, but always from bestiary
+           var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.HighCR, CreatureListPreference.Bestiary);
+         
+           Balanced CR, 50/50 chance between humanoids and bestiary:
+           var npc = EncounterRandomizer.NpcRandomizer();
          */
 
-        #region NPC RANDOMIZER
+        #region === NPC RANDOMIZER ===
         /// <summary>
         /// Randomly selects an NPC from the humanoids or bestiary list.
         /// The chosen list and weighting can be influenced by parameters.
@@ -69,7 +69,7 @@ namespace Adventure.Quest.Battle.BattleRandomizers
         }
         #endregion NPC RANDOMIZER
 
-        #region HELPER METHODS
+        #region === HELPER METHODS ===
         private static readonly Random _random = new Random();
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace Adventure.Models.BattleState
         // Battle roll tracking
         public int CurrentHitpointsNPC { get; set; }
         public int HitpointsAtStartNPC { get; set; }
-        
+
         public int HitpointsAtStartPlayer = 1000;
         public int PreHpPlayer { get; set; }
         public int PreHpNPC { get; set; }

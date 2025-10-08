@@ -10,13 +10,14 @@ using Microsoft.VisualBasic;
 using Adventure.Quest.Encounter;
 using Adventure.Models.BattleState;
 using Adventure.Quest.Battle.BattleEngine;
-using static Adventure.Quest.Battle.BattleRandomizers.EncounterRandomizer;
-using Adventure.Quest.Battle.BattleRandomizers;
+using static Adventure.Quest.Battle.Randomizers.EncounterRandomizer;
+using Adventure.Quest.Battle.Randomizers;
 
 namespace Adventure.Modules
 {
     public class AdventureGameModule : InteractionModuleBase<SocketInteractionContext>
     {
+        #region === Slashcommand "start" ===
         /// <summary>
         /// Starts the player's adventure and initializes their state.
         /// </summary>
@@ -44,7 +45,9 @@ namespace Adventure.Modules
             //await FollowupAsync("Slash Command /start is executed");
             await FollowupAsync("Your adventure has begun!");
         }
+        #endregion
 
+        #region === Slashcommand "encounter" ===
         // Trigger encounter for testing
         [SlashCommand("encounter", "Triggers a random encounter")]
         public async Task SlashCommandEncounterHandler()
@@ -83,5 +86,6 @@ namespace Adventure.Modules
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
         }
+        #endregion
     }
 }
