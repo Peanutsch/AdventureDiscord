@@ -1,6 +1,8 @@
 ﻿using Adventure.Data;
 using Adventure.Models.BattleState;
 using Adventure.Models.Items;
+using Adventure.Models.NPC;
+using Adventure.Models.Player;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Process;
 using Adventure.Quest.Battle.TextGenerator;
@@ -11,114 +13,187 @@ using Discord;
 namespace Adventure.Quest.Battle.Attack
 {
     /// <summary>
-    /// Handles all shared attack logic between players and NPCs.
-    /// - Rolls for hit/miss/critical
-    /// - Calculates and applies damage
-    /// - Updates HP states
-    /// - Generates descriptive battle logs for embeds
+    /// Handles all core attack logic shared between players and NPCs.
+    /// Includes hit validation, damage calculation, HP updates, and battle log generation.
     /// </summary>
     public static class AttackProcessor
     {
-        #region === Processor ===
+        #region === Main Processor ===
 
         /// <summary>
-        /// Executes an attack action and processes its outcome.
+        /// Executes a full attack action (hit check, damage, HP update, log generation).
         /// </summary>
-        /// <param name="userId">The ID of the player currently in battle.</param>
-        /// <param name="weapon">The weapon model being used in the attack.</param>
+        /// <param name="userId">The player ID participating in battle.</param>
+        /// <param name="weapon">The weapon being used for this attack.</param>
         /// <param name="isPlayerAttacker">True if the player is attacking; false if the NPC is attacking.</param>
         /// <returns>
         /// A tuple containing:
-        /// - <see cref="string"/> battleLog: a formatted text description of the attack result
-        /// - <see cref="BattleState"/> state: the updated battle state after the attack
+        /// - <see cref="string"/> battleLog: formatted text describing the attack result.
+        /// - <see cref="BattleState"/> state: updated battle state after the attack.
         /// </returns>
         public static (string battleLog, BattleState state) ProcessAttack(ulong userId, WeaponModel weapon, bool isPlayerAttacker)
         {
-            // Determine if the attack hits, misses, or crits
+            // Determine hit/miss/critical and fetch participants from the active battle
+            var (hitResult, state, player, npc, strength) = ValidateAndGetParticipants(userId, isPlayerAttacker);
+
+            // Apply damage based on attack result and attacker type
+            ApplyDamage(hitResult, isPlayerAttacker, userId, weapon, strength, state, player, npc);
+
+            // Update HP state descriptions (for embeds and logs)
+            UpdateHPStatus(isPlayerAttacker, state, player);
+
+            // Generate a battle log string for Discord display
+            string battleLog = GenerateBattleLog(hitResult, isPlayerAttacker, player, npc, weapon, state);
+
+            // Return both the descriptive log and the updated battle state
+            return (battleLog, state);
+        }
+
+        #endregion
+
+        #region === Hit Validation & Participant Retrieval ===
+
+        /// <summary>
+        /// Validates whether the attack hits, misses, or crits,
+        /// and retrieves the current participants (player, NPC, and strength values).
+        /// </summary>
+        private static (ProcessRollsAndDamage.HitResult hitResult, BattleState state, PlayerModel player, NpcModel npc, int strength)
+            ValidateAndGetParticipants(ulong userId, bool isPlayerAttacker)
+        {
+            // Determine hit/miss/critical roll
             var hitResult = ProcessRollsAndDamage.ValidateHit(userId, isPlayerAttacker);
 
-            // Retrieve current participants (Player, NPC, Strength) from the active battle state
+            // Retrieve the current battle state and character data
             var (state, player, npc, strength) = GetBattleStateData.GetBattleParticipants(userId, isPlayerAttacker);
 
-            // If it's a valid hit or critical hit, calculate and apply damage
-            if (hitResult == ProcessRollsAndDamage.HitResult.IsValidHit ||
-                hitResult == ProcessRollsAndDamage.HitResult.IsCriticalHit)
-            {
-                if (isPlayerAttacker)
-                {
-                    // Player attacks NPC
-                    (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, state.CurrentHitpointsNPC) =
-                        ProcessSuccesAttack.ProcessSuccessfulHit(
-                            userId,
-                            state,
-                            weapon,
-                            strength,
-                            state.CurrentHitpointsNPC,
-                            true
-                        );
-                }
-                else
-                {
-                    // NPC attacks player
-                    (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, player.Hitpoints) =
-                        ProcessSuccesAttack.ProcessSuccessfulHit(
-                            userId,
-                            state,
-                            weapon,
-                            strength,
-                            player.Hitpoints,
-                            false
-                        );
-                }
-            }
+            return (hitResult, state, player, npc, strength);
+        }
 
-            // Update HP status for the correct TargetType (Player or NPC)
+        #endregion
+
+        #region === Damage Application ===
+
+        /// <summary>
+        /// Applies the appropriate damage if the attack is successful or critical.
+        /// Updates the HP of the target accordingly.
+        /// </summary>
+        private static void ApplyDamage(
+            ProcessRollsAndDamage.HitResult hitResult,
+            bool isPlayerAttacker,
+            ulong userId,
+            WeaponModel weapon,
+            int strength,
+            BattleState state,
+            PlayerModel player,
+            NpcModel npc)
+        {
+            // Skip damage if the attack missed or was a critical miss
+            if (hitResult != ProcessRollsAndDamage.HitResult.IsValidHit &&
+                hitResult != ProcessRollsAndDamage.HitResult.IsCriticalHit)
+                return;
+
+            // Attack Player 
             if (isPlayerAttacker)
+            {
+                (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, state.CurrentHitpointsNPC) =
+                    ProcessSuccesAttack.ProcessSuccessfulHit(
+                        userId,
+                        state,
+                        weapon,
+                        strength,
+                        state.CurrentHitpointsNPC,
+                        true
+                    );
+            }
+            // Attack NPC
+            else
+            {
+                (state.Damage, state.TotalDamage, state.Rolls, state.CritRoll, state.Dice, player.Hitpoints) =
+                    ProcessSuccesAttack.ProcessSuccessfulHit(
+                        userId,
+                        state,
+                        weapon,
+                        strength,
+                        player.Hitpoints,
+                        false
+                    );
+            }
+        }
+
+        #endregion
+
+        #region === HP Status Update ===
+
+        /// <summary>
+        /// Updates HP status information (used for embed display like "Barely Standing", "Wounded", etc.).
+        /// </summary>
+        private static void UpdateHPStatus(bool isPlayerAttacker, BattleState state, PlayerModel player)
+        {
+            if (isPlayerAttacker)
+            {
+                // Update NPC HP state after being attacked
                 HPStatusHelpers.GetHPStatus(
                     state.HitpointsAtStartNPC,
                     state.CurrentHitpointsNPC,
                     HPStatusHelpers.TargetType.NPC,
                     state
                 );
+            }
             else
+            {
+                // Update Player HP state after being attacked
                 HPStatusHelpers.GetHPStatus(
                     state.HitpointsAtStartPlayer,
                     player.Hitpoints,
                     HPStatusHelpers.TargetType.Player,
                     state
                 );
-
-            // Convert hit result into text-based category (used in battle text)
-            string attackResult = GetAttackResult(hitResult);
-
-            // Generate dynamic battle log text for display in Discord
-            string battleLog = BattleTextGenerator.GenerateBattleLog
-            (
-                attackResult,                                                // Type of hit (hit/miss/crit)
-                isPlayerAttacker ? player.Name! : npc.Name!,                 // Attacker name
-                isPlayerAttacker ? npc.Name! : player.Name!,                 // Defender name
-                weapon.Name!,                                                // Weapon name
-                state.TotalDamage,                                           // Calculated total damage
-                isPlayerAttacker ? state.StateOfNPC : state.StateOfPlayer,   // Updated HP state description
-                GameData.BattleText!,                                        // Preloaded text templates
-                state,                                                       // Current battle state for context
-                GameData.RollText,                                           // Roll result templates
-                isPlayerAttacker                                             // Include dice rolls in log only for player
-            );
-
-            // Return the battle log and the updated state
-            return (battleLog, state);
+            }
         }
 
         #endregion
 
-        #region === Get Attack Result ===
+        #region === Battle Log ===
 
         /// <summary>
-        /// Converts a <see cref="ProcessRollsAndDamage.HitResult"/> enum into a string identifier used for text templates.
+        /// Builds a descriptive battle log line used for Discord message embeds.
         /// </summary>
-        /// <param name="hitResult">The result of the attack roll.</param>
-        /// <returns>A string representing the attack type (e.g., "hit", "miss", "criticalHit").</returns>
+        private static string GenerateBattleLog(
+            ProcessRollsAndDamage.HitResult hitResult,
+            bool isPlayerAttacker,
+            PlayerModel player,
+            NpcModel npc,
+            WeaponModel weapon,
+            BattleState state)
+        {
+            // Convert enum result to string key (e.g., "hit", "miss", "criticalHit")
+            string attackResult = GetAttackResult(hitResult);
+
+            // Generate formatted text for the attack log
+            return BattleTextGenerator.GenerateBattleLog(
+                attackResult,                                                // Attack result category
+                isPlayerAttacker ? player.Name! : npc.Name!,                 // Attacker name
+                isPlayerAttacker ? npc.Name! : player.Name!,                 // Defender name
+                weapon.Name!,                                                // Weapon name
+                state.TotalDamage,                                           // Total calculated damage
+                isPlayerAttacker ? state.StateOfNPC : state.StateOfPlayer,   // Updated HP state description
+                GameData.BattleText!,                                        // Preloaded text templates
+                state,                                                       // Current battle state
+                GameData.RollText,                                           // Roll result templates
+                isPlayerAttacker                                             // Only show dice rolls for players
+            );
+        }
+
+        #endregion
+
+        #region === Attack Result Conversion ===
+
+        /// <summary>
+        /// Converts a <see cref="ProcessRollsAndDamage.HitResult"/> enum
+        /// into a string identifier used for text templates.
+        /// </summary>
+        /// <param name="hitResult">The outcome of the attack roll.</param>
+        /// <returns>A string representing the attack category (e.g., "hit", "miss", "criticalHit").</returns>
         public static string GetAttackResult(ProcessRollsAndDamage.HitResult hitResult)
         {
             return hitResult switch
@@ -127,7 +202,7 @@ namespace Adventure.Quest.Battle.Attack
                 ProcessRollsAndDamage.HitResult.IsValidHit => "hit",
                 ProcessRollsAndDamage.HitResult.IsCriticalMiss => "criticalMiss",
                 ProcessRollsAndDamage.HitResult.IsMiss => "miss",
-                _ => "hit", // Default fallback in case of unexpected value
+                _ => "hit" // Default fallback in case of unexpected value
             };
         }
 
