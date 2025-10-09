@@ -6,7 +6,6 @@ using Adventure.Models.Player;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Process;
 using Adventure.Quest.Battle.TextGenerator;
-using Adventure.Quest.Helpers;
 using Adventure.Quest.Rolls;
 using Discord;
 

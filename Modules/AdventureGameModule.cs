@@ -1,4 +1,4 @@
-﻿using Adventure.Models.Enviroment;
+﻿using Adventure.Models.Map;
 using Adventure.Services;
 using Adventure.Models.Player;
 using Discord.Interactions;

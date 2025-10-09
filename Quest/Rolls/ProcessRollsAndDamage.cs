@@ -1,7 +1,7 @@
 ﻿using Adventure.Models.BattleState;
 using Adventure.Models.Items;
+using Adventure.Quest.Battle.Attack;
 using Adventure.Quest.Battle.BattleEngine;
-using Adventure.Quest.Helpers;
 using Adventure.Services;
 using System;
 using System.Collections.Generic;

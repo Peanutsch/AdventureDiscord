@@ -1,6 +1,6 @@
 ﻿using Adventure.Models.NPC;
+using Adventure.Quest.Battle.Attack;
 using Adventure.Quest.Encounter;
-using Adventure.Quest.Helpers;
 using Adventure.Services;
 using System;
 using System.Collections.Generic;

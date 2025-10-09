@@ -35,7 +35,7 @@
     <None Update="Data\NPC\humanoids.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Data\Enviroment\inn.json">
+    <None Update="Data\Map\map.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\Events\events.json">

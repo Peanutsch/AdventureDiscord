@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Quest.Helpers
+namespace Adventure.Quest.Battle.Process
 {
     public static class LevelHelpers 
     {

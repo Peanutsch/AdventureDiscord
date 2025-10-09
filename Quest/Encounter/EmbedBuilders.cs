@@ -6,7 +6,7 @@ using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Modules;
 using Adventure.Quest.Battle.BattleEngine;
-using Adventure.Quest.Helpers;
+using Adventure.Quest.Battle.Process;
 using Adventure.Services;
 using Discord;
 using Discord.WebSocket;
