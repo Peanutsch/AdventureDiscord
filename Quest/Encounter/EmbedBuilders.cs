@@ -141,6 +141,15 @@ namespace Adventure.Quest.Encounter
             // Build the pre-battle embed displaying stats and available equipment
             var embed = BuildPreBattleEmbed(state);
 
+            // Optionally defer interaction first (to avoid timeouts)
+            await component.DeferAsync();
+
+            // Send a NEW follow-up message with the embed and buttons
+            await component.FollowupAsync(embed: embed.Build(), components: builder.Build(), ephemeral: false);
+
+            LogService.Info("[EmbedBuilders.EmbedPreBattle] > Sent pre-battle screen as follow-up message.");
+
+            /*
             // Update the original Discord message with the new embed and components
             await component.UpdateAsync(msg =>
             {
@@ -148,6 +157,7 @@ namespace Adventure.Quest.Encounter
                 msg.Embed = embed.Build();
                 msg.Components = builder.Build();
             });
+            */
         }
 
         /// <summary>
