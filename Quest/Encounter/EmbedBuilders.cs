@@ -147,23 +147,23 @@ namespace Adventure.Quest.Encounter
             var builder = BuildBattleButtons(state);
             var embed = BuildPreBattleEmbed(state);
 
-            // Optionally defer interaction first (to avoid timeouts)
-            await component.DeferAsync();
-
-            // Send a NEW follow-up message with the embed and buttons
-            await component.FollowupAsync(embed: embed.Build(), components: builder.Build(), ephemeral: false);
-
-            LogService.Info("[EmbedBuilders.EmbedPreBattle] > Sent pre-battle screen as follow-up message.");
-
-            /*
-            // Update the original Discord message with the new embed and components
-            await component.UpdateAsync(msg =>
+            try
             {
-                msg.Content = string.Empty;
-                msg.Embed = embed.Build();
-                msg.Components = builder.Build();
-            });
-            */
+                // Probeer UpdateAsync (vervangt het originele bericht)
+                await component.UpdateAsync(msg =>
+                {
+                    msg.Content = string.Empty;
+                    msg.Embed = embed.Build();
+                    msg.Components = builder.Build();
+                });
+                LogService.Info("[EmbedBuilders.EmbedPreBattle] Embed succesvol geupdate via UpdateAsync.");
+            }
+            catch (Exception ex)
+            {
+                // Fallback: interaction expired → stuur een nieuw bericht
+                LogService.Info($"[EmbedBuilders.EmbedPreBattle] UpdateAsync mislukt, fallback FollowupAsync. {ex.Message}");
+                await component.FollowupAsync(embed: embed.Build(), components: builder.Build(), ephemeral: false);
+            }
         }
 
         /// <summary>

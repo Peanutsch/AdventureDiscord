@@ -72,8 +72,8 @@ namespace Adventure.Buttons
             }
             catch (Exception ex)
             {
-                LogService.Info($"[ButtonFleeHandler] UpdateAsync mislukt, fallback FollowupAsync. {ex.Message}");
-                var battleEmbed = new EmbedBuilder().WithDescription("Je hebt geprobeerd te vluchten...");
+                LogService.Info($"[ButtonFleeHandler] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
+                var battleEmbed = new EmbedBuilder().WithDescription("You tried to flee...");
                 await Context.Interaction.FollowupAsync(embed: battleEmbed.Build());
             }
         }
@@ -83,7 +83,7 @@ namespace Adventure.Buttons
         {
             if (Context.User.Id.ToString() != userIdRaw)
             {
-                await RespondAsync("⚠️ Je kunt deze battle niet bedienen!", ephemeral: true);
+                await RespondAsync("⚠️ You cannot control this battle!", ephemeral: true);
                 return;
             }
 
@@ -95,11 +95,11 @@ namespace Adventure.Buttons
             }
             catch (Exception ex)
             {
-                LogService.Info($"[ContinueBattleHandler] UpdateAsync mislukt, fallback FollowupAsync. {ex.Message}");
+                LogService.Error($"[ContinueBattleHandler] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
                 var state = BattleStateSetup.GetBattleState(Context.User.Id);
                 var embed = new EmbedBuilder()
-                    .WithTitle("Kies je wapen opnieuw")
-                    .WithDescription("De vorige interactie is verlopen, kies je wapen hieronder.")
+                    .WithTitle("Choose your weapon again!")
+                    .WithDescription("Previous interaction could not be updated.")
                     .WithColor(Color.Blue);
                 await Context.Interaction.FollowupAsync(embed: embed.Build());
             }
@@ -110,7 +110,7 @@ namespace Adventure.Buttons
         {
             if (Context.User.Id.ToString() != userIdRaw)
             {
-                await RespondAsync("⚠️ Je kunt deze battle niet bedienen!", ephemeral: true);
+                await RespondAsync("⚠️ You cannot control this battle...", ephemeral: true);
                 return;
             }
 
@@ -120,8 +120,8 @@ namespace Adventure.Buttons
             }
             catch (Exception ex)
             {
-                LogService.Info($"[FleeBattleHandler] UpdateAsync mislukt, fallback FollowupAsync. {ex.Message}");
-                var embed = new EmbedBuilder().WithDescription("Je hebt geprobeerd te vluchten...");
+                LogService.Error($"[FleeBattleHandler] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
+                var embed = new EmbedBuilder().WithDescription("You tried to flee...");
                 await Context.Interaction.FollowupAsync(embed: embed.Build());
             }
         }

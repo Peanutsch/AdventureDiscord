@@ -188,6 +188,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             // Start battle
             await HandleStepBattle(interaction, weaponId);
         }
+
         #endregion
 
         #region === Step: Battle ===
