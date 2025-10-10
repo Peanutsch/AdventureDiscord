@@ -2,38 +2,16 @@
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Rolls;
 using Adventure.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Adventure.Quest.Helpers
+namespace Adventure.Quest.Battle.Attack
 {
-    public class NpcHelpers
+    public class ChallengeRatingHelpers
     {
-        #region === HITPOINTS ===
-        /// <summary>
-        /// Determines the hitpoints for an NPC based on its challenge rating.
-        /// Rolls the appropriate dice and stores the results in the battle state.
-        /// </summary>
-        /// <param name="npc">The NPC for which hitpoints are being rolled.</param>
-        /// <param name="cr">The challenge rating of the NPC.</param>
-        /// <param name="userId">The ID of the player engaging with the NPC.</param>
-        /// <returns>The total hitpoints rolled for the NPC.</returns>
-        public static int GetNpcHitpoints(NpcModel npc, double cr, ulong userId) {
-            (int diceCount, int diceValue) = GetHitDie(cr);
-
-            // Save Dice to BattleState
-            var state = BattleStateSetup.GetBattleState(userId);
-            state.Npc = npc;
-            state.DiceCountHP = diceCount;
-            state.DiceValueHP = diceValue;
-
-            var result = DiceRoller.RollWithoutDetails(diceCount, diceValue);
-
-            LogService.Info($"[NpcHitpoints.GetNpcHitpoints] Rolled {diceCount}d{diceValue} for NPC {npc.Name} HP: {result}");
-
-            return result;
-        }
-        #endregion HITPOINTS
-
-        #region === Challenge Rating ===
         /// <summary>
         /// Returns a formatted string for a fractional or whole challenge rating.
         /// </summary>
@@ -45,6 +23,31 @@ namespace Adventure.Quest.Helpers
             else if (cr == 0.25) return "1/4";
             else if (cr == 0.5) return "1/2";
             else return cr.ToString();
+        }
+
+        /// <summary>
+        /// Determines the hitpoints for an NPC based on its challenge rating.
+        /// Rolls the appropriate dice and stores the results in the battle state.
+        /// </summary>
+        /// <param name="npc">The NPC for which hitpoints are being rolled.</param>
+        /// <param name="cr">The challenge rating of the NPC.</param>
+        /// <param name="userId">The ID of the player engaging with the NPC.</param>
+        /// <returns>The total hitpoints rolled for the NPC.</returns>
+        public static int GetNpcHitpoints(NpcModel npc, double cr, ulong userId)
+        {
+            (int diceCount, int diceValue) = GetHitDie(cr);
+
+            // Save Dice to BattleState
+            var state = BattleStateSetup.GetBattleState(userId);
+            state.Npc = npc;
+            state.DiceCountHP = diceCount;
+            state.DiceValueHP = diceValue;
+
+            var result = DiceRoller.RollWithoutDetails(diceCount, diceValue);
+
+            LogService.Info($"[NpcHitpoints.GetNpcHitpoints] Rolled {diceCount}d{diceValue} for NPC HP: {result}");
+
+            return result;
         }
 
         /// <summary>
@@ -79,6 +82,5 @@ namespace Adventure.Quest.Helpers
             else if (cr <= 10) return 5900;
             else return 0;
         }
-        #endregion CR
     }
 }

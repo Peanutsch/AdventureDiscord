@@ -4,7 +4,6 @@ using Adventure.Models.BattleState;
 using Adventure.Models.Items;
 using Adventure.Models.Text;
 using Adventure.Quest.Battle.Process;
-using Adventure.Quest.Helpers;
 using Adventure.Quest.Rolls;
 using Adventure.Services;
 using System;

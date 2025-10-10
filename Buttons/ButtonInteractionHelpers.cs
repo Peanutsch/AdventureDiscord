@@ -30,5 +30,13 @@ namespace Adventure.Buttons
                 msg.Content = ""; 
             });
         }
+
+        public static async Task RemoveButtonsAsync(SocketMessageComponent component)
+        {
+            await component.UpdateAsync(msg =>
+            {
+                msg.Components = new ComponentBuilder().Build();
+            });
+        }
     }
 }

@@ -3,7 +3,7 @@ using Adventure.Models.NPC;
 using Adventure.Services;
 using System;
 
-namespace Adventure.Quest.Helpers
+namespace Adventure.Quest.Battle.Process
 {
     /// <summary>
     /// Helper class for calculating and updating the HP status of players and NPCs during battles.
@@ -78,10 +78,8 @@ namespace Adventure.Quest.Helpers
             int roundedPercentHP = (int)Math.Round(percentHP);
 
             if (target == TargetType.Player)
-            {
                 // Update the player’s status
                 battleState.StateOfPlayer = result;
-            }
             else
             {
                 // Update the NPC’s status and percentage HP
