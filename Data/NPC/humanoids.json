@@ -15,7 +15,7 @@
     "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425208605455552602/image.png?ex=68e6c072&is=68e56ef2&hm=624c3d2593aefbb5895ba102472f3319865ad8694a0c6dfb32aa0243da896153&",
     "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425212328923893871/image.png?ex=68e6c3ea&is=68e5726a&hm=f947888e3fd3d110094457908cb0ecaf1ce45ae31aeb3a6da5816fc4b491be44&",
     "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425213756450803743/image.png?ex=68e6c53e&is=68e573be&hm=25d017f5318e1d42520e2c15ba92664dce7ec0f685518a85e7f6d6311bac4e96&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425214589389508658/image.png?ex=68e6c605&is=68e57485&hm=4240336e455c43f0b518d2d13a2c6ab2c43d559b368c189e6ef0a94c775ed364&",
+    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425762370512486440/image.png?ex=68e96cee&is=68e81b6e&hm=f015b3769363887aa83cfb5b4434496aad9a7b36aba11ddc033505cf76d19cbd&",
     "armor": [ "armor_leather_armor" ],
     "weapons": [ "weapon_short_sword", "weapon_dagger" ],
     "loot": []
@@ -33,10 +33,10 @@
       "wisdom": 10,
       "charisma": 9
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425061495506731060/hobgoblin.gif?ex=68e63770&is=68e4e5f0&hm=74137c7034fce1fbdd67cab37065a549a6caac339c3b4204d13a86deef0b3aa8&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425743344360882176/image.png?ex=68e95b36&is=68e809b6&hm=f13f352fe292b02979ecaed7dfcd8c0b17710ffc3200f390a3bb53fc1a8a78d9&",
+    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425746484615315558/content.png?ex=68e95e23&is=68e80ca3&hm=c7e528ad71e92f57d534fec016272d2d89693802cd72b249a87676309dbe0912&",
+    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425756303271268372/image.png?ex=68e96747&is=68e815c7&hm=9df99945d5008f0a640ee9eaf5caad00733a50b50d8b0ffaeb42b3c6e9f57139&",
+    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425758724894756937/image.png?ex=68e96989&is=68e81809&hm=ad59b1b883b3f3be78c14d29c736bd8d90e54bb8b5cd109a959b4a6c3c293925&",
     "armor": [ "armor_chain_shirt" ],
     "weapons": [ "weapon_spear", "weapon_longsword" ],
     "loot": []
@@ -54,8 +54,8 @@
       "wisdom": 11,
       "charisma": 10
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425060865346113538/orc.gif?ex=68e636da&is=68e4e55a&hm=fee3f766bdf1d547afb0138a0d864c04930220d38322d79a199423234c7343b6&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
+    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425768367062519808/image.png?ex=68e97284&is=68e82104&hm=f905d12c1a2eedb7c02965a56042cb23a4e1d40aae955d2b63b03e4fd44faeb6&",
+    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425774395762413588/image.png?ex=68e97821&is=68e826a1&hm=e612985ce6fc2d4d11715ca2527b2beb0de83a9c863559d4f013755ad1502ada&",
     "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
     "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
     "armor": [ "armor_hide_armor" ],

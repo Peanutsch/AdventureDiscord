@@ -20,7 +20,7 @@ namespace Adventure.Buttons
                 await HandleWeaponButton(weaponId);
                 return;
             }
-                
+
             //await FollowupAsync($"You clicked: {weaponId}\nNo ComponentInteraction match found...");
         }
 
@@ -54,7 +54,7 @@ namespace Adventure.Buttons
             LogService.Info($"[HandleWeaponButton] Current battle step: {step}");
 
             // Direct call BattleEngine.HandleStepBattle
-            await EncounterBattleStepsSetup.HandleStepBattle(Context.Interaction, weaponId);           
+            await EncounterBattleStepsSetup.HandleStepBattle(Context.Interaction, weaponId);
         }
 
         [ComponentInteraction("btn_attack")]
@@ -66,40 +66,64 @@ namespace Adventure.Buttons
         [ComponentInteraction("btn_flee")]
         public async Task ButtonFleeHandler()
         {
-            await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "flee", "none");
+            try
+            {
+                await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "flee", "none");
+            }
+            catch (Exception ex)
+            {
+                LogService.Info($"[ButtonFleeHandler] UpdateAsync mislukt, fallback FollowupAsync. {ex.Message}");
+                var battleEmbed = new EmbedBuilder().WithDescription("Je hebt geprobeerd te vluchten...");
+                await Context.Interaction.FollowupAsync(embed: battleEmbed.Build());
+            }
         }
 
         [ComponentInteraction("battle_continue_*")]
         public async Task ContinueBattleHandler(string userIdRaw)
         {
-            LogService.Info($"[ContinueBattleHandler] User {Context.User.Username} wants to continue.");
-
             if (Context.User.Id.ToString() != userIdRaw)
             {
-                await RespondAsync("⚠️ You can't interact with this battle!", ephemeral: true);
+                await RespondAsync("⚠️ Je kunt deze battle niet bedienen!", ephemeral: true);
                 return;
             }
 
-            // Zet de battle-stap terug naar de wapenkeuze
             EncounterBattleStepsSetup.SetStep(Context.User.Id, EncounterBattleStepsSetup.StepWeaponChoice);
 
-            // Toon opnieuw de wapenkeuze
-            await EmbedBuilders.EmbedPreBattle((SocketMessageComponent)Context.Interaction);
+            try
+            {
+                await EmbedBuilders.EmbedPreBattle((SocketMessageComponent)Context.Interaction);
+            }
+            catch (Exception ex)
+            {
+                LogService.Info($"[ContinueBattleHandler] UpdateAsync mislukt, fallback FollowupAsync. {ex.Message}");
+                var state = BattleStateSetup.GetBattleState(Context.User.Id);
+                var embed = new EmbedBuilder()
+                    .WithTitle("Kies je wapen opnieuw")
+                    .WithDescription("De vorige interactie is verlopen, kies je wapen hieronder.")
+                    .WithColor(Color.Blue);
+                await Context.Interaction.FollowupAsync(embed: embed.Build());
+            }
         }
 
         [ComponentInteraction("battle_flee_*")]
         public async Task FleeBattleHandler(string userIdRaw)
         {
-            LogService.Info($"[FleeBattleHandler] User {Context.User.Username} tries to flee.");
-
             if (Context.User.Id.ToString() != userIdRaw)
             {
-                await RespondAsync("⚠️ You can't interact with this battle!", ephemeral: true);
+                await RespondAsync("⚠️ Je kunt deze battle niet bedienen!", ephemeral: true);
                 return;
             }
 
-            await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "flee", "none");
+            try
+            {
+                await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "flee", "none");
+            }
+            catch (Exception ex)
+            {
+                LogService.Info($"[FleeBattleHandler] UpdateAsync mislukt, fallback FollowupAsync. {ex.Message}");
+                var embed = new EmbedBuilder().WithDescription("Je hebt geprobeerd te vluchten...");
+                await Context.Interaction.FollowupAsync(embed: embed.Build());
+            }
         }
-
     }
 }
