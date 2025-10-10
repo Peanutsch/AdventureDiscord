@@ -68,9 +68,9 @@ namespace Adventure.Models.BattleState
         public int NewTotalXP { get; set; }
         #endregion
 
-        #region === Embed ===
+        #region === Embeds ===
         public Discord.Color EmbedColor { get; set; } = Color.Red;
-        public int Round { get; set; } = 1;
+        public int RoundCounter { get; set; }
         public int NextRound { get; set; }
 
         // Keep track of Discord Message Id

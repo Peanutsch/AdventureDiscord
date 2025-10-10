@@ -194,42 +194,51 @@ namespace Adventure.Quest.Battle.BattleEngine
         #region === Step: Battle ===
 
         /// <summary>
-        /// Executes player and NPC attacks during battle.
-        /// Updates the state and moves to the post-battle step.
+        /// Executes both the player and NPC attack sequences during battle.
+        /// Handles all turn-based actions, builds the updated battle embed and buttons,
+        /// and transitions to the post-battle step if the battle is still ongoing.
         /// </summary>
+        /// <param name="interaction">The Discord interaction that triggered the battle step (e.g. a weapon button).</param>
+        /// <param name="weaponId">The identifier of the weapon chosen by the player.</param>
         public static async Task HandleStepBattle(SocketInteraction interaction, string weaponId)
         {
             ulong userId = interaction.User.Id;
             var state = BattleStateSetup.GetBattleState(userId);
 
+            // --- Validate weapon existence ---
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
             {
-                await interaction.FollowupAsync("⚠️ Wapen niet gevonden in je inventaris.", ephemeral: true);
+                await interaction.FollowupAsync("⚠️ Weapon not found in your inventory.", ephemeral: true);
                 return;
             }
 
-            // Player attack
+            // --- Player attack phase ---
             string playerAttackResult = PlayerAttack.ProcessPlayerAttack(userId, weapon);
 
-            // NPC defeat check
-            if (state.StateOfNPC == "Defeated")
+            // --- Check if NPC is defeated after player's attack ---
+            if (state.CurrentHitpointsNPC <= 0 || state.StateOfNPC == "Defeated")
             {
+                // End the battle and send victory embed
                 await EmbedBuilders.EmbedEndBattle(interaction, playerAttackResult);
                 return;
             }
 
-            // NPC attack
+            // --- NPC attack phase ---
             string npcAttackResult = state.NpcWeapons.FirstOrDefault() is { } npcWeapon
                 ? NpcAttack.ProcessNpcAttack(userId, npcWeapon)
-                : $"⚠️ {state.Npc.Name} heeft niets om mee aan te vallen.";
+                : $"⚠️ {state.Npc.Name} has nothing to attack with.";
 
+            // Combine both attack summaries
             string fullAttackLog = $"{playerAttackResult}\n\n{npcAttackResult}";
-            var battleEmbed = EmbedBuilders.EmbedBattle(userId, fullAttackLog);
+
+            // --- Build embed and battle buttons ---
+            var battleEmbed = EmbedBuilders.BuildBattleEmbed(userId, fullAttackLog);
             var battleButtons = EmbedBuilders.BuildBattleButtons(state);
 
             try
             {
+                // Update the existing Discord message if interaction is a component (button press)
                 if (interaction is SocketMessageComponent component)
                 {
                     await component.UpdateAsync(msg =>
@@ -239,15 +248,20 @@ namespace Adventure.Quest.Battle.BattleEngine
                         msg.Content = string.Empty;
                     });
                 }
+                else
+                {
+                    // Fallback: handle as a follow-up if the interaction was not from a component
+                    await interaction.FollowupAsync(embed: battleEmbed.Build(), components: battleButtons.Build());
+                }
             }
             catch (Exception ex)
             {
-                // Fallback: interaction verlopen → Followup
-                LogService.Info($"[HandleStepBattle] UpdateAsync mislukt, fallback FollowupAsync. {ex.Message}");
+                // If UpdateAsync fails (e.g. expired token or already acknowledged interaction)
+                LogService.Info($"[HandleStepBattle] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
                 await interaction.FollowupAsync(embed: battleEmbed.Build(), components: battleButtons.Build());
             }
 
-            // Move to post-battle step
+            // --- Transition to post-battle step ---
             SetStep(userId, StepPostBattle);
             await HandleStepPostBattle(interaction);
         }

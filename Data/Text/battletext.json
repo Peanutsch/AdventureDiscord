@@ -33,7 +33,7 @@
     { "text": "⚔️ {attacker} finds an opening and strikes {defender} with {weapon}, causing `{damage}` damage." },
     { "text": "⚔️ {attacker} delivers a crushing blow to {defender} with {weapon}, dealing `{damage}` damage." },
     { "text": "⚔️ A sneaky strike! {attacker} hits {defender} with {weapon}, causing `{damage}` damage." },
-    { "text": "⚔️ With brute force, {attacker} smashes {defender} using {weapon}, dealing `{damage}` damage." },
+    { "text": "⚔️ With {weapon} and brute force smashes {attacker} {defender}, dealing `{damage}` damage." },
     { "text": "⚔️ Quick and sharp, {attacker}'s {weapon} strikes {defender} for `{damage}` damage." },
     { "text": "⚔️ {attacker}'s rage manifests through {weapon}, hitting {defender} for `{damage}` damage." },
     { "text": "⚔️ {attacker} twirls and lands {weapon} on {defender}, causing `{damage}` damage." },
