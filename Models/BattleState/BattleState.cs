@@ -7,6 +7,7 @@ namespace Adventure.Models.BattleState
 {
     public class BattleState
     {
+        #region === Player / NPC / Weapons / Armor / Items ===
         public PlayerModel Player { get; set; } = new();
         public NpcModel Npc { get; set; } = new();
         public List<WeaponModel> PlayerWeapons { get; set; } = new();
@@ -18,13 +19,15 @@ namespace Adventure.Models.BattleState
         public List<ArmorModel> NpcArmor { get; set; } = new();
 
         public ArmorModel ArmorElements { get; set; } = new();
+        #endregion
 
-        // Roll NPC Stats
+        #region === Roll for NPC Stats ===
         public int DiceCountHP { get; set; }
         public int DiceValueHP { get; set; }
         public string DisplayCR { get; set; } = "UNKNOWN";
+        #endregion
 
-        // Battle roll tracking
+        #region === Battle roll tracking ===
         public int CurrentHitpointsNPC { get; set; }
         public int HitpointsAtStartNPC { get; set; }
 
@@ -36,9 +39,9 @@ namespace Adventure.Models.BattleState
 
         public string StateOfNPC { get; set; } = "UNKNOWN";
         public string StateOfPlayer { get; set; } = "UNKNOWN";
+        #endregion
 
-
-        // Attack Roll
+        #region === Attack Roll ===
         public int AttackRoll { get; set; }
         public int AbilityModifier { get; set; }
         public int ProficiencyModifier { get; set; }
@@ -46,22 +49,32 @@ namespace Adventure.Models.BattleState
         public bool IsCriticalMiss { get; set; }
         public string HitResult { get; set; } = "UNKNOWN";
         public int TotalAttackRoll { get; set; }
+        #endregion
 
-        // Damage + Critical Roll
+        #region === Damage + Critical Roll ===
         public int Damage { get; set; }
         public int CritRoll { get; set; }
         public List<int> Rolls { get; set; } = new();
         public string Dice { get; set; } = "UNKNOWN";
         public int TotalDamage { get; set; }
+        #endregion
 
-        // Weapon Tracking
+        #region === Weapon Tracking ===
         public string LastUsedWeapon { get; set; } = "UNKNOWN";
+        #endregion
 
-        // XP Reward
+        #region === XP Reward ===
         public int RewardXP { get; set; }
         public int NewTotalXP { get; set; }
+        #endregion
 
-        // Embed
+        #region === Embed ===
         public Discord.Color EmbedColor { get; set; } = Color.Red;
+        public int Round { get; set; } = 1;
+        public int NextRound { get; set; }
+
+        // Keep track of Discord Message Id
+        public Dictionary<int, ulong> RoundMessageIds { get; set; } = new();
+        #endregion
     }
 }

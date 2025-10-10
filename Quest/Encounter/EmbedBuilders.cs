@@ -125,20 +125,26 @@ namespace Adventure.Quest.Encounter
         /// and select a weapon or item before starting combat.
         /// </summary>
         /// <param name="component">The Discord component triggered by a player's button interaction.</param>
-        public static async Task EmbedPreBattle(SocketMessageComponent component)
+        public static async Task EmbedPreBattle(SocketInteraction interaction)
         {
-            // Retrieve the battle state for the current user
+            // Controleer of de interaction een SocketMessageComponent is
+            if (interaction is not SocketMessageComponent component)
+            {
+                await interaction.RespondAsync("❌ Kan de pre-battle embed niet updaten: verkeerde interaction type.", ephemeral: true);
+                return;
+            }
+
+            // Haal battle state op
             var state = BattleStateSetup.GetBattleState(component.User.Id);
             if (state == null)
             {
                 LogService.Error("[EmbedBuilders.EmbedPreBattle] > Battle state not found.");
+                await component.RespondAsync("❌ Geen actieve battle gevonden.", ephemeral: true);
                 return;
             }
 
-            // Build UI buttons for weapons, items, and flee action
+            // Bouw buttons en embed
             var builder = BuildBattleButtons(state);
-
-            // Build the pre-battle embed displaying stats and available equipment
             var embed = BuildPreBattleEmbed(state);
 
             // Optionally defer interaction first (to avoid timeouts)
@@ -323,8 +329,15 @@ namespace Adventure.Quest.Encounter
                           $"| Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP} |", inline: true)
                 .AddField("\u200B", $"{finalLog}\n\n{battleOverText}");
 
-            // ⚡ Gebruik FollowupAsync als we eerder deferred hebben
-            await interaction.FollowupAsync(embed: embed.Build(), ephemeral: false);
+            if (interaction is SocketMessageComponent component)
+            {
+                await component.UpdateAsync(msg =>
+                {
+                    msg.Embed = embed.Build();
+                    msg.Components = new ComponentBuilder().Build(); // verwijder knoppen
+                    msg.Content = string.Empty;
+                });
+            }
 
             // Update battle step
             EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepEndBattle);
