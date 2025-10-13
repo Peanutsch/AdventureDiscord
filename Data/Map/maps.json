@@ -1,0 +1,54 @@
+[
+  {
+    "id": "A",
+    "name": "tile_A",
+    "description": "Tile A, Top Left",
+    "connections": {
+      "north": "",
+      "east": "tile_B",
+      "south": "tile_C",
+      "west": ""
+    },
+    "pois": [],
+    "items": []
+  },
+  {
+    "id": "B",
+    "name": "tile_B",
+    "description": "Tile B, Top Right",
+    "connections": {
+      "north": "",
+      "east": "",
+      "south": "tile_D",
+      "west": "tile_A"
+    },
+    "pois": [],
+    "items": []
+  },
+  {
+    "id": "C",
+    "name": "tile_C",
+    "description": "Tile C, Bottom Left",
+    "connections": {
+      "north": "tile_A",
+      "east": "tile_D",
+      "south": "",
+      "west": ""
+    },
+    "pois": [],
+    "items": []
+  },
+  {
+    "id": "D",
+    "name": "tile_D",
+    "description": "Tile D, Bottom Right",
+    "connections": {
+      "north": "tile_B",
+      "east": "",
+      "south": "",
+      "west": "tile_C"
+    },
+    "pois": [],
+    "items": []
+  }
+]

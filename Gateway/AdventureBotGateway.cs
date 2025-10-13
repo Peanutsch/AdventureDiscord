@@ -62,6 +62,9 @@ namespace Adventure.Gateway
             GameData.BattleText = battleText;
             GameData.RollText = rollText;
 
+            // Load Map data
+            GameData.Maps = MapLoader.Load();
+
             // Retrieve the bot token securely from CSV
             string discordToken = GetToken.GetTokenFromCSV();
 

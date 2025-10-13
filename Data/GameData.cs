@@ -1,6 +1,7 @@
 ﻿using Adventure.Loaders;
 using Adventure.Models.Inventory;
 using Adventure.Models.Items;
+using Adventure.Models.Map;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Models.Text;
@@ -10,15 +11,16 @@ using System.Collections.Generic;
 namespace Adventure.Data
 {
     /// <summary>
-    /// Static class that holds the game's shared data collections.
-    /// Data is loaded once and stored in these properties for global access.
+    /// Static class that holds all shared game data collections.
+    /// This data is loaded once during initialization and provides global access 
+    /// to all core game entities, items, NPCs, and map information.
     /// </summary>
     public static class GameData
     {
         private static List<PlayerModel>? _player;
 
         /// <summary>
-        /// Gets or sets the list of players in the game.
+        /// Gets or sets the list of players currently registered in the game.
         /// </summary>
         public static List<PlayerModel>? Player
         {
@@ -29,7 +31,7 @@ namespace Adventure.Data
         private static List<NpcModel>? _humanoids;
 
         /// <summary>
-        /// Gets or sets the list of humanoid creatures in the game.
+        /// Gets or sets the list of humanoid NPCs (non-player characters) in the game.
         /// </summary>
         public static List<NpcModel>? Humanoids
         {
@@ -40,9 +42,9 @@ namespace Adventure.Data
         private static List<NpcModel>? _bestiary;
 
         /// <summary>
-        /// Gets or sets the list of animal creatures in the game.
+        /// Gets or sets the list of beasts, animals, and non-humanoid creatures in the game.
         /// </summary>
-        public static List<NpcModel>? Bestiary 
+        public static List<NpcModel>? Bestiary
         {
             get => _bestiary;
             set => _bestiary = value;
@@ -51,7 +53,7 @@ namespace Adventure.Data
         private static List<WeaponModel>? _weapons;
 
         /// <summary>
-        /// Gets or sets the list of weapons available in the game.
+        /// Gets or sets the list of all available weapons that can be used or equipped by players.
         /// </summary>
         public static List<WeaponModel>? Weapons
         {
@@ -62,7 +64,7 @@ namespace Adventure.Data
         private static List<ArmorModel>? _armor;
 
         /// <summary>
-        /// Gets or sets the list of armor items available in the game.
+        /// Gets or sets the list of all available armor pieces that can be equipped by players.
         /// </summary>
         public static List<ArmorModel>? Armor
         {
@@ -73,7 +75,7 @@ namespace Adventure.Data
         private static List<PotionModel>? _potions;
 
         /// <summary>
-        /// Gets or sets the list of potions available in the game.
+        /// Gets or sets the list of potions available in the game, including healing and buff items.
         /// </summary>
         public static List<PotionModel>? Potions
         {
@@ -83,6 +85,9 @@ namespace Adventure.Data
 
         private static List<ItemModel>? _items;
 
+        /// <summary>
+        /// Gets or sets the list of general items that can be found, collected, or used in the game.
+        /// </summary>
         public static List<ItemModel>? Items
         {
             get => _items;
@@ -91,6 +96,9 @@ namespace Adventure.Data
 
         private static List<InventoryModel>? _inventory;
 
+        /// <summary>
+        /// Gets or sets the collection of inventory data, representing player-owned items.
+        /// </summary>
         public static List<InventoryModel>? Inventory
         {
             get => _inventory;
@@ -99,7 +107,10 @@ namespace Adventure.Data
 
         private static BattleTextModel? _battleText;
 
-        public static BattleTextModel? BattleText 
+        /// <summary>
+        /// Gets or sets the battle text templates used to display combat actions and outcomes.
+        /// </summary>
+        public static BattleTextModel? BattleText
         {
             get => _battleText;
             set => _battleText = value;
@@ -107,10 +118,24 @@ namespace Adventure.Data
 
         private static Dictionary<string, string>? _rollText;
 
-        public static Dictionary<string, string>? RollText 
+        /// <summary>
+        /// Gets or sets a dictionary containing text templates for dice roll messages or outcomes.
+        /// </summary>
+        public static Dictionary<string, string>? RollText
         {
             get => _rollText;
             set => _rollText = value;
+        }
+
+        private static List<MapModel>? _maps;
+
+        /// <summary>
+        /// Gets or sets the current world map configuration, including tiles, connections, and POIs.
+        /// </summary>
+        public static List<MapModel>? Maps
+        {
+            get => _maps;
+            set => _maps = value;
         }
     }
 }

@@ -12,6 +12,7 @@ using Adventure.Models.BattleState;
 using Adventure.Quest.Battle.BattleEngine;
 using static Adventure.Quest.Battle.Randomizers.EncounterRandomizer;
 using Adventure.Quest.Battle.Randomizers;
+using Adventure.Quest.Map;
 
 namespace Adventure.Modules
 {
@@ -85,6 +86,42 @@ namespace Adventure.Modules
             var buttons = SlashEncounterHelpers.BuildEncounterButtons();
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
+        }
+        #endregion
+
+        #region === Slashcommand "walk" ===
+        /// <summary>
+        /// Walks the player to a specific map tile using its ID.
+        /// </summary>
+        [SlashCommand("walk", "Walk to a specific map tile.")]
+        public async Task SlashCommandWalkHandler(
+            [Summary("mapId", "The ID of the map tile to walk to")] string mapId)
+        {
+            await DeferAsync();
+
+            // Get the Discord user / player
+            var user = SlashEncounterHelpers.GetDiscordUser(Context, Context.User.Id);
+            if (user == null)
+            {
+                await RespondAsync("⚠️ Error loading user data.");
+                return;
+            }
+
+            LogService.DividerParts(1, "Slashcommand: Walk");
+            LogService.Info($"[/Walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id}), mapId: {mapId}");
+
+            // Find the tile in GameData.Maps using the correct property 'Id'
+            var mapTile = GameData.Maps?.FirstOrDefault(m => m.Id.Equals(mapId, StringComparison.OrdinalIgnoreCase));
+            if (mapTile == null)
+            {
+                await FollowupAsync($"⚠️ Map tile with ID '{mapId}' not found.");
+                return;
+            }
+
+            // Start the walk using the static method
+            WalkAMap4Tiles.StartWalk(mapTile);
+
+            await FollowupAsync($"🚶 You have started walking on tile '{mapTile.MapName}'!");
         }
         #endregion
     }
