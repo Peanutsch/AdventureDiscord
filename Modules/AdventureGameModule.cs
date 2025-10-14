@@ -10,7 +10,6 @@ using Microsoft.VisualBasic;
 using Adventure.Quest.Encounter;
 using Adventure.Models.BattleState;
 using Adventure.Quest.Battle.BattleEngine;
-using static Adventure.Quest.Battle.Randomizers.EncounterRandomizer;
 using Adventure.Quest.Battle.Randomizers;
 using Adventure.Quest.Map;
 

@@ -20,32 +20,35 @@ namespace Adventure.Quest.Map
         {
             string label = direction switch
             {
-                "North" => "⬆️ North",
-                "East" => "➡️ East",
-                "South" => "⬇️ South",
                 "West" => "⬅️ West",
+                "North" => "⬆️ North",
+                "South" => "⬇️ South",
+                "East" => "➡️ East",
                 _ => direction
             };
 
             return label;
         }
 
-        public static ComponentBuilder? BuildDirectionButtons(TileModel map)
+        public static ComponentBuilder? BuildDirectionButtons(TileModel tile)
         {
-            if (map.TileExits != null)
+            if (tile.TileExits != null)
             {
                 var builder = new ComponentBuilder();
-                var connections = MapService.GetExits(map);
+                var exits = MapService.GetExits(tile);
 
-                foreach (var connection in connections)
+                string[] directionOrder = { "West", "North", "South", "East" };
+
+                foreach (var dir in directionOrder)
                 {
-                    var buttonTex = $"{Label(connection.Key)} to {connection.Value}";
-
-                    builder.WithButton(buttonTex, $"move_{connection.Key.ToLower()}:{connection.Value}", ButtonStyle.Primary);
+                    if (exits.TryGetValue(dir, out var destination) && !string.IsNullOrEmpty(destination))
+                    {
+                        string buttonText = $"{Label(dir)} to {destination}";
+                        builder.WithButton(buttonText, $"move_{dir.ToLower()}:{destination}", ButtonStyle.Primary);
+                    }
                 }
-                    
 
-                builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary);
+                builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
                 return builder;
             }
 
@@ -54,9 +57,9 @@ namespace Adventure.Quest.Map
         #endregion
 
         #region === Embed Builders ===
-        public static EmbedBuilder EmbedWalk(TileModel map)
+        public static EmbedBuilder EmbedWalk(TileModel tile)
         {
-            var exits = MapService.GetExits(map);
+            var exits = MapService.GetExits(tile);
             var exitInfo = new StringBuilder();
 
             foreach (var (direction, destination) in exits)
@@ -65,11 +68,12 @@ namespace Adventure.Quest.Map
             }
 
             var embed = new EmbedBuilder()
-                .WithTitle($"[Position: {map.TileDescription}]")
+                .WithTitle($"[Position: {tile.TileDescription}]")
                 .WithColor(Color.Blue)
                 .AddField(
-                          $"[You are on tile *{map.TileName}*]", 
-                          $"There is nothing to do here...")
+                          $"[You are on tile *{tile.TileName}*]", 
+                          $"{tile.TilePosition}\n" +
+                          $"{tile.TileText}")
                 .AddField($"[Possible Directions]", $"{exitInfo}");
 
             return embed;

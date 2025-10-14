@@ -12,6 +12,11 @@ namespace Adventure.Loaders
 {
     public static class MapLoader
     {
+        /*
+        // TestMap1: 15 tiles
+        // TestMap2: 4 tiles
+        */
+
         public static List<TileModel>? Load()
         {
             try
@@ -28,13 +33,13 @@ namespace Adventure.Loaders
                 var allMaps = new List<TileModel>();
                 if (maps.TestMap1 != null)
                 {
-                    LogService.Info($"Adding catagory TestMap1 to allMaps: {maps.TestMap1.Count} maps");
+                    LogService.Info($"Adding catagory TestMap1 to allMaps: {maps.TestMap1.Count} tiles");
                     allMaps.AddRange(maps.TestMap1);
                 }
                     
                 if (maps.TestMap2 != null)
                 {
-                    LogService.Info($"Adding catagory TestMap2 to allMaps: {maps.TestMap2.Count} maps");
+                    LogService.Info($"Adding catagory TestMap2 to allMaps: {maps.TestMap2.Count} tiles");
                     allMaps.AddRange(maps.TestMap2);
                 }
                     

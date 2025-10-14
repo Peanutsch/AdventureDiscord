@@ -6,13 +6,19 @@ namespace Adventure.Models.Map
     public class TileModel
     {
         [JsonPropertyName("id")]
-        public string TileId { get; set; } = "ERROR_MAP_ID";
+        public string TileId { get; set; } = "ERROR_TILE_ID";
 
         [JsonPropertyName("name")]
-        public string TileName { get; set; } = "ERROR_MAP_NAME";
+        public string TileName { get; set; } = "ERROR_TILE_NAME";
 
         [JsonPropertyName("description")]
-        public string TileDescription { get; set; } = "ERROR_MAP_DESCRIPTION";
+        public string TileDescription { get; set; } = "ERROR_TILE_DESCRIPTION";
+
+        [JsonPropertyName("position")]
+        public string TilePosition { get; set; } = "ERROR_TILE_POSITION";
+
+        [JsonPropertyName("text")]
+        public string TileText { get; set; } = "ERROR_TILE_TEXT";
 
         [JsonPropertyName("exits")]
         public TileExitsModel? TileExits { get; set; }

@@ -3,12 +3,14 @@
     {
       "id": "tile_a",
       "name": "tile_a",
-      "description": "Tile A, Top Left",
+      "description": "Tile A, Row 1, 1st tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛🟩⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
       "exits": {
+        "west": "",
         "north": "",
-        "east": "tile_b",
-        "south": "tile_c",
-        "west": ""
+        "south": "tile_f",
+        "east": "tile_b"
       },
       "pois": [],
       "items": []
@@ -16,12 +18,14 @@
     {
       "id": "tile_b",
       "name": "tile_b",
-      "description": "Tile B, Top Right",
+      "description": "Tile B, Row 1, 2nd tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜🟩⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
       "exits": {
+        "west": "tile_a",
         "north": "",
-        "east": "",
-        "south": "tile_d",
-        "west": "tile_a"
+        "south": "tile_g",
+        "east": "tile_c"
       },
       "pois": [],
       "items": []
@@ -29,25 +33,220 @@
     {
       "id": "tile_c",
       "name": "tile_c",
-      "description": "Tile C, Bottom Left",
+      "description": "Tile C, Row 1, 3th tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜🟩⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
       "exits": {
-        "north": "tile_a",
-        "east": "tile_d",
-        "south": "",
-        "west": ""
+        "west": "tile_b",
+        "north": "",
+        "south": "tile_h",
+        "east": "tile_d"
+      }
+    },
+    {
+      "id": "tile_d",
+      "name": "tile_d",
+      "description": "Tile D, Row 1, 4th tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜🟩⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_c",
+        "north": "",
+        "south": "tile_i",
+        "east": "tile_e"
+      }
+    },
+    {
+      "id": "tile_e",
+      "name": "tile_e",
+      "description": "Tile E, Row 1, 5th tile <END OF ROW 1>",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜🟩⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_d",
+        "north": "",
+        "south": "tile_j",
+        "east": ""
       },
       "pois": [],
       "items": []
     },
     {
-      "id": "tile_d",
-      "name": "tile_d",
-      "description": "Tile D, Bottom Right",
+      "id": "tile_f",
+      "name": "tile_f",
+      "description": "Tile F, Row 2, 1st tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛🟩⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
       "exits": {
+        "west": "",
+        "north": "tile_a",
+        "south": "tile_k",
+        "east": "tile_g"
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_g",
+      "name": "tile_g",
+      "description": "Tile G, Row 2, 2nd tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜🟩⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_f",
         "north": "tile_b",
-        "east": "",
+        "south": "tile_l",
+        "east": "tile_h"
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_h",
+      "name": "tile_h",
+      "description": "Tile H, Row 2, 3th tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜🟩⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_g",
+        "north": "tile_c",
+        "south": "tile_m",
+        "east": "tile_i"
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_i",
+      "name": "tile_i",
+      "description": "Tile I, Row 2, 4th tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜🟩⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_h",
+        "north": "tile_d",
+        "south": "tile_n",
+        "east": "tile_j"
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_j",
+      "name": "tile_j",
+      "description": "Tile J, Row 2, 5th tile <END OF ROW 2>",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜🟩⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_i",
+        "north": "tile_e",
+        "south": "tile_o",
+        "east": ""
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_k",
+      "name": "tile_k",
+      "description": "Tile K, Row 3, 1st tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛🟩⬜⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "",
+        "north": "tile_f",
         "south": "",
-        "west": "tile_c"
+        "east": "tile_l"
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_l",
+      "name": "tile_l",
+      "description": "Tile L, Row 3, 2nd tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜🟩⬜⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_k",
+        "north": "tile_g",
+        "south": "",
+        "east": "tile_m"
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_m",
+      "name": "tile_m",
+      "description": "Tile M, Row 3, 3th tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜🟩⬜⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_l",
+        "north": "tile_h",
+        "south": "tile_p",
+        "east": "tile_n"
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_n",
+      "name": "tile_n",
+      "description": "Tile N, Row 3, 4th tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜🟩⬜⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_m",
+        "north": "tile_i",
+        "south": "tile_q",
+        "east": "tile_o"
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_o",
+      "name": "tile_o",
+      "description": "Tile O, Row 3, 5th tile <END OF ROW 3>",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜🟩⬛\n⬛⬛⬛⬜⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_n",
+        "north": "tile_j",
+        "south": "",
+        "east": ""
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_p",
+      "name": "tile_p",
+      "description": "Tile P, Row 4, 1st tile",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛🟩⬜⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "",
+        "north": "tile_m",
+        "south": "",
+        "east": "tile_q"
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_q",
+      "name": "tile_q",
+      "description": "Tile Q, Row 4, 2nd tile <END OF ROW 4>",
+      "position": "⬛⬛⬛⬛⬛⬛⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬜⬜⬜⬜⬜⬛\n⬛⬛⬛⬜🟩⬛⬛\n⬛⬛⬛⬛⬛⬛⬛",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "west": "tile_p",
+        "north": "tile_n",
+        "south": "",
+        "east": ""
       },
       "pois": [],
       "items": []
@@ -57,7 +256,9 @@
     {
       "id": "tile_a2",
       "name": "tile_a2",
-      "description": "Tile A2, Top Left",
+      "description": "Tile A2, Row 1, 1st tile",
+      "position": "🟩⬜\n⬜⬜\n⬜⬜",
+      "text": "Nothing to see on this tile",
       "exits": {
         "north": "",
         "east": "tile_b2",
@@ -70,7 +271,9 @@
     {
       "id": "tile_b2",
       "name": "tile_b2",
-      "description": "Tile B2, Top Right",
+      "description": "Tile B2, row 1, 2nd tile <END OF ROW 1>",
+      "position": "⬜🟩\n⬜⬜\n⬜⬜",
+      "text": "Nothing to see on this tile",
       "exits": {
         "north": "",
         "east": "",
@@ -83,7 +286,9 @@
     {
       "id": "tile_c2",
       "name": "tile_c2",
-      "description": "Tile C2, Bottom Left",
+      "description": "Tile C2, Row 2, 1st tile",
+      "position": "⬜⬜\n🟩⬜\n⬜⬜",
+      "text": "Nothing to see on this tile",
       "exits": {
         "north": "tile_a2",
         "east": "tile_d2",
@@ -96,7 +301,24 @@
     {
       "id": "tile_d2",
       "name": "tile_d2",
-      "description": "Tile D2, Bottom Right",
+      "description": "Tile D2, Row 2, 2nd tile <END OF ROW 2>",
+      "position": "⬜⬜\n⬜🟩\n⬜⬜",
+      "text": "Nothing to see on this tile",
+      "exits": {
+        "north": "tile_b2",
+        "east": "",
+        "south": "",
+        "west": "tile_c2"
+      },
+      "pois": [],
+      "items": []
+    },
+    {
+      "id": "tile_e2",
+      "name": "tile_e2",
+      "description": "Tile E2, Row 3, 1st tile <END OF ROW 3>",
+      "position": "⬜⬜\n⬜⬜\n🟩",
+      "text": "Nothing to see on this tile",
       "exits": {
         "north": "tile_b2",
         "east": "",
