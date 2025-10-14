@@ -10,9 +10,9 @@ namespace Adventure.Models.Map
     public class TestMapModel
     {
         [JsonPropertyName("testMap1")]
-        public List<MapModel>? TestMap1 { get; set; }
+        public List<TileModel>? TestMap1 { get; set; }
 
         [JsonPropertyName("testMap2")]
-        public List<MapModel>? TestMap2 { get; set; }
+        public List<TileModel>? TestMap2 { get; set; }
     }
 }

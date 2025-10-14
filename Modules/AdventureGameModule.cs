@@ -82,7 +82,7 @@ namespace Adventure.Modules
 
             SlashEncounterHelpers.SetupBattleState(user.Id, npc);
 
-            var embed = EmbedBuilders.EmbedRandomEncounter(npc);
+            var embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
             var buttons = SlashEncounterHelpers.BuildEncounterButtons();
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
@@ -93,34 +93,24 @@ namespace Adventure.Modules
         /// <summary>
         /// Walks the player to a specific map tile using its ID.
         /// </summary>
-        [SlashCommand("walk", "Walk to a specific map tile.")]
-        public async Task SlashCommandWalkHandler([Summary("mapId", "The ID of the map tile to walk to")] string mapId)
+        [SlashCommand("walk", "Simulate walk over tiles with direction buttons...")]
+        public async Task SlashCommandWalkHandler()
         {
-            await DeferAsync();
+            var mapStartingpoint = "tile_a";
 
-            // Get the Discord user / player
-            var user = SlashEncounterHelpers.GetDiscordUser(Context, Context.User.Id);
-            if (user == null)
+            var map = GameData.Maps?.FirstOrDefault(m => m.TileName.Equals(mapStartingpoint, StringComparison.OrdinalIgnoreCase));
+            if (map == null)
             {
-                await RespondAsync("⚠️ Error loading user data.");
+                LogService.Error($"[SlashCommandWalkHandler] Map '{mapStartingpoint}' not found...");
+
+                await RespondAsync($"❌ Map '{mapStartingpoint}' not found.", ephemeral: true);
                 return;
             }
 
-            LogService.DividerParts(1, "Slashcommand: Walk");
-            LogService.Info($"[/Walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id}), mapId: {mapId}");
+            var embed = EmbedBuildersWalk.EmbedWalk(map);
+            var components = EmbedBuildersWalk.BuildDirectionButtons(map);
 
-            // Find the tile in GameData.Maps using the property 'Id'
-            var mapTile = GameData.Maps?.FirstOrDefault(m => m.Id.Equals(mapId.ToLower(), StringComparison.OrdinalIgnoreCase));
-            if (mapTile == null)
-            {
-                await FollowupAsync($"⚠️ Map tile with ID '{mapId.ToLower()}' not found.");
-                return;
-            }
-
-            // Start the walk using the static method
-            WalkAMap4Tiles.StartWalk(mapTile);
-
-            await FollowupAsync($"🚶 You have started walking on tile '{mapTile.MapName}'!");
+            await RespondAsync(embed: embed.Build(), components: components?.Build());
         }
         #endregion
     }

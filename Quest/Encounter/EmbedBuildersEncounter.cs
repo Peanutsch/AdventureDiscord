@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Quest.Encounter
 {
-    public class EmbedBuilders
+    public class EmbedBuildersEncounter
     {
         #region === Embed Random Encounter ===
         /// <summary>
@@ -146,7 +146,7 @@ namespace Adventure.Quest.Encounter
             }
 
             // --- Build the pre-battle UI elements ---
-            var builder = BuildBattleButtons(state);
+            var buttonBuilder = BuildBattleButtons(state);
             var embed = BuildPreBattleEmbed(state);
 
             try
@@ -156,7 +156,7 @@ namespace Adventure.Quest.Encounter
                 {
                     msg.Content = string.Empty;
                     msg.Embed = embed.Build();
-                    msg.Components = builder.Build();
+                    msg.Components = buttonBuilder.Build();
                 });
 
                 LogService.Info("[EmbedBuilders.EmbedPreBattle] Embed successfully updated via UpdateAsync.");
@@ -165,7 +165,7 @@ namespace Adventure.Quest.Encounter
             {
                 // --- Fallback ---
                 LogService.Info($"[EmbedBuilders.EmbedPreBattle] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
-                await component.FollowupAsync(embed: embed.Build(), components: builder.Build(), ephemeral: false);
+                await component.FollowupAsync(embed: embed.Build(), components: buttonBuilder.Build(), ephemeral: false);
             }
         }
 

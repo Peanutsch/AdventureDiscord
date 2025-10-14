@@ -12,7 +12,7 @@ namespace Adventure.Loaders
 {
     public static class MapLoader
     {
-        public static List<MapModel>? Load()
+        public static List<TileModel>? Load()
         {
             try
             {
@@ -25,7 +25,7 @@ namespace Adventure.Loaders
                 }
 
                 // Combine all categories into a single list
-                var allMaps = new List<MapModel>();
+                var allMaps = new List<TileModel>();
                 if (maps.TestMap1 != null)
                 {
                     LogService.Info($"Adding catagory TestMap1 to allMaps: {maps.TestMap1.Count} maps");

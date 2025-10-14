@@ -5,11 +5,13 @@ using Adventure.Services;
 using Adventure.Quest.Encounter;
 using Discord.WebSocket;
 using Adventure.Quest.Battle.BattleEngine;
+using Adventure.Quest.Map;
 
 namespace Adventure.Buttons
 {
     public class ComponentInteractions : InteractionModuleBase<SocketInteractionContext>
     {
+        #region === Battle ===
         [ComponentInteraction("*")]
         public async Task DispatchComponentAction(string weaponId)
         {
@@ -91,7 +93,7 @@ namespace Adventure.Buttons
 
             try
             {
-                await EmbedBuilders.EmbedPreBattle((SocketMessageComponent)Context.Interaction);
+                await EmbedBuildersEncounter.EmbedPreBattle((SocketMessageComponent)Context.Interaction);
             }
             catch (Exception ex)
             {
@@ -125,5 +127,35 @@ namespace Adventure.Buttons
                 await Context.Interaction.FollowupAsync(embed: embed.Build());
             }
         }
+        #endregion
+
+        #region === Walk ===
+        [ComponentInteraction("move_*")]
+        public async Task WalkDirectionHandler(string data)
+        {
+            var parts = data.Split(':');
+            string direction = parts[0];
+            string targetTileId = parts[1];
+
+            var targetTile = GameData.Maps?.FirstOrDefault(m => m.TileId == targetTileId);
+            if (targetTile == null)
+            {
+                await RespondAsync($"❌ Tile '{targetTileId}' not found.", ephemeral: true);
+                return;
+            }
+
+            var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
+            var components = EmbedBuildersWalk.BuildDirectionButtons(targetTile);
+            
+            var component = (SocketMessageComponent)Context.Interaction;
+
+            await component.UpdateAsync(msg =>
+            {
+                msg.Embed = embed.Build();
+                msg.Components = components?.Build();
+            });
+
+        }
+        #endregion
     }
 }

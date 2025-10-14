@@ -4,7 +4,7 @@
       "id": "tile_a",
       "name": "tile_a",
       "description": "Tile A, Top Left",
-      "connections": {
+      "exits": {
         "north": "",
         "east": "tile_b",
         "south": "tile_c",
@@ -17,7 +17,7 @@
       "id": "tile_b",
       "name": "tile_b",
       "description": "Tile B, Top Right",
-      "connections": {
+      "exits": {
         "north": "",
         "east": "",
         "south": "tile_d",
@@ -30,7 +30,7 @@
       "id": "tile_c",
       "name": "tile_c",
       "description": "Tile C, Bottom Left",
-      "connections": {
+      "exits": {
         "north": "tile_a",
         "east": "tile_d",
         "south": "",
@@ -43,7 +43,7 @@
       "id": "tile_d",
       "name": "tile_d",
       "description": "Tile D, Bottom Right",
-      "connections": {
+      "exits": {
         "north": "tile_b",
         "east": "",
         "south": "",
@@ -58,7 +58,7 @@
       "id": "tile_a2",
       "name": "tile_a2",
       "description": "Tile A2, Top Left",
-      "connections": {
+      "exits": {
         "north": "",
         "east": "tile_b2",
         "south": "tile_c2",
@@ -71,7 +71,7 @@
       "id": "tile_b2",
       "name": "tile_b2",
       "description": "Tile B2, Top Right",
-      "connections": {
+      "exits": {
         "north": "",
         "east": "",
         "south": "tile_d2",
@@ -84,7 +84,7 @@
       "id": "tile_c2",
       "name": "tile_c2",
       "description": "Tile C2, Bottom Left",
-      "connections": {
+      "exits": {
         "north": "tile_a2",
         "east": "tile_d2",
         "south": "",
@@ -97,7 +97,7 @@
       "id": "tile_d2",
       "name": "tile_d2",
       "description": "Tile D2, Bottom Right",
-      "connections": {
+      "exits": {
         "north": "tile_b2",
         "east": "",
         "south": "",

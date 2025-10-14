@@ -110,7 +110,7 @@ namespace Adventure.Quest.Battle.BattleEngine
                     break;
 
                 case StepEndBattle:
-                    await EmbedBuilders.EmbedEndBattle(interaction);
+                    await EmbedBuildersEncounter.EmbedEndBattle(interaction);
                     break;
 
                 default:
@@ -149,7 +149,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             {
                 // Player chose attack → show weapon selection
                 LogService.Info("[HandleStepStart] Player chooses attack, showing weapons...");
-                await EmbedBuilders.EmbedPreBattle(component);
+                await EmbedBuildersEncounter.EmbedPreBattle(component);
                 SetStep(userId, StepWeaponChoice);
             }
 
@@ -220,7 +220,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             if (state.CurrentHitpointsNPC <= 0 || state.StateOfNPC == "Defeated")
             {
                 // End the battle and send victory embed
-                await EmbedBuilders.EmbedEndBattle(interaction, playerAttackResult);
+                await EmbedBuildersEncounter.EmbedEndBattle(interaction, playerAttackResult);
                 return;
             }
 
@@ -233,8 +233,8 @@ namespace Adventure.Quest.Battle.BattleEngine
             string fullAttackLog = $"{playerAttackResult}\n\n{npcAttackResult}";
 
             // --- Build embed and battle buttons ---
-            var battleEmbed = EmbedBuilders.BuildBattleEmbed(userId, fullAttackLog);
-            var battleButtons = EmbedBuilders.BuildBattleButtons(state);
+            var battleEmbed = EmbedBuildersEncounter.BuildBattleEmbed(userId, fullAttackLog);
+            var battleButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
 
             try
             {
@@ -289,7 +289,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             if (state.Player.Hitpoints <= 0 || state.StateOfNPC == "Defeated")
             {
                 SetStep(userId, StepEndBattle);
-                await EmbedBuilders.EmbedEndBattle(interaction);
+                await EmbedBuildersEncounter.EmbedEndBattle(interaction);
                 return;
             }
 

@@ -3,28 +3,28 @@ using System.Text.Json.Serialization;
 
 namespace Adventure.Models.Map
 {
-    public class MapModel
+    public class TileModel
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; } = "ERROR_MAP_ID";
+        public string TileId { get; set; } = "ERROR_MAP_ID";
 
         [JsonPropertyName("name")]
-        public string MapName { get; set; } = "ERROR_MAP_NAME";
+        public string TileName { get; set; } = "ERROR_MAP_NAME";
 
         [JsonPropertyName("description")]
-        public string MapDescription { get; set; } = "ERROR_MAP_DESCRIPTION";
+        public string TileDescription { get; set; } = "ERROR_MAP_DESCRIPTION";
 
-        [JsonPropertyName("connections")]
-        public MapConnectionsModel? MapConnections { get; set; }
+        [JsonPropertyName("exits")]
+        public TileExitsModel? TileExits { get; set; }
 
         [JsonPropertyName("pois")]
-        public List<string>? MapPois { get; set; }
+        public List<string>? TilePois { get; set; }
 
         [JsonPropertyName("items")]
-        public List<string>? MapItems { get; set; }
+        public List<string>? TileItems { get; set; }
     }
 
-    public class MapConnectionsModel
+    public class TileExitsModel
     {
         [JsonPropertyName("north")]
         public string? North { get; set; }

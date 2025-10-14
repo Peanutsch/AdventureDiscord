@@ -146,12 +146,12 @@ namespace Adventure.Data
         #endregion
 
         #region === MapModel ===
-        private static List<MapModel>? _maps;
+        private static List<TileModel>? _maps;
 
         /// <summary>
         /// Gets or sets the current map configuration, including tiles, connections, and POIs.
         /// </summary>
-        public static List<MapModel>? Maps
+        public static List<TileModel>? Maps
         {
             get => _maps;
             set => _maps = value;
