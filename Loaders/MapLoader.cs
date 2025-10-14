@@ -38,7 +38,7 @@ namespace Adventure.Loaders
                     allMaps.AddRange(maps.TestMap2);
                 }
                     
-                LogService.Info($"[MapLoader] > Loaded total of {allMaps.Count} Maps from maps.json");
+                LogService.Info($"[MapLoader] > Loaded total of {allMaps.Count} Maps from maps.json\n");
 
                 return allMaps;
             }
