@@ -94,8 +94,7 @@ namespace Adventure.Modules
         /// Walks the player to a specific map tile using its ID.
         /// </summary>
         [SlashCommand("walk", "Walk to a specific map tile.")]
-        public async Task SlashCommandWalkHandler(
-            [Summary("mapId", "The ID of the map tile to walk to")] string mapId)
+        public async Task SlashCommandWalkHandler([Summary("mapId", "The ID of the map tile to walk to")] string mapId)
         {
             await DeferAsync();
 
@@ -110,11 +109,11 @@ namespace Adventure.Modules
             LogService.DividerParts(1, "Slashcommand: Walk");
             LogService.Info($"[/Walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id}), mapId: {mapId}");
 
-            // Find the tile in GameData.Maps using the correct property 'Id'
-            var mapTile = GameData.Maps?.FirstOrDefault(m => m.Id.Equals(mapId, StringComparison.OrdinalIgnoreCase));
+            // Find the tile in GameData.Maps using the property 'Id'
+            var mapTile = GameData.Maps?.FirstOrDefault(m => m.Id.Equals(mapId.ToLower(), StringComparison.OrdinalIgnoreCase));
             if (mapTile == null)
             {
-                await FollowupAsync($"⚠️ Map tile with ID '{mapId}' not found.");
+                await FollowupAsync($"⚠️ Map tile with ID '{mapId.ToLower()}' not found.");
                 return;
             }
 

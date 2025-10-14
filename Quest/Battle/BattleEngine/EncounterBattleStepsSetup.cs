@@ -75,7 +75,7 @@ namespace Adventure.Quest.Battle.BattleEngine
 
         #endregion
 
-        #region === Main Dispatcher ===
+        #region === Main Switch BattleEngine ===
 
         /// <summary>
         /// Main dispatcher for handling player actions during a battle.

@@ -1,37 +1,37 @@
 [
   {
-    "id": "A",
-    "name": "tile_A",
+    "id": "tile_a",
+    "name": "tile_a",
     "description": "Tile A, Top Left",
     "connections": {
       "north": "",
-      "east": "tile_B",
-      "south": "tile_C",
+      "east": "tile_b",
+      "south": "tile_c",
       "west": ""
     },
     "pois": [],
     "items": []
   },
   {
-    "id": "B",
-    "name": "tile_B",
+    "id": "tile_b",
+    "name": "tile_b",
     "description": "Tile B, Top Right",
     "connections": {
       "north": "",
       "east": "",
-      "south": "tile_D",
-      "west": "tile_A"
+      "south": "tile_d",
+      "west": "tile_a"
     },
     "pois": [],
     "items": []
   },
   {
-    "id": "C",
-    "name": "tile_C",
-    "description": "Tile C, Bottom Left",
+    "id": "tile_c",
+    "name": "tile_c",
+    "description": "Tile c, Bottom Left",
     "connections": {
-      "north": "tile_A",
-      "east": "tile_D",
+      "north": "tile_a",
+      "east": "tile_d",
       "south": "",
       "west": ""
     },
@@ -39,14 +39,14 @@
     "items": []
   },
   {
-    "id": "D",
-    "name": "tile_D",
-    "description": "Tile D, Bottom Right",
+    "id": "tile_d",
+    "name": "tile_d",
+    "description": "Tile d, Bottom Right",
     "connections": {
-      "north": "tile_B",
+      "north": "tile_b",
       "east": "",
       "south": "",
-      "west": "tile_C"
+      "west": "tile_c"
     },
     "pois": [],
     "items": []

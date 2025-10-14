@@ -21,6 +21,10 @@ namespace Adventure.Loaders
         public static List<T>? LoadListFromJson<T>(string filePath)
         {
             var json = File.ReadAllText(filePath);
+
+            LogService.Info($"[JsonDataManager.LoadListFromJson] Method LoadListFromJson is called...\n" +
+                            $"> Returning [LIST] of Param filepath: {filePath}...");
+
             return JsonSerializer.Deserialize<List<T>>(json);
         }
 
@@ -32,11 +36,10 @@ namespace Adventure.Loaders
         /// <returns>Deserialized object or null if deserialization fails.</returns>
         public static T? LoadObjectFromJson<T>(string filePath)
         {
-            LogService.Info($"[JsonDataManager.LoadObjectFromJson] Method LoadObjectFromJson is called...");
-
             var json = File.ReadAllText(filePath);
 
-            LogService.Info($"[JsonDataManager.LoadObjectFromJson] Returning object of Param filepath: {filePath}...");
+            LogService.Info($"[JsonDataManager.LoadObjectFromJson] Method LoadObjectFromJson is called...\n" +
+                            $"> Returning [OBJECT] of Param filepath: {filePath}...");
 
             return JsonSerializer.Deserialize<T>(json);
         }

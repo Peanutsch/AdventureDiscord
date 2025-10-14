@@ -17,6 +17,7 @@ namespace Adventure.Data
     /// </summary>
     public static class GameData
     {
+        #region === PlayerModel ===
         private static List<PlayerModel>? _player;
 
         /// <summary>
@@ -27,7 +28,9 @@ namespace Adventure.Data
             get => _player;
             set => _player = value;
         }
+        #endregion
 
+        #region === NpcModel ===
         private static List<NpcModel>? _humanoids;
 
         /// <summary>
@@ -49,7 +52,9 @@ namespace Adventure.Data
             get => _bestiary;
             set => _bestiary = value;
         }
+        #endregion
 
+        #region === WeaponModel ===
         private static List<WeaponModel>? _weapons;
 
         /// <summary>
@@ -60,7 +65,9 @@ namespace Adventure.Data
             get => _weapons;
             set => _weapons = value;
         }
+        #endregion
 
+        #region === ArmorModel ===
         private static List<ArmorModel>? _armor;
 
         /// <summary>
@@ -71,7 +78,9 @@ namespace Adventure.Data
             get => _armor;
             set => _armor = value;
         }
+        #endregion
 
+        #region === PotionModel ===
         private static List<PotionModel>? _potions;
 
         /// <summary>
@@ -82,7 +91,9 @@ namespace Adventure.Data
             get => _potions;
             set => _potions = value;
         }
+        #endregion
 
+        #region === ItemModel ===
         private static List<ItemModel>? _items;
 
         /// <summary>
@@ -93,7 +104,9 @@ namespace Adventure.Data
             get => _items;
             set => _items = value;
         }
+        #endregion
 
+        #region === InventoryModel ===
         private static List<InventoryModel>? _inventory;
 
         /// <summary>
@@ -104,7 +117,9 @@ namespace Adventure.Data
             get => _inventory;
             set => _inventory = value;
         }
+        #endregion
 
+        #region === BattleTextModel ===
         private static BattleTextModel? _battleText;
 
         /// <summary>
@@ -115,7 +130,9 @@ namespace Adventure.Data
             get => _battleText;
             set => _battleText = value;
         }
+        #endregion
 
+        #region === Dictionary RollText ===
         private static Dictionary<string, string>? _rollText;
 
         /// <summary>
@@ -126,16 +143,19 @@ namespace Adventure.Data
             get => _rollText;
             set => _rollText = value;
         }
+        #endregion
 
+        #region === MapModel ===
         private static List<MapModel>? _maps;
 
         /// <summary>
-        /// Gets or sets the current world map configuration, including tiles, connections, and POIs.
+        /// Gets or sets the current map configuration, including tiles, connections, and POIs.
         /// </summary>
         public static List<MapModel>? Maps
         {
             get => _maps;
             set => _maps = value;
         }
+        #endregion
     }
 }

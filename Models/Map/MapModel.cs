@@ -1,41 +1,42 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Adventure.Models.Map
 {
     public class MapModel
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; } = "ERROR_MAP_ID";
 
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string MapName { get; set; } = "ERROR_MAP_NAME";
 
-        [JsonProperty("description")]
+        [JsonPropertyName("description")]
         public string MapDescription { get; set; } = "ERROR_MAP_DESCRIPTION";
 
-        [JsonProperty("connections")]
+        [JsonPropertyName("connections")]
         public MapConnectionsModel? MapConnections { get; set; }
 
-        [JsonProperty("pois")]
+        [JsonPropertyName("pois")]
         public List<string>? MapPois { get; set; }
 
-        [JsonProperty("items")]
+        [JsonPropertyName("items")]
         public List<string>? MapItems { get; set; }
     }
 
     public class MapConnectionsModel
     {
-        [JsonProperty("north")]
+        [JsonPropertyName("north")]
         public string? North { get; set; }
 
-        [JsonProperty("east")]
+        [JsonPropertyName("east")]
         public string? East { get; set; }
 
-        [JsonProperty("south")]
+        [JsonPropertyName("south")]
         public string? South { get; set; }
 
-        [JsonProperty("west")]
+        [JsonPropertyName("west")]
         public string? West { get; set; }
     }
 }
