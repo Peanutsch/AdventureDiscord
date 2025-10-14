@@ -1,4 +1,5 @@
 ﻿using Adventure.Models.Map;
+using Adventure.Models.NPC;
 using Adventure.Services;
 using Discord.Rest;
 using System;
@@ -13,24 +14,39 @@ namespace Adventure.Loaders
     {
         public static List<MapModel>? Load()
         {
-            var listMap = JsonDataManager.LoadListFromJson<MapModel>("Data/Map/maps.json");
-
-            if (listMap == null || listMap.Count == 0)
+            try
             {
-                LogService.Error($"[MapLoader.Load()] No Data found in maps.json...");
-            }
-            else
-            {
-                LogService.Info($"[MapLoader.Load()] Loading {listMap.Count} map's");
+                var maps = JsonDataManager.LoadObjectFromJson<TestMapModel>("Data/Map/maps.json");
 
-                foreach (var tile in listMap!)
+                if (maps == null)
                 {
-                    LogService.Info($"[MapLoader.Load()] Map Id <{tile.Id}> loaded (Name: {tile.MapName})");
+                    LogService.Error("[MapLoader] > Failed to load maps.json");
+                    return null;
                 }
+
+                // Combine all categories into a single list
+                var allMaps = new List<MapModel>();
+                if (maps.TestMap1 != null)
+                {
+                    LogService.Info($"Adding catagory TestMap1 to allMaps: {maps.TestMap1.Count} maps");
+                    allMaps.AddRange(maps.TestMap1);
+                }
+                    
+                if (maps.TestMap2 != null)
+                {
+                    LogService.Info($"Adding catagory TestMap2 to allMaps: {maps.TestMap2.Count} maps");
+                    allMaps.AddRange(maps.TestMap2);
+                }
+                    
+                LogService.Info($"[MapLoader] > Loaded total of {allMaps.Count} Maps from maps.json");
+
+                return allMaps;
             }
-           
-            return listMap;
-        }
-            
+            catch (System.Exception ex)
+            {
+                LogService.Error($"[MapLoader] > Error loading naps: {ex.Message}");
+                return null;
+            }
+        }       
     }
 }
