@@ -27,7 +27,6 @@ namespace Adventure.Modules
             var user = Context.Client.GetUser(Context.User.Id); 
             if (user != null)
             {
-                string username = user.Username;
                 string displayName = user.GlobalName ?? user.Username;
                 LogService.Info($"[Encounter] Discord user '{displayName}' (ID: {user.Id})");
             }
@@ -57,7 +56,7 @@ namespace Adventure.Modules
             var user = SlashEncounterHelpers.GetDiscordUser(Context ,Context.User.Id);
             if (user == null)
             {
-                await RespondAsync("⚠️ Error loading user data.");
+                await FollowupAsync("⚠️ Error loading user data.");
                 return;
             }
 
@@ -95,21 +94,42 @@ namespace Adventure.Modules
         [SlashCommand("walk", "Simulate walk over tiles with direction buttons...")]
         public async Task SlashCommandWalkHandler()
         {
-            var mapStartingpoint = "tile_a";
+            await DeferAsync();
 
-            var map = GameData.Maps?.FirstOrDefault(m => m.TileName.Equals(mapStartingpoint, StringComparison.OrdinalIgnoreCase));
-            if (map == null)
+            var user = SlashEncounterHelpers.GetDiscordUser(Context, Context.User.Id);
+            if (user == null)
             {
-                LogService.Error($"[SlashCommandWalkHandler] Map '{mapStartingpoint}' not found...");
-
-                await RespondAsync($"❌ Map '{mapStartingpoint}' not found.", ephemeral: true);
+                await FollowupAsync("⚠️ Error loading user data.");
                 return;
             }
 
+            LogService.DividerParts(1, "Slashcommand: walk");
+            LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
+
+            var startingPoint = GameData.Maps?
+                                   .FirstOrDefault(tile => tile.TileGrid
+                                   .Any(row => row.Contains("START")))?
+                                   .TileId ?? "tile_start"; // fallback to tile_p
+
+            LogService.Info($"[/walk] mapStartingpoint: {startingPoint}");
+
+            var tileLookup = GameData.Maps?.ToDictionary(t => t.TilePosition, t => t);
+
+            var map = GameData.Maps?.FirstOrDefault(m => m.TileName.Equals(startingPoint, StringComparison.OrdinalIgnoreCase));
+            if (map == null)
+            {
+                LogService.Error($"[SlashCommandWalkHandler] Map '{startingPoint}' not found...");
+
+                //await RespondAsync($"❌ Map '{startingPoint}' not found.", ephemeral: true);
+                await FollowupAsync($"❌ Map '{startingPoint}' not found.", ephemeral: true);
+                return;
+            }
+            
             var embed = EmbedBuildersWalk.EmbedWalk(map);
             var components = EmbedBuildersWalk.BuildDirectionButtons(map);
 
-            await RespondAsync(embed: embed.Build(), components: components?.Build());
+            LogService.Info("[SlashCommandWalkHandler] Sending embed + components...");
+            await FollowupAsync(embed: embed.Build(), components: components?.Build());
         }
         #endregion
     }

@@ -1,6 +1,6 @@
-﻿using Adventure.Models.BattleState;
+﻿using Adventure.Loaders;
+using Adventure.Models.BattleState;
 using Adventure.Models.Map;
-using Adventure.Quest.Walk;
 using Adventure.Services;
 using Discord;
 using System;
@@ -32,10 +32,13 @@ namespace Adventure.Quest.Map
 
         public static ComponentBuilder? BuildDirectionButtons(TileModel tile)
         {
-            if (tile.TileExits != null)
+            LogService.DividerParts(1, "BuildDirectionButtons");
+
+            //if (tile.TileExits != null)
+            if (tile.TileGrid != null)
             {
                 var builder = new ComponentBuilder();
-                var exits = MapService.GetExits(tile);
+                var exits = MapService.GetExits(tile, MapLoader.TileLookup);
 
                 string[] directionOrder = { "West", "North", "South", "East" };
 
@@ -43,15 +46,19 @@ namespace Adventure.Quest.Map
                 {
                     if (exits.TryGetValue(dir, out var destination) && !string.IsNullOrEmpty(destination))
                     {
-                        string buttonText = $"{Label(dir)} to {destination}";
-                        builder.WithButton(buttonText, $"move_{dir.ToLower()}:{destination}", ButtonStyle.Primary);
+                        //string buttonText = $"{Label(dir)} to {destination}";
+                        builder.WithButton(Label(dir), $"move_{dir.ToLower()}:{destination}", ButtonStyle.Primary);
                     }
                 }
 
                 builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
+
+                LogService.Info("Returning builder.WithButton(\"[Break]\", \"btn_flee\", ButtonStyle.Secondary, row: 2);");
+                LogService.DividerParts(2, "BuildDirectionButtons");
                 return builder;
             }
 
+            LogService.Error("[EmbedBuildersWalk.BuildDirectionButtons] tile.TileGrid = null...");
             return null;
         }
         #endregion
@@ -59,23 +66,32 @@ namespace Adventure.Quest.Map
         #region === Embed Builders ===
         public static EmbedBuilder EmbedWalk(TileModel tile)
         {
-            var exits = MapService.GetExits(tile);
+            LogService.Info("[EmbedBuildersWalk.EmbedWalk] Building embed...");
+
+            var exits = MapService.GetExits(tile, MapLoader.TileLookup);
             var exitInfo = new StringBuilder();
 
-            foreach (var (direction, destination) in exits)
+            LogService.Info("[EmbedBuildersWalk.EmbedWalk] Get exits...");
+            foreach (var (exit, destination) in exits!)
             {
-                exitInfo.AppendLine($"**{direction}** leads to **{destination}**");
+                LogService.Info($"{exit} leads to {destination}");
+                exitInfo.AppendLine($"**{exit}** leads to **{destination}**");
             }
 
+            LogService.Info("[EmbedBuildersWalk.EmbedWalk] Get gridVisual...");
+            
+            var gridVisual = TileUI.RenderTileGrid(tile.TileGrid);
+            
+            LogService.Info($"Grid rendered:\n" +
+                            $"{gridVisual}");
+
             var embed = new EmbedBuilder()
-                .WithTitle($"[Position: {tile.TileDescription}]")
+                //.WithTitle($"[Position: {tile.TileDescription}]")
                 .WithColor(Color.Blue)
-                .AddField(
-                          $"[You are on tile *{tile.TileName}*]", 
-                          $"{tile.TilePosition}\n" +
-                          $"{tile.TileText}")
+                .AddField($"[You are on tile *{tile.TileName}*]", $"{gridVisual}\n{tile.TileText}")
                 .AddField($"[Possible Directions]", $"{exitInfo}");
 
+            LogService.Info("[EmbedBuildersWalk.EmbedWalk] Returning embed...");
             return embed;
         }
         #endregion

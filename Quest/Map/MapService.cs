@@ -2,57 +2,73 @@
 using Adventure.Loaders;
 using Adventure.Models.Map;
 using Adventure.Services;
+using Discord;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Adventure.Quest.Walk
+namespace Adventure.Quest.Map
 {
     public static class MapService
     {
-        /// <summary>
-        /// Retrieves a tile based on its ID from the loaded maps.
-        /// </summary>
-        public static TileModel? GetTileById(string tileId)
+        // Richtingen en hun verschuivingen
+        private static readonly (int dr, int dc, string dir)[] directions = new[]
         {
-            var tile = GameData.Maps?.FirstOrDefault(t => t.TileId == tileId);
-            if (tile == null)
-                LogService.Error($"[MapService.GetTileById] Tile '{tileId}' not found.");
-            return tile;
+            (-1, 0, "North"),
+            (1, 0, "South"),
+            (0, -1, "West"),
+            (0, 1, "East")
+        };
+
+        public static Dictionary<string, string> GetExits(TileModel tile, Dictionary<string, TileModel> tileLookup)
+        {
+            LogService.DividerParts(1, "MapService.GetExits");
+
+            var exits = new Dictionary<string, string>();
+
+            if (tile.TilePosition == null)
+                return exits;
+
+            var parts = tile.TilePosition.Split(',');
+            if (parts.Length != 2 || !int.TryParse(parts[0], out int row) || !int.TryParse(parts[1], out int col))
+                return exits;
+
+            foreach (var (dr, dc, dir) in directions)
+            {
+                int newRow = row + dr;
+                int newCol = col + dc;
+
+                // Bouw de nieuwe TilePosition string
+                string newPos = $"{newRow},{newCol}";
+
+                // Kijk of deze tile bestaat
+
+                if (tileLookup.TryGetValue(newPos, out var neighborTile))
+                {
+                    if (IsTilePassable(neighborTile))
+                        exits[dir] = neighborTile.TileId;
+                }
+            }
+            
+            LogService.Info("Returning Exits: " + string.Join(", ", exits.Select(kv => $"{kv.Key}->{kv.Value}")));
+            LogService.DividerParts(2, "MapService.GetExits");
+            return exits;
         }
 
-        /// <summary>
-        /// Returns all possible exits from a given tile in a Dictionary<direction, connection>
-        /// e.g. <North, tile D>
-        /// </summary>
-        public static Dictionary<string, string> GetExits(TileModel map)
+        // Check of een tile betreedbaar is (Floor, Door, START of PLAYER)
+        private static bool IsTilePassable(TileModel tile)
         {
-            if (map.TileExits == null)
-                return new Dictionary<string, string>();
+            if (tile?.TileGrid == null) return false;
 
-            return map.TileExits
-                .GetType()
-                .GetProperties()
-                .Select(p => new { Direction = p.Name, Target = p.GetValue(map.TileExits) as string })
-                .Where(x => !string.IsNullOrEmpty(x.Target))
-                .ToDictionary(x => x.Direction, x => x.Target!);
-        }
-
-        /// <summary>
-        /// Logs all possible connections of a tile.
-        /// </summary>
-        public static void LogConnections(TileModel map)
-        {
-            var connections = GetExits(map);
-            if (!connections.Any())
+            foreach (var row in tile.TileGrid)
             {
-                LogService.Info($"[MapService.LogConnections] {map.TileName} has no available connections.");
-                return;
+                foreach (var cell in row)
+                {
+                    if (cell == "Floor" || cell == "Door" || cell == "PLAYER" || cell == "START")
+                        return true;
+                }
             }
 
-            foreach (var connection in connections)
-            {
-                LogService.Info($"[MapService.LogConnections] Direction {connection.Key}: {connection.Value}");
-            }
+            return false; // alle andere tiles (Wall, Water) blokkeren
         }
     }
 }

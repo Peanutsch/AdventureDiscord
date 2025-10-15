@@ -133,6 +133,7 @@ namespace Adventure.Buttons
         [ComponentInteraction("move_*")]
         public async Task WalkDirectionHandler(string data)
         {
+            // Data: row, column
             var parts = data.Split(':');
             string direction = parts[0];
             string targetTileId = parts[1];

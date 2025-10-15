@@ -17,17 +17,24 @@ namespace Adventure.Models.Map
         [JsonPropertyName("position")]
         public string TilePosition { get; set; } = "ERROR_TILE_POSITION";
 
+        [JsonPropertyName("grid")]
+        public List<List<string>> TileGrid { get; set; } = new();
+
         [JsonPropertyName("text")]
         public string TileText { get; set; } = "ERROR_TILE_TEXT";
 
-        [JsonPropertyName("exits")]
-        public TileExitsModel? TileExits { get; set; }
+        [JsonPropertyName("overlays")]
+        public List<string>? Overlays { get; set; }
 
         [JsonPropertyName("pois")]
         public List<string>? TilePois { get; set; }
 
         [JsonPropertyName("items")]
         public List<string>? TileItems { get; set; }
+
+        // Map Size
+        public int MapHeight { get; set; }
+        public int MapWidth { get; set; }
     }
 
     public class TileExitsModel

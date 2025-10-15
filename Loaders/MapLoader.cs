@@ -13,9 +13,12 @@ namespace Adventure.Loaders
     public static class MapLoader
     {
         /*
-        // TestMap1: 15 tiles
+        // TestMap1: 17 tiles
         // TestMap2: 4 tiles
         */
+
+        public static List<TileModel> AllTiles { get; private set; } = new();
+        public static Dictionary<string, TileModel> TileLookup { get; private set; } = new();
 
         public static List<TileModel>? Load()
         {
@@ -29,29 +32,39 @@ namespace Adventure.Loaders
                     return null;
                 }
 
-                // Combine all categories into a single list
                 var allMaps = new List<TileModel>();
+
                 if (maps.TestMap1 != null)
                 {
-                    LogService.Info($"Adding catagory TestMap1 to allMaps: {maps.TestMap1.Count} tiles");
+                    LogService.Info($"[MapLoader] > Adding category TestMap1: {maps.TestMap1.Count} tiles");
+                    GetMapDimensions.AssignMapDimensions(maps.TestMap1, "TestMap1");
                     allMaps.AddRange(maps.TestMap1);
                 }
-                    
+
+                /*
                 if (maps.TestMap2 != null)
                 {
-                    LogService.Info($"Adding catagory TestMap2 to allMaps: {maps.TestMap2.Count} tiles");
+                    LogService.Info($"[MapLoader] > Adding category TestMap2: {maps.TestMap2.Count} tiles");
+                    GetMapDimensions.AssignMapDimensions(maps.TestMap2, "TestMap2");
                     allMaps.AddRange(maps.TestMap2);
                 }
-                    
-                LogService.Info($"[MapLoader] > Loaded total of {allMaps.Count} Maps from maps.json\n");
+                */
 
+                // Tile lookup op basis van TilePosition (row,col)
+                TileLookup = allMaps
+                    .Where(t => !string.IsNullOrWhiteSpace(t.TilePosition))
+                    .ToDictionary(t => t.TilePosition, t => t);
+
+                AllTiles = allMaps;
+
+                LogService.Info($"[MapLoader] > Loaded total of {allMaps.Count} maps from maps.json\n");
                 return allMaps;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                LogService.Error($"[MapLoader] > Error loading naps: {ex.Message}");
+                LogService.Error($"[MapLoader] > Error loading maps: {ex.Message}");
                 return null;
             }
-        }       
+        }
     }
 }
