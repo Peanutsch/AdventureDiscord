@@ -25,11 +25,19 @@ namespace Adventure.Quest.Map
         {
             string label = direction switch
             {
+                "West" => "West",
+                "North" => "North",
+                "South" => "South",
+                "East" => "East",
+                _ => direction
+
+                /*
                 "West" => "⬅️ West",
                 "North" => "⬆️ North",
                 "South" => "⬇️ South",
                 "East" => "➡️ East",
                 _ => direction
+                */
             };
 
             return label;
@@ -46,7 +54,19 @@ namespace Adventure.Quest.Map
 
             var builder = new ComponentBuilder();
 
+
             // --- Create a list of placeholders in fixed positions ---
+            var buttons = new List<ButtonBuilder>
+            {
+                new ButtonBuilder().WithLabel("North").WithCustomId("blocked_north").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 0, col 1
+                new ButtonBuilder().WithLabel("West").WithCustomId("blocked_west").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 1
+                new ButtonBuilder().WithLabel("South").WithCustomId("blocked_south").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 2
+                new ButtonBuilder().WithLabel("East").WithCustomId("blocked_east").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 3
+            };
+
+
+            /* Backup of component list 
+             * // --- Create a list of placeholders in fixed positions ---
             var buttons = new List<ButtonBuilder>
             {
                 new ButtonBuilder().WithLabel("⬅️ West").WithCustomId("blocked_west").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 0, col 0
@@ -54,30 +74,33 @@ namespace Adventure.Quest.Map
                 new ButtonBuilder().WithLabel("⬆️ North").WithCustomId("blocked_north").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 0
                 new ButtonBuilder().WithLabel("⬇️ South").WithCustomId("blocked_south").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 1
             };
+            */
 
             var exits = MapService.GetExits(tile, MapLoader.TileLookup);
 
             // --- Replace placeholders with actual exits if they exist ---
+            if (exits.TryGetValue("North", out var north) && !string.IsNullOrEmpty(north))
+                buttons[0] = new ButtonBuilder().WithLabel(Label("North")).WithCustomId($"move_north:{north}").WithStyle(ButtonStyle.Primary);
+
             if (exits.TryGetValue("West", out var west) && !string.IsNullOrEmpty(west))
-                buttons[0] = new ButtonBuilder().WithLabel(Label("West ")).WithCustomId($"move_west:{west}").WithStyle(ButtonStyle.Primary);
+                buttons[1] = new ButtonBuilder().WithLabel(Label("West ")).WithCustomId($"move_west:{west}").WithStyle(ButtonStyle.Primary);
 
             if (exits.TryGetValue("East", out var east) && !string.IsNullOrEmpty(east))
-                buttons[1] = new ButtonBuilder().WithLabel(Label("East ")).WithCustomId($"move_east:{east}").WithStyle(ButtonStyle.Primary);
-
-            if (exits.TryGetValue("North", out var north) && !string.IsNullOrEmpty(north))
-                buttons[2] = new ButtonBuilder().WithLabel(Label("North")).WithCustomId($"move_north:{north}").WithStyle(ButtonStyle.Primary);
+                buttons[2] = new ButtonBuilder().WithLabel(Label("East ")).WithCustomId($"move_east:{east}").WithStyle(ButtonStyle.Primary);
 
             if (exits.TryGetValue("South", out var south) && !string.IsNullOrEmpty(south))
                 buttons[3] = new ButtonBuilder().WithLabel(Label("South")).WithCustomId($"move_south:{south}").WithStyle(ButtonStyle.Primary);
 
             // --- Add buttons to builder with proper rows ---
-            builder.WithButton(buttons[0], row: 0); // Button West
-            builder.WithButton(buttons[1], row: 0); // Button East
-            builder.WithButton(buttons[2], row: 1); // Button North
+            builder.WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0);
+            builder.WithButton(buttons[0], row: 0); // Button North
+            builder.WithButton(buttons[1], row: 1); // Button West
             builder.WithButton(buttons[3], row: 1); // Button South
+            builder.WithButton(buttons[2], row: 1); // Button East
+            
 
             // --- Break button always at bottom ---
-            builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
+            //builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 0);
 
             LogService.DividerParts(2, "BuildDirectionButtons");
             return builder;

@@ -17,10 +17,12 @@ namespace Adventure.Buttons
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [ComponentInteraction("_")]
+        [ComponentInteraction("*")]
         public async Task DispatchComponentAction(string id)
         {
             LogService.Info($"[ComponentInteractions.DispatchComponentAction] component ID: {id}");
+
+            await Context.Interaction.DeferAsync();
 
             if (id.StartsWith("weapon_"))
             {
@@ -80,6 +82,8 @@ namespace Adventure.Buttons
         [ComponentInteraction("btn_flee")]
         public async Task ButtonFleeHandler()
         {
+            await Context.Interaction.DeferAsync();
+
             try
             {
                 await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "flee", "none");
@@ -168,6 +172,26 @@ namespace Adventure.Buttons
                     await RespondAsync($"❌ Tile '{targetTileId}' not found.", ephemeral: true);
                     return;
                 }
+
+                #region Try out embed for Moving
+                /*
+                await Context.Interaction.ModifyOriginalResponseAsync(msg =>
+                {
+                    msg.Embed = new EmbedBuilder()
+                        .WithTitle("🚶 Moving...")
+                        .WithDescription("You walk through the area...")
+                        .WithColor(Color.Orange)
+                        .Build();
+
+                    msg.Components = new ComponentBuilder()
+                        .WithButton("Please wait...", "none", ButtonStyle.Secondary, disabled: true)
+                        .Build();
+                });
+
+                // --- Simulate traveltime
+                await Task.Delay(1200);
+                */
+                #endregion
 
                 // Build embed and components safely
                 var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
