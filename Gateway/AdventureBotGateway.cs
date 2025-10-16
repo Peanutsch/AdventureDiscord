@@ -64,6 +64,8 @@ namespace Adventure.Gateway
 
             // Load Map data
             GameData.Maps = MapLoader.Load();
+            GameData.TestHouse = TestHouseLoader.Load();
+
 
             // Retrieve the bot token securely from CSV
             string discordToken = GetToken.GetTokenFromCSV();

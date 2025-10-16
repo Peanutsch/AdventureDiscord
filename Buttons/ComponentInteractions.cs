@@ -11,21 +11,33 @@ namespace Adventure.Buttons
 {
     public class ComponentInteractions : InteractionModuleBase<SocketInteractionContext>
     {
-        #region === Battle ===
-        [ComponentInteraction("*")]
-        public async Task DispatchComponentAction(string weaponId)
+        #region === Component Dispatch ===
+        /// <summary>
+        /// Catch component id when not recognized by ComponentInteraction and call method 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [ComponentInteraction("_")]
+        public async Task DispatchComponentAction(string id)
         {
-            LogService.Info($"[DispatchComponentAction] component ID: {weaponId}");
+            LogService.Info($"[ComponentInteractions.DispatchComponentAction] component ID: {id}");
 
-            if (weaponId.StartsWith("weapon_"))
+            if (id.StartsWith("weapon_"))
             {
-                await HandleWeaponButton(weaponId);
+                await HandleWeaponButton(id);
                 return;
             }
 
-            //await FollowupAsync($"You clicked: {weaponId}\nNo ComponentInteraction match found...");
+            if (id.StartsWith("move_") || id.StartsWith("blocked_"))
+            {
+                await WalkDirectionHandler(id);
+                return;
+            }
         }
+        #endregion
 
+        #region === Battle ===
+        [ComponentInteraction("weapon_")]
         public async Task HandleWeaponButton(string weaponId)
         {
             LogService.Info($"[ComponentInteractions.HandleWeaponButton] > Recieved weaponId: {weaponId}");
@@ -133,10 +145,72 @@ namespace Adventure.Buttons
         [ComponentInteraction("move_*")]
         public async Task WalkDirectionHandler(string data)
         {
+            try
+            {
+                // Parse direction and target tile
+                var parts = data.Split(':');
+                if (parts.Length != 2)
+                {
+                    await RespondAsync("⚠️ Invalid button data.", ephemeral: true);
+                    return;
+                }
+
+                string direction = parts[0];
+                string targetTileId = parts[1];
+
+                LogService.Info($"[WalkDirectionHandler] direction: {direction}, targetTileId: {targetTileId}");
+
+                var targetTile = GameData.Maps?.FirstOrDefault(m => m.TileId == targetTileId);
+                if (targetTile == null)
+                {
+                    await RespondAsync($"❌ Tile '{targetTileId}' not found.", ephemeral: true);
+                    return;
+                }
+
+                // Build embed and components safely
+                var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
+                var components = EmbedBuildersWalk.BuildDirectionButtons(targetTile);
+
+                // Always have a fallback
+                if (components == null)
+                {
+                    components = new ComponentBuilder()
+                        .WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
+                }
+
+                // Ensure interaction is SocketMessageComponent
+                if (Context.Interaction is SocketMessageComponent component)
+                {
+                    await component.UpdateAsync(msg =>
+                    {
+                        msg.Embed = embed.Build();
+                        msg.Components = components.Build();
+                    });
+                }
+                else
+                {
+                    // Fallback: follow-up if interaction not updatable
+                    await Context.Interaction.FollowupAsync(embed: embed.Build(), components: components.Build(), ephemeral: true);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[WalkDirectionHandler] Exception:\n{ex}");
+                await Context.Interaction.FollowupAsync("❌ Something went wrong while moving.", ephemeral: true);
+            }
+        }
+
+        /*
+        [ComponentInteraction("move_*:*")]
+        public async Task WalkDirectionHandler(string data)
+        {
+            LogService.Info($"[ComponentInteractions.WalkDirectionHandler] Recieved Id: {data}");
             // Data: row, column
             var parts = data.Split(':');
             string direction = parts[0];
             string targetTileId = parts[1];
+
+            LogService.Info($"[ComponentInteractions.WalkDirectionHandler] direction: {direction} targetTileId: {targetTileId}\n");
 
             var targetTile = GameData.Maps?.FirstOrDefault(m => m.TileId == targetTileId);
             if (targetTile == null)
@@ -157,6 +231,7 @@ namespace Adventure.Buttons
             });
 
         }
+        */
         #endregion
     }
 }

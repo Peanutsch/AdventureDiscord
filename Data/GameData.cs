@@ -157,5 +157,15 @@ namespace Adventure.Data
             set => _maps = value;
         }
         #endregion
+
+        #region === TestHouseModel ===
+        private static TestHouseModel? _testhouse;
+
+        public static TestHouseModel? TestHouse
+        {
+            get => _testhouse;
+            set => _testhouse = value;
+        }
+        #endregion
     }
 }
