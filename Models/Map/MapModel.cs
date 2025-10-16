@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Map
 {
-    public class TestMapModel
+    public class MapModel
     {
         [JsonPropertyName("testMap1")]
         public List<TileModel>? TestMap1 { get; set; }

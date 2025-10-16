@@ -64,18 +64,6 @@ namespace Adventure.Quest.Map
                 new ButtonBuilder().WithLabel("East").WithCustomId("blocked_east").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 3
             };
 
-
-            /* Backup of component list 
-             * // --- Create a list of placeholders in fixed positions ---
-            var buttons = new List<ButtonBuilder>
-            {
-                new ButtonBuilder().WithLabel("⬅️ West").WithCustomId("blocked_west").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 0, col 0
-                new ButtonBuilder().WithLabel("➡️ East").WithCustomId("blocked_east").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 0, col 1
-                new ButtonBuilder().WithLabel("⬆️ North").WithCustomId("blocked_north").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 0
-                new ButtonBuilder().WithLabel("⬇️ South").WithCustomId("blocked_south").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 1
-            };
-            */
-
             var exits = MapService.GetExits(tile, MapLoader.TileLookup);
 
             // --- Replace placeholders with actual exits if they exist ---
@@ -92,15 +80,11 @@ namespace Adventure.Quest.Map
                 buttons[3] = new ButtonBuilder().WithLabel(Label("South")).WithCustomId($"move_south:{south}").WithStyle(ButtonStyle.Primary);
 
             // --- Add buttons to builder with proper rows ---
-            builder.WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0);
+            builder.WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0); // Button Break first, to get button North in "middle"
             builder.WithButton(buttons[0], row: 0); // Button North
             builder.WithButton(buttons[1], row: 1); // Button West
             builder.WithButton(buttons[3], row: 1); // Button South
             builder.WithButton(buttons[2], row: 1); // Button East
-            
-
-            // --- Break button always at bottom ---
-            //builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 0);
 
             LogService.DividerParts(2, "BuildDirectionButtons");
             return builder;

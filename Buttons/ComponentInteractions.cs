@@ -1,11 +1,13 @@
-﻿using Discord.Interactions;
-using Discord;
-using Adventure.Data;
-using Adventure.Services;
-using Adventure.Quest.Encounter;
-using Discord.WebSocket;
+﻿using Adventure.Data;
+using Adventure.Modules;
 using Adventure.Quest.Battle.BattleEngine;
+using Adventure.Quest.Encounter;
 using Adventure.Quest.Map;
+using Adventure.Services;
+using Discord;
+using Discord.Interactions;
+using Discord.WebSocket;
+using System.ComponentModel;
 
 namespace Adventure.Buttons
 {
@@ -82,17 +84,47 @@ namespace Adventure.Buttons
         [ComponentInteraction("btn_flee")]
         public async Task ButtonFleeHandler()
         {
-            await Context.Interaction.DeferAsync();
+            LogService.Info("[ButtonFleeHandler] Triggered btn_flee");
 
             try
             {
+                if (Context.Interaction is SocketMessageComponent component)
+                {
+                    // 1️⃣ Update het originele bericht → verwijder knoppen en voeg visuele feedback toe
+                    await component.UpdateAsync(msg =>
+                    {
+                        msg.Embed = new EmbedBuilder()
+                            .WithDescription("🏃 Break walk...")
+                            .WithColor(Color.DarkGrey)
+                            .Build();
+
+                        msg.Components = new ComponentBuilder().Build(); // verwijder alle knoppen
+                    });
+                }
+
+                // 2️⃣ Los van de originele message → geef extra feedback of log
+                var resultEmbed = new EmbedBuilder()
+                    .WithTitle("Break")
+                    .WithDescription($"Walking sim aborted by {Context.Interaction.Id}")
+                    .WithColor(Color.Green)
+                    .Build();
+
+                await FollowupAsync(embed: resultEmbed, ephemeral: false);
+
+                // 3️⃣ Voer interne flee logica uit
                 await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "flee", "none");
             }
             catch (Exception ex)
             {
-                LogService.Info($"[ButtonFleeHandler] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
-                var battleEmbed = new EmbedBuilder().WithDescription("You tried to flee...");
-                await Context.Interaction.FollowupAsync(embed: battleEmbed.Build());
+                LogService.Error($"[ButtonFleeHandler] Exception: {ex.Message}");
+
+                // Fallback bij mislukte update
+                var errorEmbed = new EmbedBuilder()
+                    .WithDescription("⚠️ Something went wrong while break off walk...")
+                    .WithColor(Color.Red)
+                    .Build();
+
+                await FollowupAsync(embed: errorEmbed, ephemeral: true);
             }
         }
 
@@ -126,6 +158,8 @@ namespace Adventure.Buttons
         [ComponentInteraction("battle_flee_*")]
         public async Task FleeBattleHandler(string userIdRaw)
         {
+            LogService.Info($"[FleeBattleHandler] Triggered btn_flee_*");
+
             if (Context.User.Id.ToString() != userIdRaw)
             {
                 await RespondAsync("⚠️ You cannot control this battle...", ephemeral: true);

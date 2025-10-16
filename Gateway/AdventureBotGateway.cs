@@ -65,6 +65,7 @@ namespace Adventure.Gateway
             // Load Map data
             GameData.Maps = MapLoader.Load();
             GameData.TestHouse = TestHouseLoader.Load();
+            GameData.TestRoomTiles = TestRoomTilesLoader.Load();
 
 
             // Retrieve the bot token securely from CSV

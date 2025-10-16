@@ -24,7 +24,7 @@ namespace Adventure.Loaders
         {
             try
             {
-                var tiles = JsonDataManager.LoadObjectFromJson<TestMapModel>("Data/Map/maps.json");
+                var tiles = JsonDataManager.LoadObjectFromJson<MapModel>("Data/Map/maps.json");
 
                 if (tiles == null)
                 {

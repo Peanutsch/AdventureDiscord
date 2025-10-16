@@ -167,5 +167,15 @@ namespace Adventure.Data
             set => _testhouse = value;
         }
         #endregion
+
+        #region === TestRoomTiles ===
+        private static TestRoomTilesModel? _testRoomTiles;
+
+        public static TestRoomTilesModel? TestRoomTiles
+        {
+            get => _testRoomTiles;
+            set => _testRoomTiles = value;
+        }
+        #endregion
     }
 }
