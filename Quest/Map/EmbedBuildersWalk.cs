@@ -37,8 +37,8 @@ namespace Adventure.Quest.Map
 
         /// <summary>
         /// Builds Discord buttons for the available exits on the tile.
-        /// Placeholder buttons with dummy IDs are added first and then replaced by actual exits if present.
-        /// Row 0: West/East, Row 1: North/South, Break button always row 2
+        /// Placeholder buttons ("blocked") are replaced by actual exits if present.
+        /// Row 0: West/East, Row 1: North/South, Break button always row 2.
         /// </summary>
         public static ComponentBuilder BuildDirectionButtons(TileModel tile)
         {
@@ -46,26 +46,35 @@ namespace Adventure.Quest.Map
 
             var builder = new ComponentBuilder();
 
-            // --- Add placeholders first ---
-            builder.WithButton(Label("West"), "blocked_west", ButtonStyle.Secondary, row: 0);
-            builder.WithButton(Label("East"), "blocked_east", ButtonStyle.Secondary, row: 0);
-            builder.WithButton(Label("North"), "blocked_north", ButtonStyle.Secondary, row: 1);
-            builder.WithButton(Label("South"), "blocked_south", ButtonStyle.Secondary, row: 1);
+            // --- Create a list of placeholders in fixed positions ---
+            var buttons = new List<ButtonBuilder>
+            {
+                new ButtonBuilder().WithLabel("⬅️ West").WithCustomId("blocked_west").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 0, col 0
+                new ButtonBuilder().WithLabel("➡️ East").WithCustomId("blocked_east").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 0, col 1
+                new ButtonBuilder().WithLabel("⬆️ North").WithCustomId("blocked_north").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 0
+                new ButtonBuilder().WithLabel("⬇️ South").WithCustomId("blocked_south").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 1
+            };
 
             var exits = MapService.GetExits(tile, MapLoader.TileLookup);
 
             // --- Replace placeholders with actual exits if they exist ---
             if (exits.TryGetValue("West", out var west) && !string.IsNullOrEmpty(west))
-                builder.WithButton(Label("West"), $"move_west:{west}", ButtonStyle.Primary, row: 0);
+                buttons[0] = new ButtonBuilder().WithLabel(Label("West ")).WithCustomId($"move_west:{west}").WithStyle(ButtonStyle.Primary);
 
             if (exits.TryGetValue("East", out var east) && !string.IsNullOrEmpty(east))
-                builder.WithButton(Label("East"), $"move_east:{east}", ButtonStyle.Primary, row: 0);
+                buttons[1] = new ButtonBuilder().WithLabel(Label("East ")).WithCustomId($"move_east:{east}").WithStyle(ButtonStyle.Primary);
 
             if (exits.TryGetValue("North", out var north) && !string.IsNullOrEmpty(north))
-                builder.WithButton(Label("North"), $"move_north:{north}", ButtonStyle.Primary, row: 1);
+                buttons[2] = new ButtonBuilder().WithLabel(Label("North")).WithCustomId($"move_north:{north}").WithStyle(ButtonStyle.Primary);
 
             if (exits.TryGetValue("South", out var south) && !string.IsNullOrEmpty(south))
-                builder.WithButton(Label("South"), $"move_south:{south}", ButtonStyle.Primary, row: 1);
+                buttons[3] = new ButtonBuilder().WithLabel(Label("South")).WithCustomId($"move_south:{south}").WithStyle(ButtonStyle.Primary);
+
+            // --- Add buttons to builder with proper rows ---
+            builder.WithButton(buttons[0], row: 0); // Button West
+            builder.WithButton(buttons[1], row: 0); // Button East
+            builder.WithButton(buttons[2], row: 1); // Button North
+            builder.WithButton(buttons[3], row: 1); // Button South
 
             // --- Break button always at bottom ---
             builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
@@ -73,105 +82,6 @@ namespace Adventure.Quest.Map
             LogService.DividerParts(2, "BuildDirectionButtons");
             return builder;
         }
-
-        #region //--- Test Methods
-        /*
-        /// <summary>
-        /// Builds Discord buttons for the available exits on the tile.
-        /// Placeholder buttons ("BLOCKED") are added first and then replaced by actual exits if present.
-        /// Row 0: West/East, Row 1: North/South, Break button always row 2
-        /// </summary>
-        public static ComponentBuilder? BuildDirectionButtons(TileModel tile)
-        {
-            LogService.DividerParts(1, "BuildDirectionButtons");
-
-            if (tile.TileGrid == null)
-            {
-                LogService.Error("[EmbedBuildersWalk.BuildDirectionButtons] tile.TileGrid = null...");
-                return null;
-            }
-
-            var builder = new ComponentBuilder();
-            var exits = MapService.GetExits(tile, MapLoader.TileLookup);
-
-            // Row 0: West / East
-            string[] row0Dirs = { "West", "East" };
-            foreach (var dir in row0Dirs)
-            {
-                if (exits.TryGetValue(dir, out var dest) && !string.IsNullOrEmpty(dest))
-                    builder.WithButton(Label(dir), $"move_{dir.ToLower()}:{dest}", ButtonStyle.Primary, row: 0);
-                else
-                    builder.WithButton(Label(dir), "", ButtonStyle.Secondary, row: 0); // placeholder grijs
-            }
-
-            // Row 1: North / South
-            string[] row1Dirs = { "North", "South" };
-            foreach (var dir in row1Dirs)
-            {
-                if (exits.TryGetValue(dir, out var dest) && !string.IsNullOrEmpty(dest))
-                    builder.WithButton(Label(dir), $"move_{dir.ToLower()}:{dest}", ButtonStyle.Primary, row: 1);
-                else
-                    builder.WithButton(Label(dir), "", ButtonStyle.Secondary, row: 1); // placeholder grijs
-            }
-
-            // Break button
-            builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
-
-            LogService.DividerParts(2, "BuildDirectionButtonsWithPlaceholders");
-            return builder;
-        }
-        */
-
-        /*
-        /// <summary>
-        /// Builds Discord buttons for the available exits on the tile.
-        /// West/East buttons are placed on row 0, North/South on row 1, and a Break button on row 2.
-        /// </summary>
-        /// <param name="tile">The TileModel representing the current location.</param>
-        /// <returns>A ComponentBuilder with direction buttons, or null if TileGrid is missing.</returns>
-        public static ComponentBuilder? BuildDirectionButtons(TileModel tile)
-        {
-            LogService.DividerParts(1, "BuildDirectionButtons");
-
-            if (tile.TileGrid == null)
-            {
-                LogService.Error("[EmbedBuildersWalk.BuildDirectionButtons] tile.TileGrid = null...");
-                return null;
-            }
-
-            var builder = new ComponentBuilder();
-            var exits = MapService.GetExits(tile, MapLoader.TileLookup);
-
-            // Row 0: West/East
-            string[] row0 = { "West", "East" };
-            foreach (var dir in row0)
-            {
-                if (exits.TryGetValue(dir, out var destination) && !string.IsNullOrEmpty(destination))
-                {
-                    builder.WithButton(Label(dir), $"move_{dir.ToLower()}:{destination}", ButtonStyle.Primary, row: 0);
-                    LogService.Info($"Button for {dir} -> {destination} added at row 0");
-                }
-            }
-
-            // Row 1: North/South
-            string[] row1 = { "North", "South" };
-            foreach (var dir in row1)
-            {
-                if (exits.TryGetValue(dir, out var destination) && !string.IsNullOrEmpty(destination))
-                {
-                    builder.WithButton(Label(dir), $"move_{dir.ToLower()}:{destination}", ButtonStyle.Primary, row: 1);
-                    LogService.Info($"Button for {dir} -> {destination} added at row 1");
-                }
-            }
-
-            // Break button always at bottom row
-            builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
-
-            LogService.DividerParts(2, "BuildDirectionButtons");
-            return builder;
-        }
-        */
-        #endregion --- Test Methods
         #endregion
 
         #region === Embed Builders ===
@@ -199,9 +109,9 @@ namespace Adventure.Quest.Map
             }
 
             LogService.Info("[EmbedBuildersWalk.EmbedWalk] Get gridVisual...");
-            
+
             var gridVisual = TileUI.RenderTileGrid(tile.TileGrid);
-            
+
             LogService.Info($"Grid rendered:\n" +
                             $"{gridVisual}");
 

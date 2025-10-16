@@ -18,11 +18,14 @@ namespace Adventure.Modules
     {
         public static IUser? GetDiscordUser(SocketInteractionContext context, ulong userId)
         {
+            LogService.Info($"Running SlashEncounterHelpers.GetDiscordUser...");
             return context.Client.GetUser(userId);
         }
 
         public static PlayerModel GetOrCreatePlayer(ulong userId, string playerName)
         {
+            LogService.Info($"Running SlashEncounterHelpers.GetOrCreatePlayer...");
+
             string path = Path.Combine(AppContext.BaseDirectory, "Data", "Player", $"{userId}.json");
 
             if (!File.Exists(path))
@@ -51,12 +54,16 @@ namespace Adventure.Modules
 
         public static void SetupBattleState(ulong userId, NpcModel npc)
         {
+            LogService.Info($"Running SlashEncounterHelpers.SetupBattleState...");
+
             NpcSetup.SetupNpc(userId, npc);
             EncounterBattleStepsSetup.SetStep(userId, "start");
         }
 
         public static ComponentBuilder BuildEncounterButtons()
         {
+            LogService.Info($"Running SlashEncounterHelpers.BuildEncounterButtons...");
+
             return new ComponentBuilder()
                 .WithButton("Attack", "btn_attack", ButtonStyle.Danger)
                 .WithButton("Flee", "btn_flee", ButtonStyle.Secondary);

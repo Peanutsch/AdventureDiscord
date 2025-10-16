@@ -147,6 +147,8 @@ namespace Adventure.Buttons
         {
             try
             {
+                await Context.Interaction.DeferAsync();
+
                 // Parse direction and target tile
                 var parts = data.Split(':');
                 if (parts.Length != 2)
@@ -178,20 +180,11 @@ namespace Adventure.Buttons
                         .WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
                 }
 
-                // Ensure interaction is SocketMessageComponent
-                if (Context.Interaction is SocketMessageComponent component)
+                await Context.Interaction.ModifyOriginalResponseAsync(msg =>
                 {
-                    await component.UpdateAsync(msg =>
-                    {
-                        msg.Embed = embed.Build();
-                        msg.Components = components.Build();
-                    });
-                }
-                else
-                {
-                    // Fallback: follow-up if interaction not updatable
-                    await Context.Interaction.FollowupAsync(embed: embed.Build(), components: components.Build(), ephemeral: true);
-                }
+                    msg.Embed = embed.Build();
+                    msg.Components = components.Build();
+                });
             }
             catch (Exception ex)
             {
@@ -199,39 +192,6 @@ namespace Adventure.Buttons
                 await Context.Interaction.FollowupAsync("❌ Something went wrong while moving.", ephemeral: true);
             }
         }
-
-        /*
-        [ComponentInteraction("move_*:*")]
-        public async Task WalkDirectionHandler(string data)
-        {
-            LogService.Info($"[ComponentInteractions.WalkDirectionHandler] Recieved Id: {data}");
-            // Data: row, column
-            var parts = data.Split(':');
-            string direction = parts[0];
-            string targetTileId = parts[1];
-
-            LogService.Info($"[ComponentInteractions.WalkDirectionHandler] direction: {direction} targetTileId: {targetTileId}\n");
-
-            var targetTile = GameData.Maps?.FirstOrDefault(m => m.TileId == targetTileId);
-            if (targetTile == null)
-            {
-                await RespondAsync($"❌ Tile '{targetTileId}' not found.", ephemeral: true);
-                return;
-            }
-
-            var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
-            var components = EmbedBuildersWalk.BuildDirectionButtons(targetTile);
-            
-            var component = (SocketMessageComponent)Context.Interaction;
-
-            await component.UpdateAsync(msg =>
-            {
-                msg.Embed = embed.Build();
-                msg.Components = components?.Build();
-            });
-
-        }
-        */
         #endregion
     }
 }

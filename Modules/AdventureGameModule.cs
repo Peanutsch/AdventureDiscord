@@ -24,7 +24,7 @@ namespace Adventure.Modules
         [SlashCommand("start", "Start the adventure.")]
         public async Task SlashCommandStartHandler()
         {
-            var user = Context.Client.GetUser(Context.User.Id); 
+            var user = Context.Client.GetUser(Context.User.Id);
             if (user != null)
             {
                 string displayName = user.GlobalName ?? user.Username;
@@ -53,7 +53,7 @@ namespace Adventure.Modules
         {
             await DeferAsync();
 
-            var user = SlashEncounterHelpers.GetDiscordUser(Context ,Context.User.Id);
+            var user = SlashEncounterHelpers.GetDiscordUser(Context, Context.User.Id);
             if (user == null)
             {
                 await FollowupAsync("⚠️ Error loading user data.");
@@ -94,6 +94,8 @@ namespace Adventure.Modules
         [SlashCommand("walk", "Simulate walk over tiles with direction buttons...")]
         public async Task SlashCommandWalkHandler()
         {
+            LogService.Info("Slashcommand /walk triggert...");
+
             await DeferAsync();
 
             var user = SlashEncounterHelpers.GetDiscordUser(Context, Context.User.Id);
@@ -124,11 +126,12 @@ namespace Adventure.Modules
                 await FollowupAsync($"❌ Map '{startingPoint}' not found.", ephemeral: true);
                 return;
             }
-            
+
             var embed = EmbedBuildersWalk.EmbedWalk(map);
             var components = EmbedBuildersWalk.BuildDirectionButtons(map);
 
             LogService.Info("[SlashCommandWalkHandler] Sending embed + components...");
+            LogService.Info($"Components: {components?.ToString() ?? "null"}");
             await FollowupAsync(embed: embed.Build(), components: components?.Build());
         }
         #endregion
