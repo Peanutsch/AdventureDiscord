@@ -9,7 +9,10 @@ namespace Adventure.Models.Map
 {
     public class TestRoomTilesModel
     {
-        [JsonPropertyName("tiles_Room_1")]
-        public List<TileModel> TilesRoom1 { get; set; } = new List<TileModel>();
+        [JsonPropertyName("room1")]
+        public List<TileModel> Room1 { get; set; } = new();
+
+        [JsonPropertyName("room2")]
+        public List<TileModel> Room2 { get; set; } = new();
     }
 }

@@ -89,6 +89,133 @@ namespace Adventure.Modules
 
         #region === Slashcommand "walk" ===
         /// <summary>
+        /// Handles the /walk command, showing the player's current tile and available directions.
+        /// Uses preloaded tiles from MergeAllRooms so TileText and TileGrid are preserved.
+        /// </summary>
+        [SlashCommand("walk", "Simulate walking over tiles with direction buttons.")]
+        public async Task SlashCommandWalkHandler()
+        {
+            // Defer the response to avoid Discord "No response" errors
+            await DeferAsync();
+
+            try
+            {
+                // --- Get the Discord user ---
+                var user = SlashEncounterHelpers.GetDiscordUser(Context, Context.User.Id);
+                if (user == null)
+                {
+                    await FollowupAsync("⚠️ Error loading user data.");
+                    return;
+                }
+
+                LogService.DividerParts(1, "Slashcommand: walk");
+                LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
+
+                // --- Check that map data exists ---
+                if (GameData.TestHouse == null || GameData.TestHouse.Rooms.Count == 0)
+                {
+                    LogService.Error("[/walk] TestHouse map data missing!");
+                    await FollowupAsync("⚠️ Map data is missing.");
+                    return;
+                }
+
+                // --- Build TileLookup with precomputed TileModel objects ---
+                var tileLookup = new Dictionary<string, TileModel>();
+
+                foreach (var kvp in GameData.TestHouse.Rooms)
+                {
+                    string roomKey = kvp.Key;
+                    var room = kvp.Value;
+
+                    for (int r = 0; r < room.Layout.Count; r++)
+                    {
+                        for (int c = 0; c < room.Layout[r].Count; c++)
+                        {
+                            string pos = $"{r + 1},{c + 1}";
+                            string cell = room.Layout[r][c];
+
+                            // If this is the START tile, assign full room layout
+                            var tileGrid = cell == "START"
+                                ? room.Layout.Select(row => row.ToList()).ToList() // full room for START
+                                : new List<List<string>> { new List<string> { cell } };
+
+                            var tile = new TileModel
+                            {
+                                TileId = $"tile_{roomKey}_{r + 1}_{c + 1}",
+                                TileName = $"Tile {roomKey} {r + 1},{c + 1}",
+                                TilePosition = pos,
+                                TileGrid = tileGrid,
+                                Overlays = new List<string> { cell },
+                                MapHeight = room.Layout.Count,
+                                MapWidth = room.Layout[0].Count,
+                                TileText = cell == "START" ? room.Description : $"Nothing to see on this tile ({cell})"
+                            };
+
+                            tileLookup[pos] = tile;
+                        }
+                    }
+                }
+
+                // --- Precompute exits for each tile ---
+                foreach (var tile in tileLookup.Values)
+                {
+                    tile.TileExits = new Dictionary<string, string>();
+
+                    var parts = tile.TilePosition.Split(',');
+                    if (parts.Length != 2 || !int.TryParse(parts[0], out int row) || !int.TryParse(parts[1], out int col))
+                        continue;
+
+                    var directions = new (int dr, int dc, string dir)[]
+                    {
+                        (-1, 0, "North"),
+                        (1, 0, "South"),
+                        (0, -1, "West"),
+                        (0, 1, "East")
+                    };
+
+                    foreach (var (dr, dc, dir) in directions)
+                    {
+                        int newRow = row + dr;
+                        int newCol = col + dc;
+                        string newPos = $"{newRow},{newCol}";
+
+                        if (tileLookup.TryGetValue(newPos, out var neighborTile))
+                        {
+                            string neighborType = neighborTile.TileGrid?[0][0] ?? "";
+                            if (neighborType == "Floor" || neighborType == "Door" || neighborType == "START")
+                            {
+                                tile.TileExits[dir] = neighborTile.TileId;
+                            }
+                        }
+                    }
+                }
+
+                // --- Find the START tile ---
+                var startTile = tileLookup.Values.FirstOrDefault(t => t.Overlays?.Contains("START") == true);
+                if (startTile == null)
+                {
+                    LogService.Error("[/walk] START tile not found!");
+                    await FollowupAsync("⚠️ START tile missing in map data.");
+                    return;
+                }
+
+                // --- Build the embed and direction buttons ---
+                var embed = EmbedBuildersWalk.EmbedWalk(startTile);
+                var components = EmbedBuildersWalk.BuildDirectionButtons(startTile);
+
+                // --- Send the follow-up message ---
+                await FollowupAsync(embed: embed.Build(), components: components.Build());
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[/walk] Exception: {ex}");
+                await FollowupAsync("⚠️ An error occurred during walking.");
+            }
+        }
+        #endregion
+
+        /*
+        /// <summary>
         /// Walks the player to a specific map tile using its ID.
         /// </summary>
         [SlashCommand("walk", "Simulate walk over tiles with direction buttons...")]
@@ -134,6 +261,6 @@ namespace Adventure.Modules
             LogService.Info($"Components: {components?.ToString() ?? "null"}");
             await FollowupAsync(embed: embed.Build(), components: components?.Build());
         }
-        #endregion
+        */
     }
 }

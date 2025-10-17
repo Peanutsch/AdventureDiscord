@@ -1,6 +1,6 @@
 ﻿{
   "rooms": {
-    "room_1": {
+    "room1": {
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall" ],
@@ -11,7 +11,7 @@
       ],
       "description": "Info about room_1"
     },
-    "room_2": {
+    "room2": {
       "layout": [
         [ "Wall", "Door", "Wall" ],
         [ "Wall", "Floor", "Wall" ],

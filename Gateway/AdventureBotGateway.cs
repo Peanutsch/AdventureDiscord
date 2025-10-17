@@ -1,5 +1,6 @@
 ﻿using Adventure.Data;
 using Adventure.Loaders;
+using Adventure.Quest.Map;
 using Adventure.Services;
 using Adventure.TokenAccess;
 using Discord;
@@ -66,7 +67,10 @@ namespace Adventure.Gateway
             GameData.Maps = MapLoader.Load();
             GameData.TestHouse = TestHouseLoader.Load();
             GameData.TestRoomTiles = TestRoomTilesLoader.Load();
-
+            
+            // Combine TestHouse with TestRooms (once)
+            LogService.Info("[Gateway] Calling MergeAllRooms");
+            MapMerger.MergeAllRooms(GameData.TestHouse!, GameData.TestRoomTiles!);
 
             // Retrieve the bot token securely from CSV
             string discordToken = GetToken.GetTokenFromCSV();

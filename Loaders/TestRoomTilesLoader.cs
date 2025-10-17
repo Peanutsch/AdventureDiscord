@@ -11,15 +11,15 @@ namespace Adventure.Loaders
         {
             try
             {
-                var tiles = JsonDataManager.LoadObjectFromJson<TestRoomTilesModel>("Data/Map/testhousetiles.json");
+                var tiles = JsonDataManager.LoadObjectFromJson<TestRoomTilesModel>("Data/Map/testroomtiles.json");
 
                 if (tiles == null)
                 {
-                    LogService.Error("[TestRoomTilesLoader] > Failed to load testhousetiles.json");
+                    LogService.Error("[TestRoomTilesLoader] > Failed to load testroomtiles.json");
                     return null;
                 }
 
-                LogService.Info($"[TestRoomTilesLoader] > Loaded {tiles.TilesRoom1.Count} tiles.\n");
+                LogService.Info($"[TestRoomTilesLoader] > Loaded {tiles.Room1.Count} tiles.\n");
                 return tiles;
             }
             catch (Exception ex)

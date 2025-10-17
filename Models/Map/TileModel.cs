@@ -35,8 +35,10 @@ namespace Adventure.Models.Map
         // Map Size
         public int MapHeight { get; set; }
         public int MapWidth { get; set; }
+        public Dictionary<string, string> TileExits { get; set; } = new();
     }
 
+    /*
     public class TileExitsModel
     {
         [JsonPropertyName("north")]
@@ -51,4 +53,5 @@ namespace Adventure.Models.Map
         [JsonPropertyName("west")]
         public string? West { get; set; }
     }
+    */
 }

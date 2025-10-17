@@ -32,7 +32,7 @@
     <None Update="Data\Map\testhouse.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Data\Map\testhousetiles.json">
+    <None Update="Data\Map\testroomtiles.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\NPC\bestiary.json">

@@ -37,7 +37,6 @@ namespace Adventure.Loaders
                 if (maps.TestMap1 != null)
                 {
                     LogService.Info($"[MapLoader] > Adding category TestMap1: {maps.TestMap1.Count} tiles");
-                    GetMapDimensions.AssignMapDimensions(maps.TestMap1, "TestMap1");
                     allMaps.AddRange(maps.TestMap1);
                 }
 

@@ -14,6 +14,7 @@ namespace Adventure.Quest.Map
     /// </summary>
     public static class MapService
     {
+        #region === Get Exits ===
         // Direction offsets (row change, column change, direction name)
         private static readonly (int dr, int dc, string dir)[] directions = new[]
         {
@@ -105,5 +106,6 @@ namespace Adventure.Quest.Map
             // Tiles like Wall, Water, etc. are impassable
             return false;
         }
+        #endregion
     }
 }

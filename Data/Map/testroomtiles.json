@@ -1,5 +1,5 @@
 ﻿{
-  "tiles_Room_1": [
+  "room1": [
     {
       "id": "tile_1_1",
       "name": "tile_1_1",
@@ -14,56 +14,6 @@
       "id": "tile_1_2",
       "name": "tile_1_2",
       "position": "1,2",
-      "grid": [],
-      "text": "Nothing to see on this tile",
-      "overlays": [],
-      "pois": [],
-      "items": []
-    },
-    {
-      "id": "tile_1_3",
-      "name": "tile_1_3",
-      "position": "1,3",
-      "grid": [],
-      "text": "Nothing to see on this tile",
-      "overlays": [],
-      "pois": [],
-      "items": []
-    },
-    {
-      "id": "tile_1_5",
-      "name": "tile_1_5",
-      "position": "1,5",
-      "grid": [],
-      "text": "Nothing to see on this tile",
-      "overlays": [],
-      "pois": [],
-      "items": []
-    },
-    {
-      "id": "tile_2_1",
-      "name": "tile_2_1",
-      "position": "2,1",
-      "grid": [],
-      "text": "Nothing to see on this tile",
-      "overlays": [],
-      "pois": [],
-      "items": []
-    },
-    {
-      "id": "tile_2_2",
-      "name": "tile_2_2",
-      "position": "2,2",
-      "grid": [],
-      "text": "Nothing to see on this tile",
-      "overlays": [],
-      "pois": [],
-      "items": []
-    },
-    {
-      "id": "tile_2_3",
-      "name": "tile_2_3",
-      "position": "2,3",
       "grid": [],
       "text": "Nothing to see on this tile",
       "overlays": [],
@@ -114,26 +64,6 @@
       "id": "tile_3_3",
       "name": "tile_3_3",
       "position": "3,3",
-      "grid": [],
-      "text": "Nothing to see on this tile",
-      "overlays": [],
-      "pois": [],
-      "items": []
-    },
-    {
-      "id": "tile_3_4",
-      "name": "tile_3_4",
-      "position": "3,4",
-      "grid": [],
-      "text": "Nothing to see on this tile",
-      "overlays": [],
-      "pois": [],
-      "items": []
-    },
-    {
-      "id": "tile_3_5",
-      "name": "tile_3_5",
-      "position": "3,5",
       "grid": [],
       "text": "Nothing to see on this tile",
       "overlays": [],
