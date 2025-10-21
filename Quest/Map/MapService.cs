@@ -10,15 +10,23 @@ namespace Adventure.Quest.Map
 {
     public static class MapService
     {
-        // Richtingen en hun verschuivingen
-        private static readonly (int dr, int dc, string dir)[] directions = new[]
+        // Directions and their offsets in the grid
+        private static readonly (int rowOffset, int colOffset, string directionName)[] directions = new[]
         {
-            (-1, 0, "North"),
-            (1, 0, "South"),
-            (0, -1, "West"),
-            (0, 1, "East")
+            (-1, 0, "North"),  // move up 1 row
+            (1, 0, "South"),   // move down 1 row
+            (0, -1, "West"),   // move left 1 column
+            (0, 1, "East")     // move right 1 column
         };
 
+        /// <summary>
+        /// Returns a dictionary of valid exits for a given tile.
+        /// Key = direction name (North, South, West, East)
+        /// Value = TileId of the neighboring tile
+        /// </summary>
+        /// <param name="tile">The current tile</param>
+        /// <param name="tileLookup">Lookup table: RoomName:TilePosition -> TileModel</param>
+        /// <returns>Dictionary of exits and their destination TileIds</returns>
         public static Dictionary<string, string> GetExits(TileModel tile, Dictionary<string, TileModel> tileLookup)
         {
             LogService.DividerParts(1, "MapService.GetExits");
@@ -28,25 +36,27 @@ namespace Adventure.Quest.Map
             if (tile.TilePosition == null)
                 return exits;
 
-            // Bepaal de roomName van deze tile via TileLookup
+            // --- Determine the room name that contains this tile --- 
             var roomEntry = MainHouseLoader.Rooms.FirstOrDefault(r => r.Value.Contains(tile));
-            string roomName = roomEntry.Key ?? "UnknownRoom";
+            string roomName = roomEntry.Key ?? "Unknown Room";
 
+            // --- Split the tile position into row and column integers --- 
             var parts = tile.TilePosition.Split(',');
             if (parts.Length != 2 || !int.TryParse(parts[0], out int row) || !int.TryParse(parts[1], out int col))
                 return exits;
 
-            foreach (var (dr, dc, dir) in directions)
+            // --- Check each possible direction ---
+            foreach (var (rowOffset, colOffset, directionName) in directions)
             {
-                int newRow = row + dr;
-                int newCol = col + dc;
+                int newRow = row + rowOffset;
+                int newCol = col + colOffset;
 
-                string newPos = $"{roomName}:{newRow},{newCol}"; // volledige key
+                string newPos = $"{roomName}:{newRow},{newCol}";
 
                 if (tileLookup.TryGetValue(newPos, out var neighborTile))
                 {
                     if (IsTilePassable(neighborTile))
-                        exits[dir] = neighborTile.TileId;
+                        exits[directionName] = neighborTile.TileId;
                 }
             }
 
@@ -55,10 +65,16 @@ namespace Adventure.Quest.Map
             return exits;
         }
 
-        // Check of een tile betreedbaar is (Floor, Door, START of PLAYER)
+        /// <summary>
+        /// Determines if the given tile is passable for the player.
+        /// Only tiles containing "Floor", "Door", "PLAYER", or "START" are considered passable.
+        /// </summary>
+        /// <param name="tile">The tile to check.</param>
+        /// <returns>True if the tile is passable; otherwise, false.</returns>
         private static bool IsTilePassable(TileModel tile)
         {
-            if (tile?.TileGrid == null) return false;
+            if (tile?.TileGrid == null)
+                return false;
 
             foreach (var row in tile.TileGrid)
             {
@@ -69,7 +85,8 @@ namespace Adventure.Quest.Map
                 }
             }
 
-            return false; // alle andere tiles (Wall, Water) blokkeren
+            // All other cells (e.g., "Wall", "Water") block movement
+            return false;
         }
     }
 }

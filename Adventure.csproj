@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\Map\testhouse.json">
+    <None Update="Data\Map\TestHouse\testhouse.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\NPC\bestiary.json">

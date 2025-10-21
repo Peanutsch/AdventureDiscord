@@ -25,14 +25,6 @@ namespace Adventure.Quest.Map
         {
             string label = direction switch
             {
-                /*
-                "West" => "West",
-                "North" => "North",
-                "South" => "South",
-                "East" => "East",
-                _ => direction
-                */
-
                 "West" => "⬅️",
                 "North" => "⬆️",
                 "South" => "⬇️",
@@ -84,9 +76,9 @@ namespace Adventure.Quest.Map
 
             // --- Add buttons to builder with proper rows ---
             // Row 0
-            builder.WithButton(buttons[0], row: 0); // Placeholder / Enter button
+            builder.WithButton(buttons[0], row: 0); // Placeholder / Button Enter
             builder.WithButton(buttons[1], row: 0); // Button North
-            builder.WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0); // Button Break first, to get button North in "middle"
+            builder.WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0); // Button Break
             // Row 1
             builder.WithButton(buttons[2], row: 1); // Button West
             builder.WithButton(buttons[3], row: 1); // Button South
@@ -95,105 +87,6 @@ namespace Adventure.Quest.Map
             LogService.DividerParts(2, "BuildDirectionButtons");
             return builder;
         }
-
-        #region //--- Test Methods
-        /*
-        /// <summary>
-        /// Builds Discord buttons for the available exits on the tile.
-        /// Placeholder buttons ("BLOCKED") are added first and then replaced by actual exits if present.
-        /// Row 0: West/East, Row 1: North/South, Break button always row 2
-        /// </summary>
-        public static ComponentBuilder? BuildDirectionButtons(TileModel tile)
-        {
-            LogService.DividerParts(1, "BuildDirectionButtons");
-
-            if (tile.TileGrid == null)
-            {
-                LogService.Error("[EmbedBuildersWalk.BuildDirectionButtons] tile.TileGrid = null...");
-                return null;
-            }
-
-            var builder = new ComponentBuilder();
-            var exits = MapService.GetExits(tile, MapLoader.TileLookup);
-
-            // Row 0: West / East
-            string[] row0Dirs = { "West", "East" };
-            foreach (var dir in row0Dirs)
-            {
-                if (exits.TryGetValue(dir, out var dest) && !string.IsNullOrEmpty(dest))
-                    builder.WithButton(Label(dir), $"move_{dir.ToLower()}:{dest}", ButtonStyle.Primary, row: 0);
-                else
-                    builder.WithButton(Label(dir), "", ButtonStyle.Secondary, row: 0); // placeholder grijs
-            }
-
-            // Row 1: North / South
-            string[] row1Dirs = { "North", "South" };
-            foreach (var dir in row1Dirs)
-            {
-                if (exits.TryGetValue(dir, out var dest) && !string.IsNullOrEmpty(dest))
-                    builder.WithButton(Label(dir), $"move_{dir.ToLower()}:{dest}", ButtonStyle.Primary, row: 1);
-                else
-                    builder.WithButton(Label(dir), "", ButtonStyle.Secondary, row: 1); // placeholder grijs
-            }
-
-            // Break button
-            builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
-
-            LogService.DividerParts(2, "BuildDirectionButtonsWithPlaceholders");
-            return builder;
-        }
-        */
-
-        /*
-        /// <summary>
-        /// Builds Discord buttons for the available exits on the tile.
-        /// West/East buttons are placed on row 0, North/South on row 1, and a Break button on row 2.
-        /// </summary>
-        /// <param name="tile">The TileModel representing the current location.</param>
-        /// <returns>A ComponentBuilder with direction buttons, or null if TileGrid is missing.</returns>
-        public static ComponentBuilder? BuildDirectionButtons(TileModel tile)
-        {
-            LogService.DividerParts(1, "BuildDirectionButtons");
-
-            if (tile.TileGrid == null)
-            {
-                LogService.Error("[EmbedBuildersWalk.BuildDirectionButtons] tile.TileGrid = null...");
-                return null;
-            }
-
-            var builder = new ComponentBuilder();
-            var exits = MapService.GetExits(tile, MapLoader.TileLookup);
-
-            // Row 0: West/East
-            string[] row0 = { "West", "East" };
-            foreach (var dir in row0)
-            {
-                if (exits.TryGetValue(dir, out var destination) && !string.IsNullOrEmpty(destination))
-                {
-                    builder.WithButton(Label(dir), $"move_{dir.ToLower()}:{destination}", ButtonStyle.Primary, row: 0);
-                    LogService.Info($"Button for {dir} -> {destination} added at row 0");
-                }
-            }
-
-            // Row 1: North/South
-            string[] row1 = { "North", "South" };
-            foreach (var dir in row1)
-            {
-                if (exits.TryGetValue(dir, out var destination) && !string.IsNullOrEmpty(destination))
-                {
-                    builder.WithButton(Label(dir), $"move_{dir.ToLower()}:{destination}", ButtonStyle.Primary, row: 1);
-                    LogService.Info($"Button for {dir} -> {destination} added at row 1");
-                }
-            }
-
-            // Break button always at bottom row
-            builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
-
-            LogService.DividerParts(2, "BuildDirectionButtons");
-            return builder;
-        }
-        */
-        #endregion --- Test Methods
         #endregion
 
         #region === Embed Builders ===
@@ -222,7 +115,7 @@ namespace Adventure.Quest.Map
             var exits = MapService.GetExits(tile, MainHouseLoader.TileLookup);
 
             var exitInfo = (exits != null && exits.Any())
-                ? string.Join("\n", exits.Select(e => $"**{e.Key}** leads to **{e.Value}**"))
+                ? string.Join("\n", exits.Select(e => $"**{e.Key}** leads to **{e.Value}**")) 
                 : "None";
 
             LogService.Info($"\nRoom: {roomName}\n" +

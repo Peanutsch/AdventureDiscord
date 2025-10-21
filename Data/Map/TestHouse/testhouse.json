@@ -1,6 +1,6 @@
 ﻿{
   "rooms": {
-    "room_1": {
+    "room1": {
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall" ],
@@ -9,15 +9,17 @@
         [ "Wall", "Wall", "START", "Floor", "Floor", "Wall", "Wall" ],
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ],
-      "description": "Info about room_1"
+      "description": "Info about room_1",
+      "conections": []
     },
-    "room_2": {
+    "room2": {
       "layout": [
         [ "Wall", "Door", "Wall" ],
         [ "Wall", "Floor", "Wall" ],
         [ "Wall", "Wall", "Wall" ]
       ],
-      "description": "An empty second room"
+      "description": "An empty second room",
+      "conections": []
     }
   }
 }

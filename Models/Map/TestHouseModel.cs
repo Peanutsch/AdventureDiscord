@@ -7,16 +7,15 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Map
 {
-    public class TestHouseModel
-    {
-        [JsonPropertyName("rooms")]
-        public Dictionary<string, RoomData> Rooms { get; set; } = new();
-
-    }
-
     public class RoomData
     {
-        public List<List<string>> Layout { get; set; } = new();
-        public string Description { get; set; } = "ERROR_DESCRIPTION_ROOMDATA";
+        public string[][] Layout { get; set; } = [];
+        public string Description { get; set; } = string.Empty;
+        public string Connections { get; set; } = string.Empty;
+    }
+
+    public class TestHouseModel
+    {
+        public Dictionary<string, RoomData> Rooms { get; set; } = new();
     }
 }

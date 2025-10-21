@@ -17,7 +17,7 @@ namespace Adventure.Buttons
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [ComponentInteraction("_")]
+        [ComponentInteraction("*")]
         public async Task DispatchComponentAction(string id)
         {
             LogService.Info($"[ComponentInteractions.DispatchComponentAction] component ID: {id}");

@@ -11,7 +11,7 @@ namespace Adventure.Loaders
         {
             try
             {
-                var grid = JsonDataManager.LoadObjectFromJson<TestHouseModel>("Data/Map/testhouse.json");
+                var grid = JsonDataManager.LoadObjectFromJson<TestHouseModel>("Data/Map/TestHouse/testhouse.json");
 
                 if (grid == null)
                 {

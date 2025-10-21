@@ -1,0 +1,176 @@
+﻿{
+  "Room1": {
+    "TilesRoom_1": [
+      {
+        "id": "tile_1_1",
+        "name": "tile_1_1",
+        "position": "1,1",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_1_2",
+        "name": "tile_1_2",
+        "position": "1,2",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_1_3",
+        "name": "tile_1_3",
+        "position": "1,3",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_1_5",
+        "name": "tile_1_5",
+        "position": "1,5",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_2_1",
+        "name": "tile_2_1",
+        "position": "2,1",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_2_2",
+        "name": "tile_2_2",
+        "position": "2,2",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_2_3",
+        "name": "tile_2_3",
+        "position": "2,3",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_2_4",
+        "name": "tile_2_4",
+        "position": "2,4",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_2_5",
+        "name": "tile_2_5",
+        "position": "2,5",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_3_1",
+        "name": "tile_3_1",
+        "position": "3,1",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_3_2",
+        "name": "tile_3_2",
+        "position": "3,2",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_3_3",
+        "name": "tile_3_3",
+        "position": "3,3",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_3_4",
+        "name": "tile_3_4",
+        "position": "3,4",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_3_5",
+        "name": "tile_3_5",
+        "position": "3,5",
+        "grid": "",
+        "text": "Nothing to see on this tile",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_4_1",
+        "name": "tile_4_1",
+        "position": "4,1",
+        "grid": "",
+        "text": "Your starting point, but nothing to see on this tile except this wooden door.\nThe entrance is also an exit! How bizar...",
+        "overlays": [ "START", "DOOR" ],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_4_2",
+        "name": "tile_4_2",
+        "position": "4,2",
+        "grid": "",
+        "text": "nothing to see on this tile.",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "tile_4_3",
+        "name": "tile_4_3",
+        "position": "4,3",
+        "grid": "",
+        "text": "nothing to see on this tile.",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      }
+    ]
+  }
+}
