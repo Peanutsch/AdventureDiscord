@@ -147,6 +147,8 @@ namespace Adventure.Buttons
         {
             try
             {
+                await Context.Interaction.DeferAsync();
+
                 // Parse direction and target tile
                 var parts = data.Split(':');
                 if (parts.Length != 2)
@@ -160,7 +162,7 @@ namespace Adventure.Buttons
 
                 LogService.Info($"[WalkDirectionHandler] direction: {direction}, targetTileId: {targetTileId}");
 
-                var targetTile = GameData.Maps?.FirstOrDefault(m => m.TileId == targetTileId);
+                var targetTile = GameData.MainHouse?.FirstOrDefault(m => m.TileId == targetTileId);
                 if (targetTile == null)
                 {
                     await RespondAsync($"❌ Tile '{targetTileId}' not found.", ephemeral: true);
@@ -178,20 +180,11 @@ namespace Adventure.Buttons
                         .WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
                 }
 
-                // Ensure interaction is SocketMessageComponent
-                if (Context.Interaction is SocketMessageComponent component)
+                await Context.Interaction.ModifyOriginalResponseAsync(msg =>
                 {
-                    await component.UpdateAsync(msg =>
-                    {
-                        msg.Embed = embed.Build();
-                        msg.Components = components.Build();
-                    });
-                }
-                else
-                {
-                    // Fallback: follow-up if interaction not updatable
-                    await Context.Interaction.FollowupAsync(embed: embed.Build(), components: components.Build(), ephemeral: true);
-                }
+                    msg.Embed = embed.Build();
+                    msg.Components = components.Build();
+                });
             }
             catch (Exception ex)
             {
@@ -199,6 +192,26 @@ namespace Adventure.Buttons
                 await Context.Interaction.FollowupAsync("❌ Something went wrong while moving.", ephemeral: true);
             }
         }
+
+        #region Try out embed for Moving to Other Room
+        /*
+        await Context.Interaction.ModifyOriginalResponseAsync(msg =>
+        {
+            msg.Embed = new EmbedBuilder()
+                .WithTitle("🚶 Moving...")
+                .WithDescription("You walk through the area...")
+                .WithColor(Color.Orange)
+                .Build();
+
+            msg.Components = new ComponentBuilder()
+                .WithButton("Please wait...", "none", ButtonStyle.Secondary, disabled: true)
+                .Build();
+        });
+
+        // --- Simulate traveltime
+        await Task.Delay(1200);
+        */
+        #endregion
 
         /*
         [ComponentInteraction("move_*:*")]

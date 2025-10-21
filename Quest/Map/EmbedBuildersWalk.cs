@@ -25,20 +25,30 @@ namespace Adventure.Quest.Map
         {
             string label = direction switch
             {
-                "West" => "⬅️ West",
-                "North" => "⬆️ North",
-                "South" => "⬇️ South",
-                "East" => "➡️ East",
+                /*
+                "West" => "West",
+                "North" => "North",
+                "South" => "South",
+                "East" => "East",
+                _ => direction
+                */
+
+                "West" => "⬅️",
+                "North" => "⬆️",
+                "South" => "⬇️",
+                "East" => "➡️",
                 _ => direction
             };
+
+            LogService.Info($"[EmbedbuildersWalk.Label] Direction: {direction}, Lable: {label}");
 
             return label;
         }
 
         /// <summary>
         /// Builds Discord buttons for the available exits on the tile.
-        /// Placeholder buttons with dummy IDs are added first and then replaced by actual exits if present.
-        /// Row 0: West/East, Row 1: North/South, Break button always row 2
+        /// Placeholder buttons ("blocked") are replaced by actual exits if present.
+        /// Row 0: West/East, Row 1: North/South, Break button always row 2.
         /// </summary>
         public static ComponentBuilder BuildDirectionButtons(TileModel tile)
         {
@@ -46,29 +56,41 @@ namespace Adventure.Quest.Map
 
             var builder = new ComponentBuilder();
 
-            // --- Add placeholders first ---
-            builder.WithButton(Label("West"), "blocked_west", ButtonStyle.Secondary, row: 0);
-            builder.WithButton(Label("East"), "blocked_east", ButtonStyle.Secondary, row: 0);
-            builder.WithButton(Label("North"), "blocked_north", ButtonStyle.Secondary, row: 1);
-            builder.WithButton(Label("South"), "blocked_south", ButtonStyle.Secondary, row: 1);
 
-            var exits = MapService.GetExits(tile, MapLoader.TileLookup);
+            // --- Create a list of placeholders in fixed positions ---
+            var buttons = new List<ButtonBuilder>
+            {
+                new ButtonBuilder().WithLabel("Enter").WithCustomId("blocked_btn_placeholder").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 0, col 0
+                new ButtonBuilder().WithLabel("⬆️").WithCustomId("blocked_north").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 0, col 1
+                new ButtonBuilder().WithLabel("⬅️").WithCustomId("blocked_west").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 1
+                new ButtonBuilder().WithLabel("⬇️").WithCustomId("blocked_south").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 2
+                new ButtonBuilder().WithLabel("➡️").WithCustomId("blocked_east").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 3
+            };
+
+            var exits = MapService.GetExits(tile, MainHouseLoader.TileLookup);
 
             // --- Replace placeholders with actual exits if they exist ---
-            if (exits.TryGetValue("West", out var west) && !string.IsNullOrEmpty(west))
-                builder.WithButton(Label("West"), $"move_west:{west}", ButtonStyle.Primary, row: 0);
-
-            if (exits.TryGetValue("East", out var east) && !string.IsNullOrEmpty(east))
-                builder.WithButton(Label("East"), $"move_east:{east}", ButtonStyle.Primary, row: 0);
-
             if (exits.TryGetValue("North", out var north) && !string.IsNullOrEmpty(north))
-                builder.WithButton(Label("North"), $"move_north:{north}", ButtonStyle.Primary, row: 1);
+                buttons[1] = new ButtonBuilder().WithLabel(Label("North")).WithCustomId($"move_north:{north}").WithStyle(ButtonStyle.Primary);
+
+            if (exits.TryGetValue("West", out var west) && !string.IsNullOrEmpty(west))
+                buttons[2] = new ButtonBuilder().WithLabel(Label("West")).WithCustomId($"move_west:{west}").WithStyle(ButtonStyle.Primary);
 
             if (exits.TryGetValue("South", out var south) && !string.IsNullOrEmpty(south))
-                builder.WithButton(Label("South"), $"move_south:{south}", ButtonStyle.Primary, row: 1);
+                buttons[3] = new ButtonBuilder().WithLabel(Label("South")).WithCustomId($"move_south:{south}").WithStyle(ButtonStyle.Primary);
 
-            // --- Break button always at bottom ---
-            builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
+            if (exits.TryGetValue("East", out var east) && !string.IsNullOrEmpty(east))
+                buttons[4] = new ButtonBuilder().WithLabel(Label("East")).WithCustomId($"move_east:{east}").WithStyle(ButtonStyle.Primary);
+
+            // --- Add buttons to builder with proper rows ---
+            // Row 0
+            builder.WithButton(buttons[0], row: 0); // Placeholder / Enter button
+            builder.WithButton(buttons[1], row: 0); // Button North
+            builder.WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0); // Button Break first, to get button North in "middle"
+            // Row 1
+            builder.WithButton(buttons[2], row: 1); // Button West
+            builder.WithButton(buttons[3], row: 1); // Button South
+            builder.WithButton(buttons[4], row: 1); // Button East
 
             LogService.DividerParts(2, "BuildDirectionButtons");
             return builder;
@@ -176,42 +198,45 @@ namespace Adventure.Quest.Map
 
         #region === Embed Builders ===
         /// <summary>
-        /// Builds an embed representing the tile.
-        /// Includes:
-        /// - Tile grid visualization
-        /// - Tile description
-        /// - List of possible exits
+        /// Builds an embed representing the tile with grid, description, and exits.
+        /// Safe: no null or empty values that crash Discord embeds.
         /// </summary>
-        /// <param name="tile">The TileModel to render</param>
-        /// <returns>Discord EmbedBuilder with tile information</returns>
         public static EmbedBuilder EmbedWalk(TileModel tile)
         {
             LogService.Info("[EmbedBuildersWalk.EmbedWalk] Building embed...");
 
-            LogService.Info("[EmbedBuildersWalk.EmbedWalk] Get exits...");
-            var exits = MapService.GetExits(tile, MapLoader.TileLookup);
-            var exitInfo = new StringBuilder();
+            // --- Room name ---
+            var roomName = MainHouseLoader.Rooms
+                            .FirstOrDefault(r => r.Value.Contains(tile))
+                            .Key ?? "Unknown Room";
 
-            foreach (var (exit, destination) in exits!)
-            {
-                LogService.Info($"{exit} leads to {destination}");
-                exitInfo.AppendLine($"**{exit}** leads to **{destination}**");
-            }
+            // --- Grid visualization ---
+            var gridVisual = TileUI.RenderTileGrid(tile.TileGrid) ?? "No grid available";
 
-            LogService.Info("[EmbedBuildersWalk.EmbedWalk] Get gridVisual...");
-            
-            var gridVisual = TileUI.RenderTileGrid(tile.TileGrid);
-            
-            LogService.Info($"Grid rendered:\n" +
-                            $"{gridVisual}");
+            // --- Tile description ---
+            var tileTextSafe = string.IsNullOrWhiteSpace(tile.TileText)
+                ? "No description available."
+                : tile.TileText;
 
-            var embed = new EmbedBuilder()
+            // --- Exits ---
+            var exits = MapService.GetExits(tile, MainHouseLoader.TileLookup);
+
+            var exitInfo = (exits != null && exits.Any())
+                ? string.Join("\n", exits.Select(e => $"**{e.Key}** leads to **{e.Value}**"))
+                : "None";
+
+            LogService.Info($"\nRoom: {roomName}\n" +
+                            $"Grid:\n{gridVisual}\n" +
+                            $"TileText:\n{tileTextSafe}\n" +
+                            $"Exits:\n{exitInfo}\n");
+
+            // --- Build embed ---
+            return new EmbedBuilder()
                 .WithColor(Color.Blue)
-                .AddField($"[You are on tile *{tile.TileName}*]", $"{gridVisual}\n*{tile.TileText}*")
-                .AddField($"[Possible Directions]", $"{exitInfo}");
-
-            LogService.Info("[EmbedBuildersWalk.EmbedWalk] Returning embed...");
-            return embed;
+                .AddField($"[{roomName}]", 
+                          $"{gridVisual}\n" +
+                          $"*{tileTextSafe}*")
+                .AddField("[Possible Directions]", exitInfo);
         }
         #endregion
     }

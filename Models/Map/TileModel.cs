@@ -31,24 +31,5 @@ namespace Adventure.Models.Map
 
         [JsonPropertyName("items")]
         public List<string>? TileItems { get; set; }
-
-        // Map Size
-        public int MapHeight { get; set; }
-        public int MapWidth { get; set; }
-    }
-
-    public class TileExitsModel
-    {
-        [JsonPropertyName("north")]
-        public string? North { get; set; }
-
-        [JsonPropertyName("east")]
-        public string? East { get; set; }
-
-        [JsonPropertyName("south")]
-        public string? South { get; set; }
-
-        [JsonPropertyName("west")]
-        public string? West { get; set; }
     }
 }

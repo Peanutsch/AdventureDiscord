@@ -28,6 +28,10 @@ namespace Adventure.Quest.Map
             if (tile.TilePosition == null)
                 return exits;
 
+            // Bepaal de roomName van deze tile via TileLookup
+            var roomEntry = MainHouseLoader.Rooms.FirstOrDefault(r => r.Value.Contains(tile));
+            string roomName = roomEntry.Key ?? "UnknownRoom";
+
             var parts = tile.TilePosition.Split(',');
             if (parts.Length != 2 || !int.TryParse(parts[0], out int row) || !int.TryParse(parts[1], out int col))
                 return exits;
@@ -37,10 +41,7 @@ namespace Adventure.Quest.Map
                 int newRow = row + dr;
                 int newCol = col + dc;
 
-                // Bouw de nieuwe TilePosition string
-                string newPos = $"{newRow},{newCol}";
-
-                // Kijk of deze tile bestaat
+                string newPos = $"{roomName}:{newRow},{newCol}"; // volledige key
 
                 if (tileLookup.TryGetValue(newPos, out var neighborTile))
                 {
@@ -48,7 +49,7 @@ namespace Adventure.Quest.Map
                         exits[dir] = neighborTile.TileId;
                 }
             }
-            
+
             LogService.Info("Returning Exits: " + string.Join(", ", exits.Select(kv => $"{kv.Key}->{kv.Value}")));
             LogService.DividerParts(2, "MapService.GetExits");
             return exits;

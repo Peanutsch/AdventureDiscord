@@ -63,7 +63,7 @@ namespace Adventure.Gateway
             GameData.RollText = rollText;
 
             // Load Map data
-            GameData.Maps = MapLoader.Load();
+            GameData.MainHouse = MainHouseLoader.Load();
             GameData.TestHouse = TestHouseLoader.Load();
 
 

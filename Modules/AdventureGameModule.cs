@@ -89,7 +89,7 @@ namespace Adventure.Modules
 
         #region === Slashcommand "walk" ===
         /// <summary>
-        /// Walks the player to a specific map tile using its ID.
+        /// Simulates walking through the map.
         /// </summary>
         [SlashCommand("walk", "Simulate walk over tiles with direction buttons...")]
         public async Task SlashCommandWalkHandler()
@@ -106,27 +106,46 @@ namespace Adventure.Modules
             LogService.DividerParts(1, "Slashcommand: walk");
             LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
-            var startingPoint = GameData.Maps?
-                                   .FirstOrDefault(tile => tile.TileGrid
-                                   .Any(row => row.Contains("START")))?
-                                   .TileId ?? "tile_start"; // fallback to tile_p
+            // ✅ Zoek de START tile in alle geladen tiles
+            var startTile = MainHouseLoader.AllTiles
+                    .FirstOrDefault(t => t.TileGrid?
+                    .Any(row => row
+                    .Any(cell => cell
+                    .Equals("START", StringComparison.OrdinalIgnoreCase))) == true);
 
-            LogService.Info($"[/walk] mapStartingpoint: {startingPoint}");
-
-            var tileLookup = GameData.Maps?.ToDictionary(t => t.TilePosition, t => t);
-
-            var map = GameData.Maps?.FirstOrDefault(m => m.TileName.Equals(startingPoint, StringComparison.OrdinalIgnoreCase));
-            if (map == null)
+            if (startTile == null)
             {
-                LogService.Error($"[SlashCommandWalkHandler] Map '{startingPoint}' not found...");
-
-                //await RespondAsync($"❌ Map '{startingPoint}' not found.", ephemeral: true);
-                await FollowupAsync($"❌ Map '{startingPoint}' not found.", ephemeral: true);
+                LogService.Error("[SlashCommandWalkHandler] Could not find START tile in MainHouseLoader.AllTiles.");
+                await FollowupAsync("❌ No starting tile found (no tile contains 'START').", ephemeral: true);
                 return;
             }
-            
-            var embed = EmbedBuildersWalk.EmbedWalk(map);
-            var components = EmbedBuildersWalk.BuildDirectionButtons(map);
+
+            // ✅ Probeer de kamer te bepalen via de Rooms dictionary
+            string? startingRoom = MainHouseLoader.Rooms
+                .FirstOrDefault(r => r.Value.Contains(startTile)).Key;
+
+            if (string.IsNullOrEmpty(startingRoom))
+            {
+                LogService.Error("[SlashCommandWalkHandler] START tile found but could not determine room. Defaulting to 'UnknownRoom'.");
+                startingRoom = "UnknownRoom";
+            }
+
+            // ✅ Maak de unieke key
+            LogService.Info($"[/walk] Found START tile: {startingRoom}, {startTile.TilePosition}");
+
+            string startingKey = $"{startingRoom}:{startTile.TilePosition}";            
+
+            // ✅ Controleer of de key in TileLookup bestaat
+            if (!MainHouseLoader.TileLookup.TryGetValue(startingKey, out var tile))
+            {
+                LogService.Error($"[SlashCommandWalkHandler] Tile '{startingKey}' not found in TileLookup.");
+                await FollowupAsync($"❌ Tile '{startingKey}' not found.", ephemeral: true);
+                return;
+            }
+
+            // ✅ Bouw embed en navigatieknoppen
+            var embed = EmbedBuildersWalk.EmbedWalk(tile);
+            var components = EmbedBuildersWalk.BuildDirectionButtons(tile);
 
             LogService.Info("[SlashCommandWalkHandler] Sending embed + components...");
             await FollowupAsync(embed: embed.Build(), components: components?.Build());
