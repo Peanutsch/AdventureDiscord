@@ -149,7 +149,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Walk ===
+        #region === Walk Direction Handler ===
         /// <summary>
         /// Handles directional movement button interactions from the /walk command.
         /// Ensures the player moves to the correct target tile and updates the message with the new embed and buttons.
@@ -187,6 +187,10 @@ namespace Adventure.Buttons
                 // This prevents the 3-second Discord timeout.
                 await Context.Interaction.DeferAsync();
 
+                // Save new tile as PlayerModel.Savepoint
+                LogService.Info($"Saving new savepoint for {Context.User.GlobalName}/{Context.User.Id}, savepoint: {targetTileId}.");
+                JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, targetTileId);
+
                 // Build the embed (visual representation of the new room state).
                 var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
 
@@ -218,26 +222,9 @@ namespace Adventure.Buttons
                 }
             }
         }
+        #endregion
 
-        #region Try out embed for Moving to Other Room
-        /*
-        await Context.Interaction.ModifyOriginalResponseAsync(msg =>
-        {
-            msg.Embed = new EmbedBuilder()
-                .WithTitle("🚶 Moving...")
-                .WithDescription("You walk through the area...")
-                .WithColor(Color.Orange)
-                .Build();
-
-            msg.Components = new ComponentBuilder()
-                .WithButton("Please wait...", "none", ButtonStyle.Secondary, disabled: true)
-                .Build();
-        });
-
-        // --- Simulate traveltime
-        await Task.Delay(1200);
-        */
-
+        #region Embed for Moving to Other Area
         /// <summary>
         /// Displays a short travel transition embed before entering the next area.
         /// </summary>
@@ -253,7 +240,7 @@ namespace Adventure.Buttons
             {
                 msg.Embed = new EmbedBuilder()
                     .WithTitle("🚶 Moving...")
-                    .WithDescription($"You walk towards **{roomName}**...")
+                    .WithDescription($"Walking to **{roomName}**...")
                     .WithColor(Color.Orange)
                     .Build();
 
@@ -263,10 +250,11 @@ namespace Adventure.Buttons
             });
 
             // --- Simulate travel time ---
-            await Task.Delay(1200);
+            await Task.Delay(1500);
         }
         #endregion
 
+        #region === Enter Button Handler ===
         /// <summary>
         /// Handles the "Enter" button interaction when a player chooses to enter a connected room or tile.
         /// Loads the target tile from MainHouseLoader.TileLookup and updates the embed and buttons accordingly.
@@ -326,40 +314,6 @@ namespace Adventure.Buttons
                 await Context.Interaction.FollowupAsync("❌ Something went wrong while entering the new area.", ephemeral: true);
             }
         }
-
-
-        /*
-        [ComponentInteraction("move_*:*")]
-        public async Task WalkDirectionHandler(string data)
-        {
-            LogService.Info($"[ComponentInteractions.WalkDirectionHandler] Recieved Id: {data}");
-            // Data: row, column
-            var parts = data.Split(':');
-            string direction = parts[0];
-            string targetTileId = parts[1];
-
-            LogService.Info($"[ComponentInteractions.WalkDirectionHandler] direction: {direction} targetTileId: {targetTileId}\n");
-
-            var targetTile = GameData.Maps?.FirstOrDefault(m => m.TileId == targetTileId);
-            if (targetTile == null)
-            {
-                await RespondAsync($"❌ Tile '{targetTileId}' not found.", ephemeral: true);
-                return;
-            }
-
-            var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
-            var components = EmbedBuildersWalk.BuildDirectionButtons(targetTile);
-            
-            var component = (SocketMessageComponent)Context.Interaction;
-
-            await component.UpdateAsync(msg =>
-            {
-                msg.Embed = embed.Build();
-                msg.Components = components?.Build();
-            });
-
-        }
-        */
         #endregion
     }
 }

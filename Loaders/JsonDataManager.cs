@@ -57,7 +57,8 @@ namespace Adventure.Loaders
         {
             try
             {
-                string filePath = Path.Combine(PlayerDataFolder, $"{userId}.json");
+                //string filePath = Path.Combine(PlayerDataFolder, $"{userId}.json");
+                string filePath = Path.Combine("Data", "Player", $"{userId}.json");
 
                 if (!File.Exists(filePath))
                     return null;
@@ -108,7 +109,8 @@ namespace Adventure.Loaders
                 if (!Directory.Exists(PlayerDataFolder))
                     Directory.CreateDirectory(PlayerDataFolder);
 
-                string filePath = Path.Combine(PlayerDataFolder, $"{userId}.json");
+                //string filePath = Path.Combine(PlayerDataFolder, $"{userId}.json");
+                string filePath = Path.Combine("Data", "Player", $"{userId}.json");
 
                 var options = new JsonSerializerOptions
                 {

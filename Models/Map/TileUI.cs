@@ -69,6 +69,7 @@ namespace Adventure.Models.Map
                         sb.Append(emoji);
                     else
                         sb.Append("❓"); // Use a question mark if the tile type is unknown
+                        //sb.Append("❌"); Use an X if the tile type is unknown
                 }
 
                 sb.AppendLine(); // Move to the next row visually
