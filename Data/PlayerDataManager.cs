@@ -108,7 +108,7 @@ namespace Adventure.Data {
         /// --------------------------------------------------
         /// Items: empty list by default
         /// Loot: empty list by default
-        /// MaxHitpoints: 50
+        /// MaxHitpoints: 1000 (temp. hp)
         /// MaxCarry: 70
         /// --------------------------------------------------
         /// Notes:
@@ -121,16 +121,12 @@ namespace Adventure.Data {
 
             var defaultTemplate = JsonDataManager.LoadObjectFromJson<PlayerModel>("Data/Player/default_template_player.json");
 
-            if (defaultTemplate!.Hitpoints != 50) {
-                LogService.Error("[CreateDefaultPlayer] Error loading default template");
-            }
-
             LogService.Info("[CreateDefaultPlayer] Finished loading default template");
 
             var player = defaultTemplate ?? new PlayerModel {
                 Id = userId,
                 Name = playerName,
-                Hitpoints = 100,
+                Hitpoints = 1000,
                 MaxCarry = 70,
                 Savepoint = "START",
                 Attributes = new AttributesModel {

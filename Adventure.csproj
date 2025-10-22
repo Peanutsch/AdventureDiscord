@@ -68,13 +68,7 @@
     <None Update="Data\Items\Weapons\throw.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Data\Player\_349260616772354049.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Data\Player\_692450978355740796.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Data\Player\_default_template_player.json">
+    <None Update="Data\Player\default_template_player.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\Text\battlerolldicetext.json">

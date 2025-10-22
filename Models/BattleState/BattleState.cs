@@ -31,7 +31,7 @@ namespace Adventure.Models.BattleState
         public int CurrentHitpointsNPC { get; set; }
         public int HitpointsAtStartNPC { get; set; }
 
-        public int HitpointsAtStartPlayer = 1000;
+        public int HitpointsAtStartPlayer = 100; // Temp set at 100 HP
         public int PreHpPlayer { get; set; }
         public int PreHpNPC { get; set; }
         public int PercentageHpPlayer { get; set; }

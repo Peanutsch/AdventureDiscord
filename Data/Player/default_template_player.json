@@ -1,10 +1,10 @@
 {
-  "id": 349260616772354049,
-  "name": "vinnie",
+  "id": 0,
+  "name": "",
   "level": 1,
   "xp": 0,
   "description": "A brave soul starting their journey.",
-  "hitpoints": 100,
+  "hitpoints": 1000,
   "maxCarry": 70,
   "savepoint": "START",
   "attributes": {
@@ -34,7 +34,7 @@
   "items": [
     {
       "id": "",
-      "value": 0
+      "value": 1
     }
   ],
   "loot": [],
