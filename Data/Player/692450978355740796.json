@@ -1,14 +1,14 @@
 {
-  "id": 0,
-  "name": "",
+  "id": 692450978355740796,
+  "name": "Peanutsch",
   "level": 1,
   "xp": 0,
   "description": "A brave soul starting their journey.",
-  "hitpoints": 100,
+  "hitpoints": 1000,
   "maxCarry": 70,
-  "savepoint": "START",
+  "savepoint": "Room2:tile_1_1",
   "attributes": {
-    "strength": 11,
+    "strength": 10,
     "dexterity": 14,
     "constitution": 10,
     "intelligence": 10,
@@ -21,20 +21,20 @@
       "value": 1
     },
     {
-      "id": "weapon_dagger",
+      "id": "weapon_great_axe",
       "value": 1
     }
   ],
   "armor": [
     {
-      "id": "armor_hide_armor",
+      "id": "armor_leather_armor",
       "value": 1
     }
   ],
   "items": [
     {
       "id": "",
-      "value": 1
+      "value": 0
     }
   ],
   "loot": [],

@@ -251,7 +251,7 @@
           [ "Wall", "Door", "Floor", "Floor", "Wall", "Wall", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
-        "text": "Nothing to see on this tile except this wooden door.\nIt says: **Room2**...",
+        "text": "Go to Room2...",
         "overlays": [ "START", "DOOR" ],
         "pois": [],
         "items": []
@@ -303,7 +303,7 @@
           [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
-        "text": "Nothing to see on this tile",
+        "text": "Go to Room1...",
         "pois": [],
         "items": []
       },
@@ -328,7 +328,7 @@
         "position": "1,3",
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
-          [ "Wall", "Door", "Floor", "Player", "Wall" ],
+          [ "Wall", "Door", "Floor", "PLAYER", "Wall" ],
           [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
           [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
@@ -344,7 +344,7 @@
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
           [ "Wall", "Door", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Player", "Floor", "Floor", "Wall" ],
+          [ "Wall", "PLAYER", "Floor", "Floor", "Wall" ],
           [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
@@ -359,7 +359,7 @@
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
           [ "Wall", "Door", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Player", "Floor", "Wall" ],
+          [ "Wall", "Floor", "PLAYER", "Floor", "Wall" ],
           [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
@@ -374,7 +374,7 @@
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
           [ "Wall", "Door", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Floor", "Player", "Wall" ],
+          [ "Wall", "Floor", "Floor", "PLAYER", "Wall" ],
           [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
@@ -390,7 +390,7 @@
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
           [ "Wall", "Door", "Floor", "Floor", "Wall" ],
           [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Player", "Floor", "Floor", "Wall" ],
+          [ "Wall", "PLAYER", "Floor", "Floor", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
         "text": "Nothing to see on this tile",
@@ -405,7 +405,7 @@
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
           [ "Wall", "Door", "Floor", "Floor", "Wall" ],
           [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Player", "Floor", "Wall" ],
+          [ "Wall", "Floor", "PLAYER", "Floor", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
         "text": "Nothing to see on this tile",
@@ -420,7 +420,7 @@
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
           [ "Wall", "Door", "Floor", "Floor", "Wall" ],
           [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Floor", "Player", "Wall" ],
+          [ "Wall", "Floor", "Floor", "PLAYER", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
         "text": "Nothing to see on this tile",

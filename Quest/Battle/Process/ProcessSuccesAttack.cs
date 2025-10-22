@@ -47,7 +47,7 @@ namespace Adventure.Quest.Battle.Process
                 state.CurrentHitpointsNPC = newHP;
 
                 // Update player's HP in JSON file (even if unchanged) for consistency
-                JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Name!, state.Player.Hitpoints);
+                JsonDataManager.UpdatePlayerHitpoints(userId, state.Player.Name!, state.Player.Hitpoints);
 
                 // Log HP status after player's attack
                 LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After player attack:\n\n" +
@@ -61,7 +61,7 @@ namespace Adventure.Quest.Battle.Process
                 state.Player.Hitpoints = newHP;
 
                 // Update player's HP in JSON
-                JsonDataManager.UpdatePlayerHitpointsInJson(userId, state.Player.Name!, state.Player.Hitpoints);
+                JsonDataManager.UpdatePlayerHitpoints(userId, state.Player.Name!, state.Player.Hitpoints);
 
                 // Log HP status after creature's attack
                 LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After NPC attack:\n\n" +
@@ -82,7 +82,7 @@ namespace Adventure.Quest.Battle.Process
             // Update XP in memory en JSON
             state.NewTotalXP = newXP;
             state.Player.XP = newXP;
-            JsonDataManager.UpdatePlayerXPInJson(state.Player.Id, state.Player.Name!, newXP);
+            JsonDataManager.UpdatePlayerXP(state.Player.Id, state.Player.Name!, newXP);
 
             // Bepaal huidig en nieuw level
             int oldLevel = state.Player.Level;
@@ -101,7 +101,7 @@ namespace Adventure.Quest.Battle.Process
             if (newLevel > oldLevel)
             {
                 state.Player.Level = newLevel;
-                JsonDataManager.UpdatePlayerLevelInJson(state.Player.Id, state.Player.Name!, newLevel);
+                JsonDataManager.UpdatePlayerLevel(state.Player.Id, state.Player.Name!, newLevel);
 
                 return (true, oldLevel, newLevel);
             }
@@ -134,7 +134,7 @@ namespace Adventure.Quest.Battle.Process
                 state.Player.Level = newLevel;
 
                 // Update JSON
-                JsonDataManager.UpdatePlayerLevelInJson(state.Player.Id, state.Player.Name!, newLevel);
+                JsonDataManager.UpdatePlayerLevel(state.Player.Id, state.Player.Name!, newLevel);
 
                 LogService.Info($"[UpdateLevelFromXP] Player {state.Player.Name} leveled up from {oldLevel} → {newLevel}!");
             }

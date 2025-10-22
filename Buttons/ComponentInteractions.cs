@@ -37,7 +37,7 @@ namespace Adventure.Buttons
         #endregion
 
         #region === Battle ===
-        [ComponentInteraction("weapon_")]
+        [ComponentInteraction("weapon_*")]
         public async Task HandleWeaponButton(string weaponId)
         {
             LogService.Info($"[ComponentInteractions.HandleWeaponButton] > Recieved weaponId: {weaponId}");

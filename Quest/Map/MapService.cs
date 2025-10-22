@@ -51,7 +51,7 @@ namespace Adventure.Quest.Map
                 int newRow = row + rowOffset;
                 int newCol = col + colOffset;
 
-                string newPos = $"{roomName}:{newRow},{newCol}";
+                string newPos = $"{roomName}:tile_{newRow}_{newCol}";
 
                 if (tileLookup.TryGetValue(newPos, out var neighborTile))
                 {

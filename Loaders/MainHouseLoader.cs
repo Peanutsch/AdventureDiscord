@@ -75,10 +75,13 @@ namespace Adventure.Loaders
                         if (string.IsNullOrWhiteSpace(tile.TilePosition))
                             continue; // Skip tiles without a position
 
-                        string key = $"{roomName}:{tile.TilePosition}";
+                        string key = $"{roomName}:{tile.TileId}";
 
                         if (!TileLookup.ContainsKey(key))
+                        {
+                            LogService.Info($"[MainHouseLoader] Key added: {key}");
                             TileLookup[key] = tile;
+                        }
                         else
                             LogService.Error($"[MainHouseLoader] > Duplicate key skipped: {key}");
                     }

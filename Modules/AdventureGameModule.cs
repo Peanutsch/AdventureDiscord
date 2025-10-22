@@ -53,7 +53,7 @@ namespace Adventure.Modules
         {
             await DeferAsync();
 
-            var user = SlashEncounterHelpers.GetDiscordUser(Context ,Context.User.Id);
+            var user = SlashCommandHelpers.GetDiscordUser(Context ,Context.User.Id);
             if (user == null)
             {
                 await FollowupAsync("⚠️ Error loading user data.");
@@ -63,7 +63,7 @@ namespace Adventure.Modules
             LogService.DividerParts(1, "Slashcommand: Encounter");
             LogService.Info($"[/Encounter] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
-            var player = SlashEncounterHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
+            var player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
             if (player == null)
             {
                 await FollowupAsync("⚠️ Internal error while creating or loading player.");
@@ -78,16 +78,53 @@ namespace Adventure.Modules
                 return;
             }
 
-            SlashEncounterHelpers.SetupBattleState(user.Id, npc);
+            SlashCommandHelpers.SetupBattleState(user.Id, npc);
 
             var embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
-            var buttons = SlashEncounterHelpers.BuildEncounterButtons();
+            var buttons = SlashCommandHelpers.BuildEncounterButtons();
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
         }
         #endregion
 
         #region === Slashcommand "walk" ===
+        [SlashCommand("walk", "Simulate walking through tiles with directional buttons.")]
+        public async Task SlashCommandWalkHandler()
+        {
+            await DeferAsync();
+
+            var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
+            if (user == null)
+            {
+                await FollowupAsync("⚠️ Error loading user data.");
+                return;
+            }
+
+            LogService.DividerParts(1, "SlashCommand: walk");
+            LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
+
+            var player = JsonDataManager.LoadPlayerFromJson(user.Id);
+            var tile = SlashCommandHelpers.GetTileFromSavePoint(player!.Savepoint);
+
+            if (tile == null)
+            {
+                await FollowupAsync("❌ No valid savepoint or starting tile found.", ephemeral: true);
+                return;
+            }
+
+            string startingRoom = MainHouseLoader.Rooms
+                .FirstOrDefault(r => r.Value.Contains(tile)).Key ?? "UnknownRoom";
+
+            LogService.Info($"[/walk] Starting in room: {startingRoom}, position: {tile.TilePosition}");
+
+            var embed = EmbedBuildersWalk.EmbedWalk(tile);
+            var components = EmbedBuildersWalk.BuildDirectionButtons(tile);
+
+            await FollowupAsync(embed: embed.Build(), components: components?.Build());
+        }
+
+
+        /*
         /// <summary>
         /// Simulates walking through the map.
         /// </summary>
@@ -106,7 +143,7 @@ namespace Adventure.Modules
             LogService.DividerParts(1, "Slashcommand: walk");
             LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
-            // ✅ Zoek de START tile in alle geladen tiles
+            // ✅ Zoek begin tile
             var startTile = MainHouseLoader.AllTiles
                     .FirstOrDefault(t => t.TileGrid?
                     .Any(row => row
@@ -150,6 +187,7 @@ namespace Adventure.Modules
             LogService.Info("[SlashCommandWalkHandler] Sending embed + components...");
             await FollowupAsync(embed: embed.Build(), components: components?.Build());
         }
+        */
         #endregion
     }
 }

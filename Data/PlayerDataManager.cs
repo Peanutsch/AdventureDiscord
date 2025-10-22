@@ -131,6 +131,7 @@ namespace Adventure.Data {
                 Name = playerName,
                 Hitpoints = 50,
                 MaxCarry = 70,
+                Savepoint = "START",
                 Attributes = new AttributesModel {
                     Strength = 10,
                     Dexterity = 14,
@@ -166,7 +167,7 @@ namespace Adventure.Data {
             player.Id = userId;
             player.Name = GenerateUniquePlayerName(playerName);
 
-            JsonDataManager.SaveToJson(userId, player);
+            JsonDataManager.SaveNewPlayerToJson(userId, player);
             return player;
         }
     }
