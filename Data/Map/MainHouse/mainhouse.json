@@ -1,6 +1,6 @@
 {
   "Rooms": {
-    "Room1": [
+    "Livingroom": [
       {
         "id": "tile_1_1",
         "name": "tile_1_1",
@@ -251,11 +251,11 @@
           [ "Wall", "PLAYER", "Floor", "Floor", "Wall", "Wall", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
-        "text": "Go to Room2...",
+        "text": "Entrance to the Small Pond...",
         "overlays": [ "START", "DOOR" ],
         "pois": [],
         "items": [],
-        "connections": [ "Room2:tile_1_1" ]
+        "connections": [ "Small Pond:tile_1_1" ]
       },
       {
         "id": "tile_4_2",
@@ -292,22 +292,22 @@
         "items": []
       }
     ],
-    "Room2": [
+    "Small Pond": [
       {
         "id": "tile_1_1",
         "name": "tile_1_1",
         "position": "1,1",
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
-          [ "Wall", "PLAYER", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Water", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
+          [ "Wall", "PLAYER", "Grass", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Water", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Grass", "Grass", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
-        "text": "Go to Room1...",
+        "text": "Entrance to the livingroom...",
         "pois": [],
         "items": [],
-        "connections": [ "Room1:tile_4_1" ]
+        "connections": [ "Livingroom:tile_4_1" ]
       },
       {
         "id": "tile_1_2",
@@ -315,9 +315,9 @@
         "position": "1,2",
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
-          [ "Wall", "Door", "PLAYER", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Water", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
+          [ "Wall", "Door", "PLAYER", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Water", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Grass", "Grass", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
         "text": "Nothing to see on this tile",
@@ -330,9 +330,9 @@
         "position": "1,3",
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
-          [ "Wall", "Door", "Floor", "PLAYER", "Wall" ],
-          [ "Wall", "Floor", "Water", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
+          [ "Wall", "Door", "Grass", "PLAYER", "Wall" ],
+          [ "Wall", "Grass", "Water", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Grass", "Grass", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
         "text": "Nothing to see on this tile",
@@ -345,9 +345,9 @@
         "position": "2,1",
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
-          [ "Wall", "Door", "Floor", "Floor", "Wall" ],
-          [ "Wall", "PLAYER", "Water", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
+          [ "Wall", "Door", "Grass", "Grass", "Wall" ],
+          [ "Wall", "PLAYER", "Water", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Grass", "Grass", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
         "text": "Nothing to see on this tile",
@@ -360,9 +360,9 @@
         "position": "2,3",
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
-          [ "Wall", "Door", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Water", "PLAYER", "Wall" ],
-          [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
+          [ "Wall", "Door", "Grass", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Water", "PLAYER", "Wall" ],
+          [ "Wall", "Grass", "Grass", "Grass", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
         "text": "Nothing to see on this tile",
@@ -375,9 +375,9 @@
         "position": "3,1",
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
-          [ "Wall", "Door", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Water", "Floor", "Wall" ],
-          [ "Wall", "PLAYER", "Floor", "Floor", "Wall" ],
+          [ "Wall", "Door", "Grass", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Water", "Grass", "Wall" ],
+          [ "Wall", "PLAYER", "Grass", "Grass", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
         "text": "Nothing to see on this tile",
@@ -390,9 +390,9 @@
         "position": "3,2",
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
-          [ "Wall", "Door", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Water", "Floor", "Wall" ],
-          [ "Wall", "Floor", "PLAYER", "Floor", "Wall" ],
+          [ "Wall", "Door", "Grass", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Water", "Grass", "Wall" ],
+          [ "Wall", "Grass", "PLAYER", "Grass", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
         "text": "Nothing to see on this tile",
@@ -405,9 +405,9 @@
         "position": "3,3",
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
-          [ "Wall", "Door", "Floor", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Water", "Floor", "Wall" ],
-          [ "Wall", "Floor", "Floor", "PLAYER", "Wall" ],
+          [ "Wall", "Door", "Grass", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Water", "Grass", "Wall" ],
+          [ "Wall", "Grass", "Grass", "PLAYER", "Wall" ],
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
         ],
         "text": "Nothing to see on this tile",

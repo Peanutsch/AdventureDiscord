@@ -96,7 +96,7 @@ namespace Adventure.Loaders
             }
             catch (Exception ex)
             {
-                LogService.Error($"[MainHouseLoader] > Error loading mainhouse.json: {ex.Message}");
+                LogService.Error($"[MainHouseLoader] > Error loading mainhouse.json:\n{ex.Message}");
                 return null;
             }
         }

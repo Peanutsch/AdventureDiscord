@@ -239,7 +239,7 @@ namespace Adventure.Buttons
         */
 
         /// <summary>
-        /// Displays a short travel transition embed before entering the next room/tile.
+        /// Displays a short travel transition embed before entering the next area.
         /// </summary>
         public async Task TransferAnimationEmbed(string targetTileId)
         {
