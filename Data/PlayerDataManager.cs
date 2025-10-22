@@ -14,7 +14,8 @@ namespace Adventure.Data {
     /// <summary>
     /// Handles loading, saving, and managing player data in the system.
     /// </summary>
-    public static class PlayerDataManager {
+    public static class PlayerDataManager 
+    {
         /// <summary>
         /// Loads a player's data by their Discord user ID.
         /// </summary>
@@ -115,7 +116,7 @@ namespace Adventure.Data {
         /// - Unique player names are generated if base name already exists.
         /// - This template is applied when a player is created for the first time.
         /// </remarks>
-        public static PlayerModel CreateDefaultPlayer(ulong userId, string playerName) {
+        public static PlayerModel CreateNewPlayer(ulong userId, string playerName) {
             LogService.Info("[CreateDefaultPlayer] Attempting to load default_template_player.json");
 
             var defaultTemplate = JsonDataManager.LoadObjectFromJson<PlayerModel>("Data/Player/default_template_player.json");

@@ -32,11 +32,11 @@ namespace Adventure.Modules
             if (!File.Exists(path))
             {
                 LogService.Error($"[SlashEncounterHelpers.GetOrCreatePlayer] No player file found. Creating for {playerName} ({userId})");
-                return PlayerDataManager.CreateDefaultPlayer(userId, playerName);
+                return PlayerDataManager.CreateNewPlayer(userId, playerName);
             }
 
             var player = PlayerDataManager.LoadByUserId(userId);
-            return player ?? PlayerDataManager.CreateDefaultPlayer(userId, playerName);
+            return player ?? PlayerDataManager.CreateNewPlayer(userId, playerName);
         }
         #endregion
 
