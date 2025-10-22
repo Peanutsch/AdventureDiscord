@@ -28,5 +28,8 @@ namespace Adventure.Models.Map
 
         [JsonPropertyName("items")]
         public List<string>? TileItems { get; set; }
+
+        [JsonPropertyName("connections")]
+        public List<string> Connections { get; set; } = new();
     }
 }

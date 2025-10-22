@@ -34,6 +34,13 @@ namespace Adventure.Buttons
                 await WalkDirectionHandler(id);
                 return;
             }
+
+            if (id.StartsWith("enter:"))
+            {
+                await EnterTileHandler(id);
+                return;
+            }
+
         }
         #endregion
 
@@ -231,6 +238,69 @@ namespace Adventure.Buttons
         await Task.Delay(1200);
         */
         #endregion
+
+        /// <summary>
+        /// Handles the "Enter" button interaction when a player chooses to enter a connected room or tile.
+        /// Loads the target tile from MainHouseLoader.TileLookup and updates the embed and buttons accordingly.
+        /// </summary>
+        [ComponentInteraction("enter:*")]
+        public async Task EnterTileHandler(string data)
+        {
+            try
+            {
+                // Split the button data into direction and tileId.
+                var parts = data.Split(':', 2);
+                if (parts.Length != 2)
+                {
+                    // Respond immediately if the button data is invalid.
+                    await Context.Interaction.RespondAsync("⚠️ Invalid button data.", ephemeral: true);
+                    return;
+                }
+
+                // --- Defer the interaction to acknowledge it immediately ---
+                await Context.Interaction.DeferAsync();
+
+                var targetTileId = parts[1];
+
+                LogService.Info($"[EnterTileHandler] data: {data}, targetTileId: {targetTileId}.");
+
+                // --- Attempt to retrieve the target tile from the lookup dictionary ---
+                // Example data format: "Room2:tile_1_1"
+                if (!MainHouseLoader.TileLookup.TryGetValue(targetTileId, out var targetTile))
+                {
+                    // If the tile cannot be found, inform the player (ephemeral = only visible to them)
+                    await Context.Interaction.FollowupAsync($"❌ Target tile '{targetTile}' not found.", ephemeral: false);
+                    return;
+                }
+
+                // --- Build the updated embed view for the new room/tile ---
+                var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
+                var components = EmbedBuildersWalk.BuildDirectionButtons(targetTile);
+
+                // --- Safety fallback in case no buttons were returned ---
+                if (components == null)
+                {
+                    components = new ComponentBuilder()
+                        .WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
+                }
+
+                // --- Update the original interaction message with the new room data ---
+                await Context.Interaction.ModifyOriginalResponseAsync(msg =>
+                {
+                    msg.Embed = embed.Build();
+                    msg.Components = components.Build();
+                });
+
+                LogService.Info($"[EnterTileHandler] Successfully entered {data}");
+            }
+            catch (Exception ex)
+            {
+                // --- Log and inform user about unexpected errors ---
+                LogService.Error($"[EnterTileHandler] Exception:\n{ex}");
+                await Context.Interaction.FollowupAsync("❌ Something went wrong while entering the new area.", ephemeral: true);
+            }
+        }
+
 
         /*
         [ComponentInteraction("move_*:*")]

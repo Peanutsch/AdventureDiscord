@@ -129,7 +129,7 @@ namespace Adventure.Data {
             var player = defaultTemplate ?? new PlayerModel {
                 Id = userId,
                 Name = playerName,
-                Hitpoints = 50,
+                Hitpoints = 100,
                 MaxCarry = 70,
                 Savepoint = "START",
                 Attributes = new AttributesModel {
