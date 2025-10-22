@@ -237,6 +237,34 @@ namespace Adventure.Buttons
         // --- Simulate traveltime
         await Task.Delay(1200);
         */
+
+        /// <summary>
+        /// Displays a short travel transition embed before entering the next room/tile.
+        /// </summary>
+        public async Task TransferAnimationEmbed(string targetTileId)
+        {
+            // Split targetTileId in "roomName" and "tile_{row}_{col}"
+            var parts = targetTileId.Split(':');
+            var roomName = parts[0];
+            //var targetTile = parts[1];
+
+            // --- Show a temporary "Moving..." embed to simulate travel ---
+            await Context.Interaction.ModifyOriginalResponseAsync(msg =>
+            {
+                msg.Embed = new EmbedBuilder()
+                    .WithTitle("🚶 Moving...")
+                    .WithDescription($"You walk towards **{roomName}**...")
+                    .WithColor(Color.Orange)
+                    .Build();
+
+                msg.Components = new ComponentBuilder()
+                    .WithButton("Please wait...", "none", ButtonStyle.Secondary, disabled: true)
+                    .Build();
+            });
+
+            // --- Simulate travel time ---
+            await Task.Delay(1200);
+        }
         #endregion
 
         /// <summary>
@@ -248,11 +276,10 @@ namespace Adventure.Buttons
         {
             try
             {
-                // Split the button data into direction and tileId.
+                // Split the button data: "enter:" and "{roomName}:tile_{row}_{col}"
                 var parts = data.Split(':', 2);
                 if (parts.Length != 2)
                 {
-                    // Respond immediately if the button data is invalid.
                     await Context.Interaction.RespondAsync("⚠️ Invalid button data.", ephemeral: true);
                     return;
                 }
@@ -260,42 +287,41 @@ namespace Adventure.Buttons
                 // --- Defer the interaction to acknowledge it immediately ---
                 await Context.Interaction.DeferAsync();
 
-                var targetTileId = parts[1];
-
-                LogService.Info($"[EnterTileHandler] data: {data}, targetTileId: {targetTileId}.");
+                var roomAndTile = parts[1]; // e.g., "Room2:tile_1_1"
+                LogService.Info($"[EnterTileHandler] data: {data}, targetTileId: {roomAndTile}.");
 
                 // --- Attempt to retrieve the target tile from the lookup dictionary ---
-                // Example data format: "Room2:tile_1_1"
-                if (!MainHouseLoader.TileLookup.TryGetValue(targetTileId, out var targetTile))
+                if (!MainHouseLoader.TileLookup.TryGetValue(roomAndTile, out var targetTile))
                 {
-                    // If the tile cannot be found, inform the player (ephemeral = only visible to them)
-                    await Context.Interaction.FollowupAsync($"❌ Target tile '{targetTile}' not found.", ephemeral: false);
+                    await Context.Interaction.FollowupAsync($"❌ Target tile '{roomAndTile}' not found.", ephemeral: true);
                     return;
                 }
+
+                // --- Show a temporary travel embed before updating the view ---
+                await TransferAnimationEmbed(roomAndTile);
 
                 // --- Build the updated embed view for the new room/tile ---
                 var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
                 var components = EmbedBuildersWalk.BuildDirectionButtons(targetTile);
 
-                // --- Safety fallback in case no buttons were returned ---
+                // --- Safety fallback if no buttons are returned ---
                 if (components == null)
                 {
                     components = new ComponentBuilder()
                         .WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
                 }
 
-                // --- Update the original interaction message with the new room data ---
+                // --- Update the message with the new room embed and navigation buttons ---
                 await Context.Interaction.ModifyOriginalResponseAsync(msg =>
                 {
                     msg.Embed = embed.Build();
                     msg.Components = components.Build();
                 });
 
-                LogService.Info($"[EnterTileHandler] Successfully entered {data}");
+                LogService.Info($"[EnterTileHandler] Successfully entered {roomAndTile}");
             }
             catch (Exception ex)
             {
-                // --- Log and inform user about unexpected errors ---
                 LogService.Error($"[EnterTileHandler] Exception:\n{ex}");
                 await Context.Interaction.FollowupAsync("❌ Something went wrong while entering the new area.", ephemeral: true);
             }
