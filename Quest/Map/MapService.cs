@@ -56,7 +56,7 @@ namespace Adventure.Quest.Map
                 if (tileLookup.TryGetValue(newPos, out var neighborTile))
                 {
                     if (IsTilePassable(neighborTile))
-                        exits[directionName] = neighborTile.TileId;
+                        exits[directionName] = $"{roomName}:{neighborTile.TileId}";
                 }
             }
 

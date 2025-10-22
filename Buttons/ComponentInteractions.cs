@@ -1,11 +1,12 @@
-﻿using Discord.Interactions;
-using Discord;
-using Adventure.Data;
-using Adventure.Services;
-using Adventure.Quest.Encounter;
-using Discord.WebSocket;
+﻿using Adventure.Data;
+using Adventure.Loaders;
 using Adventure.Quest.Battle.BattleEngine;
+using Adventure.Quest.Encounter;
 using Adventure.Quest.Map;
+using Adventure.Services;
+using Discord;
+using Discord.Interactions;
+using Discord.WebSocket;
 
 namespace Adventure.Buttons
 {
@@ -142,18 +143,24 @@ namespace Adventure.Buttons
         #endregion
 
         #region === Walk ===
+        /// <summary>
+        /// Handles directional movement button interactions from the /walk command.
+        /// Ensures the player moves to the correct target tile and updates the message with the new embed and buttons.
+        /// Prevents multiple responses to the same interaction by using a single response path.
+        /// </summary>
+        /// <param name="data">Button custom ID data in the format "direction:tileId".</param>
         [ComponentInteraction("move_*")]
         public async Task WalkDirectionHandler(string data)
         {
             try
             {
-                await Context.Interaction.DeferAsync();
-
-                // Parse direction and target tile
-                var parts = data.Split(':');
+                // Split the button data into direction and tileId.
+                // Example: "east:Room2:tile_1_2"
+                var parts = data.Split(':', 2);
                 if (parts.Length != 2)
                 {
-                    await RespondAsync("⚠️ Invalid button data.", ephemeral: true);
+                    // Respond immediately if the button data is invalid.
+                    await Context.Interaction.RespondAsync("⚠️ Invalid button data.", ephemeral: true);
                     return;
                 }
 
@@ -162,24 +169,26 @@ namespace Adventure.Buttons
 
                 LogService.Info($"[WalkDirectionHandler] direction: {direction}, targetTileId: {targetTileId}");
 
-                var targetTile = GameData.MainHouse?.FirstOrDefault(m => m.TileId == targetTileId);
-                if (targetTile == null)
+                // Try to find the target tile in the lookup dictionary.
+                if (!MainHouseLoader.TileLookup.TryGetValue(targetTileId, out var targetTile) || targetTile == null)
                 {
-                    await RespondAsync($"❌ Tile '{targetTileId}' not found.", ephemeral: true);
+                    await Context.Interaction.RespondAsync($"❌ Tile '{targetTileId}' not found.", ephemeral: true);
                     return;
                 }
 
-                // Build embed and components safely
+                // Defer the interaction, allowing time for processing before updating the original response.
+                // This prevents the 3-second Discord timeout.
+                await Context.Interaction.DeferAsync();
+
+                // Build the embed (visual representation of the new room state).
                 var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
-                var components = EmbedBuildersWalk.BuildDirectionButtons(targetTile);
 
-                // Always have a fallback
-                if (components == null)
-                {
-                    components = new ComponentBuilder()
-                        .WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
-                }
+                // Build the movement buttons based on available exits.
+                // If there are no exits, add a fallback "Break" button.
+                var components = EmbedBuildersWalk.BuildDirectionButtons(targetTile)
+                    ?? new ComponentBuilder().WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
 
+                // Safely update the original message with the new embed and direction buttons.
                 await Context.Interaction.ModifyOriginalResponseAsync(msg =>
                 {
                     msg.Embed = embed.Build();
@@ -188,8 +197,18 @@ namespace Adventure.Buttons
             }
             catch (Exception ex)
             {
+                // Log the exception and attempt to follow up with an ephemeral error message.
                 LogService.Error($"[WalkDirectionHandler] Exception:\n{ex}");
-                await Context.Interaction.FollowupAsync("❌ Something went wrong while moving.", ephemeral: true);
+
+                try
+                {
+                    // Use FollowupAsync here because DeferAsync was already called.
+                    await Context.Interaction.FollowupAsync("❌ Something went wrong while moving.", ephemeral: true);
+                }
+                catch (InvalidOperationException)
+                {
+                    // If FollowupAsync fails (e.g., if the interaction wasn't deferred), ignore to prevent a crash.
+                }
             }
         }
 

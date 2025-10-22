@@ -6,7 +6,7 @@
   "description": "A brave soul starting their journey.",
   "hitpoints": 1000,
   "maxCarry": 70,
-  "savepoint": "Room2:tile_1_1",
+  "savepoint": "START",
   "attributes": {
     "strength": 10,
     "dexterity": 14,

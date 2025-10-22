@@ -385,7 +385,7 @@
       {
         "id": "tile_3_1",
         "name": "tile_3_1",
-        "position": "",
+        "position": "3,1",
         "grid": [
           [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
           [ "Wall", "Door", "Floor", "Floor", "Wall" ],
