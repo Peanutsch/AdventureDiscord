@@ -31,5 +31,7 @@ namespace Adventure.Models.Map
 
         [JsonPropertyName("connections")]
         public List<string> Connections { get; set; } = new();
+
+        public string RoomId { get; set; } = "ERROR_ROOM_ID_tileModel";
     }
 }

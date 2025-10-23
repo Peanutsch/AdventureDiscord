@@ -2,103 +2,126 @@
 using Adventure.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Adventure.Loaders
 {
     /// <summary>
-    /// Loader for the main house map.
-    /// Handles loading all rooms and tiles from JSON, 
-    /// building a tile lookup dictionary, and organizing tiles per room.
+    /// Static loader for the main house map.
+    /// Handles loading rooms and tiles from JSON, building a lookup dictionary,
+    /// and storing descriptions for each room.
     /// </summary>
     public static class MainHouseLoader
     {
         /// <summary>
-        /// All tiles in the main house, flattened into a single list.
+        /// Flattened list of all tiles in the main house.
         /// </summary>
         public static List<TileModel> AllTiles { get; private set; } = new();
 
         /// <summary>
-        /// Lookup dictionary for quick access to tiles using "RoomName:TilePosition" as the key.
+        /// Dictionary for quick tile lookup by "RoomName:TileId".
         /// </summary>
         public static Dictionary<string, TileModel> TileLookup { get; private set; } = new();
 
         /// <summary>
-        /// Dictionary of rooms, each containing its list of tiles.
-        /// Useful for building embeds or UI elements.
+        /// Dictionary of rooms, each containing a list of its tiles.
         /// </summary>
         public static Dictionary<string, List<TileModel>> Rooms { get; private set; } = new();
 
         /// <summary>
-        /// Loads all tiles and rooms from the mainhouse JSON file.
+        /// Dictionary of room descriptions for display or embeds.
         /// </summary>
-        /// <returns>List of all tiles loaded, or null if loading failed.</returns>
+        public static Dictionary<string, string> RoomDescriptions { get; private set; } = new();
+
+        public static Dictionary<string, MainHouseRoomModel> RoomModels { get; private set; } = new();
+
+
+        /// <summary>
+        /// Loads all rooms and tiles from the mainhouse JSON file.
+        /// Builds the tile lookup and room description dictionaries.
+        /// </summary>
+        /// <returns>List of all tiles loaded, or null if loading fails.</returns>
         public static List<TileModel>? Load()
         {
             try
             {
-                // --- Load main house JSON into MainHouseModel ---
+                // --- Load mainhouse.json into MainHouseModel ---
                 var mainhouse = JsonDataManager.LoadObjectFromJson<MainHouseModel>("Data/Map/MainHouse/mainhouse.json");
 
-                if (mainhouse == null)
+                // --- Check for null or empty rooms ---
+                if (mainhouse == null || mainhouse.Rooms == null || mainhouse.Rooms.Count == 0)
                 {
-                    LogService.Error("[MainHouseLoader] > Failed to load mainhouse.json");
+                    LogService.Error("[MainHouseLoader] > No rooms found");
                     return null;
                 }
 
-                if (mainhouse.Rooms == null || mainhouse.Rooms.Count == 0)
-                {
-                    LogService.Error("[MainHouseLoader] > No rooms found in mainhouse.json");
-                    return new List<TileModel>();
-                }
+                // --- Clear previous data ---
+                AllTiles.Clear();
+                TileLookup.Clear();
+                Rooms.Clear();
+                RoomDescriptions.Clear();
 
-                var allRoomsMainHouse = new List<TileModel>();
-                TileLookup = new Dictionary<string, TileModel>();
-
-                // --- Iterate over each room in JSON ---
+                // --- Process all top-level rooms ---
                 foreach (var room in mainhouse.Rooms)
-                {
-                    string roomName = room.Key;
-                    var tiles = room.Value;
+                    ProcessRoom(room.Key, room.Value);
 
-                    LogService.Info($"[MainHouseLoader] > Adding {roomName}: {tiles.Count} tiles");
+                // --- Logging summary ---
+                LogService.Info($"[MainHouseLoader] > Loaded {AllTiles.Count} tiles");
+                LogService.Info($"[MainHouseLoader] > {RoomDescriptions.Count} rooms loaded");
 
-                    // Save room tiles in the Rooms dictionary
-                    Rooms[roomName] = tiles;
-
-                    // Add all tiles to the flattened list
-                    allRoomsMainHouse.AddRange(tiles);
-
-                    // Build TileLookup dictionary with "RoomName:TilePosition" keys
-                    foreach (var tile in tiles)
-                    {
-                        if (string.IsNullOrWhiteSpace(tile.TilePosition))
-                            continue; // Skip tiles without a position
-
-                        string key = $"{roomName}:{tile.TileId}";
-
-                        if (!TileLookup.ContainsKey(key))
-                        {
-                            LogService.Info($"[MainHouseLoader] Key added: {key}");
-                            TileLookup[key] = tile;
-                        }
-                        else
-                            LogService.Error($"[MainHouseLoader] > Duplicate key skipped: {key}");
-                    }
-                }
-
-                AllTiles = allRoomsMainHouse;
-
-                LogService.Info($"[MainHouseLoader] > Loaded total of {allRoomsMainHouse.Count} tiles from mainhouse.json\n");
-                LogService.Info($"[MainHouseLoader] > TileLookup contains {TileLookup.Count} unique tiles");
-
-                return allRoomsMainHouse;
+                return AllTiles;
             }
             catch (Exception ex)
             {
-                LogService.Error($"[MainHouseLoader] > Error loading mainhouse.json:\n{ex.Message}");
+                // --- Log any exception during loading ---
+                LogService.Error($"[MainHouseLoader] > Error loading mainhouse.json: {ex.Message}");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Processes a room recursively: stores tiles, builds lookup, and stores description.
+        /// Handles subrooms as well.
+        /// </summary>
+        /// <param name="roomName">The name of the room (parent prefix included for subrooms).</param>
+        /// <param name="room">The room model from JSON.</param>
+        static void ProcessRoom(string roomName, MainHouseRoomModel room)
+        {
+            // --- Store tiles for this room ---
+            if (room.Tiles != null)
+            {
+                Rooms[roomName] = room.Tiles;      // Save tiles in Rooms dictionary
+                AllTiles.AddRange(room.Tiles);     // Add to flattened list
+
+                LogService.Info($"[MainHouseLoader.ProcessRoom] Loading {roomName}, {room.Tiles.Count} tiles...");
+
+                // --- Build TileLookup for quick access ---
+                foreach (var tile in room.Tiles)
+                {
+                    tile.RoomId = room.Id;
+                    if (!string.IsNullOrWhiteSpace(tile.TilePosition))
+                    {
+                        string key = $"{room.Id}:{tile.TileId}";
+                        if (!TileLookup.ContainsKey(key))
+                            TileLookup[key] = tile; // Add tile to lookup
+                    }
+                }
+            }
+
+            // --- Store room description ---
+            RoomDescriptions[roomName] = room.Description;
+            LogService.Info($"[MainHouseLoader.ProcessRoom] Storing description {roomName}");
+
+            // --- Process subrooms recursively ---
+            /*
+            if (room.SubRooms != null)
+            {
+                foreach (var sub in room.SubRooms)
+                {
+                    string subName = $"{roomName}.{sub.Key}"; // Prefix parent room name
+                    ProcessRoom(subName, sub.Value);
+                }
+            }
+            */
         }
     }
 }

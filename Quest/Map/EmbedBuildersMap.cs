@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -164,12 +165,15 @@ namespace Adventure.Quest.Map
                             .FirstOrDefault(r => r.Value.Contains(tile))
                             .Key ?? "Unknown Room";
 
+            // --- Room Description ---
+            var roomDescription = MainHouseLoader.RoomDescriptions[roomName];
+
             // --- Grid visualization ---
             var gridVisual = TileUI.RenderTileGrid(tile.TileGrid) ?? "No grid available";
 
             // --- Tile description ---
             var tileTextSafe = string.IsNullOrWhiteSpace(tile.TileText)
-                ? "No description available."
+                ? "nothing to report..."
                 : tile.TileText;
 
             // --- Exits ---
@@ -187,8 +191,8 @@ namespace Adventure.Quest.Map
             // --- Build embed ---
             return new EmbedBuilder()
                 .WithColor(Color.Blue)
-                .AddField($"[{roomName}]", 
-                          $"{gridVisual}\n" +
+                .AddField($"[{roomName}]", $"{roomDescription}")
+                .AddField($"{gridVisual}\n",
                           $"*{tileTextSafe}*")
                 .AddField("[Possible Directions]", exitInfo);
         }

@@ -262,31 +262,41 @@ namespace Adventure.Buttons
         [ComponentInteraction("enter:*")]
         public async Task EnterTileHandler(string data)
         {
+            LogService.Info($"Received data: {data}");
             try
             {
                 // Split the button data: "enter:" and "{roomName}:tile_{row}_{col}"
-                var parts = data.Split(':', 2);
-                if (parts.Length != 2)
+                var parts = data.Split(":");
+                /*
+                if (parts.Length != 3)
                 {
-                    await Context.Interaction.RespondAsync("⚠️ Invalid button data.", ephemeral: true);
+                    await Context.Interaction.RespondAsync("⚠️ Invalid button data.", ephemeral: false);
                     return;
                 }
+                */
 
                 // --- Defer the interaction to acknowledge it immediately ---
                 await Context.Interaction.DeferAsync();
 
-                var roomAndTile = parts[1]; // e.g., "Room2:tile_1_1"
-                LogService.Info($"[EnterTileHandler] data: {data}, targetTileId: {roomAndTile}.");
+                var roomName = parts[0]; // e.g., "Room 2"
+                var tileId = parts[1];   // e.g. "tile_1_1"
+                var key = $"{roomName}:{tileId}";
+                LogService.Info($"[EnterTileHandler] data: {data}, Room: {roomName}, tileId: {tileId}, key: {key}");
 
                 // --- Attempt to retrieve the target tile from the lookup dictionary ---
-                if (!MainHouseLoader.TileLookup.TryGetValue(roomAndTile, out var targetTile))
+                if (!MainHouseLoader.TileLookup.TryGetValue(key, out var targetTile))
                 {
-                    await Context.Interaction.FollowupAsync($"❌ Target tile '{roomAndTile}' not found.", ephemeral: true);
+                    LogService.Error($"[ComponentInteractions.EnterTileHandler] ❌ With key {key } target tile '{targetTile}' not found.");
+                    await Context.Interaction.FollowupAsync($"With key {key} target tile '{targetTile}' not found.", ephemeral: false);
                     return;
                 }
 
+                // Save new tile as PlayerModel.Savepoint
+                LogService.Info($"Saving new savepoint for {Context.User.GlobalName}/{Context.User.Id}, savepoint: {targetTile}.");
+                JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, key);
+
                 // --- Show a temporary travel embed before updating the view ---
-                await TransferAnimationEmbed(roomAndTile);
+                await TransferAnimationEmbed(roomName);
 
                 // --- Build the updated embed view for the new room/tile ---
                 var embed = EmbedBuildersMap.EmbedWalk(targetTile);
@@ -306,12 +316,12 @@ namespace Adventure.Buttons
                     msg.Components = components.Build();
                 });
 
-                LogService.Info($"[EnterTileHandler] Successfully entered {roomAndTile}");
+                LogService.Info($"[EnterTileHandler] Successfully entered {roomName}");
             }
             catch (Exception ex)
             {
                 LogService.Error($"[EnterTileHandler] Exception:\n{ex}");
-                await Context.Interaction.FollowupAsync("❌ Something went wrong while entering the new area.", ephemeral: true);
+                await Context.Interaction.FollowupAsync("❌ Something went wrong while entering the new area.");
             }
         }
         #endregion
