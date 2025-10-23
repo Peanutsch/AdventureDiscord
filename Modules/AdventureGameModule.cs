@@ -124,8 +124,8 @@ namespace Adventure.Modules
 
             LogService.Info($"[/walk] Starting in room: {startingRoom}, position: {tile.TilePosition}");
 
-            var embed = EmbedBuildersWalk.EmbedWalk(tile);
-            var components = EmbedBuildersWalk.BuildDirectionButtons(tile);
+            var embed = EmbedBuildersMap.EmbedWalk(tile);
+            var components = EmbedBuildersMap.BuildDirectionButtons(tile);
 
             await FollowupAsync(embed: embed.Build(), components: components?.Build());
         }

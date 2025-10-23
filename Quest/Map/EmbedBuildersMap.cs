@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Quest.Map
 {
-    public class EmbedBuildersWalk
+    public class EmbedBuildersMap
     {
         #region === Buttons ===
         /// <summary>

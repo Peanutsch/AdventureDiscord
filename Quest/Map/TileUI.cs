@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Models.Map
+namespace Adventure.Quest.Map
 {
     public static class TileUI
     {

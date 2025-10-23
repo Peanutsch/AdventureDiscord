@@ -192,11 +192,11 @@ namespace Adventure.Buttons
                 JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, targetTileId);
 
                 // Build the embed (visual representation of the new room state).
-                var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
+                var embed = EmbedBuildersMap.EmbedWalk(targetTile);
 
                 // Build the movement buttons based on available exits.
                 // If there are no exits, add a fallback "Break" button.
-                var components = EmbedBuildersWalk.BuildDirectionButtons(targetTile)
+                var components = EmbedBuildersMap.BuildDirectionButtons(targetTile)
                     ?? new ComponentBuilder().WithButton("[Break]", "btn_flee", ButtonStyle.Secondary, row: 2);
 
                 // Safely update the original message with the new embed and direction buttons.
@@ -289,8 +289,8 @@ namespace Adventure.Buttons
                 await TransferAnimationEmbed(roomAndTile);
 
                 // --- Build the updated embed view for the new room/tile ---
-                var embed = EmbedBuildersWalk.EmbedWalk(targetTile);
-                var components = EmbedBuildersWalk.BuildDirectionButtons(targetTile);
+                var embed = EmbedBuildersMap.EmbedWalk(targetTile);
+                var components = EmbedBuildersMap.BuildDirectionButtons(targetTile);
 
                 // --- Safety fallback if no buttons are returned ---
                 if (components == null)
