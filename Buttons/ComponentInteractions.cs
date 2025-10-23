@@ -230,7 +230,7 @@ namespace Adventure.Buttons
         /// </summary>
         public async Task TransferAnimationEmbed(string targetTileId)
         {
-            // Split targetTileId in "roomName" and "tile_{row}_{col}"
+            // Split targetTileId in "areaName" and "tile_{row}_{col}"
             var parts = targetTileId.Split(':');
             var roomName = parts[0];
             //var targetTile = parts[1];
@@ -262,26 +262,26 @@ namespace Adventure.Buttons
         [ComponentInteraction("enter:*")]
         public async Task EnterTileHandler(string data)
         {
-            LogService.Info($"Received data: {data}");
+            LogService.Info($"[EnterTileHandler] Received data: {data}");
             try
             {
-                // Split the button data: "enter:" and "{roomName}:tile_{row}_{col}"
+                // Split the button data: "enter:" and "{areaName}:tile_{row}_{col}"
+                List<string> CatchParts = new List<string>();
                 var parts = data.Split(":");
-                /*
-                if (parts.Length != 3)
+                foreach (var part in parts)
                 {
-                    await Context.Interaction.RespondAsync("⚠️ Invalid button data.", ephemeral: false);
-                    return;
+                    CatchParts.Add(part);
                 }
-                */
+
+                LogService.Info($"Parts after Split() data: [{string.Join(", ", CatchParts)}]");
 
                 // --- Defer the interaction to acknowledge it immediately ---
                 await Context.Interaction.DeferAsync();
 
-                var roomName = parts[0]; // e.g., "Room 2"
-                var tileId = parts[1];   // e.g. "tile_1_1"
-                var key = $"{roomName}:{tileId}";
-                LogService.Info($"[EnterTileHandler] data: {data}, Room: {roomName}, tileId: {tileId}, key: {key}");
+                var areaName = parts[1]; // e.g., "Area 2"
+                var tileId = parts[2];   // e.g. "tile_1_1"
+                var key = $"{areaName}:{tileId}";
+                LogService.Info($"[EnterTileHandler] Area: {areaName}, tileId: {tileId}, key: {key}");
 
                 // --- Attempt to retrieve the target tile from the lookup dictionary ---
                 if (!MainHouseLoader.TileLookup.TryGetValue(key, out var targetTile))
@@ -296,7 +296,7 @@ namespace Adventure.Buttons
                 JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, key);
 
                 // --- Show a temporary travel embed before updating the view ---
-                await TransferAnimationEmbed(roomName);
+                await TransferAnimationEmbed(areaName);
 
                 // --- Build the updated embed view for the new room/tile ---
                 var embed = EmbedBuildersMap.EmbedWalk(targetTile);
@@ -316,7 +316,7 @@ namespace Adventure.Buttons
                     msg.Components = components.Build();
                 });
 
-                LogService.Info($"[EnterTileHandler] Successfully entered {roomName}");
+                LogService.Info($"[EnterTileHandler] Successfully entered {areaName}");
             }
             catch (Exception ex)
             {

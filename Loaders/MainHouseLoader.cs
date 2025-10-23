@@ -25,14 +25,14 @@ namespace Adventure.Loaders
         /// <summary>
         /// Dictionary of rooms, each containing a list of its tiles.
         /// </summary>
-        public static Dictionary<string, List<TileModel>> Rooms { get; private set; } = new();
+        public static Dictionary<string, List<TileModel>> Area { get; private set; } = new();
 
         /// <summary>
         /// Dictionary of room descriptions for display or embeds.
         /// </summary>
-        public static Dictionary<string, string> RoomDescriptions { get; private set; } = new();
+        public static Dictionary<string, string> AreaDescriptions { get; private set; } = new();
 
-        public static Dictionary<string, MainHouseRoomModel> RoomModels { get; private set; } = new();
+        public static Dictionary<string, MainHouseAreaModel> AreaModels { get; private set; } = new();
 
 
         /// <summary>
@@ -48,25 +48,25 @@ namespace Adventure.Loaders
                 var mainhouse = JsonDataManager.LoadObjectFromJson<MainHouseModel>("Data/Map/MainHouse/mainhouse.json");
 
                 // --- Check for null or empty rooms ---
-                if (mainhouse == null || mainhouse.Rooms == null || mainhouse.Rooms.Count == 0)
+                if (mainhouse == null || mainhouse.Area == null || mainhouse.Area.Count == 0)
                 {
-                    LogService.Error("[MainHouseLoader] > No rooms found");
+                    LogService.Error("[MainHouseLoader] > No area found");
                     return null;
                 }
 
                 // --- Clear previous data ---
                 AllTiles.Clear();
                 TileLookup.Clear();
-                Rooms.Clear();
-                RoomDescriptions.Clear();
+                Area.Clear();
+                AreaDescriptions.Clear();
 
                 // --- Process all top-level rooms ---
-                foreach (var room in mainhouse.Rooms)
-                    ProcessRoom(room.Key, room.Value);
+                foreach (var area in mainhouse.Area)
+                    ProcessArea(area.Key, area.Value);
 
                 // --- Logging summary ---
                 LogService.Info($"[MainHouseLoader] > Loaded {AllTiles.Count} tiles");
-                LogService.Info($"[MainHouseLoader] > {RoomDescriptions.Count} rooms loaded");
+                LogService.Info($"[MainHouseLoader] > {AreaDescriptions.Count} rooms loaded");
 
                 return AllTiles;
             }
@@ -82,25 +82,25 @@ namespace Adventure.Loaders
         /// Processes a room recursively: stores tiles, builds lookup, and stores description.
         /// Handles subrooms as well.
         /// </summary>
-        /// <param name="roomName">The name of the room (parent prefix included for subrooms).</param>
+        /// <param name="areaName">The name of the room (parent prefix included for subrooms).</param>
         /// <param name="room">The room model from JSON.</param>
-        static void ProcessRoom(string roomName, MainHouseRoomModel room)
+        static void ProcessArea(string areaName, MainHouseAreaModel area)
         {
             // --- Store tiles for this room ---
-            if (room.Tiles != null)
+            if (area.Tiles != null)
             {
-                Rooms[roomName] = room.Tiles;      // Save tiles in Rooms dictionary
-                AllTiles.AddRange(room.Tiles);     // Add to flattened list
+                Area[areaName] = area.Tiles;      // Save tiles in Rooms dictionary
+                AllTiles.AddRange(area.Tiles);     // Add to flattened list
 
-                LogService.Info($"[MainHouseLoader.ProcessRoom] Loading {roomName}, {room.Tiles.Count} tiles...");
+                LogService.Info($"[MainHouseLoader.ProcessArea] Loading {areaName}, {area.Tiles.Count} tiles...");
 
                 // --- Build TileLookup for quick access ---
-                foreach (var tile in room.Tiles)
+                foreach (var tile in area.Tiles)
                 {
-                    tile.RoomId = room.Id;
+                    tile.AreaId = area.Id;
                     if (!string.IsNullOrWhiteSpace(tile.TilePosition))
                     {
-                        string key = $"{room.Id}:{tile.TileId}";
+                        string key = $"{area.Id}:{tile.TileId}";
                         if (!TileLookup.ContainsKey(key))
                             TileLookup[key] = tile; // Add tile to lookup
                     }
@@ -108,8 +108,8 @@ namespace Adventure.Loaders
             }
 
             // --- Store room description ---
-            RoomDescriptions[roomName] = room.Description;
-            LogService.Info($"[MainHouseLoader.ProcessRoom] Storing description {roomName}");
+            AreaDescriptions[areaName] = area.Description;
+            LogService.Info($"[MainHouseLoader.ProcessArea] Storing description {areaName}");
 
             // --- Process subrooms recursively ---
             /*
@@ -118,7 +118,7 @@ namespace Adventure.Loaders
                 foreach (var sub in room.SubRooms)
                 {
                     string subName = $"{roomName}.{sub.Key}"; // Prefix parent room name
-                    ProcessRoom(subName, sub.Value);
+                    ProcessArea(subName, sub.Value);
                 }
             }
             */

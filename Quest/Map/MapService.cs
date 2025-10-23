@@ -37,7 +37,7 @@ namespace Adventure.Quest.Map
                 return exits;
 
             // --- Determine the room id that contains this tile --- 
-            var roomId = tile.RoomId;
+            var roomId = tile.AreaId;
 
             LogService.Info($"roomId: {roomId}");
 

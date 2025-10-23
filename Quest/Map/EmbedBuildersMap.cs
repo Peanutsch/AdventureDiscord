@@ -160,13 +160,13 @@ namespace Adventure.Quest.Map
         {
             LogService.Info("[EmbedBuildersWalk.EmbedWalk] Building embed...");
 
-            // --- Room name ---
-            var roomName = MainHouseLoader.Rooms
+            // --- Area name ---
+            var areaName = MainHouseLoader.Area
                             .FirstOrDefault(r => r.Value.Contains(tile))
                             .Key ?? "Unknown Room";
 
-            // --- Room Description ---
-            var roomDescription = MainHouseLoader.RoomDescriptions[roomName];
+            // --- Area Description ---
+            var areaDescription = MainHouseLoader.AreaDescriptions[areaName];
 
             // --- Grid visualization ---
             var gridVisual = TileUI.RenderTileGrid(tile.TileGrid) ?? "No grid available";
@@ -183,7 +183,7 @@ namespace Adventure.Quest.Map
                 ? string.Join("\n", exits.Select(e => $"**{e.Key}** leads to **{e.Value}**")) 
                 : "None";
 
-            LogService.Info($"\nRoom: {roomName}\n" +
+            LogService.Info($"\nRoom: {areaName}\n" +
                             $"Grid:\n{gridVisual}\n" +
                             $"TileText:\n{tileTextSafe}\n" +
                             $"Exits:\n{exitInfo}\n");
@@ -191,7 +191,7 @@ namespace Adventure.Quest.Map
             // --- Build embed ---
             return new EmbedBuilder()
                 .WithColor(Color.Blue)
-                .AddField($"[{roomName}]", $"{roomDescription}")
+                .AddField($"[{areaName}]", $"{areaDescription}")
                 .AddField($"{gridVisual}\n",
                           $"*{tileTextSafe}*")
                 .AddField("[Possible Directions]", exitInfo);

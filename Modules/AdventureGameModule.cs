@@ -119,7 +119,7 @@ namespace Adventure.Modules
                 return;
             }
 
-            string startingRoom = MainHouseLoader.Rooms
+            string startingRoom = MainHouseLoader.Area
                 .FirstOrDefault(r => r.Value.Contains(tile)).Key ?? "UnknownRoom";
 
             LogService.Info($"[/walk] Starting in room: {startingRoom}, position: {tile.TilePosition}");

@@ -9,8 +9,8 @@ namespace Adventure.Models.Map
 {
     public class MainHouseModel
     {
-        [JsonPropertyName("Rooms")]
-        public Dictionary<string, MainHouseRoomModel> Rooms { get; set; } = new();
+        [JsonPropertyName("Area")]
+        public Dictionary<string, MainHouseAreaModel> Area { get; set; } = new();
         //public Dictionary<string, List<TileModel>> Rooms { get; set; } = new();
     }
 }

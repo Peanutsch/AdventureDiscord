@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Map
 {
-    public class MainHouseRoomModel
+    public class MainHouseAreaModel
     {
         [JsonPropertyName("id")]
         public string Id { get; set; } = "ERROR_ROOM_ID_mainHouseRoomModel";
@@ -23,6 +23,6 @@ namespace Adventure.Models.Map
 
         // Genestede kamers (optioneel)
         [JsonPropertyName("subrooms")]
-        public Dictionary<string, MainHouseRoomModel>? SubRooms { get; set; }
+        public Dictionary<string, MainHouseAreaModel>? SubRooms { get; set; }
     }
 }
