@@ -21,7 +21,7 @@
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
         [ "Wall", "DOOR", "Floor", "Floor", "Wall" ],
-        [ "Wall", "Floor", "WATER", "Floor", "Wall" ],
+        [ "Wall", "Floor", "Water", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "ENEMY", "Wall" ],
         [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ],
