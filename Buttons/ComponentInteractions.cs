@@ -199,11 +199,6 @@ namespace Adventure.Buttons
                 await Context.Interaction.DeferAsync();
 
                 var parts = data.Split(':');
-                if (parts.Length < 3)
-                {
-                    await Context.Interaction.FollowupAsync("⚠️ Invalid enter data.", ephemeral: true);
-                    return;
-                }
 
                 string areaName = parts[1];
                 string tileId = parts[2];
