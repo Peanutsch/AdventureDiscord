@@ -1,36 +1,43 @@
 ﻿{
-  "Room1": {
-    "TilesRoom_1": [
+  "Areas": {
+    "living_room": [
       {
-        "id": "tile_4_1",
-        "name": "tile_4_1",
-        "position": "4,1",
-        "grid": "",
-        "text": "Your starting point, but nothing to see on this tile except this wooden door.\nThe entrance is also an exit! How bizar...",
-        "overlays": [ "START", "DOOR" ],
-        "pois": [],
-        "items": []
-      },
-      {
-        "id": "tile_4_2",
-        "name": "tile_4_2",
-        "position": "4,2",
-        "grid": "",
-        "text": "nothing to see on this tile.",
+        "id": "START",
+        "text": "Startingpoint. Nothing to see here.",
         "overlays": [],
         "pois": [],
         "items": []
       },
       {
-        "id": "tile_4_3",
-        "name": "tile_4_3",
-        "position": "4,3",
-        "grid": "",
-        "text": "nothing to see on this tile.",
+        "id": "DOOR",
+        "text": "There is not much to see here, except this wooden door.\nThe entrance is also an exit! How bizar...",
+        "connections": [ "to DOOR in small_pond" ],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "ENEMY",
+        "text": "Get ready for some fighting!",
         "overlays": [],
         "pois": [],
         "items": []
       }
-    ]
+    ],
+    "small_pond": [
+        {
+          "id": "DOOR",
+          "text": "There is not much to see here, except this wooden door.\nThe entrance is also an exit! How bizar...",
+          "connections": [ "to DOOR in living_room" ],
+          "pois": [],
+          "items": []
+        },
+        {
+          "id": "ENEMY",
+          "text": "Get ready for some fighting!",
+          "overlays": [],
+          "pois": [],
+          "items": []
+        }
+     ]
   }
 }
