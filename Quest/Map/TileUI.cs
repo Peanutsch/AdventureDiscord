@@ -8,6 +8,7 @@ namespace Adventure.Quest.Map
 {
     public static class TileUI
     {
+        #region === Possible Emoji's ===
         /* 
            [AVAILABLE SQUARE EMOJIS]
            ─────────────────────────────
@@ -22,6 +23,81 @@ namespace Adventure.Quest.Map
            🟫	U+1F7EB	Brown Square
            ───────────────────────────── */
 
+        /* 
+        ─────────────────────────────
+        [Generic / Townsfolk]
+       👤 — Generic person
+       🧑 — Neutral adult
+       🧓 — Elderly person
+       👶 — Child
+       👩 / 👨 — Adult female/male
+       🧑‍🦱 / 🧑‍🦰 — NPC met kapselvariatie
+       👴 / 👵 — Old man / old woman
+        ─────────────────────────────
+        [🏰 Fantasy / RPG Characters]
+       🧙‍♂️ / 🧙‍♀️ — Wizard / Sorcerer
+       🧝‍♂️ / 🧝‍♀️ — Elf
+       🧛‍♂️ / 🧛‍♀️ — Vampire
+       🧟‍♂️ / 🧟‍♀️ — Zombie / Undead
+       🧞‍♂️ / 🧞‍♀️ — Genie / Spirit
+       🧚‍♂️ / 🧚‍♀️ — Fairy / Sprite
+       🧜‍♂️ / 🧜‍♀️ — Merman / Mermaid
+       🐉 — Dragon / Boss Creature
+       🐺 — Wolf / Beast Companion
+       🐍 — Snake / Poisonous Creature
+       ─────────────────────────────
+        [🏹 Warrior / Guard / Soldier]
+       🗡️ — Rogue / Assassin
+       ⚔️ — Knight / Warrior
+       🛡️ — Guard / Protector
+       🪓 — Barbarian / Lumberjack-style NPC
+       🤺 — Fencer / Duelist
+       🏹 — Hunter / Ranger
+       ─────────────────────────────
+        [🏪 Merchants / Civilians]
+       💂‍♂️ / 💂‍♀️ — Guard / Soldier
+       🏪 — Shopkeeper / Merchant
+       🧵 — Weaver / Merchant
+       🍳 — Cook / Innkeeper
+       🪙 — Banker / Money handler
+       📚 — Scholar / Librarian
+       🎭 — Entertainer / Performer
+       ─────────────────────────────
+        [😄 Emotive / Role-specific]
+       🤵 / 👰 — Noble / Lord / Lady
+       👮‍♂️ / 👮‍♀️ — Police / Lawkeeper
+       🕵️‍♂️ / 🕵️‍♀️ — Detective / Investigator
+       🧩 — Quest giver / Puzzle master
+       🎨 — Artist / Painter NPC
+       🎵 — Bard / Musician
+       ─────────────────────────────
+        [🐾 Creature / Monster NPCs]
+       🐲 — Dragon
+       🐺 — Wolf / Beast
+       🦁 — Lion / Beast
+       🦅 — Bird NPC / Scout
+       🐍 — Snake / Poisonous Creature
+       🦇 — Bat / Nocturnal Creature
+       🐉 — Legendary Boss / Creature
+       ─────────────────────────────
+        [🌿 Nature / Mystic NPCs]
+       🌳 — Forest spirit
+       🌲 — Woodland NPC
+       🌊 — Water spirit / Mermaid
+       🔥 — Fire elemental / Flame NPC
+       ❄️ — Ice elemental / Snow NPC
+       🌪️ — Wind elemental / Storm NPC
+       ─────────────────────────────
+        [🪄 Magic / Rare NPCs]
+       ✨ — Enchanter / Magical NPC
+       🔮 — Seer / Fortune teller
+       🕯️ — Mage / Ritual NPC
+       📜 — Scholar / Quest giver
+       ⚗️ — Alchemist / Potion NPC
+        ─────────────────────────────*/
+        #endregion
+
+        #region === Dictionairy of used Emoji's ===
         /// <summary>
         /// Maps tile type names (string identifiers) to their corresponding emoji representations.
         /// Used to visually display maps in Discord embeds or text output.
@@ -35,7 +111,7 @@ namespace Adventure.Quest.Map
             { "Sand", "🟨" },
             { "Lava", "🟧" },
             { "Water", "🟦" },
-            { "ENEMY", "💀" },
+            { "ENEMY", "👤" },
             { "Portal", "🌀" },
             { "Treasure", "💰" },
             { "NPC", "🧍" },
@@ -43,7 +119,9 @@ namespace Adventure.Quest.Map
             { "START", "🧍" },
             { "PLAYER", "🧍" }
         };
+        #endregion
 
+        #region === Render Grid ===
         /// <summary>
         /// Converts a 2D list of tile identifiers into a multiline string of emojis,
         /// Producing a visual map layout for display in text-based interfaces.
@@ -78,5 +156,6 @@ namespace Adventure.Quest.Map
             // Trim any trailing newline characters and return the final grid view
             return sb.ToString().TrimEnd();
         }
+        #endregion
     }
 }

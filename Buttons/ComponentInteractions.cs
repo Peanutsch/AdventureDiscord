@@ -171,9 +171,9 @@ namespace Adventure.Buttons
                     return;
                 }
 
-                string areaName = parts[1];
+                string areaId = parts[1];
                 string tileId = parts[2];
-                string key = $"{areaName}:{tileId}";
+                string key = $"{areaId}:{tileId}";
 
                 await ComponentHelpers.MovePlayerAsync(Context, key);
             }

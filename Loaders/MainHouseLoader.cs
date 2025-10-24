@@ -12,28 +12,17 @@ namespace Adventure.Loaders
     /// </summary>
     public static class MainHouseLoader
     {
-        /// <summary>
-        /// Flattened list of all tiles in the main house.
-        /// </summary>
+        // --- Flattened list of all tiles in the main house ---
         public static List<TileModel> AllTiles { get; private set; } = new();
 
-        /// <summary>
-        /// Dictionary for quick tile lookup by "RoomName:TileId".
-        /// </summary>
-        public static Dictionary<string, TileModel> TileLookup { get; private set; } = new();
+        // --- Dictionary for quick tile lookup by "RoomName:TileId" ---
+        public static Dictionary<string, TileModel> TileLookup { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>
-        /// Dictionary of rooms, each containing a list of its tiles.
-        /// </summary>
-        public static Dictionary<string, List<TileModel>> Area { get; private set; } = new();
+        // --- Dictionary of the areas, each containing a list of its tiles ---
+        public static Dictionary<string, List<TileModel>> AreaTiles { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>
-        /// Dictionary of room descriptions for display or embeds.
-        /// </summary>
-        public static Dictionary<string, string> AreaDescriptions { get; private set; } = new();
-
-        public static Dictionary<string, MainHouseAreaModel> AreaModels { get; private set; } = new();
-
+        // --- Lookup of all loaded areas, each containing its tiles, name, and description ---
+        public static Dictionary<string, MainHouseAreaModel> AreaLookup { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Loads all rooms and tiles from the mainhouse JSON file.
@@ -57,16 +46,15 @@ namespace Adventure.Loaders
                 // --- Clear previous data ---
                 AllTiles.Clear();
                 TileLookup.Clear();
-                Area.Clear();
-                AreaDescriptions.Clear();
+                AreaTiles.Clear();
 
                 // --- Process all top-level rooms ---
                 foreach (var area in mainhouse.Area)
                     ProcessArea(area.Key, area.Value);
 
                 // --- Logging summary ---
-                LogService.Info($"[MainHouseLoader] > Loaded {AllTiles.Count} tiles");
-                LogService.Info($"[MainHouseLoader] > {AreaDescriptions.Count} rooms loaded");
+                LogService.Info($"[MainHouseLoader] > Loaded {AreaLookup.Count} areas");
+                LogService.Info($"[MainHouseLoader] > Loaded {AllTiles.Count} tiles\n");
 
                 return AllTiles;
             }
@@ -86,10 +74,15 @@ namespace Adventure.Loaders
         /// <param name="room">The room model from JSON.</param>
         static void ProcessArea(string areaName, MainHouseAreaModel area)
         {
+            LogService.Info($"[MainHouseLoader.ProcessArea] Processing areaName: {areaName}");
+
+            AreaLookup[area.Id] = area;
+            LogService.Info($"[MainHouseLoader.ProcessArea] [{area.Id}] added to dict AreaLookup");
+
             // --- Store tiles for this room ---
             if (area.Tiles != null)
             {
-                Area[areaName] = area.Tiles;      // Save tiles in Rooms dictionary
+                AreaTiles[areaName] = area.Tiles;      // Save tiles in Areas dictionary
                 AllTiles.AddRange(area.Tiles);     // Add to flattened list
 
                 LogService.Info($"[MainHouseLoader.ProcessArea] Loading {areaName}, {area.Tiles.Count} tiles...");
@@ -106,22 +99,6 @@ namespace Adventure.Loaders
                     }
                 }
             }
-
-            // --- Store room description ---
-            AreaDescriptions[areaName] = area.Description;
-            LogService.Info($"[MainHouseLoader.ProcessArea] Storing description {areaName}");
-
-            // --- Process subrooms recursively ---
-            /*
-            if (room.SubRooms != null)
-            {
-                foreach (var sub in room.SubRooms)
-                {
-                    string subName = $"{roomName}.{sub.Key}"; // Prefix parent room name
-                    ProcessArea(subName, sub.Value);
-                }
-            }
-            */
         }
     }
 }

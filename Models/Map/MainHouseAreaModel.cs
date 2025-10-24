@@ -20,9 +20,5 @@ namespace Adventure.Models.Map
 
         [JsonPropertyName("tiles")]
         public List<TileModel> Tiles { get; set; } = new();
-
-        // Genestede kamers (optioneel)
-        [JsonPropertyName("subrooms")]
-        public Dictionary<string, MainHouseAreaModel>? SubRooms { get; set; }
     }
 }

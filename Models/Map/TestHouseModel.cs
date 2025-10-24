@@ -7,15 +7,8 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Map
 {
-    public class RoomData
-    {
-        public string[][] Layout { get; set; } = [];
-        public string Description { get; set; } = string.Empty;
-        public string Connections { get; set; } = string.Empty;
-    }
-
     public class TestHouseModel
     {
-        public Dictionary<string, RoomData> Rooms { get; set; } = new();
+        public Dictionary<string, TestHouseAreaModel> Areas { get; set; } = new();
     }
 }

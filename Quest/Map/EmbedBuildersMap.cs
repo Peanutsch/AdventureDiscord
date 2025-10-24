@@ -98,59 +98,6 @@ namespace Adventure.Quest.Map
         }
         #endregion
 
-        #region ===> old_BuildDirectionButtons <===
-        /// <summary>
-        /// Builds Discord buttons for the available exits on the tile.
-        /// Placeholder buttons ("blocked") are replaced by actual exits if present.
-        /// Row 0: West/East, Row 1: North/South, Break button always row 2.
-        /// </summary>
-        public static ComponentBuilder old_BuildDirectionButtons(TileModel tile)
-        {
-            LogService.DividerParts(1, "BuildDirectionButtons");
-
-            var builder = new ComponentBuilder();
-
-
-            // --- Create a list of placeholders in fixed positions ---
-            var buttons = new List<ButtonBuilder>
-            {
-                new ButtonBuilder().WithLabel("Enter").WithCustomId("blocked_btn_placeholder").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 0, col 0
-                new ButtonBuilder().WithLabel("⬆️").WithCustomId("blocked_north").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 0, col 1
-                new ButtonBuilder().WithLabel("⬅️").WithCustomId("blocked_west").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 1
-                new ButtonBuilder().WithLabel("⬇️").WithCustomId("blocked_south").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 2
-                new ButtonBuilder().WithLabel("➡️").WithCustomId("blocked_east").WithStyle(ButtonStyle.Secondary).WithDisabled(true), // Row 1, col 3
-            };
-
-            var exits = MapService.GetExits(tile, MainHouseLoader.TileLookup);
-
-            // --- Replace placeholders with actual exits if they exist ---
-            if (exits.TryGetValue("North", out var north) && !string.IsNullOrEmpty(north))
-                buttons[1] = new ButtonBuilder().WithLabel(Label("North")).WithCustomId($"move_north:{north}").WithStyle(ButtonStyle.Primary);
-
-            if (exits.TryGetValue("West", out var west) && !string.IsNullOrEmpty(west))
-                buttons[2] = new ButtonBuilder().WithLabel(Label("West")).WithCustomId($"move_west:{west}").WithStyle(ButtonStyle.Primary);
-
-            if (exits.TryGetValue("South", out var south) && !string.IsNullOrEmpty(south))
-                buttons[3] = new ButtonBuilder().WithLabel(Label("South")).WithCustomId($"move_south:{south}").WithStyle(ButtonStyle.Primary);
-
-            if (exits.TryGetValue("East", out var east) && !string.IsNullOrEmpty(east))
-                buttons[4] = new ButtonBuilder().WithLabel(Label("East")).WithCustomId($"move_east:{east}").WithStyle(ButtonStyle.Primary);
-
-            // --- Add buttons to builder with proper rows ---
-            // Row 0
-            builder.WithButton(buttons[0], row: 0); // Placeholder / Button Enter
-            builder.WithButton(buttons[1], row: 0); // Button North
-            builder.WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0); // Button Break
-            // Row 1
-            builder.WithButton(buttons[2], row: 1); // Button West
-            builder.WithButton(buttons[3], row: 1); // Button South
-            builder.WithButton(buttons[4], row: 1); // Button East
-
-            LogService.DividerParts(2, "BuildDirectionButtons");
-            return builder;
-        }
-        #endregion
-
         #region === Embed Builders ===
         /// <summary>
         /// Builds an embed representing the tile with grid, description, and exits.
@@ -160,13 +107,15 @@ namespace Adventure.Quest.Map
         {
             LogService.Info("[EmbedBuildersWalk.EmbedWalk] Building embed...");
 
-            // --- Area name ---
-            var areaName = MainHouseLoader.Area
+            // --- Area Name ---
+            var areaId = MainHouseLoader.AreaTiles
                             .FirstOrDefault(r => r.Value.Contains(tile))
                             .Key ?? "Unknown Room";
 
+            var areaName = MainHouseLoader.AreaLookup[areaId].Name;
+
             // --- Area Description ---
-            var areaDescription = MainHouseLoader.AreaDescriptions[areaName];
+            var areaDescription = MainHouseLoader.AreaLookup[areaId].Description;
 
             // --- Grid visualization ---
             var gridVisual = TileUI.RenderTileGrid(tile.TileGrid) ?? "No grid available";
@@ -183,7 +132,8 @@ namespace Adventure.Quest.Map
                 ? string.Join("\n", exits.Select(e => $"**{e.Key}** leads to **{e.Value}**")) 
                 : "None";
 
-            LogService.Info($"\nRoom: {areaName}\n" +
+            LogService.Info($"\nArea: {areaName}\n" +
+                            $"Area Description:\n{areaDescription}\n" +
                             $"Grid:\n{gridVisual}\n" +
                             $"TileText:\n{tileTextSafe}\n" +
                             $"Exits:\n{exitInfo}\n");
@@ -191,10 +141,12 @@ namespace Adventure.Quest.Map
             // --- Build embed ---
             return new EmbedBuilder()
                 .WithColor(Color.Blue)
-                .AddField($"[{areaName}]", $"{areaDescription}")
+                .AddField($"[{areaName}]", 
+                          $"{areaDescription}")
                 .AddField($"{gridVisual}\n",
                           $"*{tileTextSafe}*")
-                .AddField("[Possible Directions]", exitInfo);
+                .AddField("[Possible Directions]",
+                           exitInfo);
         }
         #endregion
     }

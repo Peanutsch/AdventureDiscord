@@ -94,7 +94,7 @@ namespace Adventure.Modules
             // Direct key match (e.g., "MainRoom:3,2")
             if (MainHouseLoader.TileLookup.TryGetValue(savepoint, out var foundTile))
             {
-                LogService.Info($"[SlashEncounterHelpers.GetTileFromSavePoint] Found tile via direct key match: '{savepoint}'.");
+                LogService.Info($"[SlashEncounterHelpers.GetTileFromSavePoint] Found tile via Key match: '{savepoint}'.");
                 return foundTile;
             }
 

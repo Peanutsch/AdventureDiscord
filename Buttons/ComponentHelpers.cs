@@ -56,16 +56,22 @@ namespace Adventure.Buttons
         /// </summary>
         public static async Task TransferAnimationEmbed(SocketInteractionContext context, string targetTileId)
         {
-            // Split targetTileId into "areaName" and "tile_{row}_{col}"
+            LogService.Info($"Received targetTileId: {targetTileId}");
+
+            // Split targetTileId into "areaId" and "tile_{row}_{col}"
             var parts = targetTileId.Split(':');
-            var roomName = parts[0];
+            var areaId = parts[0];
+
+            var areaName = MainHouseLoader.AreaLookup[areaId].Name;
+
+            LogService.Info($"areaId: {areaId}, areaName: {areaName}");
 
             // --- Replace the existing message with a temporary "Moving..." embed ---
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
                 msg.Embed = new EmbedBuilder()
-                    .WithTitle("🚶 Moving...")
-                    .WithDescription($"Walking to **{roomName}**...")
+                    .WithTitle("🏃 Moving...")
+                    .WithDescription($"Moving to **{areaName}**...")
                     .WithColor(Color.Orange)
                     .Build();
 

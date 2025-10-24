@@ -159,9 +159,9 @@ namespace Adventure.Data
         #endregion
 
         #region === TestHouseModel ===
-        private static TestHouseModel? _testhouse;
+        private static List<TileModel>? _testhouse;
 
-        public static TestHouseModel? TestHouse
+        public static List<TileModel>? TestHouse
         {
             get => _testhouse;
             set => _testhouse = value;

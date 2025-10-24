@@ -1,6 +1,6 @@
 {
   "Area": {
-    "Living_Room": {
+    "living_room": {
       "id":  "living_room",
       "name": "Living Room",
       "description": "A small living room with worn furniture and a flickering light.\nOn the south side is a wooden door.",
@@ -297,7 +297,7 @@
         }
       ]
     },
-    "Small_Pond": {
+    "small_pond": {
       "id":  "small_pond",
       "name": "Small Pond",
       "description": "A small pond with grassy edges. The water glimmers softly.\nA perfect place to hide and get some rest...",

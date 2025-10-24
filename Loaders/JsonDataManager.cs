@@ -25,7 +25,7 @@ namespace Adventure.Loaders
             var json = File.ReadAllText(filePath);
 
             LogService.Info($"[JsonDataManager.LoadListFromJson] Method LoadListFromJson is called...\n" +
-                            $"> Returning [LIST] of Param filepath: {filePath}...");
+                            $"> Returning [LIST] of filepath: {filePath}...");
 
             return JsonSerializer.Deserialize<List<T>>(json);
         }
@@ -43,7 +43,7 @@ namespace Adventure.Loaders
             var json = File.ReadAllText(filePath);
 
             LogService.Info($"[JsonDataManager.LoadObjectFromJson] Method LoadObjectFromJson is called...\n" +
-                            $"> Returning [OBJECT] of Param filepath: {filePath}...");
+                            $"> Returning [OBJECT] of filepath: {filePath}...");
 
             return JsonSerializer.Deserialize<T>(json);
         }

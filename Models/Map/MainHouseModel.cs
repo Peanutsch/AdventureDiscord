@@ -11,6 +11,5 @@ namespace Adventure.Models.Map
     {
         [JsonPropertyName("Area")]
         public Dictionary<string, MainHouseAreaModel> Area { get; set; } = new();
-        //public Dictionary<string, List<TileModel>> Rooms { get; set; } = new();
     }
 }

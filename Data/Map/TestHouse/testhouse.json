@@ -1,25 +1,31 @@
 ﻿{
-  "rooms": {
-    "room1": {
+  "Areas": {
+    "living_room": {
+      "id":  "living_room",
+      "name": "Living Room",
+      "description": "A small living room with worn furniture and a flickering light.\nOn the south side is a wooden door.",
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "Wall", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall" ],
+        [ "Wall", "Floor", "Floor", "Floor", "Wall", "ENEMY", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
-        [ "Wall", "Wall", "START", "Floor", "Floor", "Wall", "Wall" ],
+        [ "Wall", "Wall", "Door", "Floor", "Floor", "Wall", "Wall" ],
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ],
-      "description": "Info about room_1",
-      "conections": []
+      "conections": [ "small_pond" ]
     },
-    "room2": {
+    "small_pond": {
+      "id": "small_pond",
+      "name": "Small Pond",
+      "description": "A small pond with grassy edges. The water glimmers softly.\nA perfect place to hide and get some rest...",
       "layout": [
-        [ "Wall", "Door", "Wall" ],
-        [ "Wall", "Floor", "Wall" ],
-        [ "Wall", "Wall", "Wall" ]
+        [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
+        [ "Wall", "Door", "Floor", "Floor", "Wall" ],
+        [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
+        [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
+        [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ],
-      "description": "An empty second room",
-      "conections": []
+      "conections": [ "living_room" ]
     }
   }
 }
