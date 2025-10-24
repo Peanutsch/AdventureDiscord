@@ -198,7 +198,18 @@ namespace Adventure.Buttons
                 LogService.Info($"[EnterTileHandler] Received data: {data}");
                 await Context.Interaction.DeferAsync();
 
+                List<string> CatchParts = new List<string>();
                 var parts = data.Split(':');
+                var counter = 0;
+                foreach (var part in parts)
+                {
+                    LogService.Info($"[EnterTileHandler] ({counter}) [{part}] added to CatchParts");
+                    CatchParts.Add(part);
+
+                    counter++;
+                }
+
+                LogService.Info($"CatchParts: [{string.Join(',', CatchParts)}]");
 
                 string areaName = parts[1];
                 string tileId = parts[2];
