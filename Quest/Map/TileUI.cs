@@ -189,7 +189,7 @@ namespace Adventure.Quest.Map
                     {
                         "Wall" => "⬛",
                         "Floor" => "⬜",
-                        "Water" => "💧",
+                        "Water" => "🟦",
                         "DOOR" => "🚪",
                         "ENEMY" => "👤",
                         "START" => "⬜",

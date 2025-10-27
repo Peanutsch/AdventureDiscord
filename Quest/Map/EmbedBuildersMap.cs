@@ -29,22 +29,23 @@ namespace Adventure.Quest.Map
 
             // --- Default disabled buttons ---
             var buttons = new List<ButtonBuilder>
-            {
-                new ButtonBuilder().WithLabel("Enter").WithCustomId("enter:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-                new ButtonBuilder().WithLabel("⬆️").WithCustomId("move_north:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-                new ButtonBuilder().WithLabel("⬅️").WithCustomId("move_west:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-                new ButtonBuilder().WithLabel("⬇️").WithCustomId("move_south:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-                new ButtonBuilder().WithLabel("➡️").WithCustomId("move_east:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true)
-            };
+    {
+        new ButtonBuilder().WithLabel("Enter").WithCustomId("enter:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+        new ButtonBuilder().WithLabel("⬆️").WithCustomId("move_north:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+        new ButtonBuilder().WithLabel("⬅️").WithCustomId("move_west:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+        new ButtonBuilder().WithLabel("⬇️").WithCustomId("move_south:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+        new ButtonBuilder().WithLabel("➡️").WithCustomId("move_east:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true)
+    };
 
             // --- Enable movement buttons op basis van tile connections ---
-            if (tile.Connections != null && tile.Connections.Count > 0)
+            if (tile.Connections != null)
             {
                 foreach (var targetTileId in tile.Connections)
                 {
                     if (!TestHouseLoader.TileLookup.TryGetValue(targetTileId, out var targetTile)) continue;
 
-                    string? dir = targetTile.TileDirectionFrom(tile); // Berekent richting t.o.v. huidige tile
+                    // Gebruik MapService om richting te bepalen
+                    string? dir = MapService.DetermineDirection(tile, targetTile);
                     if (dir == null) continue;
 
                     int index = dir switch
@@ -57,29 +58,36 @@ namespace Adventure.Quest.Map
                     };
 
                     if (index >= 0)
+                    {
                         buttons[index] = new ButtonBuilder()
                             .WithLabel(Label(dir))
                             .WithCustomId($"move:{targetTile.TileId}")
                             .WithStyle(ButtonStyle.Primary)
                             .WithDisabled(false);
+                    }
                 }
             }
 
             // --- Enable Enter button alleen als huidige tile een DOOR is ---
-            if (tile.TileType.Equals("DOOR", System.StringComparison.OrdinalIgnoreCase))
+            if (tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) && tile.Connections?.Count > 0)
             {
-                // Neem eerste verbinding als bestemming
-                if (tile.Connections != null && tile.Connections.Count > 0)
+                // connection uit detail ("small_pond:DOOR") → vind de echte TileId in TileLookup
+                string connectionRef = tile.Connections[0]; // "small_pond:DOOR"
+                var parts = connectionRef.Split(':'); // ["small_pond", "DOOR"]
+                string areaId = parts[0];
+                string detailId = parts[1];
+
+                // Zoek tile in TileLookup van dat areaId en detailId
+                var targetTile = TestHouseLoader.AreaLookup[areaId].Tiles
+                    .FirstOrDefault(t => t.TileType.Equals(detailId, StringComparison.OrdinalIgnoreCase));
+
+                if (targetTile != null)
                 {
-                    string firstConnection = tile.Connections[0];
-                    if (TestHouseLoader.TileLookup.ContainsKey(firstConnection))
-                    {
-                        buttons[0] = new ButtonBuilder()
-                            .WithLabel("Enter")
-                            .WithCustomId($"enter:{firstConnection}")
-                            .WithStyle(ButtonStyle.Success)
-                            .WithDisabled(false);
-                    }
+                    buttons[0] = new ButtonBuilder()
+                        .WithLabel("Enter")
+                        .WithCustomId($"enter:{targetTile.TileId}") // echte tileId
+                        .WithStyle(ButtonStyle.Success)
+                        .WithDisabled(false);
                 }
             }
 
@@ -94,28 +102,6 @@ namespace Adventure.Quest.Map
 
             LogService.DividerParts(2, "BuildDirectionButtons");
             return builder;
-        }
-    
-
-        // Helper om richting te bepalen tussen twee tiles
-        private static string? DetermineDirection(TileModel current, TileModel target)
-        {
-            if (current.TilePosition == null || target.TilePosition == null) return null;
-
-            var currParts = current.TilePosition.Split(',');
-            var targParts = target.TilePosition.Split(',');
-
-            if (currParts.Length != 2 || targParts.Length != 2) return null;
-
-            int currRow = int.Parse(currParts[0]), currCol = int.Parse(currParts[1]);
-            int targRow = int.Parse(targParts[0]), targCol = int.Parse(targParts[1]);
-
-            if (targRow < currRow) return "North";
-            if (targRow > currRow) return "South";
-            if (targCol < currCol) return "West";
-            if (targCol > currCol) return "East";
-
-            return null;
         }
         #endregion
 
@@ -138,7 +124,7 @@ namespace Adventure.Quest.Map
                 ? string.Join("\n", tile.Connections.Select(conn =>
                 {
                     if (!TestHouseLoader.TileLookup.TryGetValue(conn, out var t)) return conn;
-                    var dir = DetermineDirection(tile, t) ?? "Unknown";
+                    var dir = MapService.DetermineDirection(tile, t) ?? "Unknown";
                     var targetAreaName = TestHouseLoader.AreaLookup.TryGetValue(t.AreaId, out var areaT) ? areaT.Name : t.AreaId;
                     return $"{dir} → {targetAreaName} ({t.TileId})";
                 }))

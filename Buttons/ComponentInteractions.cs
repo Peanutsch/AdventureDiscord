@@ -152,17 +152,19 @@ namespace Adventure.Buttons
 
                 if (!TestHouseLoader.TileLookup.TryGetValue(tileId, out var targetTile))
                 {
-                    await Context.Interaction.FollowupAsync($"❌ Target tile '{tileId}' not found.", ephemeral: true);
+                    await Context.Interaction.FollowupAsync($"❌ Target tile '{tileId}' not found.", ephemeral: false);
                     return;
                 }
 
+                LogService.Info($"[ComponentInteractions.EnterTileHandler] TileType: {targetTile.TileType}");
                 if (!targetTile.TileType.Equals("DOOR", System.StringComparison.OrdinalIgnoreCase))
                 {
-                    await Context.Interaction.FollowupAsync("⚠️ You can only enter through a door.", ephemeral: true);
+                    LogService.Error($"⚠️ You can only enter through a door.");
+                    await Context.Interaction.FollowupAsync("⚠️ You can only enter through a door.", ephemeral: false);
                     return;
                 }
 
-                await ComponentHelpers.MovePlayerAsync(Context, tileId, showTravelAnimation: true);
+                await ComponentHelpers.MovePlayerAsync(Context, tileId, showTravelAnimation: false);
             }
             catch (Exception ex)
             {
