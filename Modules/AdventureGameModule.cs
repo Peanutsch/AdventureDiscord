@@ -1,4 +1,4 @@
-﻿using Adventure.Models.Map;
+using Adventure.Models.Map;
 using Adventure.Services;
 using Adventure.Models.Player;
 using Discord.Interactions;
@@ -109,6 +109,45 @@ namespace Adventure.Modules
                 await FollowupAsync("⚠️ Internal error while creating or loading player.");
                 return;
             }
+
+            // --- 3️⃣ Tile ophalen via savepoint ---
+            var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint);
+
+            // --- 4️⃣ Fallback naar START tile als savepoint ongeldig ---
+            if (tile == null)
+            {
+                LogService.Info($"[WalkCommand] Savepoint '{player.Savepoint}' ongeldig. Fallback naar START tile.");
+                tile = SlashCommandHelpers.FindStartTile();
+
+                if (tile != null)
+                {
+                    // Update player's savepoint zodat volgende keer correct start
+                    player.Savepoint = $"{tile.AreaId}:{tile.TilePosition}";
+                    JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, player.Savepoint);
+                    LogService.Info($"[WalkCommand] Savepoint automatisch ingesteld: {player.Savepoint}");
+                }
+                else
+                {
+                    await FollowupAsync("❌ No START tile found in any area. Cannot start.", ephemeral: true);
+                    return;
+                }
+            }
+
+            // --- 5️⃣ Room name ophalen ---
+            string startingRoom = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var area)
+                ? area.Name
+                : "Unknown Room";
+
+            LogService.Info($"[/walk] Starting in room: {startingRoom}, position: {tile.TilePosition}");
+
+            // --- 6️⃣ Embed en knoppen opbouwen ---
+            var embed = EmbedBuildersMap.EmbedWalk(tile);
+            var components = EmbedBuildersMap.BuildDirectionButtons(tile);
+
+            // --- 7️⃣ Discord response sturen ---
+            await FollowupAsync(embed: embed.Build(), components: components?.Build());
+        }
+        #endregion
 
             //var player = JsonDataManager.LoadPlayerFromJson(user.Id);
             var tile = SlashCommandHelpers.GetTileFromSavePoint(player!.Savepoint);
