@@ -33,6 +33,9 @@ namespace Adventure.Models.Player
         [JsonPropertyName("maxCarry")]
         public double MaxCarry { get; set; }
 
+        [JsonPropertyName("savepoint")]
+        public string Savepoint { get; set; } = "ERROR_LAST_SAVEPOINT";
+
         [JsonPropertyName("attributes")]
         public AttributesModel Attributes { get; set; } = new();
 

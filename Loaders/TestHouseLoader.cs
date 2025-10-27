@@ -2,104 +2,140 @@
 using Adventure.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Adventure.Loaders
 {
-    /// <summary>
-    /// Static loader for the TestHouse map.
-    /// Populates areas and tiles, ensuring TileId and TilePosition match savepoints.
-    /// </summary>
-    public static class TestHouseLoader
+    public class TestHouseLoader
     {
-        /// <summary>
-        /// Lookup dictionary for all loaded areas, keyed by area ID.
-        /// </summary>
+        // Flattened list of all tiles
+        public static List<TileModel> AllTiles { get; set; } = new();
+
+        // Quick lookup by "AreaId:TileId"
+        public static Dictionary<string, TileModel> TileLookup { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+
+        // Tiles grouped by area
+        public static Dictionary<string, List<TileModel>> AreaTiles { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+
+        // Area metadata
         public static Dictionary<string, TestHouseAreaModel> AreaLookup { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Lookup dictionary for all tiles, keyed by TileId ("areaId:row,col").
+        /// Loads the house layout and merges tile details.
         /// </summary>
-        public static Dictionary<string, TileModel> TileLookup { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+        public static List<TileModel>? Load()
+        {
+            try
+            {
+                var houseLayout = JsonDataManager.LoadObjectFromJson<TestHouseModel>("Data/Map/TestHouse/testhouse.json");
+                var tileDetails = JsonDataManager.LoadObjectFromJson<TestHouseTilesModel>("Data/Map/TestHouse/testhousetiles.json");
+
+                if (houseLayout?.Areas == null || houseLayout.Areas.Count == 0)
+                {
+                    LogService.Error("[TestHouseLoader] > Failed to load testhouse.json or no areas found.");
+                    return null;
+                }
+
+                if (tileDetails?.Areas == null || tileDetails.Areas.Count == 0)
+                {
+                    LogService.Error("[TestHouseLoader] > Failed to load testhousetiles.json or no areas found.");
+                }
+
+                // Clear previous data
+                AllTiles.Clear();
+                TileLookup.Clear();
+                AreaTiles.Clear();
+                AreaLookup.Clear();
+
+                foreach (var areaKvp in houseLayout.Areas)
+                    ProcessArea(areaKvp.Key, areaKvp.Value, tileDetails!);
+
+                LogService.Info($"[TestHouseLoader] > Loaded {AreaLookup.Count} areas");
+                LogService.Info($"[TestHouseLoader] > Loaded {AllTiles.Count} tiles\n");
+
+                return AllTiles;
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[TestHouseLoader] > Error loading JSON files:\n{ex}");
+                return null;
+            }
+        }
 
         /// <summary>
-        /// Loads all TestHouse areas and tiles from JSON files.
-        /// Ensures each tile has a proper TileId ("areaId:row,col"), TileType, and valid Connections.
+        /// Process an area: generate TileModels from layout strings and merge tile details.
         /// </summary>
-        /// <returns>List of all loaded TileModels.</returns>
-        public static List<TileModel> Load()
+        private static void ProcessArea(string areaName, TestHouseAreaModel area, TestHouseTilesModel tileDetails)
         {
-            LogService.Info("[TestHouseLoader] Starting load of TestHouse...");
-
-            // Load JSON map data
-            var houseLayout = JsonDataManager.LoadObjectFromJson<TestHouseModel>("Data/Map/TestHouse/testhouse.json");
-            var tileDetails = JsonDataManager.LoadObjectFromJson<TestHouseTilesModel>("Data/Map/TestHouse/testhousetiles.json");
-
-            var allTiles = new List<TileModel>();
-            AreaLookup.Clear();
-            TileLookup.Clear();
-
-            foreach (var areaKvp in houseLayout!.Areas)
+            if (area == null)
             {
-                var areaId = areaKvp.Key;
-                var area = areaKvp.Value;
+                LogService.Error($"[TestHouseLoader.ProcessArea] Area {areaName} is null!");
+                return;
+            }
 
-                LogService.Info($"[TestHouseLoader] Found in testhouse.json -> areaId: {areaId}, areaName: {area.Name}");
+            LogService.Info($"[TestHouseLoader.ProcessArea] Processing areaName: {areaName}");
 
-                area.Tiles = new List<TileModel>();
+            AreaLookup[area.Id] = area;
 
-                // Get detailed tile info from testhousetiles.json if available
-                var areaTileDetails = tileDetails?.Areas.ContainsKey(area.Id) == true
-                    ? tileDetails.Areas[area.Id]
-                    : new List<TestHouseTileDetailModel>();
+            var areaTileList = new List<TileModel>();
+            int tileCounter = 0;
 
-                LogService.Info($"[TestHouseLoader] Found in testhousetiles.json for {areaId} -> {areaTileDetails.Count} tile details.");
+            // Get details for this area
+            var areaTileDetails = tileDetails?.Areas.ContainsKey(area.Id) == true
+                ? tileDetails.Areas[area.Id]
+                : new List<TestHouseTileDetailModel>();
 
-                // --- Build the tile grid ---
+            if (area.Layout != null && area.Layout.Count > 0)
+            {
                 for (int row = 0; row < area.Layout.Count; row++)
                 {
                     for (int col = 0; col < area.Layout[row].Count; col++)
                     {
-                        string tileType = area.Layout[row][col];   // e.g. "DOOR", "START", "Floor"
-                        string tilePosition = $"{row},{col}";
-                        string tileId = $"{area.Id}:{tilePosition}";
+                        string tileType = area.Layout[row][col];
 
-                        // Match this tile to its detailed info (if exists)
-                        var detail = areaTileDetails.FirstOrDefault(t =>
-                            t.Id.Equals(tileType, StringComparison.OrdinalIgnoreCase));
-
-                        // --- Create the TileModel ---
                         var tile = new TileModel
                         {
-                            TileId = tileId,
-                            TileName = tileType, // bv "START", "DOOR", "Floor"
-                            AreaId = area.Id,
-                            TileType = tileType,
-                            TilePosition = tilePosition,
-                            TileText = detail?.Text ?? string.Empty,
-                            Overlays = detail?.Overlays ?? new List<string>(),
-                            TilePOI = detail?.Pois ?? new List<string>(),
-                            TileItems = detail?.Items ?? new List<string>(),
-                            Connections = detail?.Connections ?? new List<string>()
+                            TileId = $"{row}_{col}",
+                            TileName = tileType,
+                            TilePosition = $"{row},{col}",
+                            AreaId = area.Id
                         };
 
-                        // Add tile to the collections
-                        area.Tiles.Add(tile);
-                        allTiles.Add(tile);
+                        // Merge details from testhousetiles.json
+                        var detail = areaTileDetails.Find(t => t.Id.Equals(tileType, StringComparison.OrdinalIgnoreCase));
+                        if (detail != null)
+                        {
+                            tile.TileText = detail.Text;
+                            tile.Overlays = detail.Overlays ?? new List<string>();
+                            tile.TilePOI = detail.Pois ?? new List<string>();
+                            tile.TileItems = detail.Items ?? new List<string>();
+                            tile.Connections = detail.Connections ?? new List<string>();
+                        }
+                        else
+                        {
+                            tile.TileText = tileType; // fallback if no detail found
+                            tile.Overlays = new List<string>();
+                            tile.TilePOI = new List<string>();
+                            tile.TileItems = new List<string>();
+                            tile.Connections = new List<string>();
+                        }
 
-                        TileLookup[tile.TileId] = tile;
-                        // TileLookup op basis van Name (START, DOOR, etc.)
-                        if (!TileLookup.ContainsKey(tile.TileName))
-                            TileLookup[tile.TileName] = tile;
+                        areaTileList.Add(tile);
+                        AllTiles.Add(tile);
+
+                        string key = $"{area.Id}:{tile.TileId}";
+                        TileLookup[key] = tile;
+
+                        tileCounter++;
                     }
                 }
-
-                // Store the area in lookup
-                AreaLookup[area.Id] = area;
+            }
+            else
+            {
+                LogService.Error($"[TestHouseLoader.ProcessArea] Area {areaName} has no layout, skipping tiles.");
             }
 
-            LogService.Info($"[TestHouseLoader] Loaded {AreaLookup.Count} areas total. Total tiles: {allTiles.Count}");
-            return allTiles;
+            AreaTiles[areaName] = areaTileList;
+            LogService.Info($"[TestHouseLoader.ProcessArea] Loaded {tileCounter} tiles for area {areaName}");
         }
     }
 }

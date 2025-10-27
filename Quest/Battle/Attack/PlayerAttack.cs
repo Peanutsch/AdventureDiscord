@@ -20,17 +20,29 @@ class PlayerAttack
             var rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
             var (leveledUp, oldLevel, newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
 
-            battleLog += $"\n\n💀 **VICTORY!!! {state.Npc.Name} is defeated!**";
+            battleLog += $"\n\n💀 **VICTORY!!! {state.Npc.Name} is defeated after {state.RoundCounter} {UseOfS(state.RoundCounter)}!**";
             battleLog += $"\n🏆 **{state.Player.Name}** gains **{state.RewardXP} XP** (Total: {state.NewTotalXP} XP)";
 
             if (leveledUp)
                 battleLog += $"\n\n✨ **LEVEL UP!** {state.Player.Name} advanced from **Level {oldLevel} → Level {newLevel}**!";
-        }
+        }   
         else
         {
             EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepPostBattle);
         }
 
         return battleLog;
+    }
+
+    public static string UseOfS(int round)
+    {
+        if (round > 0)
+        {
+            return "rounds";
+        }
+        else
+        {
+            return "round";
+        }
     }
 }

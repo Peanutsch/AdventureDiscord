@@ -16,15 +16,12 @@ namespace Adventure.Models.Map
         public string Name { get; set; } = "ERROR_AREA_NAME";
 
         [JsonPropertyName("description")]
-        public string Description { get; set; } = "ERROR_AREA_DESCRIPTION";
+        public string Description { get; set; } = string.Empty;
 
         [JsonPropertyName("connections")]
         public string Connections { get; set; } = string.Empty;
         
         [JsonPropertyName("layout")]
         public List<List<string>> Layout { get; set; } = new();
-
-        [JsonIgnore]
-        public List<TileModel> Tiles { get; set; } = new();
     }
 }

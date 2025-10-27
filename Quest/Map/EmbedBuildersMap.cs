@@ -17,15 +17,14 @@ namespace Adventure.Quest.Map
     public class EmbedBuildersMap
     {
         #region === Buttons ===
-
         /// <summary>
-        /// Returns the emoji label for a directional button.
+        /// Returns the label for a directional button using emojis.
         /// </summary>
-        /// <param name="direction">Direction: "North", "South", "East", "West"</param>
-        /// <returns>Emoji string representing the direction</returns>
+        /// <param name="direction">The direction (North, South, East, West)</param>
+        /// <returns>Formatted string with emoji and direction</returns>
         public static string Label(string direction)
         {
-            return direction switch
+            string label = direction switch
             {
                 "West" => "⬅️",
                 "North" => "⬆️",
@@ -33,177 +32,121 @@ namespace Adventure.Quest.Map
                 "East" => "➡️",
                 _ => direction
             };
+
+            LogService.Info($"[EmbedbuildersWalk.Label] Direction: {direction}, Lable: {label}");
+
+            return label;
         }
 
         /// <summary>
-        /// Builds Discord buttons for available exits on the tile.
-        /// Uses the updated tilePosition-based connections.
+        /// Builds Discord buttons for the available exits on the tile, including "Enter" for connected tiles.
         /// </summary>
-        /// <param name="tile">Current tile model</param>
-        /// <returns>ComponentBuilder with buttons for each exit</returns>
+        /// <param name="tile">The current tile model.</param>
+        /// <returns>A ComponentBuilder with directional and Enter buttons.</returns>
         public static ComponentBuilder BuildDirectionButtons(TileModel tile)
         {
             LogService.DividerParts(1, "BuildDirectionButtons");
 
             var builder = new ComponentBuilder();
 
-            // --- Placeholder buttons (disabled by default) ---
+            // --- Create placeholder buttons ---
             var buttons = new List<ButtonBuilder>
-        {
-            new ButtonBuilder().WithLabel("Enter").WithCustomId("blocked_enter").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-            new ButtonBuilder().WithLabel("⬆️").WithCustomId("blocked_north").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-            new ButtonBuilder().WithLabel("⬅️").WithCustomId("blocked_west").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-            new ButtonBuilder().WithLabel("⬇️").WithCustomId("blocked_south").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-            new ButtonBuilder().WithLabel("➡️").WithCustomId("blocked_east").WithStyle(ButtonStyle.Secondary).WithDisabled(true)
-        };
-
-            // --- Get exits for this tile ---
-            var exits = MapService.GetExits(tile);
-
-            // Map directional buttons automatically based on exits
-            foreach (var exit in exits)
             {
-                // exit.Key = targetAreaId, exit.Value = targetTileId
-                var direction = DetermineDirection(tile, exit.Value); // helper to decide N/S/E/W if needed
-                if (direction == null) continue;
+                new ButtonBuilder().WithLabel("Enter").WithCustomId("blocked_enter").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+                new ButtonBuilder().WithLabel("⬆️").WithCustomId("blocked_north").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+                new ButtonBuilder().WithLabel("⬅️").WithCustomId("blocked_west").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+                new ButtonBuilder().WithLabel("⬇️").WithCustomId("blocked_south").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+                new ButtonBuilder().WithLabel("➡️").WithCustomId("blocked_east").WithStyle(ButtonStyle.Secondary).WithDisabled(true)
+            };
 
-                var index = direction switch
-                {
-                    "North" => 1,
-                    "West" => 2,
-                    "South" => 3,
-                    "East" => 4,
-                    _ => -1
-                };
+            // --- Get directional exits ---
+            var exits = MapService.GetExits(tile, MainHouseLoader.TileLookup);
 
-                if (index >= 0)
-                    buttons[index] = new ButtonBuilder()
-                        .WithLabel(Label(direction))
-                        .WithCustomId($"move_{direction.ToLower()}:{exit.Key}:{exit.Value}") // include target area + tile
-                        .WithStyle(ButtonStyle.Primary);
-            }
+            if (exits.TryGetValue("North", out var north) && !string.IsNullOrEmpty(north))
+                buttons[1] = new ButtonBuilder().WithLabel(Label("North")).WithCustomId($"move_north:{north}").WithStyle(ButtonStyle.Primary);
 
-            // --- Enable "Enter" button if there is at least one connection ---
+            if (exits.TryGetValue("West", out var west) && !string.IsNullOrEmpty(west))
+                buttons[2] = new ButtonBuilder().WithLabel(Label("West")).WithCustomId($"move_west:{west}").WithStyle(ButtonStyle.Primary);
+
+            if (exits.TryGetValue("South", out var south) && !string.IsNullOrEmpty(south))
+                buttons[3] = new ButtonBuilder().WithLabel(Label("South")).WithCustomId($"move_south:{south}").WithStyle(ButtonStyle.Primary);
+
+            if (exits.TryGetValue("East", out var east) && !string.IsNullOrEmpty(east))
+                buttons[4] = new ButtonBuilder().WithLabel(Label("East")).WithCustomId($"move_east:{east}").WithStyle(ButtonStyle.Primary);
+
+            // --- Enable Enter button if there are connections ---
             if (tile.Connections != null && tile.Connections.Count > 0)
             {
-                var firstConnection = tile.Connections[0]; // format: areaId:tilePosition
-                buttons[0] = new ButtonBuilder()
-                    .WithLabel("Enter")
-                    .WithCustomId($"enter:{firstConnection}")
-                    .WithStyle(ButtonStyle.Success);
+                // Use the first item in connection as target
+                var targetConnection = tile.Connections[0];
+                buttons[0] = new ButtonBuilder().WithLabel("Enter").WithCustomId($"enter:{targetConnection}").WithStyle(ButtonStyle.Success);
             }
 
             // --- Add buttons to ComponentBuilder ---
-            // Row 0: Enter + North + optional break button
-            builder.WithButton(buttons[0], row: 0)
-                   .WithButton(buttons[1], row: 0)
-                   .WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0);
+            // Row 0
+            builder.WithButton(buttons[0], row: 0); // Enter
+            builder.WithButton(buttons[1], row: 0); // North
+            builder.WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0); // Break button
 
-            // Row 1: West, South, East
-            builder.WithButton(buttons[2], row: 1)
-                   .WithButton(buttons[3], row: 1)
-                   .WithButton(buttons[4], row: 1);
+            // Row 1
+            builder.WithButton(buttons[2], row: 1); // West
+            builder.WithButton(buttons[3], row: 1); // South
+            builder.WithButton(buttons[4], row: 1); // East
 
             LogService.DividerParts(2, "BuildDirectionButtons");
             return builder;
-        }
-
-        /// <summary>
-        /// Determines the direction of a target tile relative to the current tile.
-        /// Optional: implement logic based on TilePosition to decide North/South/East/West.
-        /// </summary>
-        /// <param name="tile">Current tile</param>
-        /// <param name="targetTileId">Target tile ID (e.g., "1_1" or "START")</param>
-        /// <returns>Direction as string ("North", "South", "East", "West") or null if unknown</returns>
-        private static string? DetermineDirection(TileModel tile, string targetTileId)
-        {
-            // If the current tile has TilePosition in "row,col" format
-            if (string.IsNullOrWhiteSpace(tile.TilePosition) || string.IsNullOrWhiteSpace(targetTileId))
-                return null;
-
-            var parts = tile.TilePosition.Split(',');
-            if (parts.Length != 2 || !int.TryParse(parts[0], out int row) || !int.TryParse(parts[1], out int col))
-                return null;
-
-            // For START tile or unknown format, return null (button may just be "Enter")
-            if (targetTileId.Equals("START", StringComparison.OrdinalIgnoreCase))
-                return null;
-
-            var targetParts = targetTileId.Split('_');
-            if (targetParts.Length != 2 || !int.TryParse(targetParts[0], out int targetRow) || !int.TryParse(targetParts[1], out int targetCol))
-                return null;
-
-            // Determine direction
-            if (targetRow < row) return "North";
-            if (targetRow > row) return "South";
-            if (targetCol < col) return "West";
-            if (targetCol > col) return "East";
-
-            return null; // same tile or unknown
         }
         #endregion
 
         #region === Embed Builders ===
         /// <summary>
-        /// Builds a Discord embed representing a tile, including grid visualization,
-        /// tile description, and possible exits. Uses TileModel wrapper for rendering.
+        /// Builds an embed representing the tile with grid, description, and exits.
+        /// Safe: no null or empty values that crash Discord embeds.
         /// </summary>
         public static EmbedBuilder EmbedWalk(TileModel tile)
         {
-            LogService.Info("[EmbedBuildersMap.EmbedWalk] Building embed...");
+            LogService.Info("[EmbedBuildersWalk.EmbedWalk] Building embed...");
 
-            // --- Retrieve the area this tile belongs to ---
-            var area = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var foundArea)
-                       ? foundArea
-                       : new TestHouseAreaModel
-                       {
-                           Name = "Unknown Room",
-                           Description = "No description available."
-                       };
+            // --- Area Name ---
+            var areaId = MainHouseLoader.AreaTiles
+                            .FirstOrDefault(r => r.Value.Contains(tile))
+                            .Key ?? "Unknown Room";
 
-            // --- Area name and description ---
-            var areaName = area.Name;
-            var areaDescription = area.Description;
+            var areaName = MainHouseLoader.AreaLookup[areaId].Name;
 
-            // --- Render the grid using the TileModel wrapper ---
-            // This automatically parses tile.TilePosition and places the player emoji
-            string gridVisual = TileUI.RenderTileGrid(tile);
+            // --- Area Description ---
+            var areaDescription = MainHouseLoader.AreaLookup[areaId].Description;
 
-            // --- Tile description, safe fallback ---
-            string tileTextSafe = string.IsNullOrWhiteSpace(tile.TileText)
-                ? "<Fallback Text>\nNothing to report..."
+            // --- Grid visualization ---
+            var gridVisual = TileUI.RenderTileGrid(tile.TileGrid) ?? "No grid available";
+
+            // --- Tile description ---
+            var tileTextSafe = string.IsNullOrWhiteSpace(tile.TileText)
+                ? "nothing to report..."
                 : tile.TileText;
 
-            // --- Retrieve exits using MapService ---
-            var exits = MapService.GetExits(tile);
+            // --- Exits ---
+            var exits = MapService.GetExits(tile, MainHouseLoader.TileLookup);
 
-            // --- Build exit information string for embed ---
-            string exitInfo = exits.Any()
-                ? string.Join("\n", exits.Select(e =>
-                {
-                    var targetAreaName = TestHouseLoader.AreaLookup.TryGetValue(e.Key, out var targetArea)
-                        ? targetArea.Name
-                        : e.Key;
-                    return $"**{e.Key}** ({targetAreaName}) → Tile: {e.Value}";
-                }))
+            var exitInfo = (exits != null && exits.Any())
+                ? string.Join("\n", exits.Select(e => $"**{e.Key}** leads to **{e.Value}**")) 
                 : "None";
 
-            // --- Log for debugging ---
             LogService.Info($"\nArea: {areaName}\n" +
-                            $"Description:\n{areaDescription}\n" +
+                            $"Area Description:\n{areaDescription}\n" +
                             $"Grid:\n{gridVisual}\n" +
-                            $"Tile Text:\n{tileTextSafe}\n" +
-                            $"Exits:\n{exitInfo}\n" +
-                            $"Current Tile: {tile.TileId}");
+                            $"TileText:\n{tileTextSafe}\n" +
+                            $"Exits:\n{exitInfo}\n");
 
-            // --- Build and return the Discord embed ---
+            // --- Build embed ---
             return new EmbedBuilder()
                 .WithColor(Color.Blue)
-                .AddField($"[{areaName}]", areaDescription)
-                .AddField($"{gridVisual}\n", $"*{tileTextSafe}*")
-                .AddField("[Possible Directions]", exitInfo)
-                .AddField("[Current Tile]", tile.TileId)
-                .AddField("[Tile Position]", tile.TilePosition);
+                .AddField($"[{areaName}]", 
+                          $"{areaDescription}")
+                .AddField($"{gridVisual}\n",
+                          $"*{tileTextSafe}*")
+                .AddField("[Possible Directions]",
+                           exitInfo);
         }
         #endregion
     }

@@ -1,380 +1,390 @@
-[
-  {
-    "id": "goblin",
-    "name": "Goblin",
-    "description": "A small, wiry creature with green skin, sharp teeth, and a mischievous grin. More cunning than brave, and more annoying than deadly—unless you turn your back.",
-    "challengeRate": 0.125,
-    "attributes": {
-      "strength": 8,
-      "dexterity": 14,
-      "constitution": 10,
-      "intelligence": 10,
-      "wisdom": 8,
-      "charisma": 8
+{
+  "humanoids": [
+    {
+      "id": "goblin",
+      "name": "Goblin",
+      "description": "A small, wiry creature with green skin, sharp teeth, and a mischievous grin. More cunning than brave, and more annoying than deadly—unless you turn your back.",
+      "challengeRate": 0.125,
+      "attributes": {
+        "strength": 8,
+        "dexterity": 14,
+        "constitution": 10,
+        "intelligence": 10,
+        "wisdom": 8,
+        "charisma": 8
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425208605455552602/image.png?ex=68e6c072&is=68e56ef2&hm=624c3d2593aefbb5895ba102472f3319865ad8694a0c6dfb32aa0243da896153&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425212328923893871/image.png?ex=68e6c3ea&is=68e5726a&hm=f947888e3fd3d110094457908cb0ecaf1ce45ae31aeb3a6da5816fc4b491be44&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425213756450803743/image.png?ex=68e6c53e&is=68e573be&hm=25d017f5318e1d42520e2c15ba92664dce7ec0f685518a85e7f6d6311bac4e96&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425762370512486440/image.png?ex=68e8c42e&is=68e772ae&hm=2eb084f98ebeccff04d7141856b00868da76d3e100c6b6347fcfa3954f626b8c&",
+      "armor": [ "armor_leather_armor" ],
+      "weapons": [ "weapon_short_sword", "weapon_dagger" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425208605455552602/image.png?ex=68e6c072&is=68e56ef2&hm=624c3d2593aefbb5895ba102472f3319865ad8694a0c6dfb32aa0243da896153&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425212328923893871/image.png?ex=68e6c3ea&is=68e5726a&hm=f947888e3fd3d110094457908cb0ecaf1ce45ae31aeb3a6da5816fc4b491be44&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425213756450803743/image.png?ex=68e6c53e&is=68e573be&hm=25d017f5318e1d42520e2c15ba92664dce7ec0f685518a85e7f6d6311bac4e96&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425762370512486440/image.png?ex=68e8c42e&is=68e772ae&hm=2eb084f98ebeccff04d7141856b00868da76d3e100c6b6347fcfa3954f626b8c&",
-    "armor": [ "armor_leather_armor" ],
-    "weapons": [ "weapon_short_sword", "weapon_dagger" ],
-    "loot": []
-  },
-  {
-    "id": "hobgoblin",
-    "name": "Hobgoblin",
-    "description": "A disciplined, militaristic goblinoid known for cunning tactics and strict hierarchy. Often leads goblin raiding parties.",
-    "challengeRate": 0.5,
-    "attributes": {
-      "strength": 13,
-      "dexterity": 12,
-      "constitution": 12,
-      "intelligence": 10,
-      "wisdom": 10,
-      "charisma": 9
+    {
+      "id": "hobgoblin",
+      "name": "Hobgoblin",
+      "description": "A disciplined, militaristic goblinoid known for cunning tactics and strict hierarchy. Often leads goblin raiding parties.",
+      "challengeRate": 0.5,
+      "attributes": {
+        "strength": 13,
+        "dexterity": 12,
+        "constitution": 12,
+        "intelligence": 10,
+        "wisdom": 10,
+        "charisma": 9
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425743344360882176/image.png?ex=68e8b276&is=68e760f6&hm=5401fb28dad04be14cfc82e7167649b2affbe7e876b445ba72185e5cc0c15ba5&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425746484615315558/content.png?ex=68e8b563&is=68e763e3&hm=79c817d356cbc846738b1dee1a445947cac6b486836b5137c8357e549e301f7d&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425756303271268372/image.png?ex=68e8be87&is=68e76d07&hm=e3f1ce736f2fd82b617f030d8cb32635e33a1eac719cf4141a9e678e6876ad7d&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425758724894756937/image.png?ex=68e8c0c9&is=68e76f49&hm=cff042566c027b076d8860c162b8f53940506193c3152451717e50e5df3471ff&",
+      "armor": [ "armor_chain_shirt" ],
+      "weapons": [ "weapon_spear", "weapon_longsword" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425743344360882176/image.png?ex=68e8b276&is=68e760f6&hm=5401fb28dad04be14cfc82e7167649b2affbe7e876b445ba72185e5cc0c15ba5&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425746484615315558/content.png?ex=68e8b563&is=68e763e3&hm=79c817d356cbc846738b1dee1a445947cac6b486836b5137c8357e549e301f7d&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425756303271268372/image.png?ex=68e8be87&is=68e76d07&hm=e3f1ce736f2fd82b617f030d8cb32635e33a1eac719cf4141a9e678e6876ad7d&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425758724894756937/image.png?ex=68e8c0c9&is=68e76f49&hm=cff042566c027b076d8860c162b8f53940506193c3152451717e50e5df3471ff&",
-    "armor": [ "armor_chain_shirt" ],
-    "weapons": [ "weapon_spear", "weapon_longsword" ],
-    "loot": []
-  },
-  {
-    "id": "orc",
-    "name": "Orc",
-    "description": "A hulking brute with jagged armor and a thirst for blood. Not known for brains, but definitely for breaking bones.",
-    "challengeRate": 0.5,
-    "attributes": {
-      "strength": 16,
-      "dexterity": 12,
-      "constitution": 16,
-      "intelligence": 7,
-      "wisdom": 11,
-      "charisma": 10
+    {
+      "id": "orc",
+      "name": "Orc",
+      "description": "A hulking brute with jagged armor and a thirst for blood. Not known for brains, but definitely for breaking bones.",
+      "challengeRate": 0.5,
+      "attributes": {
+        "strength": 16,
+        "dexterity": 12,
+        "constitution": 16,
+        "intelligence": 7,
+        "wisdom": 11,
+        "charisma": 10
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425768367062519808/image.png?ex=68e8c9c4&is=68e77844&hm=730cfa5704852f5c49553e688dda73e5d34ff5b0cea96390cd8567279ae83251&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425774395762413588/image.png?ex=68e8cf61&is=68e77de1&hm=296ecec8e57d3f5da98aba6aff66deacf1738b63df52ee2138a6e7fee02eaab3&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1426902936591536268/image.png?ex=68ecea6a&is=68eb98ea&hm=93510b61e66db9928780c0100a04df244e0a35e9e6d8c1340a6ed19e5fc4fd83&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1426901424201007216/image.png?ex=68ece902&is=68eb9782&hm=826c316f9c3f7b6bad2946cc402d8945e7edfd7fa8739a9025a5ad26a9e2c11d&",
+      "armor": [ "armor_hide_armor" ],
+      "weapons": [ "weapon_great_axe" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425768367062519808/image.png?ex=68e8c9c4&is=68e77844&hm=730cfa5704852f5c49553e688dda73e5d34ff5b0cea96390cd8567279ae83251&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425774395762413588/image.png?ex=68e8cf61&is=68e77de1&hm=296ecec8e57d3f5da98aba6aff66deacf1738b63df52ee2138a6e7fee02eaab3&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_hide_armor" ],
-    "weapons": [ "weapon_great_axe" ],
-    "loot": []
-  },
-  {
-    "id": "bugbear",
-    "name": "Bugbear",
-    "description": "A large and brutish goblinoid that stalks its prey in the shadows. Bugbears rely on surprise and sheer strength to overwhelm foes.",
-    "challengeRate": 1,
-    "attributes": {
-      "strength": 16,
-      "dexterity": 14,
-      "constitution": 14,
-      "intelligence": 8,
-      "wisdom": 11,
-      "charisma": 9
+    {
+      "id": "bugbear",
+      "name": "Bugbear",
+      "description": "A large and brutish goblinoid that stalks its prey in the shadows. Bugbears rely on surprise and sheer strength to overwhelm foes.",
+      "challengeRate": 1,
+      "attributes": {
+        "strength": 16,
+        "dexterity": 14,
+        "constitution": 14,
+        "intelligence": 8,
+        "wisdom": 11,
+        "charisma": 9
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1426904372557774960/image.png?ex=68ecebc1&is=68eb9a41&hm=be0bf649a9bf03a4024d1c06ee1c1ca1b99e9720d0baa049b439aa70d8144fbb&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1426906857519321199/image.png?ex=68ecee11&is=68eb9c91&hm=cd44988688560dbd3ee22dbce0a305b2ebe76d8040ecaa772d538783a694da4d&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_chain_shirt" ],
+      "weapons": [ "weapon_morningstar", "weapon_club" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425062307272327271/bugbear.png?ex=68e63832&is=68e4e6b2&hm=61fdb0f7b8c9fb580d06a74a472ec2fd181ff92496ea48fa752f29b31beb5ddb&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_chain_shirt" ],
-    "weapons": [ "weapon_morningstar", "weapon_club" ],
-    "loot": []
-  },
-  {
-    "id": "gnoll",
-    "name": "Gnoll",
-    "description": "A savage hyena-like humanoid, feared for its bloodlust and pack hunting. Gnolls are relentless and cruel predators.",
-    "challengeRate": 1,
-    "attributes": {
-      "strength": 15,
-      "dexterity": 14,
-      "constitution": 14,
-      "intelligence": 7,
-      "wisdom": 11,
-      "charisma": 6
+    {
+      "id": "gnoll",
+      "name": "Gnoll",
+      "description": "A savage hyena-like humanoid, feared for its bloodlust and pack hunting. Gnolls are relentless and cruel predators.",
+      "challengeRate": 1,
+      "attributes": {
+        "strength": 15,
+        "dexterity": 14,
+        "constitution": 14,
+        "intelligence": 7,
+        "wisdom": 11,
+        "charisma": 6
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425063206182981712/gnoll.jpg?ex=68e63908&is=68e4e788&hm=60a8594dfb6b6ef7e03234f9f97c0aa7cd599b3c1620df38f7079c1bcc415b23&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_hide_armor" ],
+      "weapons": [ "weapon_glaive", "weapon_javelin" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425063206182981712/gnoll.jpg?ex=68e63908&is=68e4e788&hm=60a8594dfb6b6ef7e03234f9f97c0aa7cd599b3c1620df38f7079c1bcc415b23&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_hide_armor" ],
-    "weapons": [ "weapon_glaive", "weapon_javelin" ],
-    "loot": []
-  },
-  {
-    "id": "kobold",
-    "name": "Kobold",
-    "description": "A small, reptilian humanoid, often found in tunnels and mines. Kobolds are cunning, crafty, and numerous, but individually weak.",
-    "challengeRate": 0.125,
-    "attributes": {
-      "strength": 7,
-      "dexterity": 15,
-      "constitution": 9,
-      "intelligence": 8,
-      "wisdom": 7,
-      "charisma": 8
+    {
+      "id": "kobold",
+      "name": "Kobold",
+      "description": "A small, reptilian humanoid, often found in tunnels and mines. Kobolds are cunning, crafty, and numerous, but individually weak.",
+      "challengeRate": 0.125,
+      "attributes": {
+        "strength": 7,
+        "dexterity": 15,
+        "constitution": 9,
+        "intelligence": 8,
+        "wisdom": 7,
+        "charisma": 8
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425063533426774187/Kobold.jpg?ex=68e63956&is=68e4e7d6&hm=956186e0eb25342d07b3540b12eadd2c1c2a7387566d7f48bad22e616ae6bb1b&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_leather_armor" ],
+      "weapons": [ "weapon_spear", "weapon_dagger" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425063533426774187/Kobold.jpg?ex=68e63956&is=68e4e7d6&hm=956186e0eb25342d07b3540b12eadd2c1c2a7387566d7f48bad22e616ae6bb1b&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_leather_armor" ],
-    "weapons": [ "weapon_spear", "weapon_dagger" ],
-    "loot": []
-  },
-  {
-    "id": "skeleton",
-    "name": "Skeleton",
-    "description": "A rattling undead warrior held together by dark magic. Empty eye sockets glow with malevolent light.",
-    "challengeRate": 0.25,
-    "attributes": {
-      "strength": 10,
-      "dexterity": 14,
-      "constitution": 15,
-      "intelligence": 6,
-      "wisdom": 8,
-      "charisma": 5
+    {
+      "id": "gnome_wizard",
+      "name": "Gnome Wizard",
+      "description": "A tiny, clever spellcaster with a fondness for illusions and elemental magic. Often underestimated until the first spell hits.",
+      "challengeRate": 0.5,
+      "attributes": {
+        "strength": 8,
+        "dexterity": 14,
+        "constitution": 10,
+        "intelligence": 16,
+        "wisdom": 12,
+        "charisma": 10
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425069173436059668/gnome_wizard.jpg?ex=68e63e97&is=68e4ed17&hm=dac4485efb126291aa1fad31eaef11736d8196ae0cd9c38ec727b00f67451d23&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_cloth_robe" ],
+      "weapons": [ "weapon_magic_staff", "weapon_dagger" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425063774393466922/skeleton.jpeg?ex=68e63990&is=68e4e810&hm=c6c5e95c4b9a2d198168979f07b62c2cf93a8eeb0b5b1ba6417ea8d49d858ae8&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_scrap" ],
-    "weapons": [ "weapon_short_sword" ],
-    "loot": []
-  },
-  {
-    "id": "zombie",
-    "name": "Zombie",
-    "description": "A slow, shambling corpse risen by dark magic. Driven by hunger for living flesh, it is relentless and terrifying in groups.",
-    "challengeRate": 0.25,
-    "attributes": {
-      "strength": 13,
-      "dexterity": 6,
-      "constitution": 16,
-      "intelligence": 3,
-      "wisdom": 6,
-      "charisma": 5
+    {
+      "id": "half_orc",
+      "name": "Half-Orc",
+      "description": "A hulking mix of human and orc, fierce and strong. Often feared for their strength and savagery in battle.",
+      "challengeRate": 1,
+      "attributes": {
+        "strength": 17,
+        "dexterity": 12,
+        "constitution": 16,
+        "intelligence": 10,
+        "wisdom": 11,
+        "charisma": 9
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425070819314372658/half_orc.jpg?ex=68e6401f&is=68e4ee9f&hm=36a6a99c99e61071a0fdd0c59afe64dd126fe07c2dce1f5d6f443707af8d3a64&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_chain_mail" ],
+      "weapons": [ "weapon_great_axe", "weapon_shield" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425068289318719488/zombie.png?ex=68e63dc4&is=68e4ec44&hm=7cbf9d7fd416c3aeb63c474fbf5cd48e66bd22ff19ba7b76722dd2fac2939132&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_scrap" ],
-    "weapons": [ "weapon_club" ],
-    "loot": []
-  },
-  {
-    "id": "knight",
-    "name": "Knight",
-    "description": "A heavily armored warrior sworn to uphold honor and defend the realm. Moves slower but strikes with devastating force.",
-    "challengeRate": 3,
-    "attributes": {
-      "strength": 18,
-      "dexterity": 11,
-      "constitution": 16,
-      "intelligence": 10,
-      "wisdom": 12,
-      "charisma": 14
+    {
+      "id": "manbearpig",
+      "name": "ManBearPig",
+      "description": "A terrifying hybrid of half man, half bear and half pig! Extremely strong and fast, capable of crushing enemies with brute force and tusks. A rare and dangerous creature.",
+      "challengeRate": 5,
+      "attributes": {
+        "strength": 20,
+        "dexterity": 12,
+        "constitution": 18,
+        "intelligence": 8,
+        "wisdom": 10,
+        "charisma": 6
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425071405786988684/manbearpig.jpg?ex=68e640ab&is=68e4ef2b&hm=c98dbd5cad99ea6ca870a58c7ee56c417554e8f4b12ce42808295a11f8db1d2f&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_hide_armor" ],
+      "weapons": [ "weapon_gore", "weapon_club" ],
+      "loot": []
+    }
+  ],
+  "undead": [
+    {
+      "id": "skeleton",
+      "name": "Skeleton",
+      "description": "A rattling undead warrior held together by dark magic. Empty eye sockets glow with malevolent light.",
+      "challengeRate": 0.25,
+      "attributes": {
+        "strength": 10,
+        "dexterity": 14,
+        "constitution": 15,
+        "intelligence": 6,
+        "wisdom": 8,
+        "charisma": 5
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425063774393466922/skeleton.jpeg?ex=68e63990&is=68e4e810&hm=c6c5e95c4b9a2d198168979f07b62c2cf93a8eeb0b5b1ba6417ea8d49d858ae8&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_scrap" ],
+      "weapons": [ "weapon_short_sword" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425068614494453851/knight.jpg?ex=68e63e12&is=68e4ec92&hm=441582d512fd57d1a451afb6415c0753bcf8f0f9892f108b17d69933f03f5a28&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_plate", "armor_shield" ],
-    "weapons": [ "weapon_longsword", "weapon_lance" ],
-    "loot": []
-  },
-  {
-    "id": "mage",
-    "name": "Mage",
-    "description": "A spellcaster wearing light robes, relying on magic rather than physical defenses. Vulnerable up close, dangerous at a distance.",
-    "challengeRate": 2,
-    "attributes": {
-      "strength": 8,
-      "dexterity": 12,
-      "constitution": 10,
-      "intelligence": 17,
-      "wisdom": 14,
-      "charisma": 12
+    {
+      "id": "zombie",
+      "name": "Zombie",
+      "description": "A slow, shambling corpse risen by dark magic. Driven by hunger for living flesh, it is relentless and terrifying in groups.",
+      "challengeRate": 0.25,
+      "attributes": {
+        "strength": 13,
+        "dexterity": 6,
+        "constitution": 16,
+        "intelligence": 3,
+        "wisdom": 6,
+        "charisma": 5
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425068289318719488/zombie.png?ex=68e63dc4&is=68e4ec44&hm=7cbf9d7fd416c3aeb63c474fbf5cd48e66bd22ff19ba7b76722dd2fac2939132&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_scrap" ],
+      "weapons": [ "weapon_club" ],
+      "loot": []
+    }
+  ],
+  "human": [
+    {
+      "id": "knight",
+      "name": "Knight",
+      "description": "A heavily armored warrior sworn to uphold honor and defend the realm. Moves slower but strikes with devastating force.",
+      "challengeRate": 3,
+      "attributes": {
+        "strength": 18,
+        "dexterity": 11,
+        "constitution": 16,
+        "intelligence": 10,
+        "wisdom": 12,
+        "charisma": 14
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425068614494453851/knight.jpg?ex=68e63e12&is=68e4ec92&hm=441582d512fd57d1a451afb6415c0753bcf8f0f9892f108b17d69933f03f5a28&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_plate", "armor_shield" ],
+      "weapons": [ "weapon_longsword", "weapon_lance" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425068889309577236/mage.png?ex=68e63e53&is=68e4ecd3&hm=f86a92805ae1d7502c71de36a3165702d5be03feeeb5caf2d936c84947a7543a&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_cloth_robe" ],
-    "weapons": [ "weapon_staff", "weapon_dagger" ],
-    "loot": []
-  },
-  {
-    "id": "gnome_wizard",
-    "name": "Gnome Wizard",
-    "description": "A tiny, clever spellcaster with a fondness for illusions and elemental magic. Often underestimated until the first spell hits.",
-    "challengeRate": 0.5,
-    "attributes": {
-      "strength": 8,
-      "dexterity": 14,
-      "constitution": 10,
-      "intelligence": 16,
-      "wisdom": 12,
-      "charisma": 10
+    {
+      "id": "human_bandit",
+      "name": "Human Bandit",
+      "description": "A greedy rogue who preys on travelers. Quick and cunning, but weak in single combat without ambush or numbers.",
+      "challengeRate": 0.25,
+      "attributes": {
+        "strength": 11,
+        "dexterity": 14,
+        "constitution": 12,
+        "intelligence": 10,
+        "wisdom": 10,
+        "charisma": 10
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425069466605060187/human_bandit.png?ex=68e63edd&is=68e4ed5d&hm=dd3ca2350140732b43281085fd955bc2c147146fa4100ec369c71ec00d032378&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_leather_armor" ],
+      "weapons": [ "weapon_short_sword", "weapon_dagger" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425069173436059668/gnome_wizard.jpg?ex=68e63e97&is=68e4ed17&hm=dac4485efb126291aa1fad31eaef11736d8196ae0cd9c38ec727b00f67451d23&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_cloth_robe" ],
-    "weapons": [ "weapon_magic_staff", "weapon_dagger" ],
-    "loot": []
-  },
-  {
-    "id": "human_bandit",
-    "name": "Human Bandit",
-    "description": "A greedy rogue who preys on travelers. Quick and cunning, but weak in single combat without ambush or numbers.",
-    "challengeRate": 0.25,
-    "attributes": {
-      "strength": 11,
-      "dexterity": 14,
-      "constitution": 12,
-      "intelligence": 10,
-      "wisdom": 10,
-      "charisma": 10
+    {
+      "id": "human_warrior",
+      "name": "Human Warrior",
+      "description": "A trained fighter with a shield and sword. They patrol roads or serve local lords, often organized but not particularly cunning.",
+      "challengeRate": 0.5,
+      "attributes": {
+        "strength": 14,
+        "dexterity": 12,
+        "constitution": 14,
+        "intelligence": 10,
+        "wisdom": 11,
+        "charisma": 12
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425069762928709632/human_warrior.jpg?ex=68e63f23&is=68e4eda3&hm=302ab77e668eff3bcf3126c340a943c8329a2dc844ddcdb820c408c1d8d4a5b3&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_chain_mail" ],
+      "weapons": [ "weapon_longsword", "weapon_shield" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425069466605060187/human_bandit.png?ex=68e63edd&is=68e4ed5d&hm=dd3ca2350140732b43281085fd955bc2c147146fa4100ec369c71ec00d032378&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_leather_armor" ],
-    "weapons": [ "weapon_short_sword", "weapon_dagger" ],
-    "loot": []
-  },
-  {
-    "id": "human_warrior",
-    "name": "Human Warrior",
-    "description": "A trained fighter with a shield and sword. They patrol roads or serve local lords, often organized but not particularly cunning.",
-    "challengeRate": 0.5,
-    "attributes": {
-      "strength": 14,
-      "dexterity": 12,
-      "constitution": 14,
-      "intelligence": 10,
-      "wisdom": 11,
-      "charisma": 12
+    {
+      "id": "mage",
+      "name": "Mage",
+      "description": "A spellcaster wearing light robes, relying on magic rather than physical defenses. Vulnerable up close, dangerous at a distance.",
+      "challengeRate": 2,
+      "attributes": {
+        "strength": 8,
+        "dexterity": 12,
+        "constitution": 10,
+        "intelligence": 17,
+        "wisdom": 14,
+        "charisma": 12
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425068889309577236/mage.png?ex=68e63e53&is=68e4ecd3&hm=f86a92805ae1d7502c71de36a3165702d5be03feeeb5caf2d936c84947a7543a&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_cloth_robe" ],
+      "weapons": [ "weapon_staff", "weapon_dagger" ],
+      "loot": []
+    }
+  ],
+  "elf": [
+    {
+      "id": "elf_archer",
+      "name": "Elf Archer",
+      "description": "A lithe and graceful humanoid with exceptional marksmanship. Masters of the bow, elves often fight from the shadows or treetops.",
+      "challengeRate": 1,
+      "attributes": {
+        "strength": 12,
+        "dexterity": 18,
+        "constitution": 12,
+        "intelligence": 12,
+        "wisdom": 14,
+        "charisma": 12
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_leather_armor" ],
+      "weapons": [ "weapon_longbow", "weapon_dagger" ],
+      "loot": []
     },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425069762928709632/human_warrior.jpg?ex=68e63f23&is=68e4eda3&hm=302ab77e668eff3bcf3126c340a943c8329a2dc844ddcdb820c408c1d8d4a5b3&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_chain_mail" ],
-    "weapons": [ "weapon_longsword", "weapon_shield" ],
-    "loot": []
-  },
-  {
-    "id": "elf_archer",
-    "name": "Elf Archer",
-    "description": "A lithe and graceful humanoid with exceptional marksmanship. Masters of the bow, elves often fight from the shadows or treetops.",
-    "challengeRate": 1,
-    "attributes": {
-      "strength": 12,
-      "dexterity": 18,
-      "constitution": 12,
-      "intelligence": 12,
-      "wisdom": 14,
-      "charisma": 12
-    },
-    "thumbnail_100": "",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_leather_armor" ],
-    "weapons": [ "weapon_longbow", "weapon_dagger" ],
-    "loot": []
-  },
-  {
-    "id": "dwarf_warrior",
-    "name": "Dwarf Warrior",
-    "description": "A sturdy and resilient fighter, often armored head to toe. Dwarves are known for their courage in battle and loyalty to allies.",
-    "challengeRate": 1,
-    "attributes": {
-      "strength": 16,
-      "dexterity": 12,
-      "constitution": 16,
-      "intelligence": 10,
-      "wisdom": 12,
-      "charisma": 10
-    },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425070122380427324/elf_archer.jpg?ex=68e63f79&is=68e4edf9&hm=47d3bf31ac086dfc284e25be60fbf14d4381d410d271ad7fe111f94c02bc3f7d&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_chain_mail" ],
-    "weapons": [ "weapon_warhammer" ],
-    "loot": []
-  },
-  {
-    "id": "dark_elf",
-    "name": "Dark Elf",
-    "description": "A cunning and dangerous elf from the shadows. Known for poisons, traps, and dark magic, they rarely fight fair.",
-    "challengeRate": 2,
-    "attributes": {
-      "strength": 12,
-      "dexterity": 18,
-      "constitution": 12,
-      "intelligence": 14,
-      "wisdom": 12,
-      "charisma": 14
-    },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425070405084909609/dark_elf.jpg?ex=68e63fbd&is=68e4ee3d&hm=93fbdd48f03f7208708b994f204c3fb75ed9bc3d0254132079ef8572db13df92&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_leather_armor" ],
-    "weapons": [ "weapon_rapier", "weapon_shortbow" ],
-    "loot": []
-  },
-  {
-    "id": "half_orc",
-    "name": "Half-Orc",
-    "description": "A hulking mix of human and orc, fierce and strong. Often feared for their strength and savagery in battle.",
-    "challengeRate": 1,
-    "attributes": {
-      "strength": 17,
-      "dexterity": 12,
-      "constitution": 16,
-      "intelligence": 10,
-      "wisdom": 11,
-      "charisma": 9
-    },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425070819314372658/half_orc.jpg?ex=68e6401f&is=68e4ee9f&hm=36a6a99c99e61071a0fdd0c59afe64dd126fe07c2dce1f5d6f443707af8d3a64&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_chain_mail" ],
-    "weapons": [ "weapon_great_axe", "weapon_shield" ],
-    "loot": []
-  },
-  {
-    "id": "manbearpig",
-    "name": "ManBearPig",
-    "description": "A terrifying hybrid of half man, half bear and half pig! Extremely strong and fast, capable of crushing enemies with brute force and tusks. A rare and dangerous creature.",
-    "challengeRate": 5,
-    "attributes": {
-      "strength": 20,
-      "dexterity": 12,
-      "constitution": 18,
-      "intelligence": 8,
-      "wisdom": 10,
-      "charisma": 6
-    },
-    "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425071405786988684/manbearpig.jpg?ex=68e640ab&is=68e4ef2b&hm=c98dbd5cad99ea6ca870a58c7ee56c417554e8f4b12ce42808295a11f8db1d2f&",
-    "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e6cb27&is=68e579a7&hm=0273cd1ca79a59f647cfac52711dbc23b44f6660fe549cf12c1b49395238c67f&",
-    "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
-    "armor": [ "armor_hide_armor" ],
-    "weapons": [ "weapon_gore", "weapon_club" ],
-    "loot": []
-  }
-]
+    {
+      "id": "dark_elf",
+      "name": "Dark Elf",
+      "description": "A cunning and dangerous elf from the shadows. Known for poisons, traps, and dark magic, they rarely fight fair.",
+      "challengeRate": 2,
+      "attributes": {
+        "strength": 12,
+        "dexterity": 18,
+        "constitution": 12,
+        "intelligence": 14,
+        "wisdom": 12,
+        "charisma": 14
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425070405084909609/dark_elf.jpg?ex=68e63fbd&is=68e4ee3d&hm=93fbdd48f03f7208708b994f204c3fb75ed9bc3d0254132079ef8572db13df92&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_leather_armor" ],
+      "weapons": [ "weapon_rapier", "weapon_shortbow" ],
+      "loot": []
+    }
+  ],
+  "dwarf": [
+    {
+      "id": "dwarf_warrior",
+      "name": "Dwarf Warrior",
+      "description": "A sturdy and resilient fighter, often armored head to toe. Dwarves are known for their courage in battle and loyalty to allies.",
+      "challengeRate": 1,
+      "attributes": {
+        "strength": 16,
+        "dexterity": 12,
+        "constitution": 16,
+        "intelligence": 10,
+        "wisdom": 12,
+        "charisma": 10
+      },
+      "thumbnail_100": "https://cdn.discordapp.com/attachments/1425057075314167839/1425070122380427324/elf_archer.jpg?ex=68e63f79&is=68e4edf9&hm=47d3bf31ac086dfc284e25be60fbf14d4381d410d271ad7fe111f94c02bc3f7d&",
+      "thumbnail_50": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_10": "https://cdn.discordapp.com/attachments/1425057075314167839/1425220100935516251/placehold.png?ex=68e96e27&is=68e81ca7&hm=2251c9ebb818c157f63113acdfdba5f2ab3e9ce731b52b9bde4ed0b8af0e0ecb&",
+      "thumbnail_0": "https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg?ex=68e64879&is=68e4f6f9&hm=752ed6d01dd2f46fd6c0c8dc1a1edc07eedced7ea0276e3900bc30454dabf15a&",
+      "armor": [ "armor_chain_mail" ],
+      "weapons": [ "weapon_warhammer" ],
+      "loot": []
+    }
+  ]
+}

@@ -75,7 +75,7 @@ namespace Adventure.Quest.Battle.BattleEngine
 
         #endregion
 
-        #region === Main Dispatcher ===
+        #region === Main Switch BattleEngine ===
 
         /// <summary>
         /// Main dispatcher for handling player actions during a battle.
@@ -110,7 +110,7 @@ namespace Adventure.Quest.Battle.BattleEngine
                     break;
 
                 case StepEndBattle:
-                    await EmbedBuilders.EmbedEndBattle(interaction);
+                    await EmbedBuildersEncounter.EmbedEndBattle(interaction);
                     break;
 
                 default:
@@ -149,7 +149,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             {
                 // Player chose attack → show weapon selection
                 LogService.Info("[HandleStepStart] Player chooses attack, showing weapons...");
-                await EmbedBuilders.EmbedPreBattle(component);
+                await EmbedBuildersEncounter.EmbedPreBattle(component);
                 SetStep(userId, StepWeaponChoice);
             }
 
@@ -170,36 +170,23 @@ namespace Adventure.Quest.Battle.BattleEngine
             var state = BattleStateSetup.GetBattleState(userId);
             var ownedWeaponIds = state.Player.Weapons.Select(w => w.Id).ToHashSet();
 
-            LogService.DividerParts(1, "HandleStepWeaponChoice");
-
             var weapon = GameEntityFetcher.RetrieveWeaponAttributes(new List<string> { weaponId }).FirstOrDefault();
             if (weapon == null)
             {
-                await interaction.RespondAsync("You selected an unknown weapon...", ephemeral: false);
-                LogService.Error("[HandleStepWeaponChoice] Invalid weapon selected.");
+                await interaction.RespondAsync("Je hebt een onbekend wapen gekozen...", ephemeral: true);
                 return;
             }
 
-            // Check if the player owns the weapon
             if (!ownedWeaponIds.Contains(weaponId))
             {
-                await interaction.RespondAsync($"You fumble with the unfamiliar {weapon.Name}...", ephemeral: false);
-                LogService.Info("[HandleStepWeaponChoice] Weapon not owned, still entering battle.");
+                await interaction.RespondAsync($"Je rommelt met een onbekend wapen: {weapon.Name}...", ephemeral: true);
             }
 
-            // Move to battle step
+            // Zet stap naar battle
             SetStep(userId, StepBattle);
-
-            // Remove buttons if it was a button interaction
-            if (interaction is SocketMessageComponent component)
-            {
-                await ButtonInteractionHelpers.RemoveButtonsAsync(component, $"You attack with your {weapon.Name}!");
-            }
 
             // Start battle
             await HandleStepBattle(interaction, weaponId);
-
-            LogService.DividerParts(2, "HandleStepWeaponChoice");
         }
 
         #endregion
@@ -207,18 +194,18 @@ namespace Adventure.Quest.Battle.BattleEngine
         #region === Step: Battle ===
 
         /// <summary>
-        /// Executes player and NPC attacks during battle.
-        /// Updates the state and moves to the post-battle step.
+        /// Executes both the player and NPC attack sequences during battle.
+        /// Handles all turn-based actions, builds the updated battle embed and buttons,
+        /// and transitions to the post-battle step if the battle is still ongoing.
         /// </summary>
+        /// <param name="interaction">The Discord interaction that triggered the battle step (e.g. a weapon button).</param>
+        /// <param name="weaponId">The identifier of the weapon chosen by the player.</param>
         public static async Task HandleStepBattle(SocketInteraction interaction, string weaponId)
         {
             ulong userId = interaction.User.Id;
             var state = BattleStateSetup.GetBattleState(userId);
 
-            // Defer interaction for Discord response
-            if (interaction is SocketMessageComponent)
-                await interaction.DeferAsync();
-
+            // --- Validate weapon existence ---
             var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
             {
@@ -226,35 +213,58 @@ namespace Adventure.Quest.Battle.BattleEngine
                 return;
             }
 
-            // Process player attack
+            // --- Player attack phase ---
             string playerAttackResult = PlayerAttack.ProcessPlayerAttack(userId, weapon);
 
-            // Check if NPC is defeated
-            if (state.StateOfNPC == "Defeated")
+            // --- Check if NPC is defeated after player's attack ---
+            if (state.CurrentHitpointsNPC <= 0 || state.StateOfNPC == "Defeated")
             {
-                await EmbedBuilders.EmbedEndBattle(interaction, playerAttackResult);
+                // End the battle and send victory embed
+                await EmbedBuildersEncounter.EmbedEndBattle(interaction, playerAttackResult);
                 return;
             }
 
-            // Process NPC attack if available
+            // --- NPC attack phase ---
             string npcAttackResult = state.NpcWeapons.FirstOrDefault() is { } npcWeapon
                 ? NpcAttack.ProcessNpcAttack(userId, npcWeapon)
                 : $"⚠️ {state.Npc.Name} has nothing to attack with.";
 
+            // Combine both attack summaries
             string fullAttackLog = $"{playerAttackResult}\n\n{npcAttackResult}";
 
-            // Build battle embed and buttons
-            var battleEmbed = EmbedBuilders.EmbedBattle(userId, fullAttackLog);
-            var battleButtons = EmbedBuilders.BuildBattleButtons(state); // buttons for continuing battle
+            // --- Build embed and battle buttons ---
+            var battleEmbed = EmbedBuildersEncounter.BuildBattleEmbed(userId, fullAttackLog);
+            var battleButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
 
-            // Send updated battle message
-            await interaction.FollowupAsync(embed: battleEmbed.Build(), components: battleButtons.Build(), ephemeral: false);
+            try
+            {
+                // Update the existing Discord message if interaction is a component (button press)
+                if (interaction is SocketMessageComponent component)
+                {
+                    await component.UpdateAsync(msg =>
+                    {
+                        msg.Embed = battleEmbed.Build();
+                        msg.Components = battleButtons.Build();
+                        msg.Content = string.Empty;
+                    });
+                }
+                else
+                {
+                    // Fallback: handle as a follow-up if the interaction was not from a component
+                    await interaction.FollowupAsync(embed: battleEmbed.Build(), components: battleButtons.Build());
+                }
+            }
+            catch (Exception ex)
+            {
+                // If UpdateAsync fails (e.g. expired token or already acknowledged interaction)
+                LogService.Info($"[HandleStepBattle] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
+                await interaction.FollowupAsync(embed: battleEmbed.Build(), components: battleButtons.Build());
+            }
 
-            // Move to post-battle step
+            // --- Transition to post-battle step ---
             SetStep(userId, StepPostBattle);
             await HandleStepPostBattle(interaction);
         }
-
         #endregion
 
         #region === Step: Post Battle ===
@@ -279,7 +289,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             if (state.Player.Hitpoints <= 0 || state.StateOfNPC == "Defeated")
             {
                 SetStep(userId, StepEndBattle);
-                await EmbedBuilders.EmbedEndBattle(interaction);
+                await EmbedBuildersEncounter.EmbedEndBattle(interaction);
                 return;
             }
 
