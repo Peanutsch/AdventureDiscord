@@ -117,7 +117,7 @@ namespace Adventure.Modules
         /// <summary>
         /// Finds the first tile that contains 'START' in its TileGrid.
         /// </summary>
-        private static TileModel? FindStartTile()
+        public static TileModel? FindStartTile()
         {
             var startTile = MainHouseLoader.AllTiles
                 .FirstOrDefault(t => t.TileGrid?

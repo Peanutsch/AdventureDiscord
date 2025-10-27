@@ -148,26 +148,5 @@ namespace Adventure.Modules
             await FollowupAsync(embed: embed.Build(), components: components?.Build());
         }
         #endregion
-
-            //var player = JsonDataManager.LoadPlayerFromJson(user.Id);
-            var tile = SlashCommandHelpers.GetTileFromSavePoint(player!.Savepoint);
-
-            if (tile == null)
-            {
-                await FollowupAsync("❌ No valid savepoint or starting tile found.", ephemeral: true);
-                return;
-            }
-
-            string startingRoom = MainHouseLoader.AreaTiles
-                .FirstOrDefault(r => r.Value.Contains(tile)).Key ?? "UnknownRoom";
-
-            LogService.Info($"[/walk] Starting in room: {startingRoom}, position: {tile.TilePosition}");
-
-            var embed = EmbedBuildersMap.EmbedWalk(tile);
-            var components = EmbedBuildersMap.BuildDirectionButtons(tile);
-
-            await FollowupAsync(embed: embed.Build(), components: components?.Build());
-        }
-        #endregion
     }
 }
