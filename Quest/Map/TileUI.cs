@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Adventure.Loaders;
+using Adventure.Models.Map;
+using Adventure.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -97,25 +100,25 @@ namespace Adventure.Quest.Map
         ─────────────────────────────*/
         #endregion
 
-        #region === Dictionairy of used Emoji's ===
+        #region === Dictionary of used Emojis ===
         /// <summary>
-        /// Maps tile type names (string identifiers) to their corresponding emoji representations.
-        /// Used to visually display maps in Discord embeds or text output.
+        /// Maps tile type identifiers to their emoji representations.
+        /// Used to visually render map layouts inside Discord embeds.
         /// </summary>
-        private static readonly Dictionary<string, string> EmojiMap = new()
+        private static readonly Dictionary<string, string> EmojiMap = new(StringComparer.OrdinalIgnoreCase)
         {
-            { "Wall", "⬛" }, // 
-            { "Floor", "⬜" },
-            { "Grass", "🟩" },
-            { "Dirt", "🟫" },
-            { "Sand", "🟨" },
-            { "Lava", "🟧" },
-            { "Water", "🟦" },
+            { "WALL", "⬛" },
+            { "FLOOR", "⬜" },
+            { "GRASS", "🟩" },
+            { "DIRT", "🟫" },
+            { "SAND", "🟨" },
+            { "LAVA", "🟧" },
+            { "WATER", "🟦" },
             { "ENEMY", "👤" },
-            { "Portal", "🌀" },
-            { "Treasure", "💰" },
+            { "PORTAL", "🌀" },
+            { "TREASURE", "💰" },
             { "NPC", "🧍" },
-            { "Door", "🚪" },
+            { "DOOR", "🚪" },
             { "START", "🧍" },
             { "PLAYER", "🧍" }
         };
@@ -123,38 +126,83 @@ namespace Adventure.Quest.Map
 
         #region === Render Grid ===
         /// <summary>
-        /// Converts a 2D list of tile identifiers into a multiline string of emojis,
-        /// Producing a visual map layout for display in text-based interfaces.
+        /// Converts a TilePosition string "row,col" to row/col integers.
         /// </summary>
-        /// <param name="grid">The 2D grid representing tile identifiers.</param>
-        /// <returns>A formatted string representation of the grid using emojis.</returns>
-        public static string RenderTileGrid(List<List<string>> grid)
+        public static (int row, int col) ParseTilePosition(string tilePos)
         {
-            // Ensure grid data exists before rendering
-            if (grid == null || grid.Count == 0)
-                return "⚠️ Grid data missing";
-
-            var sb = new StringBuilder();
-
-            // Loop through each row in the grid
-            foreach (var row in grid)
+            var parts = tilePos.Split(',');
+            if (parts.Length == 2 &&
+                int.TryParse(parts[0], out int row) &&
+                int.TryParse(parts[1], out int col))
             {
-                // Loop through each cell in the row
-                foreach (var cell in row)
-                {
-                    // Try to find a matching emoji in the map
-                    if (EmojiMap.TryGetValue(cell, out var emoji))
-                        sb.Append(emoji);
-                    else
-                        sb.Append("❓"); // Use a question mark if the tile type is unknown
-                        //sb.Append("❌"); Use an X if the tile type is unknown
-                }
-
-                sb.AppendLine(); // Move to the next row visually
+                return (row, col);
             }
 
-            // Trim any trailing newline characters and return the final grid view
-            return sb.ToString().TrimEnd();
+            return (-1, -1);
+        }
+
+        /// <summary>
+        /// Renders a grid for the area and places the player at the correct position.
+        /// </summary>
+        /// <param name="tile">TileModel representing the player's current tile</param>
+        /// <returns>String of the rendered grid with player emoji</returns>
+        public static string RenderTileGrid(TileModel tile)
+        {
+            if (!TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var area))
+                return "<Unknown Area>";
+
+            var layout = area.Layout;
+            if (layout == null || layout.Count == 0)
+                return "<No layout>";
+
+            // Parse row,col from tile.TilePosition
+            int playerRow = -1, playerCol = -1;
+            if (!string.IsNullOrWhiteSpace(tile.TilePosition))
+            {
+                var parts = tile.TilePosition.Split(',');
+                if (parts.Length == 2 &&
+                    int.TryParse(parts[0], out int r) &&
+                    int.TryParse(parts[1], out int c))
+                {
+                    playerRow = r;
+                    playerCol = c;
+                }
+            }
+
+            var sb = new System.Text.StringBuilder();
+
+            for (int row = 0; row < layout.Count; row++)
+            {
+                for (int col = 0; col < layout[row].Count; col++)
+                {
+                    // Player takes priority
+                    if (row == playerRow && col == playerCol)
+                    {
+                        sb.Append("🧍");
+                        continue;
+                    }
+
+                    string tileType = layout[row][col];
+
+                    // Map tileType to emoji
+                    string icon = tileType switch
+                    {
+                        "Wall" => "⬛",
+                        "Floor" => "⬜",
+                        "Water" => "💧",
+                        "DOOR" => "🚪",
+                        "ENEMY" => "👤",
+                        "START" => "⬜",
+                        _ => "❓"
+                    };
+
+                    sb.Append(icon);
+                }
+
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
         }
         #endregion
     }

@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Map
 {
+    /*
     public class MainHouseTileDetailModel
     {
+     
         [JsonPropertyName("id")]
         public string Id { get; set; } = "";
 
@@ -26,5 +28,7 @@ namespace Adventure.Models.Map
 
         [JsonPropertyName("connections")]
         public List<string>? Connections { get; set; }
+        
     }
+    */
 }

@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace Adventure.Models.Map
 {
+    /*
     public class MainHouseTilesModel
     {
         [JsonPropertyName("Areas")]
         public Dictionary<string, List<MainHouseTileDetailModel>> Areas { get; set; } = new();
     }
+    */
 }

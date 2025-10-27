@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Adventure.Loaders
 {
+    /*
     /// <summary>
     /// Static loader for the main house map.
     /// Handles loading rooms and tiles from JSON, building a lookup dictionary,
@@ -101,4 +102,5 @@ namespace Adventure.Loaders
             }
         }
     }
+    */
 }

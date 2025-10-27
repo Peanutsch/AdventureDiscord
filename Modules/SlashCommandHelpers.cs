@@ -73,63 +73,69 @@ namespace Adventure.Modules
 
         #region === Get Tile Savepoint ===
         /// <summary>
-        /// Finds the tile corresponding to the player's savepoint.
-        /// Order: Direct key > TileId > fallback START 
+        /// Retrieves a TileModel from a savepoint.
+        /// Supports:
+        /// 1. Absolute TileId (areaId:row,col)
+        /// 2. TileName like "START"
         /// </summary>
-        public static TileModel? GetTileFromSavePoint(string? savepoint)
+        public static TileModel? GetTileFromSavePoint(string savepoint)
         {
-            LogService.Info($"[SlashEncounterHelpers.GetTileFromSavePoint] Searching for savepoint {savepoint}...");
             if (string.IsNullOrWhiteSpace(savepoint))
+                return null;
+
+            // 1️⃣ Direct TileId lookup (preferred)
+            if (TestHouseLoader.TileLookup.TryGetValue(savepoint, out var tile))
             {
-                LogService.Error("[SlashEncounterHelpers.GetTileFromSavePoint] Savepoint was null or empty — fallback START tile.");
-                return FindStartTile();
+                return tile;
             }
 
-            if (savepoint.Equals("START", StringComparison.OrdinalIgnoreCase))
+            // 2️⃣ Fallback: search TileName in all areas
+            foreach (var area in TestHouseLoader.AreaLookup.Values)
             {
-                LogService.Info("[GetTileFromSavePoint] Savepoint is START — loading start tile directly.");
-                return FindStartTile();
+                tile = area.Tiles.FirstOrDefault(t =>
+                    string.Equals(t.TileName, savepoint, StringComparison.OrdinalIgnoreCase));
+                if (tile != null)
+                    return tile;
             }
 
-            // Direct key match (e.g., "MainRoom:3,2")
-            if (MainHouseLoader.TileLookup.TryGetValue(savepoint, out var foundTile))
-            {
-                LogService.Info($"[SlashEncounterHelpers.GetTileFromSavePoint] Found tile via Key match: '{savepoint}'.");
-                return foundTile;
-            }
-
-            // Search by TileId (e.g., "tile_3_2")
-            var tileById = MainHouseLoader.TileLookup.Values
-                .FirstOrDefault(t =>
-                    t.TileId.Equals(savepoint, StringComparison.OrdinalIgnoreCase));
-
-            if (tileById != null)
-            {
-                LogService.Info($"[SlashEncounterHelpers.GetTileFromSavePoint] Found tile via TileId match: '{tileById.TileId}'.");
-                return tileById;
-            }
-
-            // Use START as fallback
-            LogService.Error($"[SlashEncounterHelpers.GetTileFromSavePoint] No tile found for savepoint '{savepoint}'. Falling back to START tile.");
-            return FindStartTile();
+            LogService.Error($"[TileHelpers.GetTileFromSavePoint] No tile found for savepoint '{savepoint}'.");
+            return null;
         }
 
         /// <summary>
-        /// Finds the first tile that contains 'START' in its TileGrid.
+        /// Finds the START tile in all areas and returns its TileId and TilePosition.
         /// </summary>
-        private static TileModel? FindStartTile()
+        public static TileModel? FindStartTile()
         {
-            var startTile = MainHouseLoader.AllTiles
-                .FirstOrDefault(t => t.TileGrid?
-                .Any(row => row.Any(cell =>
-                    cell.Equals("START", StringComparison.OrdinalIgnoreCase))) == true);
+            foreach (var area in TestHouseLoader.AreaLookup.Values)
+            {
+                // Zoek een tile met type "START"
+                var startTile = area.Tiles.FirstOrDefault(t => t.TileName.Equals("START", StringComparison.OrdinalIgnoreCase));
+                if (startTile != null)
+                {
+                    // Zorg dat TilePosition correct is ingesteld (row,col)
+                    if (string.IsNullOrWhiteSpace(startTile.TilePosition) || startTile.TilePosition == "ERROR_TILE_POSITION")
+                    {
+                        // Vind de positie in de layout
+                        for (int row = 0; row < area.Layout.Count; row++)
+                        {
+                            for (int col = 0; col < area.Layout[row].Count; col++)
+                            {
+                                if (area.Layout[row][col].Equals("START", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    startTile.TilePosition = $"{row},{col}";
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
-            if (startTile != null)
-                LogService.Info($"[SlashEncounterHelpers.FindStartTile] Found START tile: {startTile.TilePosition}");
-            else
-                LogService.Error("[SlashEncounterHelpers.FindStartTile] No START tile found!");
+                    return startTile;
+                }
+            }
 
-            return startTile;
+            LogService.Error("[PlayerStartHelper.FindStartTile] No START tile found in any area!");
+            return null;
         }
         #endregion
     }

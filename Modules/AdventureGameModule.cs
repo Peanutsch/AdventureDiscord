@@ -10,6 +10,7 @@ using Microsoft.VisualBasic;
 using Adventure.Quest.Encounter;
 using Adventure.Models.BattleState;
 using Adventure.Quest.Battle.BattleEngine;
+using static Adventure.Quest.Battle.Randomizers.EncounterRandomizer;
 using Adventure.Quest.Battle.Randomizers;
 using Adventure.Quest.Map;
 
@@ -24,9 +25,10 @@ namespace Adventure.Modules
         [SlashCommand("start", "Start the adventure.")]
         public async Task SlashCommandStartHandler()
         {
-            var user = Context.Client.GetUser(Context.User.Id); 
+            var user = Context.Client.GetUser(Context.User.Id);
             if (user != null)
             {
+                string username = user.Username;
                 string displayName = user.GlobalName ?? user.Username;
                 LogService.Info($"[Encounter] Discord user '{displayName}' (ID: {user.Id})");
             }
@@ -53,10 +55,10 @@ namespace Adventure.Modules
         {
             await DeferAsync();
 
-            var user = SlashCommandHelpers.GetDiscordUser(Context ,Context.User.Id);
+            var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
             if (user == null)
             {
-                await FollowupAsync("⚠️ Error loading user data.");
+                await RespondAsync("⚠️ Error loading user data.");
                 return;
             }
 
@@ -93,6 +95,7 @@ namespace Adventure.Modules
         {
             await DeferAsync();
 
+            // --- 1️⃣ Discord user ophalen ---
             var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
             if (user == null)
             {
@@ -103,6 +106,7 @@ namespace Adventure.Modules
             LogService.DividerParts(1, "SlashCommand: walk");
             LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
+            // --- 2️⃣ Player ophalen of aanmaken ---
             var player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
             if (player == null)
             {
@@ -145,27 +149,6 @@ namespace Adventure.Modules
             var components = EmbedBuildersMap.BuildDirectionButtons(tile);
 
             // --- 7️⃣ Discord response sturen ---
-            await FollowupAsync(embed: embed.Build(), components: components?.Build());
-        }
-        #endregion
-
-            //var player = JsonDataManager.LoadPlayerFromJson(user.Id);
-            var tile = SlashCommandHelpers.GetTileFromSavePoint(player!.Savepoint);
-
-            if (tile == null)
-            {
-                await FollowupAsync("❌ No valid savepoint or starting tile found.", ephemeral: true);
-                return;
-            }
-
-            string startingRoom = MainHouseLoader.AreaTiles
-                .FirstOrDefault(r => r.Value.Contains(tile)).Key ?? "UnknownRoom";
-
-            LogService.Info($"[/walk] Starting in room: {startingRoom}, position: {tile.TilePosition}");
-
-            var embed = EmbedBuildersMap.EmbedWalk(tile);
-            var components = EmbedBuildersMap.BuildDirectionButtons(tile);
-
             await FollowupAsync(embed: embed.Build(), components: components?.Build());
         }
         #endregion

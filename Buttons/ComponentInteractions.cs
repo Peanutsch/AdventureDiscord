@@ -1,4 +1,5 @@
-﻿using Adventure.Data;
+﻿// ComponentInteractions.cs
+using Adventure.Data;
 using Adventure.Loaders;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Encounter;
@@ -13,34 +14,17 @@ namespace Adventure.Buttons
     public class ComponentInteractions : InteractionModuleBase<SocketInteractionContext>
     {
         #region === Component Dispatch ===
-        /// <summary>
-        /// Catch component id when not recognized by ComponentInteraction and call method 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         [ComponentInteraction("*")]
         public async Task DispatchComponentAction(string id)
         {
             LogService.Info($"[ComponentInteractions.DispatchComponentAction] component ID: {id}");
 
             if (id.StartsWith("weapon_"))
-            {
                 await HandleWeaponButton(id);
-                return;
-            }
-
-            if (id.StartsWith("move_"))// || id.StartsWith("blocked_"))
-            {
+            else if (id.StartsWith("move:"))
                 await WalkDirectionHandler(id);
-                return;
-            }
-
-            if (id.StartsWith("enter:"))
-            {
+            else if (id.StartsWith("enter:"))
                 await EnterTileHandler(id);
-                return;
-            }
-
         }
         #endregion
 
@@ -48,9 +32,7 @@ namespace Adventure.Buttons
         [ComponentInteraction("weapon_*")]
         public async Task HandleWeaponButton(string weaponId)
         {
-            LogService.Info($"[ComponentInteractions.HandleWeaponButton] > Recieved weaponId: {weaponId}");
-
-            ulong userId = Context.User.Id;
+            LogService.Info($"[HandleWeaponButton] weaponId: {weaponId}");
 
             var state = BattleStateSetup.GetBattleState(Context.User.Id);
             if (state == null)
@@ -65,25 +47,16 @@ namespace Adventure.Buttons
 
             if (weapon == null)
             {
-                LogService.Error($"[ComponentInteractions.HandleWeaponButton] > Weapon ID '{weaponId}' not found.");
                 await RespondAsync($"⚠️ Weapon not found: {weaponId}");
                 return;
             }
 
-            LogService.Info($"[ComponentInteractions.HandleWeaponButton] > Player choose: {weapon.Name}\n");
-
-            var step = EncounterBattleStepsSetup.GetStep(userId);
-            LogService.Info($"[HandleWeaponButton] Current battle step: {step}");
-
-            // Direct call BattleEngine.HandleStepBattle
             await EncounterBattleStepsSetup.HandleStepBattle(Context.Interaction, weaponId);
         }
 
         [ComponentInteraction("btn_attack")]
         public async Task ButtonAttackHandler()
-        {
-            await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "attack", "none");
-        }
+            => await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "attack", "none");
 
         [ComponentInteraction("btn_flee")]
         public async Task ButtonFleeHandler()
@@ -92,11 +65,9 @@ namespace Adventure.Buttons
             {
                 await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "flee", "none");
             }
-            catch (Exception ex)
+            catch
             {
-                LogService.Info($"[ButtonFleeHandler] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
-                var battleEmbed = new EmbedBuilder().WithDescription("You tried to flee...");
-                await Context.Interaction.FollowupAsync(embed: battleEmbed.Build());
+                await Context.Interaction.FollowupAsync(embed: new EmbedBuilder().WithDescription("You tried to flee...").Build());
             }
         }
 
@@ -115,10 +86,8 @@ namespace Adventure.Buttons
             {
                 await EmbedBuildersEncounter.EmbedPreBattle((SocketMessageComponent)Context.Interaction);
             }
-            catch (Exception ex)
+            catch
             {
-                LogService.Error($"[ContinueBattleHandler] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
-                var state = BattleStateSetup.GetBattleState(Context.User.Id);
                 var embed = new EmbedBuilder()
                     .WithTitle("Choose your weapon again!")
                     .WithDescription("Previous interaction could not be updated.")
@@ -140,86 +109,64 @@ namespace Adventure.Buttons
             {
                 await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "flee", "none");
             }
-            catch (Exception ex)
+            catch
             {
-                LogService.Error($"[FleeBattleHandler] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
-                var embed = new EmbedBuilder().WithDescription("You tried to flee...");
-                await Context.Interaction.FollowupAsync(embed: embed.Build());
+                await Context.Interaction.FollowupAsync(embed: new EmbedBuilder().WithDescription("You tried to flee...").Build());
             }
         }
         #endregion
 
         #region === Walk Direction Handler ===
-        /// <summary>
-        /// Handles directional movement button interactions from the /walk command.
-        /// Ensures the player moves to the correct target tile and updates the message with the new embed and buttons.
-        /// Prevents multiple responses to the same interaction by using a single response path.
-        /// </summary>
-        /// <param name="data">Button custom ID data in the format "direction:tileId".</param>
-        [ComponentInteraction("move_*")]
+        [ComponentInteraction("move:*")]
         public async Task WalkDirectionHandler(string data)
         {
             try
             {
-                LogService.Info($"[WalkDirectionHandler] Received data: {data}");
                 await Context.Interaction.DeferAsync();
+                string tileId = data.Substring("move:".Length);
 
-                var parts = data.Split(':');
-                if (parts.Length < 3)
+                if (!TestHouseLoader.TileLookup.ContainsKey(tileId))
                 {
-                    await Context.Interaction.FollowupAsync("⚠️ Invalid move data.", ephemeral: true);
+                    await Context.Interaction.FollowupAsync($"❌ Tile '{tileId}' bestaat niet!", ephemeral: true);
                     return;
                 }
 
-                string areaId = parts[1];
-                string tileId = parts[2];
-                string key = $"{areaId}:{tileId}";
-
-                await ComponentHelpers.MovePlayerAsync(Context, key);
+                await ComponentHelpers.MovePlayerAsync(Context, tileId);
             }
             catch (Exception ex)
             {
-                LogService.Error($"[WalkDirectionHandler] Exception:\n{ex}");
+                LogService.Error(ex.ToString());
                 await Context.Interaction.FollowupAsync("❌ Something went wrong while moving.");
             }
         }
         #endregion
 
         #region === Enter Button Handler ===
-        /// <summary>
-        /// Handles the "Enter" button interaction when a player chooses to enter a connected room or tile.
-        /// Loads the target tile from MainHouseLoader.TileLookup and updates the embed and buttons accordingly.
-        /// </summary>
         [ComponentInteraction("enter:*")]
         public async Task EnterTileHandler(string data)
         {
             try
             {
-                LogService.Info($"[EnterTileHandler] Received data: {data}");
                 await Context.Interaction.DeferAsync();
+                string tileId = data.Substring("enter:".Length);
 
-                List<string> CatchParts = new List<string>();
-                var parts = data.Split(':');
-                var counter = 0;
-                foreach (var part in parts)
+                if (!TestHouseLoader.TileLookup.TryGetValue(tileId, out var targetTile))
                 {
-                    LogService.Info($"[EnterTileHandler] ({counter}) [{part}] added to CatchParts");
-                    CatchParts.Add(part);
-
-                    counter++;
+                    await Context.Interaction.FollowupAsync($"❌ Target tile '{tileId}' not found.", ephemeral: true);
+                    return;
                 }
 
-                LogService.Info($"CatchParts: [{string.Join(',', CatchParts)}]");
+                if (!targetTile.TileType.Equals("DOOR", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    await Context.Interaction.FollowupAsync("⚠️ You can only enter through a door.", ephemeral: true);
+                    return;
+                }
 
-                string areaName = parts[1];
-                string tileId = parts[2];
-                string key = $"{areaName}:{tileId}";
-
-                await ComponentHelpers.MovePlayerAsync(Context, key, showTravelAnimation: true);
+                await ComponentHelpers.MovePlayerAsync(Context, tileId, showTravelAnimation: true);
             }
             catch (Exception ex)
             {
-                LogService.Error($"[EnterTileHandler] Exception:\n{ex}");
+                LogService.Error(ex.ToString());
                 await Context.Interaction.FollowupAsync("❌ Something went wrong while entering the new area.");
             }
         }

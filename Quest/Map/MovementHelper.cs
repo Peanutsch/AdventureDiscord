@@ -7,6 +7,7 @@ namespace Adventure.Quest.Map
 {
     public class MovementHelper
     {
+        /*
         // Track current player position (you can store this in PlayerData instead)
         private int playerX = 0;
         private int playerY = 0;
@@ -38,5 +39,6 @@ namespace Adventure.Quest.Map
 
             return renderedMap;
         }
+        */
     }
 }
