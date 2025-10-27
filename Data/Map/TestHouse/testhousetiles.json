@@ -1,0 +1,43 @@
+﻿{
+  "Areas": {
+    "living_room": [
+      {
+        "id": "START",
+        "text": "<testhousetiles.json>\nStartingpoint. Nothing to see here.",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "DOOR",
+        "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nThe entrance is also an exit! How bizar...",
+        "connections": [ "small_pond:DOOR" ],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "ENEMY",
+        "text": "<testhousetiles.json>\nGet ready for some fighting!",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      }
+    ],
+    "small_pond": [
+      {
+        "id": "DOOR",
+        "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nThe entrance is also an exit! How bizar...",
+        "connections": [ "living_room:DOOR" ],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "ENEMY",
+        "text": "<testhousetiles.json>\nGet ready for some fighting!",
+        "overlays": [],
+        "pois": [],
+        "items": []
+      }
+     ]
+  }
+}

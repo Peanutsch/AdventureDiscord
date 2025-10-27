@@ -87,5 +87,72 @@ namespace Adventure.Modules
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
         }
         #endregion
+<<<<<<< Updated upstream
+=======
+
+        #region === Slashcommand "walk" ===
+        [SlashCommand("walk", "Simulate walking through tiles with directional buttons.")]
+        public async Task SlashCommandWalkHandler()
+        {
+            await DeferAsync();
+
+            // --- 1️⃣ Discord user ophalen ---
+            var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
+            if (user == null)
+            {
+                await FollowupAsync("⚠️ Error loading user data.");
+                return;
+            }
+
+            LogService.DividerParts(1, "SlashCommand: walk");
+            LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
+
+            // --- 2️⃣ Player ophalen of aanmaken ---
+            var player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
+            if (player == null)
+            {
+                await FollowupAsync("⚠️ Internal error while creating or loading player.");
+                return;
+            }
+
+            // --- 3️⃣ Tile ophalen via savepoint ---
+            var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint);
+
+            // --- 4️⃣ Fallback naar START tile als savepoint ongeldig ---
+            if (tile == null)
+            {
+                LogService.Info($"[WalkCommand] Savepoint '{player.Savepoint}' ongeldig. Fallback naar START tile.");
+                tile = SlashCommandHelpers.FindStartTile();
+
+                if (tile != null)
+                {
+                    // Update player's savepoint zodat volgende keer correct start
+                    player.Savepoint = $"{tile.AreaId}:{tile.TilePosition}";
+                    JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, player.Savepoint);
+                    LogService.Info($"[WalkCommand] Savepoint automatisch ingesteld: {player.Savepoint}");
+                }
+                else
+                {
+                    await FollowupAsync("❌ No START tile found in any area. Cannot start.", ephemeral: true);
+                    return;
+                }
+            }
+
+            // --- 5️⃣ Room name ophalen ---
+            string startingRoom = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var area)
+                ? area.Name
+                : "Unknown Room";
+
+            LogService.Info($"[/walk] Starting in room: {startingRoom}, position: {tile.TilePosition}");
+
+            // --- 6️⃣ Embed en knoppen opbouwen ---
+            var embed = EmbedBuildersMap.EmbedWalk(tile);
+            var components = EmbedBuildersMap.BuildDirectionButtons(tile);
+
+            // --- 7️⃣ Discord response sturen ---
+            await FollowupAsync(embed: embed.Build(), components: components?.Build());
+        }
+        #endregion
+>>>>>>> Stashed changes
     }
 }
