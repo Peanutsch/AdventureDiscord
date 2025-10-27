@@ -3,76 +3,11 @@ using Adventure.Loaders;
 using Adventure.Models.Map;
 using Adventure.Services;
 using Discord;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Adventure.Quest.Map
 {
-    /*
-      Provides helper methods for accessing and interacting with the map data.
-      Handles retrieving tiles, areas, exits, and tracking player positions.
-    */
-
-    public static class MapService
-    {
-        /// <summary>
-        /// Retrieves all loaded areas in the TestHouse.
-        /// </summary>
-        public static Dictionary<string, TestHouseAreaModel> Areas => TestHouseLoader.AreaLookup;
-
-        /// <summary>
-        /// Returns a dictionary of valid exits for a given tile.
-        /// Supports connections in the format "areaId:TileName" (e.g., "small_pond:DOOR").
-        /// </summary>
-        public static Dictionary<string, string> GetExits(TileModel tile)
-        {
-            var exits = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            if (tile.Connections == null || !tile.Connections.Any())
-            {
-                LogService.Info("[MapService.GetExits] No connections defined for this tile.");
-                return exits;
-            }
-
-            foreach (var connection in tile.Connections)
-            {
-                var parts = connection.Split(':');
-                if (parts.Length != 2)
-                {
-                    LogService.Error($"[MapService.GetExits] Invalid connection format: {connection}");
-                    continue;
-                }
-
-                string targetAreaId = parts[0];
-                string targetTileName = parts[1];
-
-                if (!Areas.TryGetValue(targetAreaId, out var targetArea))
-                {
-                    LogService.Error($"[MapService.GetExits] Target area '{targetAreaId}' not found.");
-                    continue;
-                }
-
-                // Find the first tile in target area that matches TileName
-                var targetTile = targetArea.Tiles.FirstOrDefault(t =>
-                    string.Equals(t.TileName, targetTileName, StringComparison.OrdinalIgnoreCase));
-
-                if (targetTile != null)
-                {
-                    exits[targetAreaId] = targetTile.TileId;
-                }
-                else
-                {
-                    LogService.Error($"[MapService.GetExits] Tile '{targetTileName}' not found in area '{targetAreaId}'.");
-                }
-            }
-
-            return exits;
-        }
-    }
-}
-    /*
     public static class MapService
     {
         // Directions and their offsets in the grid
@@ -158,4 +93,3 @@ namespace Adventure.Quest.Map
         }
     }
 }
-*/

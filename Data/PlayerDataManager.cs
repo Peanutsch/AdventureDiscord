@@ -14,7 +14,8 @@ namespace Adventure.Data {
     /// <summary>
     /// Handles loading, saving, and managing player data in the system.
     /// </summary>
-    public static class PlayerDataManager {
+    public static class PlayerDataManager 
+    {
         /// <summary>
         /// Loads a player's data by their Discord user ID.
         /// </summary>
@@ -107,7 +108,7 @@ namespace Adventure.Data {
         /// --------------------------------------------------
         /// Items: empty list by default
         /// Loot: empty list by default
-        /// MaxHitpoints: 50
+        /// MaxHitpoints: 1000 (temp. hp)
         /// MaxCarry: 70
         /// --------------------------------------------------
         /// Notes:
@@ -115,22 +116,19 @@ namespace Adventure.Data {
         /// - Unique player names are generated if base name already exists.
         /// - This template is applied when a player is created for the first time.
         /// </remarks>
-        public static PlayerModel CreateDefaultPlayer(ulong userId, string playerName) {
+        public static PlayerModel CreateNewPlayer(ulong userId, string playerName) {
             LogService.Info("[CreateDefaultPlayer] Attempting to load default_template_player.json");
 
             var defaultTemplate = JsonDataManager.LoadObjectFromJson<PlayerModel>("Data/Player/default_template_player.json");
-
-            if (defaultTemplate!.Hitpoints != 50) {
-                LogService.Error("[CreateDefaultPlayer] Error loading default template");
-            }
 
             LogService.Info("[CreateDefaultPlayer] Finished loading default template");
 
             var player = defaultTemplate ?? new PlayerModel {
                 Id = userId,
                 Name = playerName,
-                Hitpoints = 50,
+                Hitpoints = 1000,
                 MaxCarry = 70,
+                Savepoint = "START",
                 Attributes = new AttributesModel {
                     Strength = 10,
                     Dexterity = 14,
@@ -166,7 +164,7 @@ namespace Adventure.Data {
             player.Id = userId;
             player.Name = GenerateUniquePlayerName(playerName);
 
-            JsonDataManager.SaveToJson(userId, player);
+            JsonDataManager.SaveNewPlayerToJson(userId, player);
             return player;
         }
     }

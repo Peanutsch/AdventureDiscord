@@ -13,12 +13,13 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Adventure.Quest.Encounter
 {
-    public class EmbedBuilders
+    public class EmbedBuildersEncounter
     {
         #region === Embed Random Encounter ===
         /// <summary>
@@ -121,43 +122,51 @@ namespace Adventure.Quest.Encounter
 
         #region === Embed PreBattle ===
         /// <summary>
-        /// Displays the pre-battle preparation screen where the player can view their equipment
-        /// and select a weapon or item before starting combat.
+        /// Displays the pre-battle preparation screen where the player can review their current gear,
+        /// stats, and available weapons before the fight begins.  
+        /// This method updates the existing Discord message with a new embed and weapon selection buttons.
         /// </summary>
-        /// <param name="component">The Discord component triggered by a player's button interaction.</param>
-        public static async Task EmbedPreBattle(SocketMessageComponent component)
+        /// <param name="interaction">The Discord interaction triggered by the player's button click.</param>
+        public static async Task EmbedPreBattle(SocketInteraction interaction)
         {
-            // Retrieve the battle state for the current user
+            // --- Validate the interaction type ---
+            if (interaction is not SocketMessageComponent component)
+            {
+                await interaction.RespondAsync("❌ Unable to update pre-battle screen: invalid interaction type.", ephemeral: true);
+                return;
+            }
+
+            // --- Retrieve the current battle state for the user ---
             var state = BattleStateSetup.GetBattleState(component.User.Id);
             if (state == null)
             {
                 LogService.Error("[EmbedBuilders.EmbedPreBattle] > Battle state not found.");
+                await component.RespondAsync("❌ No active battle found.", ephemeral: true);
                 return;
             }
 
-            // Build UI buttons for weapons, items, and flee action
-            var builder = BuildBattleButtons(state);
-
-            // Build the pre-battle embed displaying stats and available equipment
+            // --- Build the pre-battle UI elements ---
+            var buttonBuilder = BuildBattleButtons(state);
             var embed = BuildPreBattleEmbed(state);
 
-            // Optionally defer interaction first (to avoid timeouts)
-            await component.DeferAsync();
-
-            // Send a NEW follow-up message with the embed and buttons
-            await component.FollowupAsync(embed: embed.Build(), components: builder.Build(), ephemeral: false);
-
-            LogService.Info("[EmbedBuilders.EmbedPreBattle] > Sent pre-battle screen as follow-up message.");
-
-            /*
-            // Update the original Discord message with the new embed and components
-            await component.UpdateAsync(msg =>
+            try
             {
-                msg.Content = string.Empty;
-                msg.Embed = embed.Build();
-                msg.Components = builder.Build();
-            });
-            */
+                // --- Replaces the previous content with the new pre-battle embed and buttons. ---
+                await component.UpdateAsync(msg =>
+                {
+                    msg.Content = string.Empty;
+                    msg.Embed = embed.Build();
+                    msg.Components = buttonBuilder.Build();
+                });
+
+                LogService.Info("[EmbedBuilders.EmbedPreBattle] Embed successfully updated via UpdateAsync.");
+            }
+            catch (Exception ex)
+            {
+                // --- Fallback ---
+                LogService.Info($"[EmbedBuilders.EmbedPreBattle] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
+                await component.FollowupAsync(embed: embed.Build(), components: buttonBuilder.Build(), ephemeral: false);
+            }
         }
 
         /// <summary>
@@ -170,14 +179,14 @@ namespace Adventure.Quest.Encounter
         {
             var builder = new ComponentBuilder();
 
-            // Add a button for each weapon the player currently owns
+            // --- Add a button for each weapon the player currently owns --- 
             if (state.PlayerWeapons != null && state.PlayerWeapons.Any())
             {
                 foreach (var weapon in state.PlayerWeapons)
                     builder.WithButton(weapon.Name, weapon.Id, ButtonStyle.Primary);
             }
 
-            // Add a button for each item (like potions or consumables)
+            // --- Add a button for each item (like potions or consumables) --- 
             if (state.Items != null && state.Items.Any())
             {
                 foreach (var item in state.Items)
@@ -188,7 +197,7 @@ namespace Adventure.Quest.Encounter
                 LogService.Info("[EmbedBuilders.EmbedPreBattle] > No items available.");
             }
 
-            // Add the 'Flee' or 'Break' button to allow exiting the battle
+            // --- Add the 'Flee' or 'Break' button to allow exiting the battle --- 
             builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary);
 
             return builder;
@@ -206,9 +215,9 @@ namespace Adventure.Quest.Encounter
                 .WithTitle("[Prepare for Battle]")
                 .WithThumbnailUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1425077955121381427/weaponrack2.jpg?ex=68e646c5&is=68e4f545&hm=0f79e4a059c952bda3811786473f42769493eaea55fc71105b2925024727022c&")
                 .AddField($"**{state.Player.Name}** prepares for battle...",
-                          $"| Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP} |");
+                          $"| Level: {state.Player.Level} | XP: {state.Player.XP} | HP: {state.Player.Hitpoints} |");
 
-            // Add detailed sections for weapons, armor, and items
+            // --- Add detailed sections for weapons, armor, and items --- 
             AddWeaponFields(embed, state);
             AddArmorFields(embed, state);
             AddItemFields(embed, state);
@@ -264,37 +273,49 @@ namespace Adventure.Quest.Encounter
 
         #region === Embed Battle ===
         /// <summary>
-        /// Rebuilds an embed summarizing the current battle state including HP before attack and attack log.
+        /// Builds the battle embed for the current round without updating the Discord message.
+        /// This method:
+        /// - Displays attack summaries and current HP for both combatants
+        /// - Checks if the player or NPC has been defeated
+        /// - Returns the EmbedBuilder for the outer handler to send/update
         /// </summary>
-        /// <param name="userId">User ID of the player in battle.</param>
-        /// <param name="preHPPlayer">Player's HP before the attack.</param>
-        /// <param name="preNpcHP">NPC's HP before the attack.</param>
-        /// <param name="attackSummary">Text describing the attack results.</param>
-        /// <returns>An EmbedBuilder summarizing the battle.</returns>
-        public static EmbedBuilder EmbedBattle(ulong userId, string attackSummary)
+        /// <param name="userId">The player's Discord ID.</param>
+        /// <param name="attackSummary">Formatted attack summary for the current round.</param>
+        /// <returns>An EmbedBuilder representing the current battle state.</returns>
+        public static EmbedBuilder BuildBattleEmbed(ulong userId, string attackSummary)
         {
+            // --- Retrieve the current battle state --- 
             var state = BattleStateSetup.GetBattleState(userId);
             var player = state.Player;
             var npc = state.Npc;
 
-            // Controleer of HP-status al is ingesteld
-            HPStatusHelpers.GetHPStatus(state.HitpointsAtStartNPC, state.CurrentHitpointsNPC,
-                                        HPStatusHelpers.TargetType.NPC, state);
+            // --- Check for battle end (player or NPC HP <= 0) ---
+            if (player.Hitpoints <= 0 || state.CurrentHitpointsNPC <= 0)
+            {
+                LogService.Info($"[EmbedBuilders.BuildBattleEmbed] Battle ended. Player HP: {player.Hitpoints}, NPC HP: {state.CurrentHitpointsNPC}");
 
+                // Return a simple "battle ended" embed; the outer method should call EmbedEndBattle()
+                return new EmbedBuilder()
+                    .WithTitle("⚰️ Battle Ended")
+                    .WithDescription("The fight is over. One side has fallen...");
+            }
+
+            // --- Increment round counter ---
+            state.RoundCounter++;
+
+            // --- Determine NPC thumbnail based on HP percentage --- 
             string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(npc, state.PercentageHpNpc);
 
-            LogService.Info($"[EmbedBuilders.EmbedBattle]\n\n{npc.Name} HP at Start: {state.HitpointsAtStartNPC} {npc.Name} current HP: {state.CurrentHitpointsNPC} {npc.Name} Health: {state.PercentageHpNpc}% State: {state.StateOfNPC} Thumbnail: {thumbUrl}\n\n");
-
-            // Maak embed
-            EmbedBuilder embed = new EmbedBuilder()
+            // --- Build the ongoing battle embed ---
+            var embed = new EmbedBuilder()
                 .WithColor(state.EmbedColor)
-                .WithTitle("[Battle Report]")
+                .WithTitle($"⚔️ Battle Report — Round {state.RoundCounter}")
                 .WithThumbnailUrl(thumbUrl)
                 .AddField(
                     $"{player.Name} ({state.StateOfPlayer}) VS {npc.Name} ({state.StateOfNPC})",
-                    $"| Level: {player.Level} | HP: {player.Hitpoints} | XP: {player.XP} |",
-                    inline: true)
-                .AddField("\u200B", attackSummary, false);
+                    $"| Level {player.Level} | {player.XP} XP | {player.Hitpoints} HP |")
+                .AddField("🩸 Attack Summary", attackSummary, false)
+                .WithFooter($"Round {state.RoundCounter} completed.");
 
             return embed;
         }
@@ -315,16 +336,29 @@ namespace Adventure.Quest.Encounter
             string finalLog = extraMessage ?? "";
             string battleOverText = $"{EncounterBattleStepsSetup.MsgBattleOver}";
 
+            // --- Increment round counter ---
+            state.RoundCounter++;
+
             var embed = new EmbedBuilder()
                 .WithColor(state.EmbedColor)
-                .WithTitle("[Battle Report]")
+                .WithTitle($"[Battle Report, Round {state.RoundCounter}]")
                 .WithThumbnailUrl(thumbUrl) //("https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg")
                 .AddField($"{state.Player.Name} (HP: {state.Player.Hitpoints}) VS {state.Npc.Name} ({state.StateOfNPC})",
-                          $"| Level: {state.Player.Level} | HP: {state.Player.Hitpoints} | XP: {state.Player.XP} |", inline: true)
+                          $"| Level {state.Player.Level} | {state.Player.XP} XP | {state.Player.Hitpoints} HP |")
                 .AddField("\u200B", $"{finalLog}\n\n{battleOverText}");
 
-            // ⚡ Gebruik FollowupAsync als we eerder deferred hebben
-            await interaction.FollowupAsync(embed: embed.Build(), ephemeral: false);
+            if (interaction is SocketMessageComponent component)
+            {
+                await component.UpdateAsync(msg =>
+                {
+                    msg.Embed = embed.Build();
+                    msg.Components = new ComponentBuilder().Build(); // remove buttons
+                    msg.Content = string.Empty;
+                });
+            }
+
+            // Reset round counter
+            state.RoundCounter = 0;
 
             // Update battle step
             EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepEndBattle);

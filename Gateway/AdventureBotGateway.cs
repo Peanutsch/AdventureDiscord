@@ -50,17 +50,8 @@ namespace Adventure.Gateway
         /// </summary>
         public async Task StartBotAsync()
         {
-            // Load static game data into memory at startup
-            GameData.Weapons = WeaponLoader.Load();
-            GameData.Armor = ArmorLoader.Load();
-            GameData.Items = ItemLoader.Load();
-            GameData.Humanoids = HumanoidLoader.Load();
-            GameData.Bestiary = BestiaryLoader.Load();
-
-            // Load battle and roll text data
-            var (battleText, rollText) = BattleTextLoader.Load();
-            GameData.BattleText = battleText;
-            GameData.RollText = rollText;
+            // Load data
+            LoadModule.Load();
 
             // Retrieve the bot token securely from CSV
             string discordToken = GetToken.GetTokenFromCSV();

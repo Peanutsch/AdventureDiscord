@@ -1,4 +1,4 @@
-﻿using Adventure.Models.Map;
+using Adventure.Models.Map;
 using Adventure.Services;
 using Adventure.Models.Player;
 using Discord.Interactions;
@@ -10,8 +10,8 @@ using Microsoft.VisualBasic;
 using Adventure.Quest.Encounter;
 using Adventure.Models.BattleState;
 using Adventure.Quest.Battle.BattleEngine;
-using static Adventure.Quest.Battle.Randomizers.EncounterRandomizer;
 using Adventure.Quest.Battle.Randomizers;
+using Adventure.Quest.Map;
 
 namespace Adventure.Modules
 {
@@ -27,7 +27,6 @@ namespace Adventure.Modules
             var user = Context.Client.GetUser(Context.User.Id); 
             if (user != null)
             {
-                string username = user.Username;
                 string displayName = user.GlobalName ?? user.Username;
                 LogService.Info($"[Encounter] Discord user '{displayName}' (ID: {user.Id})");
             }
@@ -54,17 +53,17 @@ namespace Adventure.Modules
         {
             await DeferAsync();
 
-            var user = SlashEncounterHelpers.GetDiscordUser(Context ,Context.User.Id);
+            var user = SlashCommandHelpers.GetDiscordUser(Context ,Context.User.Id);
             if (user == null)
             {
-                await RespondAsync("⚠️ Error loading user data.");
+                await FollowupAsync("⚠️ Error loading user data.");
                 return;
             }
 
             LogService.DividerParts(1, "Slashcommand: Encounter");
             LogService.Info($"[/Encounter] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
-            var player = SlashEncounterHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
+            var player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
             if (player == null)
             {
                 await FollowupAsync("⚠️ Internal error while creating or loading player.");
@@ -79,16 +78,14 @@ namespace Adventure.Modules
                 return;
             }
 
-            SlashEncounterHelpers.SetupBattleState(user.Id, npc);
+            SlashCommandHelpers.SetupBattleState(user.Id, npc);
 
-            var embed = EmbedBuilders.EmbedRandomEncounter(npc);
-            var buttons = SlashEncounterHelpers.BuildEncounterButtons();
+            var embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
+            var buttons = SlashCommandHelpers.BuildEncounterButtons();
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
         }
         #endregion
-<<<<<<< Updated upstream
-=======
 
         #region === Slashcommand "walk" ===
         [SlashCommand("walk", "Simulate walking through tiles with directional buttons.")]
@@ -96,7 +93,6 @@ namespace Adventure.Modules
         {
             await DeferAsync();
 
-            // --- 1️⃣ Discord user ophalen ---
             var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
             if (user == null)
             {
@@ -107,7 +103,6 @@ namespace Adventure.Modules
             LogService.DividerParts(1, "SlashCommand: walk");
             LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
-            // --- 2️⃣ Player ophalen of aanmaken ---
             var player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
             if (player == null)
             {
@@ -153,6 +148,26 @@ namespace Adventure.Modules
             await FollowupAsync(embed: embed.Build(), components: components?.Build());
         }
         #endregion
->>>>>>> Stashed changes
+
+            //var player = JsonDataManager.LoadPlayerFromJson(user.Id);
+            var tile = SlashCommandHelpers.GetTileFromSavePoint(player!.Savepoint);
+
+            if (tile == null)
+            {
+                await FollowupAsync("❌ No valid savepoint or starting tile found.", ephemeral: true);
+                return;
+            }
+
+            string startingRoom = MainHouseLoader.AreaTiles
+                .FirstOrDefault(r => r.Value.Contains(tile)).Key ?? "UnknownRoom";
+
+            LogService.Info($"[/walk] Starting in room: {startingRoom}, position: {tile.TilePosition}");
+
+            var embed = EmbedBuildersMap.EmbedWalk(tile);
+            var components = EmbedBuildersMap.BuildDirectionButtons(tile);
+
+            await FollowupAsync(embed: embed.Build(), components: components?.Build());
+        }
+        #endregion
     }
 }
