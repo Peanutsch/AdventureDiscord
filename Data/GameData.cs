@@ -145,19 +145,6 @@ namespace Adventure.Data
         }
         #endregion
 
-        #region === MainHouseModel ===
-        private static List<TileModel>? _mainHouse;
-
-        /// <summary>
-        /// Gets or sets the current map configuration, including tiles, connections, and POIs.
-        /// </summary>
-        public static List<TileModel>? MainHouse
-        {
-            get => _mainHouse;
-            set => _mainHouse = value;
-        }
-        #endregion
-
         #region === TestHouseModel ===
         private static List<TileModel>? _testhouse;
 
