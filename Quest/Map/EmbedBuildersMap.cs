@@ -130,7 +130,8 @@ namespace Adventure.Quest.Map
                 }))
                 : "None";
 
-            LogService.Info($"\nArea: {area.Name}\nDescription:\n{area.Description}\nGrid:\n{gridVisual}\nTile Text:\n{tileTextSafe}\nExits:\n{exitInfo}\nCurrent Tile: {tile.TileId}");
+            //LogService.Info($"\nArea: {area.Name}\nDescription:\n{area.Description}\nGrid:\n{gridVisual}\nTile Text:\n{tileTextSafe}\nExits:\n{exitInfo}\nCurrent Tile: {tile.TileId}");
+            LogService.Info($"\n[Area]\n{area.Name}\n[Description]\n{area.Description}\n[Location]\n{tile.TileId}\n[Tile Text]\n{tileTextSafe}\n[Exits]\n{exitInfo}\n[Current Tile]\n{tile.TileId}");
 
             return new EmbedBuilder()
                 .WithColor(Color.Blue)

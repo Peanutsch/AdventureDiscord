@@ -14,11 +14,13 @@ namespace Adventure.Buttons
         {
             if (!TestHouseLoader.TileLookup.TryGetValue(key, out var targetTile) || targetTile == null)
             {
+                LogService.Error($"[ComponentHelpers.MovePlayerAsync] ❌ Target tile '{key}' not found!");
                 await context.Interaction.FollowupAsync($"❌ Target tile '{key}' not found.", ephemeral: true);
                 return false;
             }
 
             // Save player position
+            LogService.Info($"[ComponentHelpers.MovePlayerAsync] Save location {key} for {context.User.GlobalName}");
             JsonDataManager.UpdatePlayerSavepoint(context.User.Id, key);
 
             // Travel animation

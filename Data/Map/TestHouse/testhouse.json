@@ -6,7 +6,7 @@
       "description": "<testhouse.json>\nA small living room with worn furniture and a flickering light.\nOn the south side is a wooden door.",
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "Wall", "START", "Floor", "Floor", "Wall", "ENEMY", "Wall" ],
+        [ "Wall", "START", "Floor", "Floor", "Wall", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "DOOR", "Floor", "Floor", "Floor", "Wall", "Wall" ],
@@ -21,7 +21,7 @@
         [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
         [ "Wall", "DOOR", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Water", "Floor", "Wall" ],
-        [ "Wall", "Floor", "Floor", "ENEMY", "Wall" ],
+        [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ]
     }

@@ -101,19 +101,15 @@ namespace Adventure.Quest.Map
         #endregion
 
         #region === Dictionary of used Emojis ===
-        /// <summary>
-        /// Maps tile type identifiers to their emoji representations.
-        /// Used to visually render map layouts inside Discord embeds.
-        /// </summary>
-        private static readonly Dictionary<string, string> EmojiMap = new(StringComparer.OrdinalIgnoreCase)
+        public static readonly Dictionary<string, string> EmojiMap = new(StringComparer.OrdinalIgnoreCase)
         {
-            { "WALL", "⬛" },
-            { "FLOOR", "⬜" },
-            { "GRASS", "🟩" },
-            { "DIRT", "🟫" },
-            { "SAND", "🟨" },
-            { "LAVA", "🟧" },
-            { "WATER", "🟦" },
+            { "Wall", "⬛" },
+            { "Floor", "⬜" },
+            { "Grass", "🟩" },
+            { "Dirt", "🟫" },
+            { "Sand", "🟨" },
+            { "Lava", "🟧" },
+            { "Water", "🟦" },
             { "ENEMY", "👤" },
             { "PORTAL", "🌀" },
             { "TREASURE", "💰" },
@@ -131,8 +127,7 @@ namespace Adventure.Quest.Map
         public static (int row, int col) ParseTilePosition(string tilePos)
         {
             var parts = tilePos.Split(',');
-            if (parts.Length == 2 &&
-                int.TryParse(parts[0], out int row) &&
+            if (int.TryParse(parts[0], out int row) &&
                 int.TryParse(parts[1], out int col))
             {
                 return (row, col);
@@ -184,7 +179,20 @@ namespace Adventure.Quest.Map
 
                     string tileType = layout[row][col];
 
+                    if (tileType.Equals("START", StringComparison.OrdinalIgnoreCase))
+                    {
+                        LogService.Info($"[TileUI.RenderTileGrid] Set tile 'START' to 'Floor'");
+                        tileType = "Floor";
+                    }
+
                     // Map tileType to emoji
+                    ///*
+                    string icon = TileUI.EmojiMap.TryGetValue(tileType.ToUpper(), out var emoji)
+                        ? emoji
+                        : "❓";
+                    //*/
+                    
+                    /*
                     string icon = tileType switch
                     {
                         "Wall" => "⬛",
@@ -195,6 +203,7 @@ namespace Adventure.Quest.Map
                         "START" => "⬜",
                         _ => "❓"
                     };
+                    */
 
                     sb.Append(icon);
                 }

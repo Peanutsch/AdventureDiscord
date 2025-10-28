@@ -11,7 +11,7 @@
       {
         "id": "DOOR",
         "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nThe entrance is also an exit! How bizar...",
-        "connections": [ "small_pond:DOOR" ],
+        "connections": [ "small_pond:1,1" ],
         "pois": [],
         "items": []
       },
@@ -27,7 +27,7 @@
       {
         "id": "DOOR",
         "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nThe entrance is also an exit! How bizar...",
-        "connections": [ "living_room:DOOR" ],
+        "connections": [ "living_room:4,1" ],
         "pois": [],
         "items": []
       },

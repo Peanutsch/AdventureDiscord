@@ -120,14 +120,15 @@ namespace Adventure.Buttons
         [ComponentInteraction("move:*")]
         public async Task WalkDirectionHandler(string data)
         {
+            await Context.Interaction.DeferAsync();
             try
             {
-                await Context.Interaction.DeferAsync();
                 string tileId = data.Substring("move:".Length);
 
                 if (!TestHouseLoader.TileLookup.ContainsKey(tileId))
                 {
-                    await Context.Interaction.FollowupAsync($"❌ Tile '{tileId}' bestaat niet!", ephemeral: true);
+                    LogService.Error($"[ComponentInteractions.WalkDirectionHandler] ❌ Tile '{tileId}' not found");
+                    await Context.Interaction.FollowupAsync($"❌ Tile '{tileId}' not found!", ephemeral: true);
                     return;
                 }
 
@@ -135,7 +136,7 @@ namespace Adventure.Buttons
             }
             catch (Exception ex)
             {
-                LogService.Error(ex.ToString());
+                LogService.Error($"[ComponentInteractions.WalkDirectionHandler] Error while moving:\n{ex}");
                 await Context.Interaction.FollowupAsync("❌ Something went wrong while moving.");
             }
         }
@@ -145,13 +146,14 @@ namespace Adventure.Buttons
         [ComponentInteraction("enter:*")]
         public async Task EnterTileHandler(string data)
         {
+            await Context.Interaction.DeferAsync();
             try
             {
-                await Context.Interaction.DeferAsync();
                 string tileId = data.Substring("enter:".Length);
 
                 if (!TestHouseLoader.TileLookup.TryGetValue(tileId, out var targetTile))
                 {
+                    LogService.Error($"[ComponentInteractions.EnterTileHandler] ❌ Tile '{tileId}' not found");
                     await Context.Interaction.FollowupAsync($"❌ Target tile '{tileId}' not found.", ephemeral: false);
                     return;
                 }
@@ -168,7 +170,7 @@ namespace Adventure.Buttons
             }
             catch (Exception ex)
             {
-                LogService.Error(ex.ToString());
+                LogService.Error($"[ComponentInteractions.EnterTileHandler] Error:\n{ex}");
                 await Context.Interaction.FollowupAsync("❌ Something went wrong while entering the new area.");
             }
         }
