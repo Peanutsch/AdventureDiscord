@@ -3,13 +3,16 @@
     "living_room": [
       {
         "id": "START",
+        "base": "",
+        "overlay": "Floor",
         "text": "<testhousetiles.json>\nStartingpoint. Nothing to see here.",
-        "overlays": [],
         "pois": [],
         "items": []
       },
       {
         "id": "DOOR",
+        "base": "",
+        "overlay": "",
         "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nA small plate says 'To the pond'",
         "connections": [ "small_pond:DOOR" ],
         "pois": [],
@@ -17,8 +20,9 @@
       },
       {
         "id": "ENEMY",
+        "base": "",
+        "overlay": "Floor",
         "text": "<testhousetiles.json>\nGet ready for some fighting!",
-        "overlays": [],
         "pois": [],
         "items": []
       }
@@ -26,6 +30,8 @@
     "small_pond": [
       {
         "id": "DOOR",
+        "base": "",
+        "overlay": "",
         "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.",
         "connections": [ "living_room:DOOR" ],
         "pois": [],
@@ -33,8 +39,9 @@
       },
       {
         "id": "ENEMY",
+        "base": "",
+        "overlay": "Floor",
         "text": "<testhousetiles.json>\nGet ready for some fighting!",
-        "overlays": [],
         "pois": [],
         "items": []
       }

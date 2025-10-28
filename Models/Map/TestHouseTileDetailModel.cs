@@ -12,11 +12,14 @@ namespace Adventure.Models.Map
         [JsonPropertyName("id")]
         public string Id { get; set; } = "";
 
+        [JsonPropertyName("base")]
+        public string Base { get; set; } = "ERROR_BASE";
+
+        [JsonPropertyName("overlay")]
+        public string Overlay { get; set; } = "ERROR_OVERLAY";
+
         [JsonPropertyName("text")]
         public string Text { get; set; } = "";
-
-        [JsonPropertyName("overlays")]
-        public List<string> Overlays { get; set; } = new();
 
         [JsonPropertyName("pois")]
         public List<string> Pois { get; set; } = new();

@@ -20,9 +20,6 @@ namespace Adventure.Models.Map
         [JsonPropertyName("text")]
         public string TileText { get; set; } = "ERROR_TILE_TEXT";
 
-        [JsonPropertyName("overlays")]
-        public List<string>? Overlays { get; set; }
-
         [JsonPropertyName("poi")]
         public List<string>? TilePOI { get; set; }
 
@@ -31,6 +28,10 @@ namespace Adventure.Models.Map
 
         [JsonPropertyName("connections")]
         public List<string> Connections { get; set; } = new();
+
+        public string TileBase { get; set; } = "ERROR_TILE_BASE";
+
+        public string TileOverlay { get; set; } = "ERROR_TILE_OVERLAY";
 
         public string TileType { get; set; } = "ERROR_TILE_TYPE";
 

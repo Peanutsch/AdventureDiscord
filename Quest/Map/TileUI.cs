@@ -103,6 +103,7 @@ namespace Adventure.Quest.Map
         #region === Dictionary of used Emojis ===
         public static readonly Dictionary<string, string> EmojiMap = new(StringComparer.OrdinalIgnoreCase)
         {
+            // 
             { "Wall", "⬛" },
             { "Floor", "⬜" },
             { "Grass", "🟩" },
@@ -110,13 +111,18 @@ namespace Adventure.Quest.Map
             { "Sand", "🟨" },
             { "Lava", "🟧" },
             { "Water", "🟦" },
-            { "ENEMY", "👤" },
-            { "PORTAL", "🌀" },
-            { "TREASURE", "💰" },
-            { "NPC", "🧍" },
+            //
             { "DOOR", "🚪" },
-            { "START", "🧍" },
-            { "PLAYER", "🧍" }
+            { "PORTAL", "🌀" },
+            //
+            { "TREASURE", "💰" },
+            //
+            { "PLAYER", "🧍" },
+            { "ENEMY", "👤" },
+            { "NPC", "🧍" },
+            //
+            { "START", "🧍" }
+
         };
         #endregion
 
@@ -164,7 +170,7 @@ namespace Adventure.Quest.Map
                 }
             }
 
-            var sb = new System.Text.StringBuilder();
+            var sb = new StringBuilder();
 
             for (int row = 0; row < layout.Count; row++)
             {
@@ -186,25 +192,10 @@ namespace Adventure.Quest.Map
                     }
 
                     // Map tileType to emoji
-                    ///*
-                    string icon = TileUI.EmojiMap.TryGetValue(tileType.ToUpper(), out var emoji)
+                    string icon = EmojiMap.TryGetValue(tileType.ToUpper(), out var emoji)
                         ? emoji
                         : "❓";
-                    //*/
                     
-                    /*
-                    string icon = tileType switch
-                    {
-                        "Wall" => "⬛",
-                        "Floor" => "⬜",
-                        "Water" => "🟦",
-                        "DOOR" => "🚪",
-                        "ENEMY" => "👤",
-                        "START" => "⬜",
-                        _ => "❓"
-                    };
-                    */
-
                     sb.Append(icon);
                 }
 

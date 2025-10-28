@@ -53,10 +53,11 @@ namespace Adventure.Loaders
                             TileType = tileType,
                             TilePosition = tilePosition,
                             TileText = detail?.Text ?? string.Empty,
-                            Overlays = detail?.Overlays ?? new List<string>(),
                             TilePOI = detail?.Pois ?? new List<string>(),
                             TileItems = detail?.Items ?? new List<string>(),
-                            Connections = detail?.Connections ?? new List<string>()
+                            Connections = detail?.Connections ?? new List<string>(),
+                            TileBase = detail?.Base ?? string.Empty,
+                            TileOverlay = detail?.Overlay ?? string.Empty
                         };
 
                         // Voeg tile toe aan Area en algemene lijst
