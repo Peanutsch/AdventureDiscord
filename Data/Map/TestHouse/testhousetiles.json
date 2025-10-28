@@ -10,8 +10,8 @@
       },
       {
         "id": "DOOR",
-        "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nThe entrance is also an exit! How bizar...",
-        "connections": [ "small_pond:1,1" ],
+        "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nA small plate says 'To the pond'",
+        "connections": [ "small_pond:DOOR" ],
         "pois": [],
         "items": []
       },
@@ -26,8 +26,8 @@
     "small_pond": [
       {
         "id": "DOOR",
-        "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nThe entrance is also an exit! How bizar...",
-        "connections": [ "living_room:4,1" ],
+        "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.",
+        "connections": [ "living_room:DOOR" ],
         "pois": [],
         "items": []
       },

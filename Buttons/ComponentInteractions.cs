@@ -117,7 +117,7 @@ namespace Adventure.Buttons
         #endregion
 
         #region === Walk Direction Handler ===
-        [ComponentInteraction("move:*")]
+        //[ComponentInteraction("move:*")]
         public async Task WalkDirectionHandler(string data)
         {
             await Context.Interaction.DeferAsync();
@@ -143,7 +143,7 @@ namespace Adventure.Buttons
         #endregion
 
         #region === Enter Button Handler ===
-        [ComponentInteraction("enter:*")]
+        //[ComponentInteraction("enter:*")]
         public async Task EnterTileHandler(string data)
         {
             await Context.Interaction.DeferAsync();
