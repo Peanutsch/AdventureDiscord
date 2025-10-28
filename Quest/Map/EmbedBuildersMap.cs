@@ -12,23 +12,40 @@ namespace Adventure.Quest.Map
     public class EmbedBuildersMap
     {
         #region === Buttons ===
-
-        public static string Label(string direction) => direction switch
-        {
-            "West" => "⬅️",
-            "North" => "⬆️",
-            "South" => "⬇️",
-            "East" => "➡️",
-            _ => direction
-        };
-
+        /// <summary>
+        /// Handles the creation of Discord component buttons (Enter, Move, Break)
+        /// based on the player's current tile and available connections.
+        /// </summary>
         public static ComponentBuilder BuildDirectionButtons(TileModel tile)
         {
             LogService.DividerParts(1, "BuildDirectionButtons");
             var builder = new ComponentBuilder();
 
-            // --- Default disabled buttons ---
-            var buttons = new List<ButtonBuilder>
+            // Create default disabled buttons
+            var buttons = CreateDefaultButtons();
+
+            // Enable movement buttons based on available connections
+            EnableMovementButtons(tile, buttons);
+
+            // Enable "Enter" button if current tile is a DOOR
+            EnableEnterButton(tile, buttons);
+
+            // Add all buttons to the Discord component builder
+            AddButtonsToBuilder(builder, buttons);
+
+            LogService.DividerParts(2, "BuildDirectionButtons");
+            return builder;
+        }
+        #endregion
+
+        #region === Button Helper Methods ===
+
+        /// <summary>
+        /// Creates a list of default disabled buttons for Enter, Move (N/W/S/E) and Break.
+        /// </summary>
+        private static List<ButtonBuilder> CreateDefaultButtons()
+        {
+            return new List<ButtonBuilder>
     {
         new ButtonBuilder().WithLabel("Enter").WithCustomId("enter:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
         new ButtonBuilder().WithLabel("⬆️").WithCustomId("move_north:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
@@ -36,77 +53,121 @@ namespace Adventure.Quest.Map
         new ButtonBuilder().WithLabel("⬇️").WithCustomId("move_south:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
         new ButtonBuilder().WithLabel("➡️").WithCustomId("move_east:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true)
     };
+        }
 
-            // --- Enable movement buttons op basis van tile connections ---
-            if (tile.Connections != null)
+        /// <summary>
+        /// Enables directional movement buttons based on tile connections.
+        /// </summary>
+        /// <param name="tile">The current tile model containing connections.</param>
+        /// <param name="buttons">The list of button builders to update.</param>
+        private static void EnableMovementButtons(TileModel tile, List<ButtonBuilder> buttons)
+        {
+            if (tile.Connections == null)
+                return;
+
+            foreach (var targetTileId in tile.Connections)
             {
-                foreach (var targetTileId in tile.Connections)
+                // Try to find the connected tile in the global lookup
+                if (!TestHouseLoader.TileLookup.TryGetValue(targetTileId, out var targetTile))
+                    continue;
+
+                // Determine the direction from the current tile to the target tile
+                string? dir = MapService.DetermineDirection(tile, targetTile);
+                if (dir == null)
+                    continue;
+
+                // Map direction to index position in the button list
+                int index = dir switch
                 {
-                    if (!TestHouseLoader.TileLookup.TryGetValue(targetTileId, out var targetTile)) continue;
+                    "North" => 1,
+                    "West" => 2,
+                    "South" => 3,
+                    "East" => 4,
+                    _ => -1
+                };
 
-                    // Gebruik MapService om richting te bepalen
-                    string? dir = MapService.DetermineDirection(tile, targetTile);
-                    if (dir == null) continue;
-
-                    int index = dir switch
-                    {
-                        "North" => 1,
-                        "West" => 2,
-                        "South" => 3,
-                        "East" => 4,
-                        _ => -1
-                    };
-
-                    if (index >= 0)
-                    {
-                        buttons[index] = new ButtonBuilder()
-                            .WithLabel(Label(dir))
-                            .WithCustomId($"move:{targetTile.TileId}")
-                            .WithStyle(ButtonStyle.Primary)
-                            .WithDisabled(false);
-                    }
-                }
-            }
-
-            // --- Enable Enter button alleen als huidige tile een DOOR is ---
-            if (tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) && tile.Connections?.Count > 0)
-            {
-                // connection uit detail ("small_pond:DOOR") → vind de echte TileId in TileLookup
-                string connectionRef = tile.Connections[0]; // "small_pond:DOOR"
-                var parts = connectionRef.Split(':'); // ["small_pond", "DOOR"]
-                string areaId = parts[0];
-                string detailId = parts[1];
-
-                // Zoek tile in TileLookup van dat areaId en detailId
-                var targetTile = TestHouseLoader.AreaLookup[areaId].Tiles
-                    .FirstOrDefault(t => t.TileType.Equals(detailId, StringComparison.OrdinalIgnoreCase));
-
-                if (targetTile != null)
+                // Replace the default disabled button with an active movement button
+                if (index >= 0)
                 {
-                    buttons[0] = new ButtonBuilder()
-                        .WithLabel("Enter")
-                        .WithCustomId($"enter:{targetTile.TileId}") // echte tileId
-                        .WithStyle(ButtonStyle.Success)
+                    buttons[index] = new ButtonBuilder()
+                        .WithLabel(Label(dir))
+                        .WithCustomId($"move:{targetTile.TileId}") // Unique ID for component interaction
+                        .WithStyle(ButtonStyle.Primary)
                         .WithDisabled(false);
                 }
             }
+        }
 
-            // --- Voeg buttons toe aan builder ---
+        /// <summary>
+        /// Enables the Enter button if the current tile represents a door with valid connections.
+        /// </summary>
+        /// <param name="tile">The current tile model.</param>
+        /// <param name="buttons">The list of buttons to modify.</param>
+        private static void EnableEnterButton(TileModel tile, List<ButtonBuilder> buttons)
+        {
+            // Only apply to DOOR tiles with at least one connection
+            if (!tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) || tile.Connections?.Count == 0)
+                return;
+
+            string connectionRef = tile.Connections![0]; // Example: "small_pond:DOOR"
+            var parts = connectionRef.Split(':');
+            if (parts.Length < 2)
+                return;
+
+            string areaId = parts[0];
+            string detailId = parts[1];
+
+            // Verify the area exists
+            if (!TestHouseLoader.AreaLookup.TryGetValue(areaId, out var area))
+                return;
+
+            // Find the target tile within the destination area
+            var targetTile = area.Tiles.FirstOrDefault(t =>
+                t.TileType.Equals(detailId, StringComparison.OrdinalIgnoreCase));
+
+            if (targetTile != null)
+            {
+                // Enable Enter button linking to the target tile
+                buttons[0] = new ButtonBuilder()
+                    .WithLabel("Enter")
+                    .WithCustomId($"enter:{targetTile.TileId}")
+                    .WithStyle(ButtonStyle.Success)
+                    .WithDisabled(false);
+            }
+        }
+
+        /// <summary>
+        /// Adds the prepared buttons to the Discord ComponentBuilder with specific layout rows.
+        /// </summary>
+        private static void AddButtonsToBuilder(ComponentBuilder builder, List<ButtonBuilder> buttons)
+        {
+            // Row 0: Enter, North, Break
             builder.WithButton(buttons[0], row: 0)
                    .WithButton(buttons[1], row: 0)
                    .WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0);
 
+            // Row 1: West, South, East
             builder.WithButton(buttons[2], row: 1)
                    .WithButton(buttons[3], row: 1)
                    .WithButton(buttons[4], row: 1);
-
-            LogService.DividerParts(2, "BuildDirectionButtons");
-            return builder;
         }
+
+        /// <summary>
+        /// Returns a formatted label string for directional buttons with emoji.
+        /// </summary>
+        /// <param name="dir">The direction name.</param>
+        /// <returns>A readable label for the button.</returns>
+        private static string Label(string dir) => dir switch
+        {
+            "North" => "⬆️ North",
+            "West" => "⬅️ West",
+            "South" => "⬇️ South",
+            "East" => "➡️ East",
+            _ => dir
+        };
         #endregion
 
         #region === Embed Builders ===
-
         public static EmbedBuilder EmbedWalk(TileModel tile)
         {
             LogService.Info("[EmbedBuildersMap.EmbedWalk] Building embed...");
@@ -115,7 +176,10 @@ namespace Adventure.Quest.Map
                        ? foundArea
                        : new TestHouseAreaModel { Name = "Unknown Room", Description = "No description available." };
 
+            LogService.DividerParts(1, "TileUI.RenderTileGrid");
             string gridVisual = TileUI.RenderTileGrid(tile);
+            LogService.DividerParts(2, "TileUI.RenderTileGrid");
+
             string tileTextSafe = string.IsNullOrWhiteSpace(tile.TileText)
                 ? "<Fallback Text from EmbedBuilder>\nNothing to report..."
                 : tile.TileText;
@@ -130,7 +194,6 @@ namespace Adventure.Quest.Map
                 }))
                 : "None";
 
-            //LogService.Info($"\nArea: {area.Name}\nDescription:\n{area.Description}\nGrid:\n{gridVisual}\nTile Text:\n{tileTextSafe}\nExits:\n{exitInfo}\nCurrent Tile: {tile.TileId}");
             LogService.Info($"\n[Area]\n{area.Name}\n[Description]\n{area.Description}\n[Location]\n{tile.TileId}\n[Tile Text]\n{tileTextSafe}\n[Exits]\n{exitInfo}\n[Current Tile]\n{tile.TileId}");
 
             return new EmbedBuilder()

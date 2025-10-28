@@ -173,34 +173,33 @@ namespace Adventure.Quest.Map
                     }
 
                     string tileType = layout[row][col];
-                    LogService.Info($"[TileUI.RenderTileGrid] tileType: {tileType}");
+                    LogService.Info($"TileType: {tileType}");
 
                     // Vind tile details als overlay/base nodig is
                     var tileDetail = area.Tiles.FirstOrDefault(t => t.TilePosition == $"{row},{col}");
 
                     string icon = "❓"; // default
-                    //if (tileDetail != null)
                     if (!string.IsNullOrEmpty(tileDetail!.TileBase)|| !string.IsNullOrEmpty(tileDetail.TileOverlay))
                     {
-                        LogService.Info($"[TileUI.RenderTileGrid] Tile Position: ({tileDetail.TilePosition}) TileBase: {tileDetail.TileBase}, TileOverlay: {tileDetail.TileOverlay}");
+                        LogService.Info($"Tile Position: ({tileDetail.TilePosition}) TileBase: {tileDetail.TileBase}, TileOverlay: {tileDetail.TileOverlay}");
 
                         // Gebruik overlay als die aanwezig is, anders base
                         string? key = !string.IsNullOrWhiteSpace(tileDetail.TileOverlay)
                                      ? tileDetail.TileOverlay
                                      : tileDetail.TileBase;
 
-                        LogService.Info($"[TileUI.RenderTileGrid] key: {key}");
+                        LogService.Info($"Key: {key}");
 
                         if (!string.IsNullOrWhiteSpace(key))
                             icon = EmojiMap.TryGetValue(key.ToUpper(), out var emoji) ? emoji : "❓";
                     }
                     else
                     {
-                        LogService.Info($"[TileUI.RenderTileGrid] Tile Position: ({tileDetail.TilePosition}) tileBase['{tileDetail.TileBase}'] OR tileOverlay['{tileDetail.TileOverlay}'] empty... Use '{tileType}' to search for icon");
+                        LogService.Info($"Tile Position: ({tileDetail.TilePosition}) tileBase['{tileDetail.TileBase}'] OR tileOverlay['{tileDetail.TileOverlay}'] empty... Use '{tileType}' to search for icon");
                         icon = EmojiMap.TryGetValue(tileType.ToUpper(), out var emoji) ? emoji : "❓";
                     }
 
-                    LogService.Info($"[TileUI.RenderTileGrid] icon: {icon}");
+                    LogService.Info($"Use icon: {icon}");
                     sb.Append(icon);
                 }
                 sb.AppendLine();

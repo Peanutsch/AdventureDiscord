@@ -5,12 +5,15 @@
       "name": "Living Room",
       "description": "<testhouse.json>\nA small living room with worn furniture and a flickering light.\nOn the south side is a wooden door.",
       "layout": [
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "Wall", "START", "Floor", "Floor", "Wall", "ENEMY", "Wall" ],
-        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
-        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
-        [ "Wall", "DOOR", "Floor", "Floor", "Floor", "Wall", "Wall" ],
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
+        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
+        [ "Wall", "START", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall", "ENEMY", "Wall" ],
+        [ "Wall", "Floor", "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall" ],
+        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
+        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
+        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
+        [ "Wall", "Floor", "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall" ],
+        [ "Wall", "DOOR", "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall" ],
+        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ]
     },
     "small_pond": {
@@ -18,11 +21,13 @@
       "name": "Small Pond",
       "description": "<testhouse.json>\nA small pond with grassy edges. The water glimmers softly.\nA perfect place to hide and get some rest...",
       "layout": [
-        [ "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "Wall", "DOOR", "Floor", "Floor", "Wall" ],
-        [ "Wall", "Floor", "Water", "Floor", "Wall" ],
-        [ "Wall", "Floor", "Floor", "Floor", "Wall" ],
-        [ "Wall", "Wall", "Wall", "Wall", "Wall" ]
+        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
+        [ "Wall", "DOOR", "Grass", "Grass", "Grass", "Wall" ],
+        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall" ],
+        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall" ],
+        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall" ],
+        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Wall" ],
+        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ]
     }
   }
