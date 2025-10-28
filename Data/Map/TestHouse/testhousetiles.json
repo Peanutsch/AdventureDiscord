@@ -3,7 +3,7 @@
     "living_room": [
       {
         "id": "START",
-        "base": "",
+        "base": "START",
         "overlay": "Floor",
         "text": "<testhousetiles.json>\nStartingpoint. Nothing to see here.",
         "pois": [],
@@ -11,8 +11,8 @@
       },
       {
         "id": "DOOR",
-        "base": "",
-        "overlay": "",
+        "base": "DOOR",
+        "overlay": "DOOR",
         "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nA small plate says 'To the pond'",
         "connections": [ "small_pond:DOOR" ],
         "pois": [],
@@ -20,8 +20,8 @@
       },
       {
         "id": "ENEMY",
-        "base": "",
-        "overlay": "Floor",
+        "base": "ENEMY",
+        "overlay": "ENEMY",
         "text": "<testhousetiles.json>\nGet ready for some fighting!",
         "pois": [],
         "items": []
@@ -30,8 +30,8 @@
     "small_pond": [
       {
         "id": "DOOR",
-        "base": "",
-        "overlay": "",
+        "base": "DOOR",
+        "overlay": "DOOR",
         "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.",
         "connections": [ "living_room:DOOR" ],
         "pois": [],
@@ -39,8 +39,8 @@
       },
       {
         "id": "ENEMY",
-        "base": "",
-        "overlay": "Floor",
+        "base": "ENEMY",
+        "overlay": "ENEMY",
         "text": "<testhousetiles.json>\nGet ready for some fighting!",
         "pois": [],
         "items": []

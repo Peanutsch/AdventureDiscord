@@ -118,7 +118,7 @@ namespace Adventure.Quest.Map
             { "TREASURE", "💰" },
             //
             { "PLAYER", "🧍" },
-            { "ENEMY", "👤" },
+            { "ENEMY", "⚔️" },
             { "NPC", "🧍" },
             //
             { "START", "🧍" }
@@ -156,19 +156,8 @@ namespace Adventure.Quest.Map
             if (layout == null || layout.Count == 0)
                 return "<No layout>";
 
-            // Parse row,col from tile.TilePosition
-            int playerRow = -1, playerCol = -1;
-            if (!string.IsNullOrWhiteSpace(tile.TilePosition))
-            {
-                var parts = tile.TilePosition.Split(',');
-                if (parts.Length == 2 &&
-                    int.TryParse(parts[0], out int r) &&
-                    int.TryParse(parts[1], out int c))
-                {
-                    playerRow = r;
-                    playerCol = c;
-                }
-            }
+            // Player positie ophalen via ParseTilePosition
+            var (playerRow, playerCol) = ParseTilePosition(tile.TilePosition);
 
             var sb = new StringBuilder();
 
@@ -176,29 +165,44 @@ namespace Adventure.Quest.Map
             {
                 for (int col = 0; col < layout[row].Count; col++)
                 {
-                    // Player takes priority
+                    // Player neemt prioriteit
                     if (row == playerRow && col == playerCol)
                     {
-                        sb.Append("🧍");
+                        sb.Append(EmojiMap.TryGetValue("PLAYER", out var playerEmoji) ? playerEmoji : "🧍");
                         continue;
                     }
 
                     string tileType = layout[row][col];
+                    LogService.Info($"[TileUI.RenderTileGrid] tileType: {tileType}");
 
-                    if (tileType.Equals("START", StringComparison.OrdinalIgnoreCase))
+                    // Vind tile details als overlay/base nodig is
+                    var tileDetail = area.Tiles.FirstOrDefault(t => t.TilePosition == $"{row},{col}");
+
+                    string icon = "❓"; // default
+                    //if (tileDetail != null)
+                    if (!string.IsNullOrEmpty(tileDetail!.TileBase)|| !string.IsNullOrEmpty(tileDetail.TileOverlay))
                     {
-                        LogService.Info($"[TileUI.RenderTileGrid] Set tile 'START' to 'Floor'");
-                        tileType = "Floor";
+                        LogService.Info($"[TileUI.RenderTileGrid] Tile Position: ({tileDetail.TilePosition}) TileBase: {tileDetail.TileBase}, TileOverlay: {tileDetail.TileOverlay}");
+
+                        // Gebruik overlay als die aanwezig is, anders base
+                        string? key = !string.IsNullOrWhiteSpace(tileDetail.TileOverlay)
+                                     ? tileDetail.TileOverlay
+                                     : tileDetail.TileBase;
+
+                        LogService.Info($"[TileUI.RenderTileGrid] key: {key}");
+
+                        if (!string.IsNullOrWhiteSpace(key))
+                            icon = EmojiMap.TryGetValue(key.ToUpper(), out var emoji) ? emoji : "❓";
+                    }
+                    else
+                    {
+                        LogService.Info($"[TileUI.RenderTileGrid] Tile Position: ({tileDetail.TilePosition}) tileBase['{tileDetail.TileBase}'] OR tileOverlay['{tileDetail.TileOverlay}'] empty... Use '{tileType}' to search for icon");
+                        icon = EmojiMap.TryGetValue(tileType.ToUpper(), out var emoji) ? emoji : "❓";
                     }
 
-                    // Map tileType to emoji
-                    string icon = EmojiMap.TryGetValue(tileType.ToUpper(), out var emoji)
-                        ? emoji
-                        : "❓";
-                    
+                    LogService.Info($"[TileUI.RenderTileGrid] icon: {icon}");
                     sb.Append(icon);
                 }
-
                 sb.AppendLine();
             }
 

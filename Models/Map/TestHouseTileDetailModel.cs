@@ -10,7 +10,7 @@ namespace Adventure.Models.Map
     public class TestHouseTileDetailModel
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; } = "";
+        public string Id { get; set; } = "ERROR_ID";
 
         [JsonPropertyName("base")]
         public string Base { get; set; } = "ERROR_BASE";
@@ -19,7 +19,7 @@ namespace Adventure.Models.Map
         public string Overlay { get; set; } = "ERROR_OVERLAY";
 
         [JsonPropertyName("text")]
-        public string Text { get; set; } = "";
+        public string Text { get; set; } = "ERROR_TEXT";
 
         [JsonPropertyName("pois")]
         public List<string> Pois { get; set; } = new();

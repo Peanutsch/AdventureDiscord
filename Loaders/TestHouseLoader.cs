@@ -71,6 +71,7 @@ namespace Adventure.Loaders
                 }
 
                 AreaLookup[area.Id] = area;
+                LogService.Info($"Added area [{area.Name}] to List AreaLookup");
             }
 
             LogService.Info($"[TestHouseLoader] Loaded {AreaLookup.Count} areas and {allTiles.Count} tiles.");
