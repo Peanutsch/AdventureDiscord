@@ -159,12 +159,6 @@ namespace Adventure.Buttons
                 }
 
                 LogService.Info($"[ComponentInteractions.EnterTileHandler] TileType: {targetTile.TileType}");
-                if (!targetTile.TileType.Equals("DOOR", System.StringComparison.OrdinalIgnoreCase))
-                {
-                    LogService.Error($"⚠️ You can only enter through a door.");
-                    await Context.Interaction.FollowupAsync("⚠️ You can only enter through a door.", ephemeral: false);
-                    return;
-                }
 
                 await ComponentHelpers.MovePlayerAsync(Context, tileId, showTravelAnimation: false);
             }

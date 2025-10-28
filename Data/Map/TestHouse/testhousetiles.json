@@ -10,30 +10,64 @@
         "items": []
       },
       {
-        "id": "DOOR",
-        "base": "DOOR",
-        "overlay": "DOOR",
-        "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nA small plate says 'To the pond'",
-        "connections": [ "small_pond:DOOR" ],
-        "pois": [],
-        "items": []
-      },
-      {
         "id": "ENEMY",
         "base": "ENEMY",
         "overlay": "ENEMY",
         "text": "<testhousetiles.json>\nGet ready for some fighting!",
         "pois": [],
         "items": []
+      },
+      {
+        "id": "EXIT1",
+        "base": "PORTAL",
+        "overlay": "PORTAL",
+        "text": "<testhousetiles.json>\nNorthern Exit...\nTravel to small_pond:1,1!",
+        "connections": [ "small_pond:EXIT1" ],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "EXIT2",
+        "base": "ExitRight",
+        "overlay": "ExitRight",
+        "text": "<testhousetiles.json>\nSouthern Exit...\nTravel to small_pond:1,1!",
+        "connections": [ "small_pond:EXIT1" ],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "EXIT3",
+        "base": "DOOR",
+        "overlay": "DOOR",
+        "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nA small plate says 'To the pond'",
+        "connections": [ "small_pond:EXIT1" ],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "PLANT1",
+        "base": "PLANT1",
+        "overlay": "PLANT1",
+        "text": "<testhousetiles.json>\nA plant in a pot. Nothing special to see here.",
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "PLANT2",
+        "base": "PLANT1",
+        "overlay": "PLANT1",
+        "text": "<testhousetiles.json>\nAnother plant in a pot. Also nothing special to see here.",
+        "pois": [],
+        "items": []
       }
     ],
     "small_pond": [
       {
-        "id": "DOOR",
+        "id": "EXIT1",
         "base": "DOOR",
         "overlay": "DOOR",
         "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.",
-        "connections": [ "living_room:DOOR" ],
+        "connections": [ "living_room:EXIT3" ],
         "pois": [],
         "items": []
       },

@@ -11,99 +11,10 @@ namespace Adventure.Quest.Map
 {
     public static class TileUI
     {
-        #region === Possible Emoji's ===
-        /* 
-           [AVAILABLE SQUARE EMOJIS]
-           ─────────────────────────────
-           ⬛	U+2B1B	Black Large Square
-           ⬜	U+2B1C	White Large Square
-           🟥	U+1F7E5	Red Square
-           🟧	U+1F7E7	Orange Square
-           🟨	U+1F7E8	Yellow Square
-           🟩	U+1F7E9	Green Square
-           🟦	U+1F7E6	Blue Square
-           🟪	U+1F7EA	Purple Square
-           🟫	U+1F7EB	Brown Square
-           ───────────────────────────── */
-
-        /* 
-        ─────────────────────────────
-        [Generic / Townsfolk]
-       👤 — Generic person
-       🧑 — Neutral adult
-       🧓 — Elderly person
-       👶 — Child
-       👩 / 👨 — Adult female/male
-       🧑‍🦱 / 🧑‍🦰 — NPC met kapselvariatie
-       👴 / 👵 — Old man / old woman
-        ─────────────────────────────
-        [🏰 Fantasy / RPG Characters]
-       🧙‍♂️ / 🧙‍♀️ — Wizard / Sorcerer
-       🧝‍♂️ / 🧝‍♀️ — Elf
-       🧛‍♂️ / 🧛‍♀️ — Vampire
-       🧟‍♂️ / 🧟‍♀️ — Zombie / Undead
-       🧞‍♂️ / 🧞‍♀️ — Genie / Spirit
-       🧚‍♂️ / 🧚‍♀️ — Fairy / Sprite
-       🧜‍♂️ / 🧜‍♀️ — Merman / Mermaid
-       🐉 — Dragon / Boss Creature
-       🐺 — Wolf / Beast Companion
-       🐍 — Snake / Poisonous Creature
-       ─────────────────────────────
-        [🏹 Warrior / Guard / Soldier]
-       🗡️ — Rogue / Assassin
-       ⚔️ — Knight / Warrior
-       🛡️ — Guard / Protector
-       🪓 — Barbarian / Lumberjack-style NPC
-       🤺 — Fencer / Duelist
-       🏹 — Hunter / Ranger
-       ─────────────────────────────
-        [🏪 Merchants / Civilians]
-       💂‍♂️ / 💂‍♀️ — Guard / Soldier
-       🏪 — Shopkeeper / Merchant
-       🧵 — Weaver / Merchant
-       🍳 — Cook / Innkeeper
-       🪙 — Banker / Money handler
-       📚 — Scholar / Librarian
-       🎭 — Entertainer / Performer
-       ─────────────────────────────
-        [😄 Emotive / Role-specific]
-       🤵 / 👰 — Noble / Lord / Lady
-       👮‍♂️ / 👮‍♀️ — Police / Lawkeeper
-       🕵️‍♂️ / 🕵️‍♀️ — Detective / Investigator
-       🧩 — Quest giver / Puzzle master
-       🎨 — Artist / Painter NPC
-       🎵 — Bard / Musician
-       ─────────────────────────────
-        [🐾 Creature / Monster NPCs]
-       🐲 — Dragon
-       🐺 — Wolf / Beast
-       🦁 — Lion / Beast
-       🦅 — Bird NPC / Scout
-       🐍 — Snake / Poisonous Creature
-       🦇 — Bat / Nocturnal Creature
-       🐉 — Legendary Boss / Creature
-       ─────────────────────────────
-        [🌿 Nature / Mystic NPCs]
-       🌳 — Forest spirit
-       🌲 — Woodland NPC
-       🌊 — Water spirit / Mermaid
-       🔥 — Fire elemental / Flame NPC
-       ❄️ — Ice elemental / Snow NPC
-       🌪️ — Wind elemental / Storm NPC
-       ─────────────────────────────
-        [🪄 Magic / Rare NPCs]
-       ✨ — Enchanter / Magical NPC
-       🔮 — Seer / Fortune teller
-       🕯️ — Mage / Ritual NPC
-       📜 — Scholar / Quest giver
-       ⚗️ — Alchemist / Potion NPC
-        ─────────────────────────────*/
-        #endregion
-
         #region === Dictionary of used Emojis ===
         public static readonly Dictionary<string, string> EmojiMap = new(StringComparer.OrdinalIgnoreCase)
         {
-            // 
+            // Ground / Walls
             { "Wall", "⬛" },
             { "Floor", "⬜" },
             { "Grass", "🟩" },
@@ -111,18 +22,22 @@ namespace Adventure.Quest.Map
             { "Sand", "🟨" },
             { "Lava", "🟧" },
             { "Water", "🟦" },
-            //
+            // Passage
             { "DOOR", "🚪" },
             { "PORTAL", "🌀" },
-            //
+            { "ExitUp", "⬆️" },
+            { "ExitLeft", "⬅️" },
+            { "ExitDown", "⬇️" },
+            { "ExitRight", "➡️" },
+            // Objects
             { "TREASURE", "💰" },
-            //
+            { "PLANT1", "🪴" },
+            // Characters
             { "PLAYER", "🧍" },
             { "ENEMY", "⚔️" },
             { "NPC", "🧍" },
-            //
+            // POI's
             { "START", "🧍" }
-
         };
         #endregion
 

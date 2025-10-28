@@ -99,17 +99,23 @@ namespace Adventure.Quest.Map
         }
 
         /// <summary>
-        /// Enables the Enter button if the current tile represents a door with valid connections.
+        /// Enables the Enter button if the current tile represents a door or exit with valid connections.
         /// </summary>
         /// <param name="tile">The current tile model.</param>
-        /// <param name="buttons">The list of buttons to modify.</param>
         private static void EnableEnterButton(TileModel tile, List<ButtonBuilder> buttons)
         {
-            // Only apply to DOOR tiles with at least one connection
-            if (!tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) || tile.Connections?.Count == 0)
+            // Define which tile types can trigger an Enter action
+            var enterableTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "DOOR", "EXIT1", "EXIT2", "EXIT3", "EXIT4"
+            };
+
+            // Only continue if the tile is a valid enterable type AND has connections
+            if (!enterableTypes.Contains(tile.TileType) || tile.Connections?.Count == 0)
                 return;
 
-            string connectionRef = tile.Connections![0]; // Example: "small_pond:DOOR"
+            // Example: "small_pond:DOOR"
+            string connectionRef = tile.Connections![0];
             var parts = connectionRef.Split(':');
             if (parts.Length < 2)
                 return;
@@ -117,17 +123,17 @@ namespace Adventure.Quest.Map
             string areaId = parts[0];
             string detailId = parts[1];
 
-            // Verify the area exists
+            // Verify the destination area exists
             if (!TestHouseLoader.AreaLookup.TryGetValue(areaId, out var area))
                 return;
 
-            // Find the target tile within the destination area
+            // Find the target tile in the destination area
             var targetTile = area.Tiles.FirstOrDefault(t =>
                 t.TileType.Equals(detailId, StringComparison.OrdinalIgnoreCase));
 
             if (targetTile != null)
             {
-                // Enable Enter button linking to the target tile
+                // Enable the Enter button linking to the target tile
                 buttons[0] = new ButtonBuilder()
                     .WithLabel("Enter")
                     .WithCustomId($"enter:{targetTile.TileId}")
@@ -159,10 +165,10 @@ namespace Adventure.Quest.Map
         /// <returns>A readable label for the button.</returns>
         private static string Label(string dir) => dir switch
         {
-            "North" => "⬆️ North",
-            "West" => "⬅️ West",
-            "South" => "⬇️ South",
-            "East" => "➡️ East",
+            "North" => "⬆️",
+            "West" => "⬅️",
+            "South" => "⬇️",
+            "East" => "➡️",
             _ => dir
         };
         #endregion
