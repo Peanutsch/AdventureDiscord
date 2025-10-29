@@ -22,7 +22,7 @@
         "base": "PORTAL",
         "overlay": "PORTAL",
         "text": "<testhousetiles.json>\nNorthern Exit...\nTravel to small_pond:1,1!",
-        "connections": [ "small_pond:EXIT1" ],
+        "connections": [ "living_room:7,8" ],
         "pois": [],
         "items": []
       },
@@ -31,7 +31,7 @@
         "base": "ExitRight",
         "overlay": "ExitRight",
         "text": "<testhousetiles.json>\nSouthern Exit...\nTravel to small_pond:1,1!",
-        "connections": [ "small_pond:EXIT1" ],
+        "connections": [ "living_room:7,1" ],
         "pois": [],
         "items": []
       },
@@ -40,7 +40,7 @@
         "base": "DOOR",
         "overlay": "DOOR",
         "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nA small plate says 'To the pond'",
-        "connections": [ "small_pond:EXIT1" ],
+        "connections": [ "small_pond:1,1" ],
         "pois": [],
         "items": []
       },
@@ -67,7 +67,7 @@
         "base": "DOOR",
         "overlay": "DOOR",
         "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.",
-        "connections": [ "living_room:EXIT3" ],
+        "connections": [ "living_room:1,8" ],
         "pois": [],
         "items": []
       },

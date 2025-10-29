@@ -160,7 +160,7 @@ namespace Adventure.Buttons
 
                 LogService.Info($"[ComponentInteractions.EnterTileHandler] TileType: {targetTile.TileType}");
 
-                await ComponentHelpers.MovePlayerAsync(Context, tileId, showTravelAnimation: false);
+                await ComponentHelpers.MovePlayerAsync(Context, tileId, showTravelAnimation: true);
             }
             catch (Exception ex)
             {

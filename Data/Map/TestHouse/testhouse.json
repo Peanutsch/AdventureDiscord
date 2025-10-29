@@ -12,8 +12,8 @@
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall" ],
-        [ "Wall", "EXIT3", "Wall", "PLANT1", "Floor", "Floor", "PLANT2", "Wall", "Floor", "EXIT2" ],
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
+        [ "Wall", "Floor", "Wall", "PLANT1", "Floor", "Floor", "PLANT2", "Wall", "Floor", "EXIT2" ],
+        [ "Wall", "EXIT3", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ]
     },
     "small_pond": {
@@ -21,13 +21,13 @@
       "name": "Small Pond",
       "description": "<testhouse.json>\nA small pond with grassy edges. The water glimmers softly.\nA perfect place to hide and get some rest...",
       "layout": [
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "Wall", "EXIT1", "Grass", "Grass", "Grass", "Wall" ],
-        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall" ],
-        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall" ],
-        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall" ],
-        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Wall" ],
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
+        [ "Wall", "EXIT1", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
+        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Wall", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ]
     }
   }

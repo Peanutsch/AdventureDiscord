@@ -39,6 +39,32 @@ namespace Adventure.Quest.Map
         #endregion
 
         #region === Button Helper Methods ===
+        /// <summary>
+        /// Find tile by:
+        /// TileId (like area:EXIT1) or TilePosition (like area:7,8).
+        /// </summary>
+        private static TileModel? FindTileByIdOrPosition(string areaId, string detailId)
+        {
+            if (!TestHouseLoader.AreaLookup.TryGetValue(areaId, out var area))
+                return null;
+
+            // 1Try to match by TileType
+            var tile = area.Tiles.FirstOrDefault(t =>
+                t.TileType.Equals(detailId, StringComparison.OrdinalIgnoreCase));
+
+            if (tile != null)
+                return tile;
+
+            // If not found, try to match by tile position
+            if (detailId.Contains(','))
+            {
+                string pos = detailId.Trim();
+                tile = area.Tiles.FirstOrDefault(t =>
+                    t.TilePosition.Equals(pos, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return tile;
+        }
 
         /// <summary>
         /// Creates a list of default disabled buttons for Enter, Move (N/W/S/E) and Break.
@@ -99,37 +125,31 @@ namespace Adventure.Quest.Map
         }
 
         /// <summary>
-        /// Enables the Enter button if the current tile represents a door or exit with valid connections.
+        /// Enables the "Enter" button if the current tile represents a door or exit
+        /// with at least one valid connection.
         /// </summary>
-        /// <param name="tile">The current tile model.</param>
         private static void EnableEnterButton(TileModel tile, List<ButtonBuilder> buttons)
         {
-            // Define which tile types can trigger an Enter action
-            var enterableTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "DOOR", "EXIT1", "EXIT2", "EXIT3", "EXIT4"
-            };
-
-            // Only continue if the tile is a valid enterable type AND has connections
-            if (!enterableTypes.Contains(tile.TileType) || tile.Connections?.Count == 0)
+            // Check if the tile type is either a DOOR or any variant of EXIT (e.g., EXIT1, EXIT2)
+            if (!(tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) ||
+                  tile.TileType.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase)))
                 return;
 
-            // Example: "small_pond:DOOR"
-            string connectionRef = tile.Connections![0];
+            // Must have at least one valid connection
+            if (tile.Connections == null || tile.Connections.Count == 0)
+                return;
+
+            // Example connection: "living_room:EXIT1" or "living_room:7,8"
+            string connectionRef = tile.Connections[0];
             var parts = connectionRef.Split(':');
-            if (parts.Length < 2)
+            if (parts.Length != 2)
                 return;
 
             string areaId = parts[0];
             string detailId = parts[1];
 
-            // Verify the destination area exists
-            if (!TestHouseLoader.AreaLookup.TryGetValue(areaId, out var area))
-                return;
-
-            // Find the target tile in the destination area
-            var targetTile = area.Tiles.FirstOrDefault(t =>
-                t.TileType.Equals(detailId, StringComparison.OrdinalIgnoreCase));
+            // Try to find the target tile by its ID or position
+            var targetTile = FindTileByIdOrPosition(areaId, detailId);
 
             if (targetTile != null)
             {
@@ -180,7 +200,7 @@ namespace Adventure.Quest.Map
 
             var area = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var foundArea)
                        ? foundArea
-                       : new TestHouseAreaModel { Name = "Unknown Room", Description = "No description available." };
+                       : new TestHouseAreaModel { Name = "Unknown Area", Description = "No description available." };
 
             LogService.DividerParts(1, "TileUI.RenderTileGrid");
             string gridVisual = TileUI.RenderTileGrid(tile);
@@ -194,7 +214,7 @@ namespace Adventure.Quest.Map
                 ? string.Join("\n", tile.Connections.Select(conn =>
                 {
                     if (!TestHouseLoader.TileLookup.TryGetValue(conn, out var t)) return conn;
-                    var dir = MapService.DetermineDirection(tile, t) ?? "Unknown";
+                    var dir = MapService.DetermineDirection(tile, t) ?? "Travel";
                     var targetAreaName = TestHouseLoader.AreaLookup.TryGetValue(t.AreaId, out var areaT) ? areaT.Name : t.AreaId;
                     return $"{dir} → {targetAreaName} ({t.TileId})";
                 }))
