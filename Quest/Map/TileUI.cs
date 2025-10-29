@@ -22,6 +22,7 @@ namespace Adventure.Quest.Map
             { "Sand", "🟨" },
             { "Lava", "🟧" },
             { "Water", "🟦" },
+            { "BLOCK", " " },
             // Passage
             { "DOOR", "🚪" },
             { "PORTAL", "🌀" },

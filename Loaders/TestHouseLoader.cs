@@ -38,7 +38,12 @@ namespace Adventure.Loaders
                 {
                     for (int col = 0; col < area.Layout[row].Count; col++)
                     {
-                        string tileType = area.Layout[row][col]; // bv: "DOOR", "Floor", "Wall"
+                        string tileType = area.Layout[row][col]; // bv: "DOOR", "Floor", "
+                                                                 //
+                                                                 //
+                                                                 //
+                                                                 //
+                                                                 // "
                         string tilePosition = $"{row},{col}";
                         string tileId = $"{area.Id}:{tilePosition}";
 
@@ -79,7 +84,8 @@ namespace Adventure.Loaders
             // --- Auto-connect buurt-tiles voor Floor (N/S/E/W) ---
             foreach (var tile in allTiles)
             {
-                if (tile.TileType == "Wall" || tile.TileType == "Water") continue;
+                // Pass TileTypes with no exits
+                if (tile.TileType == "Wall" || tile.TileType == "Water" || tile.TileType == "BLOCK") continue;
 
                 var parts = tile.TilePosition.Split(',');
                 int row = int.Parse(parts[0]);
@@ -98,7 +104,7 @@ namespace Adventure.Loaders
                     string targetKey = $"{tile.AreaId}:{dir.Value.r},{dir.Value.c}";
                     if (TileLookup.TryGetValue(targetKey, out var neighbor))
                     {
-                        if (neighbor.TileType != "Wall" && neighbor.TileType != "Water")
+                        if (neighbor.TileType != "Wall" && neighbor.TileType != "Water" && neighbor.TileType != "BLOCK")
                         {
                             if (!tile.Connections.Contains(neighbor.TileId))
                                 tile.Connections.Add(neighbor.TileId);

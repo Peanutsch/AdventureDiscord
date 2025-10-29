@@ -86,4 +86,6 @@
     <Folder Include="Data\Thumb\" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
 </Project>

@@ -1,7 +1,7 @@
 ﻿{
   "Areas": {
     "living_room": {
-      "id":  "living_room",
+      "id": "living_room",
       "name": "Living Room",
       "description": "A small living room with worn furniture and a flickering light.\nOn the south side is a wooden door, on the east are 2 other exits.",
       "layout": [
@@ -11,23 +11,37 @@
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
-        [ "Wall", "Floor", "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall" ],
-        [ "Wall", "Floor", "Wall", "PLANT1", "Floor", "Floor", "PLANT2", "Wall", "Floor", "EXIT2" ],
-        [ "Wall", "EXIT3", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
+        [ "Wall", "Floor", "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall", "Tree", "Tree" ],
+        [ "Wall", "Floor", "Wall", "PLANT1", "Floor", "Floor", "PLANT2", "Wall", "Floor", "EXIT2", "BLOCK" ],
+        [ "Wall", "EXIT3", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree" ]
       ]
     },
     "small_pond": {
       "id": "small_pond",
       "name": "Small Pond",
-      "description": "A small pond with grassy edges. The water glimmers softly.\nIn the east is a small forest.\nA perfect place to hide and get some rest...",
+      "description": "A small pond with grassy edges, with in the middle a tiny island.\nThe water glimmers softly.\nToo bad you can't swim! Maybe there is another way to get there...\nIn the east is a small forest.\nA perfect place to hide and get some rest...",
       "layout": [
-        [ "Wall", "EXIT1", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
+        [ "Wall", "EXIT1", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree", "Tree", "Tree" ],
+        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "Wall", "Tree", "Tree", "Tree" ],
+        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree", "Tree" ],
+        [ "Wall", "Grass", "Water", "EXIT2", "Water", "Grass", "Wall", "Tree", "Tree" ],
+        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree" ],
+        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "EXIT3", "BLOCK"],
+        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree" ]
+      ]
+    },
+    "forest_south": {
+      "id": "forest_south",
+      "name": "Southern Forest",
+      "description": "A small forest.\nIn the north is the entrance to the living room.",
+      "layout": [
+        [ "Wall", "Tree", "Tree", "EXIT1", "Tree", "Wall" ],
+        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "EXIT2", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ]
     }
   }

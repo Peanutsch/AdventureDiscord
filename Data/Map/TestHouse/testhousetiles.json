@@ -22,7 +22,7 @@
         "base": "PORTAL",
         "overlay": "PORTAL",
         "text": "North-East Exit...\nTravel to living_room:7,8!",
-        "connections": [ "living_room:7,8" ],
+        "connections": [ "small_pond:3,3" ],
         "pois": [],
         "items": []
       },
@@ -30,8 +30,8 @@
         "id": "EXIT2",
         "base": "ExitRight",
         "overlay": "ExitRight",
-        "text": "South-East Exit...\nTravel to living_room:7,1!",
-        "connections": [ "living_room:7,1" ],
+        "text": "The entrance to the forest.",
+        "connections": [ "forest_south:1,3" ],
         "pois": [],
         "items": []
       },
@@ -72,6 +72,24 @@
         "items": []
       },
       {
+        "id": "EXIT2",
+        "base": "Dirt",
+        "overlay": "Dirt",
+        "text": "Entrance to the forest",
+        "connections": [ "living_room:1,8" ],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "EXIT3",
+        "base": "ExitRight",
+        "overlay": "ExitRight",
+        "text": "Entrance to the forest",
+        "connections": [ "forest_south:5,1" ],
+        "pois": [],
+        "items": []
+      },
+      {
         "id": "ENEMY",
         "base": "ENEMY",
         "overlay": "ENEMY",
@@ -79,6 +97,26 @@
         "pois": [],
         "items": []
       }
-     ]
+    ],
+    "forest_south": [
+      {
+        "id": "EXIT1",
+        "base": "ExitUp",
+        "overlay": "ExitUp",
+        "text": "Entrance to the living room",
+        "connections": [ "living_room:7,8" ],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "EXIT2",
+        "base": "ExitLeft",
+        "overlay": "ExitLeft",
+        "text": "Entrance to the small pond",
+        "connections": [ "small_pond:5,5" ],
+        "pois": [],
+        "items": []
+      }
+    ]
   }
 }

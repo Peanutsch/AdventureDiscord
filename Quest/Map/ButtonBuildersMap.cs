@@ -134,11 +134,17 @@ namespace Adventure.Quest.Map
             // --- Check if the tile type is either a DOOR or any variant of EXIT (e.g., EXIT1, EXIT2) --- 
             if (!(tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) ||
                   tile.TileType.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase)))
+            {
+                LogService.Info("[EnableEnterButton] No 'DOOR' or 'EXIT*'");
                 return;
+            }
 
             // --- Must have at least one valid connection --- 
             if (tile.Connections == null || tile.Connections.Count == 0)
+            {
+                LogService.Info("[EnableEnterButton] tile.Connections == null or 0");
                 return;
+            }
 
             // --- Example connection: "living_room:EXIT1" or "living_room:7,8" --- 
             string connectionRef = tile.Connections[0];
@@ -168,12 +174,12 @@ namespace Adventure.Quest.Map
         /// </summary>
         private static void AddButtonsToBuilder(ComponentBuilder builder, List<ButtonBuilder> buttons)
         {
-            // --- Row 0: Enter, North, Break --- 
+            // --- Row 0: Enter, Up, Break --- 
             builder.WithButton(buttons[0], row: 0)
                    .WithButton(buttons[1], row: 0)
                    .WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0);
 
-            // --- Row 1: West, South, East 
+            // --- Row 1: Left, Down, Right
             builder.WithButton(buttons[2], row: 1)
                    .WithButton(buttons[3], row: 1)
                    .WithButton(buttons[4], row: 1);
