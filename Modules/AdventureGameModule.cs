@@ -95,7 +95,7 @@ namespace Adventure.Modules
         {
             await DeferAsync();
 
-            // --- 1️⃣ Discord user ophalen ---
+            // --- Get user Id ---
             var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
             if (user == null)
             {
@@ -106,7 +106,7 @@ namespace Adventure.Modules
             LogService.DividerParts(1, "SlashCommand: walk");
             LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
-            // --- 2️⃣ Player ophalen of aanmaken ---
+            // --- Get/Create user profile ---
             var player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
             if (player == null)
             {
@@ -114,10 +114,10 @@ namespace Adventure.Modules
                 return;
             }
 
-            // --- 3️⃣ Tile ophalen via savepoint ---
+            // --- Check for last savepoint ---
             var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint);
 
-            // --- 4️⃣ Fallback naar START tile als savepoint ongeldig ---
+            // --- Fallback to START tile if no (valid) savepoint ---
             if (tile == null)
             {
                 LogService.Info($"[WalkCommand] Savepoint '{player.Savepoint}' ongeldig. Fallback naar START tile.");
@@ -125,7 +125,7 @@ namespace Adventure.Modules
 
                 if (tile != null)
                 {
-                    // Update player's savepoint zodat volgende keer correct start
+                    // --- Update player's savepoint ---
                     player.Savepoint = $"{tile.AreaId}:{tile.TilePosition}";
                     JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, player.Savepoint);
                     LogService.Info($"[WalkCommand] Savepoint automatisch ingesteld: {player.Savepoint}");
@@ -137,18 +137,17 @@ namespace Adventure.Modules
                 }
             }
 
-            // --- 5️⃣ Room name ophalen ---
-            string startingRoom = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var area)
+            // --- Get name of area ---
+            string startArea = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var area)
                 ? area.Name
-                : "Unknown Room";
+                : "Unknown Area";
 
-            LogService.Info($"[/walk] Starting in room: {startingRoom}, position: {tile.TilePosition}");
+            LogService.Info($"[/walk] Starting in area: {startArea}, position: {tile.TilePosition}");
 
-            // --- 6️⃣ Embed en knoppen opbouwen ---
+            // --- Build Embed and buttons ---
             var embed = EmbedBuildersMap.EmbedWalk(tile);
             var components = ButtonBuildersMap.BuildDirectionButtons(tile);
 
-            // --- 7️⃣ Discord response sturen ---
             await FollowupAsync(embed: embed.Build(), components: components?.Build());
         }
         #endregion

@@ -22,16 +22,16 @@ namespace Adventure.Quest.Map
             LogService.DividerParts(1, "BuildDirectionButtons");
             var builder = new ComponentBuilder();
 
-            // Create default disabled buttons
+            // --- Create default disabled buttons --- 
             var buttons = CreateDefaultButtons();
 
-            // Enable movement buttons based on available connections
+            // --- Enable movement buttons based on available connections --- 
             EnableMovementButtons(tile, buttons);
 
-            // Enable "Enter" button if current tile is a DOOR
+            // --- Enable "Enter" button if current tile is a DOOR --- 
             EnableEnterButton(tile, buttons);
 
-            // Add all buttons to the Discord component builder
+            // --- Add all buttons to the Discord component builder --- 
             AddButtonsToBuilder(builder, buttons);
 
             LogService.DividerParts(2, "BuildDirectionButtons");
@@ -49,14 +49,14 @@ namespace Adventure.Quest.Map
             if (!TestHouseLoader.AreaLookup.TryGetValue(areaId, out var area))
                 return null;
 
-            // 1Try to match by TileType
+            // --- Try to match by TileType --- 
             var tile = area.Tiles.FirstOrDefault(t =>
                 t.TileType.Equals(detailId, StringComparison.OrdinalIgnoreCase));
 
             if (tile != null)
                 return tile;
 
-            // If not found, try to match by tile position
+            // --- If no TileType found, try to match by tile position --- 
             if (detailId.Contains(','))
             {
                 string pos = detailId.Trim();
@@ -73,13 +73,13 @@ namespace Adventure.Quest.Map
         private static List<ButtonBuilder> CreateDefaultButtons()
         {
             return new List<ButtonBuilder>
-    {
-        new ButtonBuilder().WithLabel("Enter").WithCustomId("enter:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-        new ButtonBuilder().WithLabel("⬆️").WithCustomId("move_north:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-        new ButtonBuilder().WithLabel("⬅️").WithCustomId("move_west:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-        new ButtonBuilder().WithLabel("⬇️").WithCustomId("move_south:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
-        new ButtonBuilder().WithLabel("➡️").WithCustomId("move_east:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true)
-    };
+            {
+                new ButtonBuilder().WithLabel("Enter").WithCustomId("enter:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+                new ButtonBuilder().WithLabel("⬆️").WithCustomId("move_up:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+                new ButtonBuilder().WithLabel("⬅️").WithCustomId("move_left:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+                new ButtonBuilder().WithLabel("⬇️").WithCustomId("move_down:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+                new ButtonBuilder().WithLabel("➡️").WithCustomId("move_right:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true)
+            };
         }
 
         /// <summary>
@@ -94,31 +94,31 @@ namespace Adventure.Quest.Map
 
             foreach (var targetTileId in tile.Connections)
             {
-                // Try to find the connected tile in the global lookup
+                // --- Try to find the connected tile in the global lookup --- 
                 if (!TestHouseLoader.TileLookup.TryGetValue(targetTileId, out var targetTile))
                     continue;
 
-                // Determine the direction from the current tile to the target tile
+                // --- Determine the direction from the current tile to the target tile --- 
                 string? dir = MapService.DetermineDirection(tile, targetTile);
                 if (dir == null)
                     continue;
 
-                // Map direction to index position in the button list
+                // --- Map direction to index position in the button list --- 
                 int index = dir switch
                 {
-                    "North" => 1,
-                    "West" => 2,
-                    "South" => 3,
-                    "East" => 4,
+                    "Up" => 1,
+                    "Left" => 2,
+                    "Down" => 3,
+                    "Right" => 4,
                     _ => -1
                 };
 
-                // Replace the default disabled button with an active movement button
+                // --- Replace the default disabled button with an active movement button --- 
                 if (index >= 0)
                 {
                     buttons[index] = new ButtonBuilder()
                         .WithLabel(Label(dir))
-                        .WithCustomId($"move:{targetTile.TileId}") // Unique ID for component interaction
+                        .WithCustomId($"move:{targetTile.TileId}")
                         .WithStyle(ButtonStyle.Primary)
                         .WithDisabled(false);
                 }
@@ -131,16 +131,16 @@ namespace Adventure.Quest.Map
         /// </summary>
         private static void EnableEnterButton(TileModel tile, List<ButtonBuilder> buttons)
         {
-            // Check if the tile type is either a DOOR or any variant of EXIT (e.g., EXIT1, EXIT2)
+            // --- Check if the tile type is either a DOOR or any variant of EXIT (e.g., EXIT1, EXIT2) --- 
             if (!(tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) ||
                   tile.TileType.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase)))
                 return;
 
-            // Must have at least one valid connection
+            // --- Must have at least one valid connection --- 
             if (tile.Connections == null || tile.Connections.Count == 0)
                 return;
 
-            // Example connection: "living_room:EXIT1" or "living_room:7,8"
+            // --- Example connection: "living_room:EXIT1" or "living_room:7,8" --- 
             string connectionRef = tile.Connections[0];
             var parts = connectionRef.Split(':');
             if (parts.Length != 2)
@@ -149,12 +149,12 @@ namespace Adventure.Quest.Map
             string areaId = parts[0];
             string detailId = parts[1];
 
-            // Try to find the target tile by its ID or position
+            // --- Try to find the target tile by its ID or position --- 
             var targetTile = FindTileByIdOrPosition(areaId, detailId);
 
             if (targetTile != null)
             {
-                // Enable the Enter button linking to the target tile
+                // --- Enable the Enter button linking to the target tile --- 
                 buttons[0] = new ButtonBuilder()
                     .WithLabel("Enter")
                     .WithCustomId($"enter:{targetTile.TileId}")
@@ -168,12 +168,12 @@ namespace Adventure.Quest.Map
         /// </summary>
         private static void AddButtonsToBuilder(ComponentBuilder builder, List<ButtonBuilder> buttons)
         {
-            // Row 0: Enter, North, Break
+            // --- Row 0: Enter, North, Break --- 
             builder.WithButton(buttons[0], row: 0)
                    .WithButton(buttons[1], row: 0)
                    .WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0);
 
-            // Row 1: West, South, East
+            // --- Row 1: West, South, East 
             builder.WithButton(buttons[2], row: 1)
                    .WithButton(buttons[3], row: 1)
                    .WithButton(buttons[4], row: 1);
@@ -186,10 +186,10 @@ namespace Adventure.Quest.Map
         /// <returns>A readable label for the button.</returns>
         private static string Label(string dir) => dir switch
         {
-            "North" => "⬆️",
-            "West" => "⬅️",
-            "South" => "⬇️",
-            "East" => "➡️",
+            "Up" => "⬆️",
+            "Left" => "⬅️",
+            "Down" => "⬇️",
+            "Right" => "➡️",
             _ => dir
         };
         #endregion

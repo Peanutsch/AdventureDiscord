@@ -87,10 +87,10 @@ namespace Adventure.Loaders
 
                 var directions = new Dictionary<string, (int r, int c)>
                 {
-                    { "North", (row - 1, col) }, // omhoog
-                    { "South", (row + 1, col) }, // omlaag
-                    { "West",  (row, col - 1) }, // links
-                    { "East",  (row, col + 1) }  // rechts
+                    { "Up", (row - 1, col) },
+                    { "Down", (row + 1, col) },
+                    { "Left",  (row, col - 1) },
+                    { "Right",  (row, col + 1) }
                 };
 
                 foreach (var dir in directions)
