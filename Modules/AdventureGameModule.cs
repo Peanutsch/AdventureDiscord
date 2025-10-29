@@ -146,7 +146,7 @@ namespace Adventure.Modules
 
             // --- 6️⃣ Embed en knoppen opbouwen ---
             var embed = EmbedBuildersMap.EmbedWalk(tile);
-            var components = EmbedBuildersMap.BuildDirectionButtons(tile);
+            var components = ButtonBuildersMap.BuildDirectionButtons(tile);
 
             // --- 7️⃣ Discord response sturen ---
             await FollowupAsync(embed: embed.Build(), components: components?.Build());

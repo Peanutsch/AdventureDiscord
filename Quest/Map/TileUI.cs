@@ -59,69 +59,84 @@ namespace Adventure.Quest.Map
         }
 
         /// <summary>
-        /// Renders a grid for the area and places the player at the correct position.
+        /// Renders a visual grid for the current area with the player icon placed at the correct position.
         /// </summary>
-        /// <param name="tile">TileModel representing the player's current tile</param>
-        /// <returns>String of the rendered grid with player emoji</returns>
         public static string RenderTileGrid(TileModel tile)
         {
-            if (!TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var area))
+            // 1️⃣ Validate and retrieve the area layout
+            if (!TryGetAreaLayout(tile, out var area, out var layout))
                 return "<Unknown Area>";
 
-            var layout = area.Layout;
-            if (layout == null || layout.Count == 0)
-                return "<No layout>";
-
-            // Player positie ophalen via ParseTilePosition
+            // 2️⃣ Parse player coordinates
             var (playerRow, playerCol) = ParseTilePosition(tile.TilePosition);
 
+            // 3️⃣ Build the grid row by row
             var sb = new StringBuilder();
-
             for (int row = 0; row < layout.Count; row++)
             {
                 for (int col = 0; col < layout[row].Count; col++)
                 {
-                    // Player neemt prioriteit
-                    if (row == playerRow && col == playerCol)
-                    {
-                        sb.Append(EmojiMap.TryGetValue("PLAYER", out var playerEmoji) ? playerEmoji : "🧍");
-                        continue;
-                    }
-
-                    string tileType = layout[row][col];
-                    //LogService.Info($"TileType: {tileType}");
-
-                    // Vind tile details als overlay/base nodig is
-                    var tileDetail = area.Tiles.FirstOrDefault(t => t.TilePosition == $"{row},{col}");
-
-                    string icon = "❓"; // default
-                    if (!string.IsNullOrEmpty(tileDetail!.TileBase)|| !string.IsNullOrEmpty(tileDetail.TileOverlay))
-                    {
-                        //LogService.Info($"Tile Position: ({tileDetail.TilePosition}) TileBase: {tileDetail.TileBase}, TileOverlay: {tileDetail.TileOverlay}");
-
-                        // Gebruik overlay als die aanwezig is, anders base
-                        string? key = !string.IsNullOrWhiteSpace(tileDetail.TileOverlay)
-                                     ? tileDetail.TileOverlay
-                                     : tileDetail.TileBase;
-
-                        //LogService.Info($"Key: {key}");
-
-                        if (!string.IsNullOrWhiteSpace(key))
-                            icon = EmojiMap.TryGetValue(key.ToUpper(), out var emoji) ? emoji : "❓";
-                    }
-                    else
-                    {
-                        //LogService.Info($"Tile Position: ({tileDetail.TilePosition}) tileBase['{tileDetail.TileBase}'] OR tileOverlay['{tileDetail.TileOverlay}'] empty... Use '{tileType}' to search for icon");
-                        icon = EmojiMap.TryGetValue(tileType.ToUpper(), out var emoji) ? emoji : "❓";
-                    }
-
-                    //LogService.Info($"{tileDetail.TilePosition} use icon: {icon}");
+                    string icon = GetTileIcon(area!, row, col, playerRow, playerCol);
                     sb.Append(icon);
                 }
                 sb.AppendLine();
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Attempts to retrieve the area and its layout for a given tile.
+        /// Returns false if missing or invalid.
+        /// </summary>
+        private static bool TryGetAreaLayout(TileModel tile, out TestHouseAreaModel? area, out List<List<string>> layout)
+        {
+            layout = new();
+            if (!TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out area))
+                return false;
+
+            if (area.Layout == null || area.Layout.Count == 0)
+                return false;
+
+            layout = area.Layout;
+            return true;
+        }
+
+        /// <summary>
+        /// Determines which emoji/icon should be shown for a given grid position.
+        /// </summary>
+        private static string GetTileIcon(TestHouseAreaModel area, int row, int col, int playerRow, int playerCol)
+        {
+            // Player always takes priority
+            if (row == playerRow && col == playerCol)
+                return EmojiMap.TryGetValue("PLAYER", out var playerEmoji) ? playerEmoji : "🧍";
+
+            // Try to locate tile details for this grid position
+            var tileDetail = area.Tiles.FirstOrDefault(t => t.TilePosition == $"{row},{col}");
+            string tileType = area.Layout[row][col];
+
+            // Default icon
+            string icon = "❓";
+
+            if (tileDetail != null)
+            {
+                // Prefer overlay > base > layout type
+                string? key = !string.IsNullOrWhiteSpace(tileDetail.TileOverlay)
+                             ? tileDetail.TileOverlay
+                             : tileDetail.TileBase;
+
+                if (!string.IsNullOrWhiteSpace(key))
+                    icon = EmojiMap.TryGetValue(key.ToUpper(), out var emoji) ? emoji : "❓";
+                else
+                    icon = EmojiMap.TryGetValue(tileType.ToUpper(), out var emoji) ? emoji : "❓";
+            }
+            else
+            {
+                // Fallback if no tile detail found
+                icon = EmojiMap.TryGetValue(tileType.ToUpper(), out var emoji) ? emoji : "❓";
+            }
+
+            return icon;
         }
         #endregion
     }

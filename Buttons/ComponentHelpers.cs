@@ -29,7 +29,7 @@ namespace Adventure.Buttons
 
             // Update embed + buttons
             var embed = EmbedBuildersMap.EmbedWalk(targetTile);
-            var components = EmbedBuildersMap.BuildDirectionButtons(targetTile);
+            var components = ButtonBuildersMap.BuildDirectionButtons(targetTile);
 
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
@@ -49,8 +49,8 @@ namespace Adventure.Buttons
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
                 msg.Embed = new EmbedBuilder()
-                    .WithTitle("🏃 Moving...")
-                    .WithDescription($"Moving to **{areaName}**...")
+                    .WithTitle("Travel 🏃")
+                    .WithDescription($"Traveling to **{areaName}**...")
                     .WithColor(Color.Orange)
                     .Build();
 

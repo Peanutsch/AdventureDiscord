@@ -3,7 +3,7 @@
     "living_room": {
       "id":  "living_room",
       "name": "Living Room",
-      "description": "<testhouse.json>\nA small living room with worn furniture and a flickering light.\nOn the south side is a wooden door.",
+      "description": "A small living room with worn furniture and a flickering light.\nOn the south side is a wooden door, on the east are 2 other exits.",
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
         [ "Wall", "START", "Floor", "Floor", "Floor", "Floor", "PLANT1", "Wall", "ENEMY", "EXIT1" ],
@@ -19,15 +19,15 @@
     "small_pond": {
       "id": "small_pond",
       "name": "Small Pond",
-      "description": "<testhouse.json>\nA small pond with grassy edges. The water glimmers softly.\nA perfect place to hide and get some rest...",
+      "description": "A small pond with grassy edges. The water glimmers softly.\nIn the east is a small forest.\nA perfect place to hide and get some rest...",
       "layout": [
-        [ "Wall", "EXIT1", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Wall", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Grass", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
+        [ "Wall", "EXIT1", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
+        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ]
     }
   }

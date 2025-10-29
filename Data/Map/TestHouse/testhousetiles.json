@@ -5,7 +5,7 @@
         "id": "START",
         "base": "START",
         "overlay": "Floor",
-        "text": "<testhousetiles.json>\nStartingpoint. Nothing to see here.",
+        "text": "Startingpoint. Nothing to see here.",
         "pois": [],
         "items": []
       },
@@ -13,7 +13,7 @@
         "id": "ENEMY",
         "base": "ENEMY",
         "overlay": "ENEMY",
-        "text": "<testhousetiles.json>\nGet ready for some fighting!",
+        "text": "Get ready for some fighting!",
         "pois": [],
         "items": []
       },
@@ -21,7 +21,7 @@
         "id": "EXIT1",
         "base": "PORTAL",
         "overlay": "PORTAL",
-        "text": "<testhousetiles.json>\nNorthern Exit...\nTravel to small_pond:1,1!",
+        "text": "North-East Exit...\nTravel to living_room:7,8!",
         "connections": [ "living_room:7,8" ],
         "pois": [],
         "items": []
@@ -30,7 +30,7 @@
         "id": "EXIT2",
         "base": "ExitRight",
         "overlay": "ExitRight",
-        "text": "<testhousetiles.json>\nSouthern Exit...\nTravel to small_pond:1,1!",
+        "text": "South-East Exit...\nTravel to living_room:7,1!",
         "connections": [ "living_room:7,1" ],
         "pois": [],
         "items": []
@@ -39,7 +39,7 @@
         "id": "EXIT3",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.\nA small plate says 'To the pond'",
+        "text": "There is not much to see here, except for this wooden door.\nA small plate says 'To the pond'",
         "connections": [ "small_pond:1,1" ],
         "pois": [],
         "items": []
@@ -48,7 +48,7 @@
         "id": "PLANT1",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "<testhousetiles.json>\nA plant in a pot. Nothing special to see here.",
+        "text": "Oh, look! It's a plant in a pot. Nothing special to see here.",
         "pois": [],
         "items": []
       },
@@ -56,7 +56,7 @@
         "id": "PLANT2",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "<testhousetiles.json>\nAnother plant in a pot. Also nothing special to see here.",
+        "text": "A plant in a pot. Also nothing special to see here.",
         "pois": [],
         "items": []
       }
@@ -66,7 +66,7 @@
         "id": "EXIT1",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "<testhousetiles.json>\nThere is not much to see here, except this wooden door.",
+        "text": "There is not much to see here, except this wooden door.",
         "connections": [ "living_room:1,8" ],
         "pois": [],
         "items": []
@@ -75,7 +75,7 @@
         "id": "ENEMY",
         "base": "ENEMY",
         "overlay": "ENEMY",
-        "text": "<testhousetiles.json>\nGet ready for some fighting!",
+        "text": "Get ready for some fighting!",
         "pois": [],
         "items": []
       }
