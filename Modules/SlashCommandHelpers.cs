@@ -80,12 +80,15 @@ namespace Adventure.Modules
         /// </summary>
         public static TileModel? GetTileFromSavePoint(string savepoint)
         {
+            LogService.Info($"[SlashCommandHelpers.GetTileFromSavePoint] Last updated savepoint {savepoint}");
+
             if (string.IsNullOrWhiteSpace(savepoint))
                 return null;
 
             // 1️⃣ Direct TileId lookup (preferred)
             if (TestHouseLoader.TileLookup.TryGetValue(savepoint, out var tile))
             {
+                LogService.Info($"[SlashCommandHelpers.GetTileFromSavePoint] Found savepoint {savepoint} on map...");
                 return tile;
             }
 
@@ -95,7 +98,10 @@ namespace Adventure.Modules
                 tile = area.Tiles.FirstOrDefault(t =>
                     string.Equals(t.TileName, savepoint, StringComparison.OrdinalIgnoreCase));
                 if (tile != null)
+                {
+                    LogService.Info($"Found savepoint {tile.TileId} on map...");
                     return tile;
+                }
             }
 
             LogService.Error($"[TileHelpers.GetTileFromSavePoint] No tile found for savepoint '{savepoint}'.");

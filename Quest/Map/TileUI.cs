@@ -37,7 +37,7 @@ namespace Adventure.Quest.Map
             // Characters
             { "PLAYER", "🧍" },
             { "ENEMY", "⚔️" },
-            { "NPC", "🧍" },
+            { "NPCFEM", "👩" },
             // POI's
             { "START", "🧍" }
         };

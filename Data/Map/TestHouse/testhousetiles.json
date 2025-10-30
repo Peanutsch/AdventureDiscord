@@ -10,17 +10,9 @@
         "items": []
       },
       {
-        "id": "ENEMY",
-        "base": "ENEMY",
-        "overlay": "ENEMY",
-        "text": "Get ready for some fighting!",
-        "pois": [],
-        "items": []
-      },
-      {
         "id": "EXIT1",
-        "base": "PORTAL",
-        "overlay": "PORTAL",
+        "base": "PORTAl",
+        "overlay": "Wall",
         "text": "North-East Exit...\nTravel to living_room:7,8!",
         "connections": [ "small_pond:3,3" ],
         "pois": [],
@@ -67,7 +59,7 @@
         "base": "DOOR",
         "overlay": "DOOR",
         "text": "There is not much to see here, except this wooden door.",
-        "connections": [ "living_room:1,8" ],
+        "connections": [ "living_room:7,1" ],
         "pois": [],
         "items": []
       },
@@ -114,6 +106,14 @@
         "overlay": "ExitLeft",
         "text": "Entrance to the small pond",
         "connections": [ "small_pond:5,5" ],
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "NPC1",
+        "base": "NPCFEM",
+        "overlay": "NPCFEM",
+        "text": "Listen very carefully, I say this only once!\nThere is something weird with the wall...\nIn the upper right corner of the living room...",
         "pois": [],
         "items": []
       }

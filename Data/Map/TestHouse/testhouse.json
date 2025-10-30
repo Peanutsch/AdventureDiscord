@@ -6,7 +6,7 @@
       "description": "A small living room with worn furniture and a flickering light.\nOn the south side is a wooden door, on the east are 2 other exits.",
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "Wall", "START", "Floor", "Floor", "Floor", "Floor", "PLANT1", "Wall", "ENEMY", "EXIT1" ],
+        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "PLANT1", "Wall", "Floor", "EXIT1" ],
         [ "Wall", "Floor", "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
@@ -26,7 +26,7 @@
         [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree", "Tree" ],
         [ "Wall", "Grass", "Water", "EXIT2", "Water", "Grass", "Wall", "Tree", "Tree" ],
         [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree" ],
-        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "EXIT3", "BLOCK"],
+        [ "Wall", "START", "Grass", "Grass", "Grass", "Grass", "EXIT3", "BLOCK" ],
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree" ]
       ]
     },
@@ -40,7 +40,7 @@
         [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
         [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
         [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "EXIT2", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "EXIT2", "Tree", "Tree", "Tree", "NPC1", "Wall" ],
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ]
     }
