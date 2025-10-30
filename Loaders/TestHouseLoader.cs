@@ -26,7 +26,7 @@ namespace Adventure.Loaders
             {
                 var areaId = areaKvp.Key;
                 var area = areaKvp.Value;
-                LogService.Info($"[TestHouseLoader] Found area: {areaId} ({area.Name})");
+                LogService.Info($"[TestHouseLoader] Found area: {area.Name} ({areaId})");
 
                 area.Tiles = new List<TileModel>();
 
@@ -38,12 +38,7 @@ namespace Adventure.Loaders
                 {
                     for (int col = 0; col < area.Layout[row].Count; col++)
                     {
-                        string tileType = area.Layout[row][col]; // bv: "DOOR", "Floor", "
-                                                                 //
-                                                                 //
-                                                                 //
-                                                                 //
-                                                                 // "
+                        string tileType = area.Layout[row][col]; // bv: "DOOR", "Floor", "Wall"
                         string tilePosition = $"{row},{col}";
                         string tileId = $"{area.Id}:{tilePosition}";
 
@@ -71,12 +66,12 @@ namespace Adventure.Loaders
 
                         // Voeg tile correct toe aan TileLookup
                         TileLookup[tile.TileId] = tile;
-                        LogService.Info($"Added {tile.TileId} to List TileLookup");
+                        //LogService.Info($"Added {tile.TileId} to List TileLookup");
                     }
                 }
 
                 AreaLookup[area.Id] = area;
-                LogService.Info($"Added area [{area.Name}] to List AreaLookup");
+                LogService.Info($"> Added area [{area.Name}] to List AreaLookup");
             }
 
             LogService.Info($"[TestHouseLoader] Loaded {AreaLookup.Count} areas and {allTiles.Count} tiles.");
@@ -85,7 +80,8 @@ namespace Adventure.Loaders
             foreach (var tile in allTiles)
             {
                 // Pass TileTypes with no exits
-                if (tile.TileType == "Wall" || tile.TileType == "Water" || tile.TileType == "BLOCK") continue;
+                if (tile.TileType == "Wall" || tile.TileType == "Water" || tile.TileType == "BLOCKt")
+                    continue;
 
                 var parts = tile.TilePosition.Split(',');
                 int row = int.Parse(parts[0]);

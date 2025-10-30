@@ -11,19 +11,19 @@
       },
       {
         "id": "EXIT1",
-        "base": "PORTAl",
+        "base": "PORTAL",
         "overlay": "Wall",
-        "text": "North-East Exit...\nTravel to living_room:7,8!",
+        "text": "North-East Exit...\nTravel to small_pond:3,3!",
         "connections": [ "small_pond:3,3" ],
         "pois": [],
         "items": []
       },
       {
         "id": "EXIT2",
-        "base": "ExitRight",
-        "overlay": "ExitRight",
+        "base": "EXIT",
+        "overlay": "EXIT",
         "text": "The entrance to the forest.",
-        "connections": [ "forest_south:1,3" ],
+        "connections": [ "forest_south:0,1" ],
         "pois": [],
         "items": []
       },
@@ -32,7 +32,7 @@
         "base": "DOOR",
         "overlay": "DOOR",
         "text": "There is not much to see here, except for this wooden door.\nA small plate says 'To the pond'",
-        "connections": [ "small_pond:1,1" ],
+        "connections": [ "small_pond:0,1" ],
         "pois": [],
         "items": []
       },
@@ -55,11 +55,19 @@
     ],
     "small_pond": [
       {
+        "id": "START",
+        "base": "START",
+        "overlay": "Grass",
+        "text": "Startingpoint. Nothing to see here.",
+        "pois": [],
+        "items": []
+      },
+      {
         "id": "EXIT1",
         "base": "DOOR",
         "overlay": "DOOR",
         "text": "There is not much to see here, except this wooden door.",
-        "connections": [ "living_room:7,1" ],
+        "connections": [ "living_room:8,1" ],
         "pois": [],
         "items": []
       },
@@ -74,10 +82,10 @@
       },
       {
         "id": "EXIT3",
-        "base": "ExitRight",
-        "overlay": "ExitRight",
+        "base": "EXIT",
+        "overlay": "EXIT",
         "text": "Entrance to the forest",
-        "connections": [ "forest_south:5,1" ],
+        "connections": [ "forest_south:5,0" ],
         "pois": [],
         "items": []
       },
@@ -92,20 +100,28 @@
     ],
     "forest_south": [
       {
+        "id": "START",
+        "base": "START",
+        "overlay": "Tree",
+        "text": "Startingpoint. Nothing to see here.",
+        "pois": [],
+        "items": []
+      },
+      {
         "id": "EXIT1",
-        "base": "ExitUp",
-        "overlay": "ExitUp",
+        "base": "EXIT",
+        "overlay": "EXIT",
         "text": "Entrance to the living room",
-        "connections": [ "living_room:7,8" ],
+        "connections": [ "living_room:7,9" ],
         "pois": [],
         "items": []
       },
       {
         "id": "EXIT2",
-        "base": "ExitLeft",
-        "overlay": "ExitLeft",
+        "base": "EXIT",
+        "overlay": "EXIT",
         "text": "Entrance to the small pond",
-        "connections": [ "small_pond:5,5" ],
+        "connections": [ "small_pond:5,6" ],
         "pois": [],
         "items": []
       },
@@ -113,7 +129,7 @@
         "id": "NPC1",
         "base": "NPCFEM",
         "overlay": "NPCFEM",
-        "text": "Listen very carefully, I say this only once!\nThere is something weird with the wall...\nIn the upper right corner of the living room...",
+        "text": "**There is a weird lady, saying:**\nListen very carefully, I say this only once!\nThere is something weird with that wall...\nThat one in the upper right corner of the living room...",
         "pois": [],
         "items": []
       }

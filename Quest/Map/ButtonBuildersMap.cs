@@ -40,6 +40,7 @@ namespace Adventure.Quest.Map
         #endregion
 
         #region === Button Helper Methods ===
+
         /// <summary>
         /// Find tile by:
         /// TileId (like area:EXIT1) or TilePosition (like area:7,8).
@@ -74,7 +75,7 @@ namespace Adventure.Quest.Map
         {
             return new List<ButtonBuilder>
             {
-                new ButtonBuilder().WithLabel("Enter").WithCustomId("enter:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+                new ButtonBuilder().WithLabel("Action").WithCustomId("enter:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
                 new ButtonBuilder().WithLabel("⬆️").WithCustomId("move_up:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
                 new ButtonBuilder().WithLabel("⬅️").WithCustomId("move_left:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
                 new ButtonBuilder().WithLabel("⬇️").WithCustomId("move_down:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),

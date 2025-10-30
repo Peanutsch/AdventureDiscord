@@ -45,7 +45,7 @@ namespace Adventure.Quest.Map
                 .AddField($"[{area.Name}]", area.Description)
                 .AddField($"{gridVisual}\n", $"*{tileTextSafe}*")
                 .AddField("[Possible Directions]", exitInfo)
-                .AddField("[Current Tile]", tile.TileId)
+                .AddField("[Current Tile / Type]", $"{tile.TileId} / {tile.TileType}")
                 .AddField("[Tile Position]", tile.TilePosition);
         }
         #endregion

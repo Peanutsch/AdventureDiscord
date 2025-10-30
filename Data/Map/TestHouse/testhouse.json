@@ -12,7 +12,7 @@
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall", "Tree", "Tree" ],
-        [ "Wall", "Floor", "Wall", "PLANT1", "Floor", "Floor", "PLANT2", "Wall", "Floor", "EXIT2", "BLOCK" ],
+        [ "Wall", "Floor", "Wall", "PLANT1", "Floor", "Floor", "PLANT2", "Wall", "Floor", "EXIT2", "BLOCKt", "Tree" ],
         [ "Wall", "EXIT3", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree" ]
       ]
     },
@@ -26,7 +26,7 @@
         [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree", "Tree" ],
         [ "Wall", "Grass", "Water", "EXIT2", "Water", "Grass", "Wall", "Tree", "Tree" ],
         [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree" ],
-        [ "Wall", "START", "Grass", "Grass", "Grass", "Grass", "EXIT3", "BLOCK" ],
+        [ "Wall", "START", "Grass", "Grass", "Grass", "Grass", "EXIT3", "BLOCKT" ],
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree" ]
       ]
     },
@@ -35,13 +35,14 @@
       "name": "Southern Forest",
       "description": "A small forest.\nIn the north is the entrance to the living room.",
       "layout": [
-        [ "Wall", "Tree", "Tree", "EXIT1", "Tree", "Wall" ],
-        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "EXIT2", "Tree", "Tree", "Tree", "NPC1", "Wall" ],
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
+        [ "Wall", "EXIT1", "Wall", "Wall", "Wall", "Wall", "Wall" ],
+        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
+        [ "EXIT2", "Tree", "Tree", "Tree", "Tree", "NPC1", "Wall" ],
+        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ]
     }
   }

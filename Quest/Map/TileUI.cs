@@ -22,7 +22,9 @@ namespace Adventure.Quest.Map
             { "Sand", "🟨" },
             { "Lava", "🟧" },
             { "Water", "🟦" },
-            { "BLOCK", " " },
+            { "Tree", "🌳" },
+            { "BLOCKt", "🌳" },
+            //{ "BLOCK", " ⠀  " }, // Braille blank
             // Passage
             { "DOOR", "🚪" },
             { "PORTAL", "🌀" },
@@ -30,10 +32,10 @@ namespace Adventure.Quest.Map
             { "ExitLeft", "⬅️" },
             { "ExitDown", "⬇️" },
             { "ExitRight", "➡️" },
+            { "EXIT", "      " }, // Braille blank
             // Objects
             { "TREASURE", "💰" },
             { "PLANT1", "🪴" },
-            { "Tree", "🌳" },
             // Characters
             { "PLAYER", "🧍" },
             { "ENEMY", "⚔️" },
