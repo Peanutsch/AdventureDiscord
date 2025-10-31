@@ -120,7 +120,7 @@ namespace Adventure.Modules
             // --- Fallback to START tile if no (valid) savepoint ---
             if (tile == null)
             {
-                LogService.Info($"[WalkCommand] Savepoint '{player.Savepoint}' ongeldig. Fallback naar START tile.");
+                LogService.Info($"[WalkCommand] Savepoint '{player.Savepoint}' invalid. Fallback to START tile.");
                 tile = SlashCommandHelpers.FindStartTile();
 
                 if (tile != null)
@@ -128,7 +128,7 @@ namespace Adventure.Modules
                     // --- Update player's savepoint ---
                     player.Savepoint = $"{tile.AreaId}:{tile.TilePosition}";
                     JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, player.Savepoint);
-                    LogService.Info($"[WalkCommand] Savepoint automatisch ingesteld: {player.Savepoint}");
+                    LogService.Info($"[WalkCommand] Position saved as new savepoint: {player.Savepoint}");
                 }
                 else
                 {

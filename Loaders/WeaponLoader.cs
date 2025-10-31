@@ -14,14 +14,14 @@ namespace Adventure.Loaders
                 var arrows = JsonDataManager.LoadListFromJson<WeaponModel>("Data/Items/Weapons/arrows.json");
                 if (arrows != null)
                 {
-                    LogService.Info($"Adding catagory Arrows to combinedWeapons: {arrows.Count} of arrows");
+                    LogService.Info($"Adding catagory Arrows to combinedWeapons: {arrows.Count} arrows from arrows.json");
                     combinedWeapons.AddRange(arrows);
                 }
 
                 var melee = JsonDataManager.LoadListFromJson<WeaponModel>("Data/Items/Weapons/melee.json");
                 if (melee != null)
                 {
-                    LogService.Info($"Adding catagory Melee to combinedWeapons: {melee.Count} of melee weapons");
+                    LogService.Info($"Adding catagory Melee to combinedWeapons: {melee.Count} melee weapons from melee.json");
                     combinedWeapons.AddRange(melee);
                 }
 
@@ -29,7 +29,7 @@ namespace Adventure.Loaders
                 var range = JsonDataManager.LoadListFromJson<WeaponModel>("Data/Items/Weapons/range.json");
                 if (range != null)
                 {
-                    LogService.Info($"Adding catagory Range to combinedWeapons: {range.Count} of ranged weapons");
+                    LogService.Info($"Adding catagory Range to combinedWeapons: {range.Count} ranged weapons from range.json");
                     combinedWeapons.AddRange(range);
                 }
 
@@ -42,7 +42,7 @@ namespace Adventure.Loaders
                 }
                 */
 
-                LogService.Info($"Loaded total of {combinedWeapons.Count} weapons\n");
+                LogService.Info($"> Loaded total of {combinedWeapons.Count} weapons\n");
 
                 return combinedWeapons;
             }

@@ -14,14 +14,14 @@ namespace Adventure.Loaders
                 var healingPotions = JsonDataManager.LoadListFromJson<ItemModel>("Data/Items/Potions/healing.json");
                 if (healingPotions != null)
                 {
-                    LogService.Info($"Adding catagory Healing Potions: {healingPotions.Count} of healing potions");
+                    LogService.Info($"Adding catagory Healing Potions: {healingPotions.Count} healing potions from healing.json");
                     combinedItems.AddRange(healingPotions);
                 }
 
                 var poisonPotions = JsonDataManager.LoadListFromJson<ItemModel>("Data/Items/Potions/poisening.json");
                 if (poisonPotions != null)
                 {
-                    LogService.Info($"Adding catagory Poison Potions: {poisonPotions.Count} of poison potions");
+                    LogService.Info($"Adding catagory Poison Potions: {poisonPotions.Count} poison potions from poisening.json");
                     combinedItems.AddRange(poisonPotions);
                 }
 
@@ -29,11 +29,11 @@ namespace Adventure.Loaders
                 var valuables = JsonDataManager.LoadListFromJson<ItemModel>("Data/Items/Valuables/valuables.json");
                 if (valuables != null)
                 {
-                    LogService.Info($"Adding catagory Valuables: {valuables.Count} of valuables");
+                    LogService.Info($"Adding catagory Valuables: {valuables.Count} of valuables from valuables.json");
                     combinedItems.AddRange(valuables);
                 }
 
-                LogService.Info($"[ItemLoader] > Loaded total of {combinedItems.Count} items...\n");
+                LogService.Info($"> Loaded total of {combinedItems.Count} items...\n");
                 return combinedItems;
             }
             catch (System.Exception ex)

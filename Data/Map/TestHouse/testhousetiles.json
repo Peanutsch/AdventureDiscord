@@ -5,7 +5,7 @@
         "id": "START",
         "base": "START",
         "overlay": "Floor",
-        "text": "Startingpoint. Nothing to see here.",
+        "text": "",
         "pois": [],
         "items": []
       },
@@ -13,34 +13,38 @@
         "id": "EXIT1",
         "base": "PORTAL",
         "overlay": "Wall",
-        "text": "North-East Exit...\nTravel to small_pond:3,3!",
-        "connections": [ "small_pond:3,3" ],
+        "text": "Wat is dit??? Een geheime gang?\nWaar zou deze naar toe gaan?",
+        "connections": [ "small_pond:4,3" ],
         "pois": [],
         "items": []
       },
       {
         "id": "EXIT2",
-        "base": "EXIT",
-        "overlay": "EXIT",
-        "text": "The entrance to the forest.",
-        "connections": [ "forest_south:0,1" ],
+        "base": "DOOR",
+        "overlay": "DOOR",
+        "text": "Naar het bos...",
+        "connections": [ "forest_south:1,0" ],
         "pois": [],
-        "items": []
+        "items": [],
+        "lock": "copper",
+        "locked": "False"
       },
       {
         "id": "EXIT3",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "There is not much to see here, except for this wooden door.\nA small plate says 'To the pond'",
+        "text": "Een houten deur. Door het raam zie je wat gras en water...",
         "connections": [ "small_pond:0,1" ],
         "pois": [],
-        "items": []
+        "items": [],
+        "lock": "iron",
+        "locked":  "False"
       },
       {
         "id": "PLANT1",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "Oh, look! It's a plant in a pot. Nothing special to see here.",
+        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.",
         "pois": [],
         "items": []
       },
@@ -48,7 +52,7 @@
         "id": "PLANT2",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "A plant in a pot. Also nothing special to see here.",
+        "text": "Een plant in een pot. Verder niets bijzonders...",
         "pois": [],
         "items": []
       }
@@ -58,7 +62,7 @@
         "id": "START",
         "base": "START",
         "overlay": "Grass",
-        "text": "Startingpoint. Nothing to see here.",
+        "text": "",
         "pois": [],
         "items": []
       },
@@ -66,26 +70,28 @@
         "id": "EXIT1",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "There is not much to see here, except this wooden door.",
+        "text": "De deur om naar de woonkamer...",
         "connections": [ "living_room:8,1" ],
         "pois": [],
-        "items": []
+        "items": [],
+        "lock": "copper",
+        "locked": "False"
       },
       {
         "id": "EXIT2",
         "base": "Dirt",
         "overlay": "Dirt",
-        "text": "Entrance to the forest",
-        "connections": [ "living_room:1,8" ],
+        "text": "Naar het bos...",
+        "connections": [ "living_room:1,9" ],
         "pois": [],
         "items": []
       },
       {
         "id": "EXIT3",
-        "base": "EXIT",
-        "overlay": "EXIT",
-        "text": "Entrance to the forest",
-        "connections": [ "forest_south:5,0" ],
+        "base": "Tree",
+        "overlay": "Tree",
+        "text": "Naar het bos...",
+        "connections": [ "forest_south:7,0" ],
         "pois": [],
         "items": []
       },
@@ -93,7 +99,7 @@
         "id": "ENEMY",
         "base": "ENEMY",
         "overlay": "ENEMY",
-        "text": "Get ready for some fighting!",
+        "text": "Maak je klaar om te vechten!",
         "pois": [],
         "items": []
       }
@@ -103,25 +109,25 @@
         "id": "START",
         "base": "START",
         "overlay": "Tree",
-        "text": "Startingpoint. Nothing to see here.",
+        "text": "",
         "pois": [],
         "items": []
       },
       {
         "id": "EXIT1",
-        "base": "EXIT",
-        "overlay": "EXIT",
-        "text": "Entrance to the living room",
+        "base": "DOOR",
+        "overlay": "DOOR",
+        "text": "De deur naar de woonkamer...",
         "connections": [ "living_room:7,9" ],
         "pois": [],
         "items": []
       },
       {
         "id": "EXIT2",
-        "base": "EXIT",
-        "overlay": "EXIT",
-        "text": "Entrance to the small pond",
-        "connections": [ "small_pond:5,6" ],
+        "base": "Tree",
+        "overlay": "Tree",
+        "text": "Naar de vijver...",
+        "connections": [ "small_pond:7,6" ],
         "pois": [],
         "items": []
       },
@@ -129,7 +135,15 @@
         "id": "NPC1",
         "base": "NPCFEM",
         "overlay": "NPCFEM",
-        "text": "**There is a weird lady, saying:**\nListen very carefully, I say this only once!\nThere is something weird with that wall...\nThat one in the upper right corner of the living room...",
+        "text": "Je vindt een mevrouw die een beetje in de war lijkt te zijn. Ze zegt:\n'Luister goed, want ik zeg dit maar één keer!\nEr is iets raars aan de hand met die muur...\nDie fluisterende muur rechtsboven in de woonkamer...'",
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "TXT1",
+        "base": "Tree",
+        "overlay": "Tree",
+        "text": "Je ziet iemand onder een boom zitten...",
         "pois": [],
         "items": []
       }

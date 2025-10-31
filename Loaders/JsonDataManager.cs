@@ -24,8 +24,7 @@ namespace Adventure.Loaders
         {
             var json = File.ReadAllText(filePath);
 
-            LogService.Info($"[JsonDataManager.LoadListFromJson] Method LoadListFromJson is called...\n" +
-                            $"> Returning [LIST] of filepath: {filePath}...");
+            //LogService.Info($"[JsonDataManager.LoadListFromJson] Returning [LIST] of filepath: {filePath}...");
 
             return JsonSerializer.Deserialize<List<T>>(json);
         }
@@ -42,8 +41,7 @@ namespace Adventure.Loaders
         {
             var json = File.ReadAllText(filePath);
 
-            LogService.Info($"[JsonDataManager.LoadObjectFromJson] Method LoadObjectFromJson is called...\n" +
-                            $"> Returning [OBJECT] of filepath: {filePath}...");
+            //LogService.Info($"[JsonDataManager.LoadObjectFromJson] Returning [OBJECT] of filepath: {filePath}...");
 
             return JsonSerializer.Deserialize<T>(json);
         }
@@ -69,7 +67,7 @@ namespace Adventure.Loaders
             }
             catch (Exception ex)
             {
-                LogService.Error($"[PlayerJsonManager] Error loading player {userId}: {ex.Message}");
+                LogService.Error($"[JsonDataManager.LoadPlayerFromJson] Error loading player {userId}: {ex.Message}");
                 return null;
             }
         }
@@ -120,11 +118,11 @@ namespace Adventure.Loaders
                 string json = JsonSerializer.Serialize(player, options);
                 File.WriteAllText(filePath, json);
 
-                LogService.Info($"[PlayerJsonManager] Saved player {userId} to {filePath}");
+                LogService.Info($"[JsonDataManager.SaveNewPlayerToJson] Saved player {userId} to {filePath}");
             }
             catch (Exception ex)
             {
-                LogService.Error($"[SaveToJson] Error saving player data for {userId}:\n{ex.Message}");
+                LogService.Error($"[JsonDataManager.SaveNewPlayerToJson] Error saving player data for {userId}:\n{ex.Message}");
             }
         }
         #endregion
@@ -141,7 +139,7 @@ namespace Adventure.Loaders
 
             if (!File.Exists(path))
             {
-                LogService.Error($"[UpdatePlayerHitpointsInJson] File not found: {path}");
+                LogService.Error($"[JsonDataManager.UpdatePlayerHitpointsInJson] File not found: {path}");
                 return;
             }
 
@@ -152,7 +150,7 @@ namespace Adventure.Loaders
 
                 if (player == null)
                 {
-                    LogService.Error("[UpdatePlayerHitpointsInJson] Failed to deserialize PlayerModel.");
+                    LogService.Error("[JsonDataManager.UpdatePlayerHitpointsInJson] Failed to deserialize PlayerModel.");
                     return;
                 }
 
@@ -165,11 +163,11 @@ namespace Adventure.Loaders
 
                 File.WriteAllText(path, updatedJson);
 
-                LogService.Info($"[UpdatePlayerHitpointsInJson] Hitpoints updated to {newHitpoints} for userId {userId} ({playerName})");
+                LogService.Info($"[JsonDataManager.UpdatePlayerHitpointsInJson] Hitpoints updated to {newHitpoints} for userId {userId} ({playerName})");
             }
             catch (Exception ex)
             {
-                LogService.Error($"[UpdatePlayerHitpointsInJson] Exception: {ex.Message}");
+                LogService.Error($"[JsonDataManager.UpdatePlayerHitpointsInJson] Exception: {ex.Message}");
             }
         }
 
@@ -224,7 +222,7 @@ namespace Adventure.Loaders
                         break;
 
                     default:
-                        LogService.Error($"[UpdatePlayerItemsInJson] Unknown listType '{listType}'");
+                        LogService.Error($"[JsonDataManager.UpdatePlayerItemsInJson] Unknown listType '{listType}'");
                         return;
                 }
 
@@ -234,11 +232,11 @@ namespace Adventure.Loaders
                 });
 
                 File.WriteAllText(path, updatedJson);
-                LogService.Info($"[UpdatePlayerItemsInJson] Item '{itemId}' added to '{listType}' for userId {userId} ({playerName})");
+                LogService.Info($"[JsonDataManager.UpdatePlayerItemsInJson] Item '{itemId}' added to '{listType}' for userId {userId} ({playerName})");
             }
             catch (Exception ex)
             {
-                LogService.Error($"[UpdatePlayerItemsInJson] Exception: {ex.Message}");
+                LogService.Error($"[JsonDataManager.UpdatePlayerItemsInJson] Exception: {ex.Message}");
             }
         }
 
@@ -253,7 +251,7 @@ namespace Adventure.Loaders
 
             if (!File.Exists(path))
             {
-                LogService.Error($"[UpdatePlayerHitpointsInJson] File not found: {path}");
+                LogService.Error($"[JsonDataManager.UpdatePlayerXP] File not found: {path}");
                 return;
             }
 
@@ -264,7 +262,7 @@ namespace Adventure.Loaders
 
                 if (player == null)
                 {
-                    LogService.Error("[UpdatePlayerXPInJson] Failed to deserialize PlayerModel.");
+                    LogService.Error("[JsonDataManager.UpdatePlayerXP] Failed to deserialize PlayerModel.");
                     return;
                 }
 
@@ -277,11 +275,11 @@ namespace Adventure.Loaders
 
                 File.WriteAllText(path, updatedJson);
 
-                LogService.Info($"[UpdatePlayerXPInJson] Player XP updated to {newXP} for userId {userId} ({playerName})");
+                LogService.Info($"[JsonDataManager.UpdatePlayerXP] Player XP updated to {newXP} for userId {userId} ({playerName})");
             }
             catch (Exception ex)
             {
-                LogService.Error($"[UpdatePlayerHitpointsInJson] Exception: {ex.Message}");
+                LogService.Error($"[JsonDataManager.UpdatePlayerXP] Exception:\n{ex.Message}");
             }
         }
 
@@ -291,7 +289,7 @@ namespace Adventure.Loaders
 
             if (!File.Exists(path))
             {
-                LogService.Error($"[UpdatePlayerLevelInJson] File not found: {path}");
+                LogService.Error($"[JsonDataManager.UpdatePlayerLevel] File not found: {path}");
                 return;
             }
 
@@ -302,7 +300,7 @@ namespace Adventure.Loaders
 
                 if (player == null)
                 {
-                    LogService.Error("[UpdatePlayerLevelInJson] Failed to deserialize PlayerModel.");
+                    LogService.Error("[JsonDataManager.UpdatePlayerLevel] Failed to deserialize PlayerModel.");
                     return;
                 }
 
@@ -315,11 +313,11 @@ namespace Adventure.Loaders
 
                 File.WriteAllText(path, updatedJson);
 
-                LogService.Info($"[UpdatePlayerLevelInJson] Player level updated to {newLevel} for userId {userId} ({playerName})");
+                LogService.Info($"[JsonDataManager.UpdatePlayerLevel] Player level updated to {newLevel} for userId {userId} ({playerName})");
             }
             catch (Exception ex)
             {
-                LogService.Error($"[UpdatePlayerLevelInJson] Exception: {ex.Message}");
+                LogService.Error($"[JsonDataManager.UpdatePlayerLevel] Exception:\n{ex.Message}");
             }
         }
 
@@ -329,7 +327,7 @@ namespace Adventure.Loaders
 
             if (!File.Exists(path))
             {
-                LogService.Error($"[UpdatePlayerLevelInJson] File not found: {path}");
+                LogService.Error($"[JsonDataManager.UpdatePlayerSavepoint] File not found: {path}");
                 return;
             }
 
@@ -340,7 +338,7 @@ namespace Adventure.Loaders
 
                 if (player == null)
                 {
-                    LogService.Error("[UpdatePlayerLevelInJson] Failed to deserialize PlayerModel.");
+                    LogService.Error("[JsonDataManager.UpdatePlayerSavepoint] Failed to deserialize PlayerModel.");
                     return;
                 }
 
@@ -353,11 +351,11 @@ namespace Adventure.Loaders
 
                 File.WriteAllText(path, updatedJson);
 
-                LogService.Info($"[UpdatePlayerLevelInJson] Savepoint updated to {savepoint} for userId {userId} ({player.Name})");
+                LogService.Info($"[JsonDataManager.UpdatePlayerSavepoint] Savepoint updated to {savepoint} for userId {userId} ({player.Name})");
             }
             catch (Exception ex)
             {
-                LogService.Error($"[UpdatePlayerLevelInJson] Exception: {ex.Message}");
+                LogService.Error($"[JsonDataManager.UpdatePlayerSavepoint] Exception:\n{ex.Message}");
             }
         }
         #endregion

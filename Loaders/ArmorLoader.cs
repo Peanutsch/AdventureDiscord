@@ -33,7 +33,7 @@ namespace Adventure.Loaders
                 }
                     
 
-                LogService.Info($"[ArmorLoader] > Loaded total of {allArmor!.Count} armor to GameData.Armor\n");
+                LogService.Info($"> Loaded total of {allArmor!.Count} armor from armor.json\n");
 
                 return allArmor;
             }

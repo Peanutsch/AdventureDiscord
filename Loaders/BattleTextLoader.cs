@@ -18,12 +18,23 @@ namespace Adventure.Loaders
             // Flavor text
             var battleText = JsonDataManager.LoadObjectFromJson<BattleTextModel>("Data/Text/battletext.json");
             if (battleText == null)
+            {
                 throw new System.Exception($"Failed to load Data/Text/battletext.json...");
+            }
+            else
+            {
+                LogService.Info("[BattleTextLoader] BattleText loaded...");
+            }
 
-            // Roll text
-            var rollText = JsonDataManager.LoadObjectFromJson<Dictionary<string, string>>("Data/Text/battlerolldicetext.json");
+                // Roll text
+                var rollText = JsonDataManager.LoadObjectFromJson<Dictionary<string, string>>("Data/Text/battlerolldicetext.json");
             if (rollText == null)
                 throw new System.Exception($"Failed to load Data/Text/battlerolldicetext.json...");
+           
+            if (rollText.Count != 0)
+            {
+                LogService.Info($"Loading roll-tex, {rollText.Count} items\n");
+            }
 
             return (battleText, rollText);
         }

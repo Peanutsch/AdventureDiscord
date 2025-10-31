@@ -47,7 +47,7 @@ namespace Adventure.Loaders {
                     allNpcs.AddRange(beasts.MagicalBeasts);
                 }
                     
-                LogService.Info($"[BestiaryLoader] > Loaded total of {allNpcs.Count} NPCs from bestiary.json\n");
+                LogService.Info($"> Loaded total of {allNpcs.Count} NPCs from bestiary.json\n");
 
                 return allNpcs;
             }

@@ -54,7 +54,7 @@ namespace Adventure.Loaders
                     allNpcs.AddRange(humanoids.Dwarf);
                 }
 
-                LogService.Info($"[HumanoidLoader] > Loaded total of {allNpcs.Count} NPCs from humanoids.json\n");
+                LogService.Info($"> Loaded total of {allNpcs.Count} NPCs from humanoids.json\n");
 
                 return allNpcs;
             }

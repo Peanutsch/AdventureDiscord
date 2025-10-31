@@ -25,7 +25,7 @@ namespace Adventure.Quest.Map
             LogService.DividerParts(2, "TileUI.RenderTileGrid");
 
             string tileTextSafe = string.IsNullOrWhiteSpace(tile.TileText)
-                ? "<Fallback Text from EmbedBuilder>\nNothing to report..."
+                ? "\u2800"
                 : tile.TileText;
 
             string exitInfo = (tile.Connections != null && tile.Connections.Count > 0)
@@ -43,10 +43,10 @@ namespace Adventure.Quest.Map
             return new EmbedBuilder()
                 .WithColor(Color.Blue)
                 .AddField($"[{area.Name}]", area.Description)
-                .AddField($"{gridVisual}\n", $"*{tileTextSafe}*")
-                .AddField("[Possible Directions]", exitInfo)
-                .AddField("[Current Tile / Type]", $"{tile.TileId} / {tile.TileType}")
-                .AddField("[Tile Position]", tile.TilePosition);
+                .AddField($"{gridVisual}\n", $"{tileTextSafe}")
+                //.AddField("[Possible Directions]", exitInfo)
+                .AddField("[Current Tile / Type]", $"{tile.TileId} / {tile.TileType}");
+                //.AddField("[Tile Position]", tile.TilePosition);
         }
         #endregion
     }
