@@ -67,7 +67,7 @@ namespace Adventure.Quest.Map
                             $"[Tile Text]\n{tileTextSafe}\n" +
                             $"[Exits]\n{exitInfo}\n" +
                             $"[Current Tile]\n{tile.TileId}\n" +
-                            $"[LockType/IsLocked]\n{tile.LockState?.LockType ?? "---"}/{(tile.LockState?.Locked.ToString() ?? "---")}\n");
+                            $"[LockType/IsLocked]\n{tile.LockState?.LockType ?? "---"}/{(tile.LockState?.Locked.ToString().ToLower() ?? "---")}\n");
 
             return embed;
         }

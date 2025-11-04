@@ -25,7 +25,7 @@ namespace Adventure.Loaders
             var allTiles = BuildTilesFromAreas(houseLayout, tileDetails);
 
             // Apply door states
-            ApplyDoorStates(allTiles, lockData);
+            ApplyLockStates(allTiles, lockData);
 
             // Auto-connect neighbors
             BuildTileConnections(allTiles);
@@ -158,22 +158,12 @@ namespace Adventure.Loaders
         #endregion
 
         #region === Door Handling ===
-        private static void ApplyDoorStates(List<TileModel> allTiles, TestHouseLockCollection doorData)
+        private static void ApplyLockStates(List<TileModel> allTiles, TestHouseLockCollection doorData)
         {
             foreach (var tile in allTiles)
             {
-                if (string.IsNullOrWhiteSpace(tile.LockId) || tile.LockId == "ERROR_LOCKID")
-                {
-                    if (tile.TileName.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase) ||
-                        tile.TileBase.Equals("DOOR", StringComparison.OrdinalIgnoreCase))
-                    {
-                        LogService.Error($"[TestHouseLoader.ApplyDoorStates] Tile '{tile.TileId}' does not have a lockId (Area: {tile.AreaId})");
-                    }
-                    continue;
-                }
-
                 // Zoek de bijpassende deurconfiguratie
-                if (doorData.LockedDoors.TryGetValue(tile.LockId, out var doorState))
+                if (doorData.LockedDoors.TryGetValue(tile.LockId!, out var doorState))
                 {
                     tile.LockState = new TestHouseLockModel
                     {
@@ -181,10 +171,6 @@ namespace Adventure.Loaders
                         Locked = doorState.Locked
                     };
                     LogService.Info($"[TestHouseLoader.ApplyDoorStates] Applied lock '{tile.LockId}' to tile {tile.TileId} → {doorState.LockType}/{doorState.Locked}");
-                }
-                else
-                {
-                    LogService.Error($"[TestHouseLoader.ApplyDoorStates] LockId '{tile.LockId}' niet gevonden in testhouselocks.json");
                 }
             }
         }
