@@ -16,7 +16,7 @@ using Adventure.Quest.Map;
 
 namespace Adventure.Modules
 {
-    public class AdventureGameModule : InteractionModuleBase<SocketInteractionContext>
+    public class SlashCommandModule : InteractionModuleBase<SocketInteractionContext>
     {
         #region === Slashcommand "start" ===
         /// <summary>

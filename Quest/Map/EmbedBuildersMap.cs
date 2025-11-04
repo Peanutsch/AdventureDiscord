@@ -44,9 +44,9 @@ namespace Adventure.Quest.Map
                 .WithColor(Color.Blue)
                 .AddField($"[{area.Name}]", area.Description)
                 .AddField($"{gridVisual}\n", $"{tileTextSafe}")
-                //.AddField("[Possible Directions]", exitInfo)
-                .AddField("[Current Tile / Type]", $"{tile.TileId} / {tile.TileType}");
-                //.AddField("[Tile Position]", tile.TilePosition);
+                .AddField("[Possible Directions]", exitInfo)
+                .AddField("[Current Tile / Type]", $"{tile.TileId}/{tile.TileType}")
+                .AddField("[LockType/IsLocked]", $"{tile.LockState!.LockType}/{tile.LockState.Locked}");
         }
         #endregion
     }

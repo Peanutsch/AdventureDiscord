@@ -1,0 +1,8 @@
+{
+  "locks": {
+    "door_pond_living": {
+      "locktype": "iron",
+      "locked": true
+    }
+  }
+}

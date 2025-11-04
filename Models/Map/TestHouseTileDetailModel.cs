@@ -28,10 +28,10 @@ namespace Adventure.Models.Map
         public List<string> Items { get; set; } = new();
 
         [JsonPropertyName("lock")]
-        public string LockType { get; set; } = "ERROR_LOCK_TYPE";
+        public string? LockType { get; set; }
 
         [JsonPropertyName("locked")]
-        public bool IsLocked { get; set; }
+        public bool? Locked { get; set; }
 
         [JsonPropertyName("connections")]
         public List<string>? Connections { get; set; }

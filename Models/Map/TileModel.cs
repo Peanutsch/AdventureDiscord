@@ -29,6 +29,11 @@ namespace Adventure.Models.Map
         [JsonPropertyName("connections")]
         public List<string> Connections { get; set; } = new();
 
+        [JsonPropertyName("lockId")]
+        public string? LockId { get; set; }
+
+        public TestHouseLockModel? LockState { get; set; } = new();
+
         public string TileBase { get; set; } = "ERROR_TILE_BASE";
 
         public string TileOverlay { get; set; } = "ERROR_TILE_OVERLAY";

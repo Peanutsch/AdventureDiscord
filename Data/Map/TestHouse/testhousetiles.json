@@ -25,9 +25,7 @@
         "text": "Naar het bos...",
         "connections": [ "forest_south:1,0" ],
         "pois": [],
-        "items": [],
-        "lock": "copper",
-        "locked": "False"
+        "items": []
       },
       {
         "id": "EXIT3",
@@ -37,8 +35,7 @@
         "connections": [ "small_pond:0,1" ],
         "pois": [],
         "items": [],
-        "lock": "iron",
-        "locked":  "False"
+        "lockId": "door_pond_living"
       },
       {
         "id": "PLANT1",
@@ -74,8 +71,7 @@
         "connections": [ "living_room:8,1" ],
         "pois": [],
         "items": [],
-        "lock": "copper",
-        "locked": "False"
+        "lockId": "door_pond_living"
       },
       {
         "id": "EXIT2",

@@ -1,4 +1,5 @@
 ﻿using Adventure.Models.Items;
+using Adventure.Models.Map;
 using Adventure.Models.Player;
 using Adventure.Services;
 using Discord;
@@ -356,6 +357,43 @@ namespace Adventure.Loaders
             catch (Exception ex)
             {
                 LogService.Error($"[JsonDataManager.UpdatePlayerSavepoint] Exception:\n{ex.Message}");
+            }
+        }
+        #endregion
+
+        #region === Update Door Locks ===
+        public static void UpdateDoorStates(TestHouseLockCollection doorData, string fileName)
+        {
+            string path = Path.Combine("Data", "Map", fileName);
+
+            if (!File.Exists(path))
+            {
+                LogService.Error($"[JsonDataManager.UpdateDoorStates] File not found: {path}");
+                return;
+            }
+
+            try
+            {
+                // Lees bestaande deurdata
+                var existingJson = File.ReadAllText(path);
+                var existingData = JsonSerializer.Deserialize<TestHouseLockCollection>(existingJson)
+                                   ?? new TestHouseLockCollection();
+
+                // Merge: update bestaande of voeg nieuwe toe
+                foreach (var kvp in doorData.LockedDoors)
+                {
+                    existingData.LockedDoors[kvp.Key] = kvp.Value;
+                }
+
+                // Serialiseer en schrijf terug
+                string updatedJson = JsonSerializer.Serialize(existingData, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(path, updatedJson);
+
+                LogService.Info($"[JsonDataManager.UpdateDoorStates] Door states merged and saved to {fileName}");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[JsonDataManager.UpdateDoorStates] Exception:\n{ex.Message}");
             }
         }
         #endregion
