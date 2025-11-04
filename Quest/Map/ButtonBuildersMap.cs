@@ -29,7 +29,7 @@ namespace Adventure.Quest.Map
             EnableMovementButtons(tile, buttons);
 
             // --- Enable "Enter" button if current tile is a DOOR --- 
-            EnableEnterButton(tile, buttons);
+            EnableActionButton(tile, buttons);
 
             // --- Add all buttons to the Discord component builder --- 
             AddButtonsToBuilder(builder, buttons);
@@ -127,23 +127,23 @@ namespace Adventure.Quest.Map
         }
 
         /// <summary>
-        /// Enables the "Enter" button if the current tile represents a door or exit
+        /// Enables the "Action" button if the current tile represents a door or exit
         /// with at least one valid connection.
         /// </summary>
-        private static void EnableEnterButton(TileModel tile, List<ButtonBuilder> buttons)
+        private static void EnableActionButton(TileModel tile, List<ButtonBuilder> buttons)
         {
             // --- Check if the tile type is either a DOOR or any variant of EXIT (e.g., EXIT1, EXIT2) --- 
             if (!(tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) ||
                   tile.TileType.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase)))
             {
-                LogService.Info("[EnableEnterButton] No 'DOOR' or 'EXIT*'");
+                LogService.Info("[EnableActionButton] No 'DOOR' or 'EXIT*'");
                 return;
             }
 
             // --- Must have at least one valid connection --- 
             if (tile.Connections == null || tile.Connections.Count == 0)
             {
-                LogService.Info("[EnableEnterButton] tile.Connections == null or 0");
+                LogService.Info("[EnableActionButton] tile.Connections == null or 0");
                 return;
             }
 
