@@ -161,14 +161,27 @@ namespace Adventure.Quest.Map
 
             if (targetTile != null)
             {
-                // --- Enable the Enter button linking to the target tile --- 
+                string label = "Enter";
+                var style = ButtonStyle.Success;
+                bool disabled = false;
+
+                // === Check if this door has a lock and is locked ===
+                if (tile.LockState?.LockType != "---" && tile.LockState?.Locked != null && tile.LockState.Locked)
+                {
+                    label = "LOCKED";
+                    style = ButtonStyle.Secondary;
+                    disabled = true;
+                }
+
+                // --- Enable the Enter (or LOCKED) button ---
                 buttons[0] = new ButtonBuilder()
-                    .WithLabel("Enter")
+                    .WithLabel(label)
                     .WithCustomId($"enter:{targetTile.TileId}")
-                    .WithStyle(ButtonStyle.Success)
-                    .WithDisabled(false);
+                    .WithStyle(style)
+                    .WithDisabled(disabled);
             }
         }
+
 
         /// <summary>
         /// Adds the prepared buttons to the Discord ComponentBuilder with specific layout rows.
