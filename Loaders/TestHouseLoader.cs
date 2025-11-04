@@ -52,7 +52,7 @@ namespace Adventure.Loaders
         {
             LogService.Info("[TestHouseLoader.LoadTestHouseData] Starting TestHouse data load...");
 
-            // === 1️⃣ Load testhouse layout ===
+            // === Load testhouse layout testhouse.json ===
             var houseLayout = JsonDataManager.LoadObjectFromJson<TestHouseModel>("Data/Map/TestHouse/testhouse.json");
             if (houseLayout == null)
             {
@@ -61,7 +61,7 @@ namespace Adventure.Loaders
             }
             LogService.Info("[TestHouseLoader.LoadTestHouseData] Loaded testhouse.json successfully.");
 
-            // === 2️⃣ Load tile details ===
+            // === Load tile details testhousetiles.json ===
             var tileDetails = JsonDataManager.LoadObjectFromJson<TestHouseTilesModel>("Data/Map/TestHouse/testhousetiles.json");
             if (tileDetails == null)
             {
@@ -70,7 +70,7 @@ namespace Adventure.Loaders
             }
             LogService.Info("[TestHouseLoader.LoadTestHouseData] Loaded testhousetiles.json successfully.");
 
-            // === 3️⃣ Load door lock configuration ===
+            // === Load door lock configuration testhouselocks.json ===
             var doorData = JsonDataManager.LoadObjectFromJson<TestHouseLockCollection>("Data/Map/TestHouse/testhouselocks.json");
             if (doorData == null)
             {
@@ -79,7 +79,7 @@ namespace Adventure.Loaders
             }
             LogService.Info($"[TestHouseLoader.LoadTestHouseData] Loaded testhouselocks.json successfully with {doorData.LockedDoors.Count} entries.");
 
-            // === 4️⃣ Validate door data structure ===
+            // === Validate door data structure ===
             if (doorData.LockedDoors == null || doorData.LockedDoors.Count == 0)
             {
                 LogService.Error("[TestHouseLoader.LoadTestHouseData] No door locks found — proceeding with all doors unlocked.");
@@ -90,7 +90,7 @@ namespace Adventure.Loaders
                 throw new InvalidDataException("Invalid door data in testhouselocks.json.");
             }
 
-            // === 5️⃣ Apply lock states to all tiles ===
+            // === Apply lock states to all tiles ===
             LogService.Info($"[TestHouseLoader.LoadTestHouseData] Loaded tile details for {tileDetails.Areas.Count} areas.");
 
             LogService.Info("[TestHouseLoader.LoadTestHouseData] TestHouse data load completed successfully.");
@@ -137,7 +137,7 @@ namespace Adventure.Loaders
             string tilePosition = $"{row},{col}";
             string tileId = $"{area.Id}:{tilePosition}";
 
-            var detail = areaTileDetails.FirstOrDefault(t => t.Id.Equals(tileType, StringComparison.OrdinalIgnoreCase));
+            var areaDetail = areaTileDetails.FirstOrDefault(t => t.Id.Equals(tileType, StringComparison.OrdinalIgnoreCase));
 
             return new TileModel
             {
@@ -146,12 +146,13 @@ namespace Adventure.Loaders
                 TilePosition = tilePosition,
                 TileType = tileType,
                 AreaId = area.Id,
-                TileText = detail?.Text ?? string.Empty,
-                TilePOI = detail?.Pois ?? new List<string>(),
-                TileItems = detail?.Items ?? new List<string>(),
-                Connections = detail?.Connections ?? new List<string>(),
-                TileBase = detail?.Base ?? string.Empty,
-                TileOverlay = detail?.Overlay ?? string.Empty
+                TileText = areaDetail?.Text ?? string.Empty,
+                TilePOI = areaDetail?.Pois ?? new List<string>(),
+                TileItems = areaDetail?.Items ?? new List<string>(),
+                Connections = areaDetail?.Connections ?? new List<string>(),
+                TileBase = areaDetail?.Base ?? string.Empty,
+                TileOverlay = areaDetail?.Overlay ?? string.Empty,
+                LockId = areaDetail?.TileLockId ?? string.Empty
             };
         }
         #endregion
@@ -161,14 +162,12 @@ namespace Adventure.Loaders
         {
             foreach (var tile in allTiles)
             {
-                // Controleer of er een lockId is
-                if (string.IsNullOrEmpty(tile.LockId))
+                if (string.IsNullOrWhiteSpace(tile.LockId) || tile.LockId == "ERROR_LOCKID")
                 {
-                    // Alleen loggen als het om een deur of uitgang gaat
-                    if (tile.TileId.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase) ||
+                    if (tile.TileName.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase) ||
                         tile.TileBase.Equals("DOOR", StringComparison.OrdinalIgnoreCase))
                     {
-                        LogService.Error($"[TestHouseLoader.ApplyDoorStates] Tile '{tile.TileId}' heeft geen lockId (Area: {tile.AreaId})");
+                        LogService.Error($"[TestHouseLoader.ApplyDoorStates] Tile '{tile.TileId}' does not have a lockId (Area: {tile.AreaId})");
                     }
                     continue;
                 }
@@ -181,7 +180,7 @@ namespace Adventure.Loaders
                         LockType = doorState.LockType,
                         Locked = doorState.Locked
                     };
-                    LogService.Info($"[TestHouseLoader.ApplyDoorStates] Applied lock '{tile.LockId}' → {doorState.LockType}/{doorState.Locked}");
+                    LogService.Info($"[TestHouseLoader.ApplyDoorStates] Applied lock '{tile.LockId}' to tile {tile.TileId} → {doorState.LockType}/{doorState.Locked}");
                 }
                 else
                 {

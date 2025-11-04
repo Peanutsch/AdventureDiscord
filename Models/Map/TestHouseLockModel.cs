@@ -9,8 +9,10 @@ namespace Adventure.Models.Map
 {
     public class TestHouseLockModel
     {
-        public string LockType { get; set; } = "none";
+        [JsonPropertyName("lock_type")]
+        public string LockType { get; set; } = "---";
 
-        public bool Locked { get; set; } = false;
+        [JsonPropertyName("locked")]
+        public bool Locked { get; set; }
     }
 }

@@ -27,11 +27,8 @@ namespace Adventure.Models.Map
         [JsonPropertyName("items")]
         public List<string> Items { get; set; } = new();
 
-        [JsonPropertyName("lock")]
-        public string? LockType { get; set; }
-
-        [JsonPropertyName("locked")]
-        public bool? Locked { get; set; }
+        [JsonPropertyName("lockId")]
+        public string TileLockId { get; set; } = "ERROR_LOCKID";
 
         [JsonPropertyName("connections")]
         public List<string>? Connections { get; set; }
