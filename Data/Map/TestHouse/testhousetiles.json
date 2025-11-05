@@ -41,15 +41,16 @@
         "id": "PLANT1",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nHier is verder ook niets te vinden...",
+        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nMaar zodra je er langs loopt, hoor je duidelijk een klik...",
         "pois": [],
-        "items": []
+        "items": [],
+        "lockSwitch":  true
       },
       {
         "id": "PLANT2",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "Een plant in een pot. Verder niets bijzonders...",
+        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nHier is niets te vinden...",
         "pois": [],
         "items": []
       }
@@ -93,9 +94,9 @@
       },
       {
         "id": "ENEMY",
-        "base": "ENEMY",
+        "base": "Floor",
         "overlay": "ENEMY",
-        "text": "Maak je klaar om te vechten!",
+        "text": "Maak je klaar voor een gevecht!",
         "pois": [],
         "items": []
       }

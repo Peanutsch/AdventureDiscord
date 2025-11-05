@@ -71,20 +71,20 @@ namespace Adventure.Loaders
             LogService.Info("[TestHouseLoader.LoadTestHouseData] Loaded testhousetiles.json successfully.");
 
             // === Load door lock configuration testhouselocks.json ===
-            var doorData = JsonDataManager.LoadObjectFromJson<TestHouseLockCollection>("Data/Map/TestHouse/testhouselocks.json");
-            if (doorData == null)
+            var lockData = JsonDataManager.LoadObjectFromJson<TestHouseLockCollection>("Data/Map/TestHouse/testhouselocks.json");
+            if (lockData == null)
             {
                 LogService.Error("[TestHouseLoader.LoadTestHouseData] Error loading testhouselocks.json: Data is invalid or missing.");
                 throw new InvalidDataException("testhouselocks.json is invalid or missing.");
             }
-            LogService.Info($"[TestHouseLoader.LoadTestHouseData] Loaded testhouselocks.json successfully with {doorData.LockedDoors.Count} entries.");
+            LogService.Info($"[TestHouseLoader.LoadTestHouseData] Loaded testhouselocks.json successfully with {lockData.LockedDoors.Count} entries.");
 
             // === Validate door data structure ===
-            if (doorData.LockedDoors == null || doorData.LockedDoors.Count == 0)
+            if (lockData.LockedDoors == null || lockData.LockedDoors.Count == 0)
             {
                 LogService.Error("[TestHouseLoader.LoadTestHouseData] No door locks found — proceeding with all doors unlocked.");
             }
-            else if (doorData.LockedDoors.Any(d => string.IsNullOrEmpty(d.Key) || d.Value == null))
+            else if (lockData.LockedDoors.Any(d => string.IsNullOrEmpty(d.Key) || d.Value == null))
             {
                 LogService.Error("[TestHouseLoader.LoadTestHouseData] Invalid door data: Missing or incorrect lock data.");
                 throw new InvalidDataException("Invalid door data in testhouselocks.json.");
@@ -94,7 +94,7 @@ namespace Adventure.Loaders
             LogService.Info($"[TestHouseLoader.LoadTestHouseData] Loaded tile details for {tileDetails.Areas.Count} areas.");
 
             LogService.Info("[TestHouseLoader.LoadTestHouseData] TestHouse data load completed successfully.");
-            return (houseLayout!, tileDetails!, doorData!);
+            return (houseLayout!, tileDetails!, lockData!);
         }
         #endregion
 
@@ -137,9 +137,12 @@ namespace Adventure.Loaders
             string tilePosition = $"{row},{col}";
             string tileId = $"{area.Id}:{tilePosition}";
 
-            var areaDetail = areaTileDetails.FirstOrDefault(t => t.Id.Equals(tileType, StringComparison.OrdinalIgnoreCase));
+            // Find matching details for this tile type
+            var areaDetail = areaTileDetails
+                .FirstOrDefault(t => t.Id.Equals(tileType, StringComparison.OrdinalIgnoreCase));
 
-            return new TileModel
+            // Create tile
+            var tile = new TileModel
             {
                 TileId = tileId,
                 TileName = tileType,
@@ -152,12 +155,20 @@ namespace Adventure.Loaders
                 Connections = areaDetail?.Connections ?? new List<string>(),
                 TileBase = areaDetail?.Base ?? string.Empty,
                 TileOverlay = areaDetail?.Overlay ?? string.Empty,
-                LockId = areaDetail?.TileLockId ?? string.Empty
+                LockId = areaDetail?.TileLockId ?? string.Empty,
+                LockSwitch = areaDetail?.TileLockSwitch ?? false
             };
+
+            // --- Debug logging for tile lock info ---
+            LogService.Info($"[CreateTile] Created tile {tile.TileId} → LockSwitch={tile.LockSwitch}, LockId='{tile.LockId}'");
+
+            return tile;
         }
         #endregion
 
-        #region === Door Handling ===
+        #region === Lock Handling ===
+        public static Dictionary<string, TestHouseLockModel> LockLookup { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+
         private static void ApplyLockStates(List<TileModel> allTiles, TestHouseLockCollection doorData)
         {
             foreach (var tile in allTiles)
@@ -170,6 +181,8 @@ namespace Adventure.Loaders
                         LockType = doorState.LockType,
                         Locked = doorState.Locked
                     };
+
+                    LockLookup[tile.LockId!] = tile.LockState;
                     LogService.Info($"[TestHouseLoader.ApplyDoorStates] Applied lock '{tile.LockId}' to tile {tile.TileId} → {doorState.LockType}/{doorState.Locked}");
                 }
             }

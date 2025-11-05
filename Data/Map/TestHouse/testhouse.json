@@ -6,7 +6,7 @@
       "description": "De woonkamer.\nHier is niet zoveel te zien, behalve wat planten en wat versleten meubels.\nAan de zuidkant zie je een deur. Aan de oostzijde zie je enkele bomen door een gat in de muur...",
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "PLANT1", "Wall", "Floor", "EXIT1" ],
+        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "PLANT2", "Wall", "Floor", "EXIT1" ],
         [ "Wall", "Floor", "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Floor", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Wall", "Wall", "Floor", "Wall" ],

@@ -34,12 +34,14 @@ namespace Adventure.Models.Map
 
         public TestHouseLockModel? LockState { get; set; } = new();
 
+        public bool LockSwitch { get; set; }
+
         public string TileBase { get; set; } = "ERROR_TILE_BASE";
 
         public string TileOverlay { get; set; } = "ERROR_TILE_OVERLAY";
 
         public string TileType { get; set; } = "ERROR_TILE_TYPE";
 
-        public string AreaId { get; set; } = "ERROR_ROOM_ID_tileModel";
+        public string AreaId { get; set; } = "ERROR_AREA_ID_tileModel";
     }
 }

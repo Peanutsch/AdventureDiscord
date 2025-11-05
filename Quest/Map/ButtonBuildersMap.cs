@@ -12,7 +12,7 @@ namespace Adventure.Quest.Map
 {
     public class ButtonBuildersMap
     {
-        #region === Buttons ===
+        #region === Build Direction Buttons ===
         /// <summary>
         /// Handles the creation of Discord component buttons (Enter, Move, Break)
         /// based on the player's current tile and available connections.
@@ -37,9 +37,6 @@ namespace Adventure.Quest.Map
             LogService.DividerParts(2, "BuildDirectionButtons");
             return builder;
         }
-        #endregion
-
-        #region === Button Helper Methods ===
 
         /// <summary>
         /// Find tile by:
@@ -125,64 +122,127 @@ namespace Adventure.Quest.Map
                 }
             }
         }
+        #endregion
 
+        #region === Build Action Button ===
         /// <summary>
-        /// Enables the "Action" button if the current tile represents a door or exit
-        /// with at least one valid connection.
+        /// Enables the main "Action" button (Enter/Locked) based on the current tile's type,
+        /// connections, and lock state. This button may be labeled "Enter" or "LOCKED"
+        /// depending on whether the door or exit can be accessed.
         /// </summary>
         private static void EnableActionButton(TileModel tile, List<ButtonBuilder> buttons)
         {
-            // --- Check if the tile type is either a DOOR or any variant of EXIT (e.g., EXIT1, EXIT2) --- 
-            if (!(tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) ||
-                  tile.TileType.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase)))
-            {
+            // --- Ensure this tile is a door or an exit before creating an action button ---
+            if (!IsDoorOrExit(tile))
+                return;
+
+            // --- Verify that this tile has at least one valid connection to another tile ---
+            if (!HasValidConnection(tile))
+                return;
+
+            // --- Retrieve the tile connected to this door or exit ---
+            var targetTile = GetTargetTile(tile);
+            if (targetTile == null)
+                return;
+
+            // --- Determine the label, style, and disabled state for the action button ---
+            var (label, style, disabled) = GetActionButtonState(tile);
+
+            // --- Create and assign the button to the first position in the button list ---
+            buttons[0] = new ButtonBuilder()
+                .WithLabel(label)
+                .WithCustomId($"enter:{targetTile.TileId}")
+                .WithStyle(style)
+                .WithDisabled(disabled);
+        }
+
+        /// <summary>
+        /// Determines whether the given tile represents a door or an exit.
+        /// </summary>
+        /// <param name="tile">The current tile being evaluated.</param>
+        /// <returns>True if the tile is a door or an exit; otherwise, false.</returns>
+        private static bool IsDoorOrExit(TileModel tile)
+        {
+            // --- Door: exactly "DOOR"
+            // --- Exit: any tile type starting with "EXIT" (e.g., EXIT1, EXIT2)
+            bool result = tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) ||
+                          tile.TileType.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase);
+
+            if (!result)
                 LogService.Info("[EnableActionButton] No 'DOOR' or 'EXIT*'");
-                return;
-            }
 
-            // --- Must have at least one valid connection --- 
-            if (tile.Connections == null || tile.Connections.Count == 0)
-            {
+            return result;
+        }
+
+        /// <summary>
+        /// Checks whether the tile has one or more valid connection references.
+        /// </summary>
+        /// <param name="tile">The tile being checked.</param>
+        /// <returns>True if valid connections exist; otherwise, false.</returns>
+        private static bool HasValidConnection(TileModel tile)
+        {
+            // --- Tile must contain at least one connection to be usable as an entry point ---
+            bool valid = tile.Connections != null && tile.Connections.Count > 0;
+
+            if (!valid)
                 LogService.Info("[EnableActionButton] tile.Connections == null or 0");
-                return;
-            }
 
-            // --- Example connection: "living_room:EXIT1" or "living_room:7,8" --- 
-            string connectionRef = tile.Connections[0];
+            return valid;
+        }
+
+        /// <summary>
+        /// Finds the target tile that this door or exit connects to.
+        /// </summary>
+        /// <param name="tile">The current tile containing a connection reference.</param>
+        /// <returns>The connected TileModel if found; otherwise, null.</returns>
+        private static TileModel? GetTargetTile(TileModel tile)
+        {
+            // --- Example connection format: "living_room:EXIT1" or "living_room:7,8" ---
+            string connectionRef = tile.Connections![0];
             var parts = connectionRef.Split(':');
+
+            // --- Ensure the reference is valid (areaId:detailId) ---
             if (parts.Length != 2)
-                return;
+                return null;
 
             string areaId = parts[0];
             string detailId = parts[1];
 
-            // --- Try to find the target tile by its ID or position --- 
-            var targetTile = FindTileByIdOrPosition(areaId, detailId);
-
-            if (targetTile != null)
-            {
-                string label = "Enter";
-                var style = ButtonStyle.Success;
-                bool disabled = false;
-
-                // === Check if this door has a lock and is locked ===
-                if (tile.LockState?.LockType != "---" && tile.LockState?.Locked != null && tile.LockState.Locked)
-                {
-                    label = "LOCKED";
-                    style = ButtonStyle.Secondary;
-                    disabled = true;
-                }
-
-                // --- Enable the Enter (or LOCKED) button ---
-                buttons[0] = new ButtonBuilder()
-                    .WithLabel(label)
-                    .WithCustomId($"enter:{targetTile.TileId}")
-                    .WithStyle(style)
-                    .WithDisabled(disabled);
-            }
+            // --- Attempt to find the target tile by ID or position ---
+            return FindTileByIdOrPosition(areaId, detailId);
         }
 
+        /// <summary>
+        /// Determines the correct label, style, and state for the action button
+        /// based on the lock status of the current tile.
+        /// </summary>
+        /// <param name="tile">The current tile being processed.</param>
+        /// <returns>
+        /// A tuple containing:
+        /// - Label: the text shown on the button (e.g., "Enter" or "LOCKED")
+        /// - Style: the Discord button style (e.g., Success or Secondary)
+        /// - Disabled: whether the button should be interactable
+        /// </returns>
+        private static (string Label, ButtonStyle Style, bool Disabled) GetActionButtonState(TileModel tile)
+        {
+            // --- Default: the door or exit is open and can be entered ---
+            string label = "Enter";
+            var style = ButtonStyle.Success;
+            bool disabled = false;
 
+            // --- If the tile has a lock and it's locked, change the button to "LOCKED" ---
+            if (tile.LockState?.LockType != "---" && tile.LockState?.Locked == true)
+            {
+                label = "LOCKED";
+                style = ButtonStyle.Secondary; // Grayed-out style
+                disabled = true;               // Disable the button so it can't be pressed
+            }
+
+            return (label, style, disabled);
+        }
+        #endregion
+
+        #region === Add Buttons to Builder ===
         /// <summary>
         /// Adds the prepared buttons to the Discord ComponentBuilder with specific layout rows.
         /// </summary>
@@ -198,7 +258,9 @@ namespace Adventure.Quest.Map
                    .WithButton(buttons[3], row: 1)
                    .WithButton(buttons[4], row: 1);
         }
+        #endregion
 
+        #region === Direction Labels ===
         /// <summary>
         /// Returns a formatted label string for directional buttons with emoji.
         /// </summary>
@@ -213,6 +275,5 @@ namespace Adventure.Quest.Map
             _ => dir
         };
         #endregion
-
     }
 }

@@ -90,12 +90,16 @@ namespace Adventure.Modules
         #endregion
 
         #region === Slashcommand "walk" ===
+        /// <summary>
+        /// Handles the /walk slash command. Moves the player to the current tile, 
+        /// toggles any lock if the tile has a switch, and builds the embed and directional buttons.
+        /// </summary>
         [SlashCommand("walk", "Simulate walking through tiles with directional buttons.")]
         public async Task SlashCommandWalkHandler()
         {
             await DeferAsync();
 
-            // --- Get user Id ---
+            // --- Get Discord user object ---
             var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
             if (user == null)
             {
@@ -106,7 +110,7 @@ namespace Adventure.Modules
             LogService.DividerParts(1, "SlashCommand: walk");
             LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
-            // --- Get/Create user profile ---
+            // --- Get or create player profile ---
             var player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
             if (player == null)
             {
@@ -114,10 +118,10 @@ namespace Adventure.Modules
                 return;
             }
 
-            // --- Check for last savepoint ---
+            // --- Determine current tile from player's savepoint ---
             var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint);
 
-            // --- Fallback to START tile if no (valid) savepoint ---
+            // --- Fallback to START tile if savepoint is invalid ---
             if (tile == null)
             {
                 LogService.Info($"[WalkCommand] Savepoint '{player.Savepoint}' invalid. Fallback to START tile.");
@@ -125,7 +129,7 @@ namespace Adventure.Modules
 
                 if (tile != null)
                 {
-                    // --- Update player's savepoint ---
+                    // Update player's savepoint to START tile
                     player.Savepoint = $"{tile.AreaId}:{tile.TilePosition}";
                     JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, player.Savepoint);
                     LogService.Info($"[WalkCommand] Position saved as new savepoint: {player.Savepoint}");
@@ -137,17 +141,23 @@ namespace Adventure.Modules
                 }
             }
 
-            // --- Get name of area ---
+            // --- Toggle lock if the current tile has a switch ---
+            if (TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup))
+            {
+                LogService.Info($"[WalkCommand] Tile {tile.TileId} switch toggled lock: {tile.LockId}");
+            }
+
+            // --- Get name of area for logging ---
             string startArea = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var area)
                 ? area.Name
                 : "Unknown Area";
-
             LogService.Info($"[/walk] Starting in area: {startArea}, position: {tile.TilePosition}");
 
-            // --- Build Embed and buttons ---
-            var embed = EmbedBuildersMap.EmbedWalk(tile);
+            // --- Build embed and directional buttons ---
+            var embed = EmbedBuildersMap.EmbedWalk(tile); // Reads current tile state (including lock)
             var components = ButtonBuildersMap.BuildDirectionButtons(tile);
 
+            // --- Send embed and buttons to Discord ---
             await FollowupAsync(embed: embed.Build(), components: components?.Build());
         }
         #endregion

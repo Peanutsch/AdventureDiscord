@@ -40,6 +40,12 @@ namespace Adventure.Quest.Map
                 }))
                 : "None";
 
+            // --- Toggle lock if the current tile has a switch ---
+            if (TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup))
+            {
+                LogService.Info($"[EmbedBuildersMap.EmbedWalk] Tile {tile.TileId} switch toggled lock: {tile.LockId}");
+            }
+
             // === Build embed ===
             var embed = new EmbedBuilder()
                 .WithColor(Color.Blue)
