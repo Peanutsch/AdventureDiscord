@@ -5,6 +5,7 @@ using Adventure.Services;
 using Discord;
 using System;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text.Json;
 
 namespace Adventure.Loaders
@@ -41,8 +42,6 @@ namespace Adventure.Loaders
         public static T? LoadObjectFromJson<T>(string filePath)
         {
             var json = File.ReadAllText(filePath);
-
-            //LogService.Info($"[JsonDataManager.LoadObjectFromJson] Returning [OBJECT] of filepath: {filePath}...");
 
             return JsonSerializer.Deserialize<T>(json);
         }
@@ -362,38 +361,51 @@ namespace Adventure.Loaders
         #endregion
 
         #region === Update Door Locks ===
-        public static void UpdateDoorStates(TestHouseLockCollection doorData, string fileName)
+        /// <summary>
+        /// Updates the lock states in the original testhouselocks.json file
+        /// located in the project directory (not the runtime /bin folder).
+        /// </summary>
+        /// <param name="fileName">The name of the JSON file containing lock data.</param>
+        /// <param name="locks">The list of updated lock models.</param>
+        public static void UpdateLockStates(TestHouseLockCollection lockData, string fileName)
         {
-            string path = Path.Combine("Data", "Map", fileName);
+            // Get the base directory where the app runs (bin/Debug/net9.0)
+            string baseDir = AppContext.BaseDirectory;
+
+            // Navigate three levels up to reach the project root
+            string projectRoot = Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\"));
+
+            // Build the absolute path to the JSON file in the project folder
+            string path = Path.Combine(projectRoot, "Data", "Map", "TestHouse", fileName);
 
             if (!File.Exists(path))
             {
-                LogService.Error($"[JsonDataManager.UpdateDoorStates] File not found: {path}");
+                LogService.Error($"[JsonDataManager.UpdateLockStates] File not found: {path}");
                 return;
             }
 
             try
             {
-                // Lees bestaande deurdata
+                // Read existing JSON file
                 var existingJson = File.ReadAllText(path);
                 var existingData = JsonSerializer.Deserialize<TestHouseLockCollection>(existingJson)
                                    ?? new TestHouseLockCollection();
 
-                // Merge: update bestaande of voeg nieuwe toe
-                foreach (var kvp in doorData.LockedDoors)
+                // Merge updated locks into existing data
+                foreach (var kvp in lockData.LockedDoors)
                 {
                     existingData.LockedDoors[kvp.Key] = kvp.Value;
                 }
 
-                // Serialiseer en schrijf terug
+                // Serialize merged data back to file
                 string updatedJson = JsonSerializer.Serialize(existingData, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(path, updatedJson);
 
-                LogService.Info($"[JsonDataManager.UpdateDoorStates] Door states merged and saved to {fileName}");
+                LogService.Info($"✅ [JsonDataManager.UpdateLockStates] Door states updated and saved to: {path}");
             }
             catch (Exception ex)
             {
-                LogService.Error($"[JsonDataManager.UpdateDoorStates] Exception:\n{ex.Message}");
+                LogService.Error($"[JsonDataManager.UpdateLockStates] Exception:\n{ex.Message}");
             }
         }
         #endregion

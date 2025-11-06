@@ -41,10 +41,13 @@ namespace Adventure.Quest.Map
                 : "None";
 
             // --- Toggle lock if the current tile has a switch ---
+            TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup);
+            /*
             if (TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup))
             {
                 LogService.Info($"[EmbedBuildersMap.EmbedWalk] Tile {tile.TileId} switch toggled lock: {tile.LockId}");
             }
+            */
 
             // === Build embed ===
             var embed = new EmbedBuilder()
@@ -58,12 +61,12 @@ namespace Adventure.Quest.Map
             if (tile.LockState!.LockType != "---")
             {
                 LogService.Info($"LockType is {tile.LockState!.LockType}");
-                embed.AddField("[LockType/IsLocked]", $"{tile.LockState.LockType}/{tile.LockState.Locked}");
+                //embed.AddField("[LockType/IsLocked]", $"{tile.LockState.LockType}/{tile.LockState.Locked}");
             }
             else
             {
                 LogService.Info($"LockType is empty...");
-                embed.AddField("[LockType/IsLocked]", "---/---");
+                //embed.AddField("[LockType/IsLocked]", "---/---");
             }
 
             // === Debug log ===

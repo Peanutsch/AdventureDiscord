@@ -124,6 +124,7 @@ namespace Adventure.Loaders
                     }
                 }
 
+                // --- Add to lookup list AreaLookup
                 AreaLookup[areaId] = area;
             }
 
@@ -155,12 +156,15 @@ namespace Adventure.Loaders
                 Connections = areaDetail?.Connections ?? new List<string>(),
                 TileBase = areaDetail?.Base ?? string.Empty,
                 TileOverlay = areaDetail?.Overlay ?? string.Empty,
-                LockId = areaDetail?.TileLockId ?? string.Empty,
+                LockId = areaDetail?.TileLockId,
                 LockSwitch = areaDetail?.TileLockSwitch ?? false
             };
 
             // --- Debug logging for tile lock info ---
-            LogService.Info($"[CreateTile] Created tile {tile.TileId} → LockSwitch={tile.LockSwitch}, LockId='{tile.LockId}'");
+            if (tile.LockSwitch && !string.IsNullOrEmpty(tile.LockId))
+            {
+                LogService.Info($"[CreateTile] Created tile {tile.TileId} → LockSwitch={tile.LockSwitch}, LockId='{tile.LockId}'");
+            }
 
             return tile;
         }
@@ -173,7 +177,11 @@ namespace Adventure.Loaders
         {
             foreach (var tile in allTiles)
             {
-                // Zoek de bijpassende deurconfiguratie
+                // Skip tiles without a LockId
+                if (string.IsNullOrEmpty(tile.LockId))
+                    continue;
+
+                // Apply matching lock state if available
                 if (doorData.LockedDoors.TryGetValue(tile.LockId!, out var doorState))
                 {
                     tile.LockState = new TestHouseLockModel

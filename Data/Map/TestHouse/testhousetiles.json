@@ -44,6 +44,7 @@
         "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nMaar zodra je er langs loopt, hoor je duidelijk een klik...",
         "pois": [],
         "items": [],
+        "lockId": "door_pond_living",
         "lockSwitch":  true
       },
       {

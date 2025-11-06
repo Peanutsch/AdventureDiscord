@@ -28,7 +28,7 @@ namespace Adventure.Models.Map
         public List<string> Items { get; set; } = new();
 
         [JsonPropertyName("lockId")]
-        public string TileLockId { get; set; } = "ERROR_LOCK_ID";
+        public string TileLockId { get; set; } = string.Empty;
 
         [JsonPropertyName("lockSwitch")]
         public bool TileLockSwitch { get; set; }

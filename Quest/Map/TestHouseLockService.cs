@@ -37,19 +37,50 @@ namespace Adventure.Quest.Map
                     // Toggle the lock state (locked <-> unlocked)
                     lockState.Locked = !lockState.Locked;
 
-                    // Print the updated lock state to the console for debugging
-                    LogService.Info($"Lock '{currentTile.LockId}' is now {(lockState.Locked ? "locked" : "unlocked")}.");
+                    // Wrap updated locks dictionary into a TestHouseLockCollection
+                    var updatedLocks = new TestHouseLockCollection
+                    {
+                        LockedDoors = locks
+                    };
+
+                    // Save updated lock data to JSON file
+                    JsonDataManager.UpdateLockStates(updatedLocks, "testhouselocks.json");
+
+                    LogService.Info($"[TestHouseLockService.ToggleLockBySwitch] Lock '{currentTile.LockId}' is now {(lockState.Locked ? "locked" : "unlocked")}.");
                     return true;
                 }
                 else
                 {
-                    // No matching lock found in the dictionary
-                    LogService.Info($"No lock found with ID '{currentTile.LockId}'.");
+                    LogService.Info($"[TestHouseLockService.ToggleLockBySwitch] No lock found with ID '{currentTile.LockId}'.");
                 }
             }
 
-            // Return false if no switch was triggered or the lock was not found
             return false;
         }
+
+        public static TestHouseLockCollection ReloadLockStates()
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, @"..\..\..\Data\Map\TestHouse\testhouselocks.json");
+            path = Path.GetFullPath(path);
+
+            if (!File.Exists(path))
+            {
+                LogService.Error($"[JsonDataManager.ReloadLockStates] File not found: {path}");
+                return new TestHouseLockCollection();
+            }
+
+            try
+            {
+                var json = File.ReadAllText(path);
+
+                return JsonDataManager.LoadObjectFromJson<TestHouseLockCollection>("Data/Map/TestHouse/testhouselocks.json");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[JsonDataManager.ReloadLockStates] Exception: {ex.Message}");
+                return new TestHouseLockCollection();
+            }
+        }
+
     }
 }
