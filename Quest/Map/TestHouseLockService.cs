@@ -47,6 +47,9 @@ namespace Adventure.Quest.Map
                     JsonDataManager.UpdateLockStates(updatedLocks, "testhouselocks.json");
 
                     LogService.Info($"[TestHouseLockService.ToggleLockBySwitch] Lock '{currentTile.LockId}' is now {(lockState.Locked ? "locked" : "unlocked")}.");
+
+                    // Reload updated lock data
+                    ReloadLockStates();
                     return true;
                 }
                 else
@@ -58,29 +61,43 @@ namespace Adventure.Quest.Map
             return false;
         }
 
-        public static TestHouseLockCollection ReloadLockStates()
+        public static void ReloadLockStates()
         {
-            string path = Path.Combine(AppContext.BaseDirectory, @"..\..\..\Data\Map\TestHouse\testhouselocks.json");
-            path = Path.GetFullPath(path);
-
-            if (!File.Exists(path))
+            // === Load door lock configuration testhouselocks.json ===
+            var lockData = JsonDataManager.LoadObjectFromJson<TestHouseLockCollection>("Data/Map/TestHouse/testhouselocks.json");
+            if (lockData == null)
             {
-                LogService.Error($"[JsonDataManager.ReloadLockStates] File not found: {path}");
-                return new TestHouseLockCollection();
+                LogService.Error("[TestHouseLockService.ReloadLockStates] Error loading testhouselocks.json: Data is invalid or missing.");
+                throw new InvalidDataException("testhouselocks.json is invalid or missing.");
+            }
+            LogService.Info($"[TestHouseLockService.ReloadLockStates] Reloading testhouselocks.json successfully with {lockData.LockedDoors.Count} entries.");
+
+            // === Apply new lock states to all loaded tiles ===
+            foreach (var tile in TestHouseLoader.TileLookup.Values)
+            {
+                if (!string.IsNullOrEmpty(tile.LockId) && lockData.LockedDoors.TryGetValue(tile.LockId, out var newLock))
+                {
+                    tile.LockState!.LockType = newLock.LockType;
+                    tile.LockState.Locked = newLock.Locked;
+                    tile.LockState.KeyId = newLock.KeyId;
+                }
             }
 
-            try
+            foreach (var kvp in TestHouseLoader.LockLookup.Values)
             {
-                var json = File.ReadAllText(path);
+                LogService.Info($"\nLockType: {kvp.LockType}\n" +
+                                $"KeyId: {kvp.KeyId}\n" +
+                                $"Locked: {kvp.Locked}\n");
+            }
 
-                return JsonDataManager.LoadObjectFromJson<TestHouseLockCollection>("Data/Map/TestHouse/testhouselocks.json");
-            }
-            catch (Exception ex)
-            {
-                LogService.Error($"[JsonDataManager.ReloadLockStates] Exception: {ex.Message}");
-                return new TestHouseLockCollection();
-            }
+            // === Update LockLookup as well ===
+            TestHouseLoader.LockLookup = lockData.LockedDoors.ToDictionary(
+                kv => kv.Key,
+                kv => kv.Value,
+                StringComparer.OrdinalIgnoreCase
+            );
+
+            LogService.Info("[TestHouseLockService.ReloadLockStates] Updated TileLookup and LockLookup with latest lock states.");
         }
-
     }
 }

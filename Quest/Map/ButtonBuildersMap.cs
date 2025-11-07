@@ -231,7 +231,8 @@ namespace Adventure.Quest.Map
             bool disabled = false;
 
             // --- If the tile has a lock and it's locked, change the button to "LOCKED" ---
-            if (tile.LockState?.LockType != "---" && tile.LockState?.Locked == true)
+            if (tile.LockState?.LockType != "---" && tile.LockState?.Locked == true
+                || tile.LockState?.LockType != string.Empty && tile.LockState?.Locked == true)
             {
                 label = "LOCKED";
                 style = ButtonStyle.Secondary; // Grayed-out style

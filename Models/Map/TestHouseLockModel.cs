@@ -13,7 +13,7 @@ namespace Adventure.Models.Map
         public string LockType { get; set; } = "---";
 
         [JsonPropertyName("keyId")]
-        public string KeyId { get; set; } = "ERROR_KEY";
+        public string KeyId { get; set; } = "ERROR_KkeyID";
 
         [JsonPropertyName("locked")]
         public bool Locked { get; set; }

@@ -376,7 +376,8 @@ namespace Adventure.Loaders
             string projectRoot = Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\"));
 
             // Build the absolute path to the JSON file in the project folder
-            string path = Path.Combine(projectRoot, "Data", "Map", "TestHouse", fileName);
+            //string path = Path.Combine(projectRoot, "Data", "Map", "TestHouse", fileName);
+            string path = Path.Combine(baseDir, "Data", "Map", "TestHouse", fileName);
 
             if (!File.Exists(path))
             {

@@ -163,7 +163,7 @@ namespace Adventure.Loaders
             // --- Debug logging for tile lock info ---
             if (tile.LockSwitch && !string.IsNullOrEmpty(tile.LockId))
             {
-                LogService.Info($"[CreateTile] Created tile {tile.TileId} → LockSwitch={tile.LockSwitch}, LockId='{tile.LockId}'");
+                LogService.Info($"[CreateTile] Created tile {tile.TileId} → LockSwitch={tile.LockSwitch} connected with LockId='{tile.LockId}'");
             }
 
             return tile;
@@ -171,9 +171,9 @@ namespace Adventure.Loaders
         #endregion
 
         #region === Lock Handling ===
-        public static Dictionary<string, TestHouseLockModel> LockLookup { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+        public static Dictionary<string, TestHouseLockModel> LockLookup { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
-        private static void ApplyLockStates(List<TileModel> allTiles, TestHouseLockCollection doorData)
+        private static void ApplyLockStates(List<TileModel> allTiles, TestHouseLockCollection lockData)
         {
             foreach (var tile in allTiles)
             {
@@ -182,11 +182,12 @@ namespace Adventure.Loaders
                     continue;
 
                 // Apply matching lock state if available
-                if (doorData.LockedDoors.TryGetValue(tile.LockId!, out var doorState))
+                if (lockData.LockedDoors.TryGetValue(tile.LockId!, out var doorState))
                 {
                     tile.LockState = new TestHouseLockModel
                     {
                         LockType = doorState.LockType,
+                        KeyId = doorState.KeyId,
                         Locked = doorState.Locked
                     };
 
