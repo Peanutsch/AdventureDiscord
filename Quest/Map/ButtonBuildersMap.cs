@@ -234,9 +234,9 @@ namespace Adventure.Quest.Map
             if (tile.LockState?.LockType != "---" && tile.LockState?.Locked == true
                 || tile.LockState?.LockType != string.Empty && tile.LockState?.Locked == true)
             {
-                label = "LOCKED";
-                style = ButtonStyle.Secondary; // Grayed-out style
-                disabled = true;               // Disable the button so it can't be pressed
+                label = "🔒";
+                style = ButtonStyle.Danger; // Red color
+                disabled = true;            // Button disabled
             }
 
             return (label, style, disabled);
