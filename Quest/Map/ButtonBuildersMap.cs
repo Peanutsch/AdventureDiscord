@@ -157,9 +157,10 @@ namespace Adventure.Quest.Map
                 //.WithCustomId($"enter:{targetTile.TileId}")
                 .WithStyle(style)
                 .WithDisabled(disabled);
+
+            // -- Handle events like Enter door/entrance, fight NPC
             if (tile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase))
             {
-                // Create a Fight button that triggers the encounter logic
                 buttons[0] = new ButtonBuilder()
                     .WithLabel("Fight")
                     .WithCustomId("encounter:npc")
@@ -168,7 +169,6 @@ namespace Adventure.Quest.Map
             }
             else
             {
-                // Normal Enter button
                 buttons[0].WithCustomId($"enter:{targetTile.TileId}");
             }
         }

@@ -64,8 +64,13 @@ namespace Adventure.Quest.Map
                             $"[Layout]\n{gridVisual}" +
                             $"[Tile Text]\n{tileTextSafe}\n" +
                             $"[Exits]\n{exitInfo}\n" +
-                            $"[Current Tile Id/Name]\n{tile.TileId} / {tile.TileName}\n" +
-                            $"[LockType/IsLocked]\n{tile.LockState?.LockType ?? "---"}/{(tile.LockState?.Locked.ToString().ToLower() ?? "---")}\n");
+                            $"[Current Tile Id/Name]\n{tile.TileId} / {tile.TileName}\n");
+
+            if (!tile.LockSwitch && tile.LockState!.Locked)
+            {
+                embed.AddField($"[LockType/IsLocked]", 
+                               $"{tile.LockState?.LockType}/{tile.LockState?.Locked.ToString()}\n");
+            }             
 
             return embed;
         }

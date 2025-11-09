@@ -29,6 +29,8 @@ namespace Adventure.Buttons
                 await EnterTileHandler(id);
             else if (id.StartsWith("encounter:"))
                 await EncounterHandler(id);
+            else if (id.StartsWith("battle_continue"))
+                await ContinueBattleHandler(id);
         }
         #endregion
 
@@ -37,7 +39,6 @@ namespace Adventure.Buttons
         {
             await DeferAsync();
 
-            // Simuleer wat /encounter al doet
             var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
             if (user == null)
             {
@@ -52,6 +53,7 @@ namespace Adventure.Buttons
                 return;
             }
 
+            // Start gevecht
             SlashCommandHelpers.SetupBattleState(user.Id, npc);
 
             var embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
@@ -105,32 +107,23 @@ namespace Adventure.Buttons
         [ComponentInteraction("battle_continue_*")]
         public async Task ContinueBattleHandler(string userIdRaw)
         {
-            if (Context.User.Id.ToString() != userIdRaw)
+            LogService.Info($"[ComponentInteractions.ContinueBattleHandler] Received userIdRaw: {userIdRaw}");
+
+            if (!userIdRaw.Contains(Context.User.Id.ToString()))
             {
-                await RespondAsync("⚠️ You cannot control this battle!", ephemeral: true);
+                await RespondAsync("⚠️ You cannot continue this battle.", ephemeral: true);
                 return;
             }
 
-            EncounterBattleStepsSetup.SetStep(Context.User.Id, EncounterBattleStepsSetup.StepWeaponChoice);
-
-            try
-            {
-                await EmbedBuildersEncounter.EmbedPreBattle((SocketMessageComponent)Context.Interaction);
-            }
-            catch
-            {
-                var embed = new EmbedBuilder()
-                    .WithTitle("Choose your weapon again!")
-                    .WithDescription("Previous interaction could not be updated.")
-                    .WithColor(Color.Blue);
-                await Context.Interaction.FollowupAsync(embed: embed.Build());
-            }
+            await ReturnToWalkAsync();
         }
 
         [ComponentInteraction("battle_flee_*")]
         public async Task FleeBattleHandler(string userIdRaw)
         {
-            if (Context.User.Id.ToString() != userIdRaw)
+            LogService.Info($"Received userIdRaw: {userIdRaw}");
+
+            if (!userIdRaw.Contains(Context.User.Id.ToString()))
             {
                 await RespondAsync("⚠️ You cannot control this battle...", ephemeral: true);
                 return;
@@ -138,13 +131,30 @@ namespace Adventure.Buttons
 
             try
             {
-                await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "flee", "none");
+                await ReturnToWalkAsync();
             }
             catch
             {
                 await Context.Interaction.FollowupAsync(embed: new EmbedBuilder().WithDescription("You tried to flee...").Build());
             }
         }
+
+        public async Task ReturnToWalkAsync()
+        {
+            await DeferAsync();
+
+            var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
+            var player = SlashCommandHelpers.GetOrCreatePlayer(user!.Id, user.GlobalName ?? user.Username);
+
+            var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint)
+                       ?? SlashCommandHelpers.FindStartTile();
+
+            var embed = EmbedBuildersMap.EmbedWalk(tile!);
+            var components = ButtonBuildersMap.BuildDirectionButtons(tile!);
+
+            await FollowupAsync(embed: embed.Build(), components: components.Build());
+        }
+
         #endregion
 
         #region === Walk Direction Handler ===

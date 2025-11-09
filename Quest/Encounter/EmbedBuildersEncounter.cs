@@ -198,7 +198,7 @@ namespace Adventure.Quest.Encounter
             }
 
             // --- Add the 'Flee' or 'Break' button to allow exiting the battle --- 
-            builder.WithButton("[Break]", "btn_flee", ButtonStyle.Secondary);
+            builder.WithButton("Flee", "battle_flee", ButtonStyle.Secondary);
 
             return builder;
         }
@@ -347,12 +347,16 @@ namespace Adventure.Quest.Encounter
                           $"| Level {state.Player.Level} | {state.Player.XP} XP | {state.Player.Hitpoints} HP |")
                 .AddField("\u200B", $"{finalLog}\n\n{battleOverText}");
 
+            var buttons = new ComponentBuilder()
+                .WithButton("CONTINUE", $"battle_continue_{userId}", ButtonStyle.Success);
+
             if (interaction is SocketMessageComponent component)
             {
                 await component.UpdateAsync(msg =>
                 {
                     msg.Embed = embed.Build();
-                    msg.Components = new ComponentBuilder().Build(); // remove buttons
+                    msg.Components = buttons.Build(); // Add button CONTINUE
+                    //msg.Components = new ComponentBuilder().Build(); // remove buttons
                     msg.Content = string.Empty;
                 });
             }
