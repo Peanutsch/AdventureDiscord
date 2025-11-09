@@ -42,40 +42,29 @@ namespace Adventure.Quest.Map
 
             // --- Toggle lock if the current tile has a switch ---
             TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup);
-            /*
-            if (TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup))
-            {
-                LogService.Info($"[EmbedBuildersMap.EmbedWalk] Tile {tile.TileId} switch toggled lock: {tile.LockId}");
-            }
-            */
 
             // === Build embed ===
             var embed = new EmbedBuilder()
                 .WithColor(Color.Blue)
                 .AddField($"[{area.Name}]", area.Description)
-                .AddField($"{gridVisual}\n", $"{tileTextSafe}")
-                .AddField("[Possible Directions]", exitInfo)
-                .AddField("[Current Tile/Type]", $"{tile.TileId}/{tile.TileType}");
+                .AddField($"{gridVisual}\n", $"**{tileTextSafe}**");
+                //.AddField("[Possible Directions]", exitInfo)
 
             // === Add lock info ===
-            if (tile.LockState!.LockType != "---")
+            if (!tile.LockSwitch && tile.LockState!.Locked)
             {
-                LogService.Info($"LockType is {tile.LockState!.LockType}");
-                //embed.AddField("[LockType/IsLocked]", $"{tile.LockState.LockType}/{tile.LockState.Locked}");
-            }
-            else
-            {
-                LogService.Info($"LockType is empty...");
-                //embed.AddField("[LockType/IsLocked]", "---/---");
+                LogService.Info($"LockState.Locked is {tile.LockState!.LockType}");
+                embed.AddField("[Locked]", $"De deur zit op slot, maar er is geen sleutelgat...");
             }
 
             // === Debug log ===
             LogService.Info($"\n[Area]\n{area.Name}\n" +
                             $"[Description]\n{area.Description}\n" +
                             $"[Location]\n{tile.TileId}\n" +
+                            $"[Layout]\n{gridVisual}" +
                             $"[Tile Text]\n{tileTextSafe}\n" +
                             $"[Exits]\n{exitInfo}\n" +
-                            $"[Current Tile]\n{tile.TileId}\n" +
+                            $"[Current Tile Id/Name]\n{tile.TileId} / {tile.TileName}\n" +
                             $"[LockType/IsLocked]\n{tile.LockState?.LockType ?? "---"}/{(tile.LockState?.Locked.ToString().ToLower() ?? "---")}\n");
 
             return embed;

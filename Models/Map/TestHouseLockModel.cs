@@ -10,10 +10,10 @@ namespace Adventure.Models.Map
     public class TestHouseLockModel
     {
         [JsonPropertyName("lockType")]
-        public string LockType { get; set; } = "---";
+        public string LockType { get; set; } = string.Empty;
 
         [JsonPropertyName("keyId")]
-        public string KeyId { get; set; } = "ERROR_KkeyID";
+        public string KeyId { get; set; } = "ERROR_KeyID";
 
         [JsonPropertyName("locked")]
         public bool Locked { get; set; }

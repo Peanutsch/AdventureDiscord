@@ -2,6 +2,30 @@
   "Areas": {
     "living_room": [
       {
+        "id": "WISP1",
+        "base": "WISP1",
+        "overlay": "Floor",
+        "text": "Je hoort zacht gefluister...",
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "WISP2",
+        "base": "WISP2",
+        "overlay": "Floor",
+        "text": "Het gefluister wordt luider...",
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "WISP3",
+        "base": "WISP3",
+        "overlay": "Floor",
+        "text": "Het gefluister is nu verstaan!\n'Deze kant op... Deze kant op!'",
+        "pois": [],
+        "items": []
+      },
+      {
         "id": "START",
         "base": "START",
         "overlay": "Floor",
@@ -22,16 +46,17 @@
         "id": "EXIT2",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "Naar het bos...",
+        "text": "Toegang naar het bos...",
         "connections": [ "forest_south:1,0" ],
         "pois": [],
-        "items": []
+        "items": [],
+        "lockId": "door_forest_living"
       },
       {
         "id": "EXIT3",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "Een houten deur. Door het raam zie je wat gras en water...",
+        "text": "Een houten deur.\nDoor het raam zie je wat gras en water...",
         "connections": [ "small_pond:0,1" ],
         "pois": [],
         "items": [],
@@ -41,17 +66,43 @@
         "id": "PLANT1",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nMaar zodra je er langs loopt, hoor je duidelijk een klik...",
+        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nMaar zodra je er langs loopt, hoor je links van je zacht geratel en daarna een klik...",
         "pois": [],
         "items": [],
         "lockId": "door_pond_living",
-        "lockSwitch":  true
+        "lockSwitch": true
       },
       {
         "id": "PLANT2",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nHier is niets te vinden...",
+        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nHier is niets te vinden...\nMaar je hoort wel wat zacht gefluister...",
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "PLANT3",
+        "base": "PLANT1",
+        "overlay": "PLANT1",
+        "text": "Het is een plant in een pot.\nMaar zodra je er langs loopt, hoor je rechts van je zacht geratel en daarna een klik...",
+        "pois": [],
+        "items": [],
+        "lockId": "door_forest_living",
+        "lockSwitch": true
+      },
+      {
+        "id": "PLANT4",
+        "base": "PLANT1",
+        "overlay": "PLANT1",
+        "text": "Een plant in een pot. Niet zo heel bijzonder eigenlijk.\nHier is dan ook niets te vinden...",
+        "pois": [],
+        "items": []
+      },
+      {
+        "id": "NPC01",
+        "base": "Floor",
+        "overlay": "ENEMY",
+        "text": "Prepare for a fight!",
         "pois": [],
         "items": []
       }
@@ -69,7 +120,7 @@
         "id": "EXIT1",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "De deur om naar de woonkamer...",
+        "text": "De deur naar de woonkamer...",
         "connections": [ "living_room:8,1" ],
         "pois": [],
         "items": [],
@@ -79,7 +130,7 @@
         "id": "EXIT2",
         "base": "Dirt",
         "overlay": "Dirt",
-        "text": "Naar het bos...",
+        "text": "Terug naar de woonkamer...",
         "connections": [ "living_room:1,9" ],
         "pois": [],
         "items": []
@@ -118,7 +169,8 @@
         "text": "De deur naar de woonkamer...",
         "connections": [ "living_room:7,9" ],
         "pois": [],
-        "items": []
+        "items": [],
+        "lockId": "door_forest_living"
       },
       {
         "id": "EXIT2",

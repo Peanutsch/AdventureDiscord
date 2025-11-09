@@ -1,5 +1,8 @@
 ﻿using Adventure.Loaders;
 using Adventure.Models.Map;
+using Adventure.Modules;
+using Adventure.Quest.Battle.Randomizers;
+using Adventure.Quest.Encounter;
 using Adventure.Services;
 using Discord;
 using System;
@@ -133,7 +136,7 @@ namespace Adventure.Quest.Map
         private static void EnableActionButton(TileModel tile, List<ButtonBuilder> buttons)
         {
             // --- Ensure this tile is a door or an exit before creating an action button ---
-            if (!IsDoorOrExit(tile))
+            if (!IsActionEvent(tile))
                 return;
 
             // --- Verify that this tile has at least one valid connection to another tile ---
@@ -151,9 +154,23 @@ namespace Adventure.Quest.Map
             // --- Create and assign the button to the first position in the button list ---
             buttons[0] = new ButtonBuilder()
                 .WithLabel(label)
-                .WithCustomId($"enter:{targetTile.TileId}")
+                //.WithCustomId($"enter:{targetTile.TileId}")
                 .WithStyle(style)
                 .WithDisabled(disabled);
+            if (tile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase))
+            {
+                // Create a Fight button that triggers the encounter logic
+                buttons[0] = new ButtonBuilder()
+                    .WithLabel("Fight")
+                    .WithCustomId("encounter:npc")
+                    .WithStyle(ButtonStyle.Danger)
+                    .WithDisabled(false);
+            }
+            else
+            {
+                // Normal Enter button
+                buttons[0].WithCustomId($"enter:{targetTile.TileId}");
+            }
         }
 
         /// <summary>
@@ -161,15 +178,13 @@ namespace Adventure.Quest.Map
         /// </summary>
         /// <param name="tile">The current tile being evaluated.</param>
         /// <returns>True if the tile is a door or an exit; otherwise, false.</returns>
-        private static bool IsDoorOrExit(TileModel tile)
+        private static bool IsActionEvent(TileModel tile)
         {
-            // --- Door: exactly "DOOR"
+            // --- Door: any tile type starting with "DOOR"
             // --- Exit: any tile type starting with "EXIT" (e.g., EXIT1, EXIT2)
-            bool result = tile.TileType.Equals("DOOR", StringComparison.OrdinalIgnoreCase) ||
-                          tile.TileType.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase);
-
-            if (!result)
-                LogService.Info("[EnableActionButton] No 'DOOR' or 'EXIT*'");
+            bool result = tile.TileType.StartsWith("DOOR", StringComparison.OrdinalIgnoreCase)
+                       || tile.TileType.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase)
+                       || tile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase);
 
             return result;
         }
@@ -231,12 +246,20 @@ namespace Adventure.Quest.Map
             bool disabled = false;
 
             // --- If the tile has a lock and it's locked, change the button to "LOCKED" ---
-            if (tile.LockState?.LockType != "---" && tile.LockState?.Locked == true
-                || tile.LockState?.LockType != string.Empty && tile.LockState?.Locked == true)
+            if (tile.LockState?.LockType != string.Empty && tile.LockState?.Locked == true)
             {
                 label = "🔒";
                 style = ButtonStyle.Danger; // Red color
                 disabled = true;            // Button disabled
+            }
+
+            // -- I the tile is an enemy, change button to "Fight" ---
+            if (tile.TileName.StartsWith("NPC"))
+            {
+                LogService.Info($"[ButtonBuildersMap.GetActionButtonState] TileName starts with 'NPC':\nTileName {tile.TileName}, Tileype: {tile.TileType}, TileId: {tile.TileId}\n");
+                label = "Fight";
+                style = ButtonStyle.Danger;
+                disabled = false;
             }
 
             return (label, style, disabled);

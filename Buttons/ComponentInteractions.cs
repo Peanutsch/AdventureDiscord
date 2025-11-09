@@ -1,7 +1,9 @@
 ﻿// ComponentInteractions.cs
 using Adventure.Data;
 using Adventure.Loaders;
+using Adventure.Modules;
 using Adventure.Quest.Battle.BattleEngine;
+using Adventure.Quest.Battle.Randomizers;
 using Adventure.Quest.Encounter;
 using Adventure.Quest.Map;
 using Adventure.Services;
@@ -25,10 +27,39 @@ namespace Adventure.Buttons
                 await WalkDirectionHandler(id);
             else if (id.StartsWith("enter:"))
                 await EnterTileHandler(id);
+            else if (id.StartsWith("encounter:"))
+                await EncounterHandler(id);
         }
         #endregion
 
         #region === Battle ===
+        public async Task EncounterHandler(string data)
+        {
+            await DeferAsync();
+
+            // Simuleer wat /encounter al doet
+            var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
+            if (user == null)
+            {
+                await FollowupAsync("⚠️ Error loading user data.");
+                return;
+            }
+
+            var npc = EncounterRandomizer.NpcRandomizer();
+            if (npc == null)
+            {
+                await FollowupAsync("⚠️ Could not pick a random creature.");
+                return;
+            }
+
+            SlashCommandHelpers.SetupBattleState(user.Id, npc);
+
+            var embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
+            var buttons = SlashCommandHelpers.BuildEncounterButtons();
+
+            await FollowupAsync(embed: embed.Build(), components: buttons.Build());
+        }
+
         [ComponentInteraction("weapon_*")]
         public async Task HandleWeaponButton(string weaponId)
         {
@@ -149,6 +180,8 @@ namespace Adventure.Buttons
             try
             {
                 string tileId = data.Substring("enter:".Length);
+                LogService.Info($"\nReveived data: {data}\n" +
+                                $"tileId: {tileId}\n");
 
                 if (!TestHouseLoader.TileLookup.TryGetValue(tileId, out var targetTile))
                 {

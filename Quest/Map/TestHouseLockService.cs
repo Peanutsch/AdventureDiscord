@@ -97,7 +97,19 @@ namespace Adventure.Quest.Map
                 StringComparer.OrdinalIgnoreCase
             );
 
-            LogService.Info("[TestHouseLockService.ReloadLockStates] Updated TileLookup and LockLookup with latest lock states.");
+            LogService.Info("[TestHouseLockService.ReloadLockStates] Updated TileLookup and LockLookup...");
+        }
+
+        public string GetLockState(TileModel tile, string pos)
+        {
+            string result = "open";
+
+            if (tile.LockState!.Locked)
+            {
+                result = "op slot";
+            }
+
+            return result;
         }
     }
 }
