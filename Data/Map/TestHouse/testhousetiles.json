@@ -100,8 +100,8 @@
       },
       {
         "id": "NPC01",
-        "base": "Floor",
-        "overlay": "ENEMY",
+        "base": "ENEMY",
+        "overlay": "Floor",
         "text": "Prepare for a fight!",
         "pois": [],
         "items": []
