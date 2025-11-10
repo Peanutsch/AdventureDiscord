@@ -63,11 +63,11 @@ namespace Adventure.Modules
             EncounterBattleStepsSetup.SetStep(userId, "start");
         }
 
-        public static ComponentBuilder BuildEncounterButtons()
+        public static ComponentBuilder BuildEncounterButtons(ulong userId)
         {
             return new ComponentBuilder()
                 .WithButton("Attack", "btn_attack", ButtonStyle.Danger)
-                .WithButton("Flee", "btn_flee", ButtonStyle.Secondary);
+                .WithButton("Flee", $"battle_flee_{userId}", ButtonStyle.Secondary);
         }
         #endregion
 

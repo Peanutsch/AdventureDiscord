@@ -198,7 +198,7 @@ namespace Adventure.Quest.Encounter
             }
 
             // --- Add the 'Flee' or 'Break' button to allow exiting the battle --- 
-            builder.WithButton("Flee", "battle_flee", ButtonStyle.Secondary);
+            builder.WithButton("Flee", $"battle_flee_{state.Player.Id}", ButtonStyle.Secondary);
 
             return builder;
         }

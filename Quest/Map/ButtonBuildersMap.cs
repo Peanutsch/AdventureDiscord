@@ -253,7 +253,7 @@ namespace Adventure.Quest.Map
                 disabled = true;            // Button disabled
             }
 
-            // -- I the tile is an enemy, change button to "Fight" ---
+            // -- If the tile is an enemy, change button to "Fight" ---
             if (tile.TileName.StartsWith("NPC"))
             {
                 LogService.Info($"[ButtonBuildersMap.GetActionButtonState] TileName starts with 'NPC':\nTileName {tile.TileName}, Tileype: {tile.TileType}, TileId: {tile.TileId}\n");

@@ -31,6 +31,8 @@ namespace Adventure.Buttons
                 await EncounterHandler(id);
             else if (id.StartsWith("battle_continue"))
                 await ContinueBattleHandler(id);
+            else if (id.StartsWith("battle_flee"))
+                await FleeBattleHandler(id);
         }
         #endregion
 
@@ -53,11 +55,13 @@ namespace Adventure.Buttons
                 return;
             }
 
-            // Start gevecht
+            // Start battle
+            await ComponentHelpers.TransferBattleEmbed(Context, npc.Name!);
+
             SlashCommandHelpers.SetupBattleState(user.Id, npc);
 
             var embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
-            var buttons = SlashCommandHelpers.BuildEncounterButtons();
+            var buttons = SlashCommandHelpers.BuildEncounterButtons(user.Id);
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
         }
@@ -91,19 +95,6 @@ namespace Adventure.Buttons
         public async Task ButtonAttackHandler()
             => await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "attack", "none");
 
-        [ComponentInteraction("btn_flee")]
-        public async Task ButtonFleeHandler()
-        {
-            try
-            {
-                await EncounterBattleStepsSetup.HandleEncounterAction(Context.Interaction, "flee", "none");
-            }
-            catch
-            {
-                await Context.Interaction.FollowupAsync(embed: new EmbedBuilder().WithDescription("You tried to flee...").Build());
-            }
-        }
-
         [ComponentInteraction("battle_continue_*")]
         public async Task ContinueBattleHandler(string userIdRaw)
         {
@@ -115,7 +106,7 @@ namespace Adventure.Buttons
                 return;
             }
 
-            await ReturnToWalkAsync();
+            await ReturnToWalkAsync(Context);
         }
 
         [ComponentInteraction("battle_flee_*")]
@@ -123,6 +114,7 @@ namespace Adventure.Buttons
         {
             LogService.Info($"Received userIdRaw: {userIdRaw}");
 
+            // Prevent other users from triggering this
             if (!userIdRaw.Contains(Context.User.Id.ToString()))
             {
                 await RespondAsync("⚠️ You cannot control this battle...", ephemeral: true);
@@ -131,19 +123,22 @@ namespace Adventure.Buttons
 
             try
             {
-                await ReturnToWalkAsync();
+                // Show Flee Embed
+                await ComponentHelpers.TransferFleeEmbed(Context);
             }
-            catch
+            catch (Exception ex)
             {
-                await Context.Interaction.FollowupAsync(embed: new EmbedBuilder().WithDescription("You tried to flee...").Build());
+                LogService.Error($"FleeBattleHandler failed: {ex.Message}");
+                await Context.Interaction.FollowupAsync(embed: new EmbedBuilder()
+                    .WithDescription("You tried to flee, but something went wrong...")
+                    .WithColor(Color.Red)
+                    .Build());
             }
         }
 
-        public async Task ReturnToWalkAsync()
+        public static async Task ReturnToWalkAsync(SocketInteractionContext context)
         {
-            await DeferAsync();
-
-            var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
+            var user = SlashCommandHelpers.GetDiscordUser(context, context.User.Id);
             var player = SlashCommandHelpers.GetOrCreatePlayer(user!.Id, user.GlobalName ?? user.Username);
 
             var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint)
@@ -152,7 +147,7 @@ namespace Adventure.Buttons
             var embed = EmbedBuildersMap.EmbedWalk(tile!);
             var components = ButtonBuildersMap.BuildDirectionButtons(tile!);
 
-            await FollowupAsync(embed: embed.Build(), components: components.Build());
+            await context.Interaction.FollowupAsync(embed: embed.Build(), components: components.Build());
         }
 
         #endregion

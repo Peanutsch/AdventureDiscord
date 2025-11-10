@@ -83,7 +83,7 @@ namespace Adventure.Modules
             SlashCommandHelpers.SetupBattleState(user.Id, npc);
 
             var embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
-            var buttons = SlashCommandHelpers.BuildEncounterButtons();
+            var buttons = SlashCommandHelpers.BuildEncounterButtons(user.Id);
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
         }

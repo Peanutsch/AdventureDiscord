@@ -61,5 +61,45 @@ namespace Adventure.Buttons
 
             await Task.Delay(1500);
         }
+
+        public static async Task TransferBattleEmbed(SocketInteractionContext context, string npc)
+        {
+            await context.Interaction.ModifyOriginalResponseAsync(msg =>
+            {
+                msg.Embed = new EmbedBuilder()
+                    .WithTitle("⚔️ GET READY ⚔️")
+                    .WithDescription($"Get ready to fight **{npc}**...")
+                    .WithColor(Color.Red)
+                    .Build();
+
+                msg.Components = new ComponentBuilder()
+                    .WithButton("Please wait...", "none", ButtonStyle.Secondary, disabled: true)
+                    .Build();
+            });
+
+            await Task.Delay(1500);
+        }
+
+        public static async Task TransferFleeEmbed(SocketInteractionContext context)
+        {
+            await context.Interaction.DeferAsync();
+
+            await context.Interaction.ModifyOriginalResponseAsync(msg =>
+            {
+                msg.Embed = new EmbedBuilder()
+                    .WithTitle("🏃 Flee 🏃")
+                    .WithDescription($"You fled as fast as possible...")
+                    .WithColor(Color.Orange)
+                    .Build();
+
+                msg.Components = new ComponentBuilder()
+                    .WithButton("Please wait...", "none", ButtonStyle.Secondary, disabled: true)
+                    .Build();
+            });
+
+            await Task.Delay(1500);
+
+            await ComponentInteractions.ReturnToWalkAsync(context);
+        }
     }
 }
