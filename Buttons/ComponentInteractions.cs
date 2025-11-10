@@ -56,7 +56,7 @@ namespace Adventure.Buttons
             }
 
             // Start battle
-            await ComponentHelpers.TransferBattleEmbed(Context, npc.Name!);
+            await ComponentHelpers.TransitionBattleEmbed(Context, npc.Name!);
 
             SlashCommandHelpers.SetupBattleState(user.Id, npc);
 
@@ -114,7 +114,7 @@ namespace Adventure.Buttons
             var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint)
                        ?? SlashCommandHelpers.FindStartTile();
 
-            await ComponentHelpers.TransferAnimationEmbed(Context, tile!);
+            await ComponentHelpers.TransitionTravelEmbed(Context, tile!);
 
             // --- Calling EmbedWalk for new embed
             await ReturnToWalkAsync(Context);
@@ -134,8 +134,14 @@ namespace Adventure.Buttons
 
             try
             {
-                // Show Flee Embed
-                await ComponentHelpers.TransferFleeEmbed(Context);
+                // Chance to flee to tile nearby small: 20%
+                Random rnd = new Random();
+                int chance = rnd.Next(1, 100);
+                LogService.Info($"int chance: {chance}...");
+                if (chance <= 20)
+                    await ComponentHelpers.TransitionFleeEmbed(Context, fleeMode: "nearby");
+                else
+                    await ComponentHelpers.TransitionFleeEmbed(Context, fleeMode: "random");
             }
             catch (Exception ex)
             {
@@ -155,11 +161,10 @@ namespace Adventure.Buttons
             var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint)
                        ?? SlashCommandHelpers.FindStartTile();
 
-            var embed = EmbedBuildersMap.EmbedWalk(tile!);
-            var components = ButtonBuildersMap.BuildDirectionButtons(tile!);
-
-            await context.Interaction.FollowupAsync(embed: embed.Build(), components: components.Build());
+            // ⚠️ Disable auto encounter here
+            await ComponentHelpers.MovePlayerAsync(context, tile!.TileId, showTravelAnimation: false, allowAutoEncounter: false);
         }
+
 
         #endregion
 

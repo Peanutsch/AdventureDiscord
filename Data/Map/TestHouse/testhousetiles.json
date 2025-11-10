@@ -100,7 +100,7 @@
       },
       {
         "id": "NPC01",
-        "base": "ENEMY",
+        "base": "Floor",
         "overlay": "Floor",
         "text": "Prepare for a fight!",
         "pois": [],
@@ -128,8 +128,8 @@
       },
       {
         "id": "EXIT2",
-        "base": "Dirt",
-        "overlay": "Dirt",
+        "base": "COIN",
+        "overlay": "COIN",
         "text": "Terug naar de woonkamer...",
         "connections": [ "living_room:1,9" ],
         "pois": [],
@@ -182,7 +182,7 @@
         "items": []
       },
       {
-        "id": "NPC1",
+        "id": "FEM1",
         "base": "NPCFEM",
         "overlay": "NPCFEM",
         "text": "Je vindt een mevrouw die een beetje in de war lijkt te zijn. Ze zegt:\n'Luister goed, want ik zeg dit maar één keer!\nEr is iets raars aan de hand met die muur...\nDie fluisterende muur rechtsboven in de woonkamer...'",

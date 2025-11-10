@@ -34,14 +34,17 @@ namespace Adventure.Quest.Map
             { "ExitRight", "➡️" },
             { "EXIT", "      " }, // Braille blank
             // Objects
-            { "TREASURE", "💰" },
+            { "MONEY", "💰" },
+            { "COIN", "🪙" },
             { "PLANT1", "🪴" },
+            { "CHEST", "🧰" },
             // Characters
             { "PLAYER", "🧍" },
             { "ENEMY", "⚔️" },
             { "NPCFEM", "👩" },
             // POI's
-            { "START", "🧍" }
+            { "START", "🧍" },
+            { "ISLAND", "🏝️" }
         };
         #endregion
 

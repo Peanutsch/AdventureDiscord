@@ -135,47 +135,41 @@ namespace Adventure.Quest.Map
         /// </summary>
         private static void EnableActionButton(TileModel tile, List<ButtonBuilder> buttons)
         {
-            // --- Random kans voor bepaalde encounters (zoals Tree) ---
-            Random rnd = new Random();
-            int chance = rnd.Next(1, 100);
+            // --- Ensure this tile is a door or an exit before creating an action button ---
+            if (!IsActionEvent(tile))
+                return;
 
-            // --- Default: disabled "Action" knop ---
+            // --- Verify that this tile has at least one valid connection to another tile ---
+            if (!HasValidConnection(tile))
+                return;
+
+            // --- Retrieve the tile connected to this door or exit ---
+            var targetTile = GetTargetTile(tile);
+            if (targetTile == null)
+                return;
+
+            // --- Determine the label, style, and disabled state for the action button ---
+            var (label, style, disabled) = GetActionButtonState(tile);
+
+            // --- Create and assign the button to the first position in the button list ---
             buttons[0] = new ButtonBuilder()
-                .WithLabel("Action")
-                .WithCustomId("enter:none")
-                .WithStyle(ButtonStyle.Secondary)
-                .WithDisabled(true);
+                .WithLabel(label)
+                //.WithCustomId($"enter:{targetTile.TileId}")
+                .WithStyle(style)
+                .WithDisabled(disabled);
 
-            // --- Case 1: NPC of Tree (met 25% kans) → Fight ---
-            if (tile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase) ||
-                (tile.TileName.Equals("Tree", StringComparison.OrdinalIgnoreCase) && chance <= 25))
+            // -- Handle events like Enter door/entrance, fight NPC
+            if (tile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase))
             {
-                LogService.Info($"[ButtonBuildersMap.EnableActionButton] Fight triggered on {tile.TileName} (chance {chance})");
-
                 buttons[0] = new ButtonBuilder()
                     .WithLabel("Fight")
                     .WithCustomId("encounter:npc")
-                    .WithStyle(ButtonStyle.Success)
+                    .WithStyle(ButtonStyle.Danger)
                     .WithDisabled(false);
-                return;
             }
-
-            // --- Case 2: Door → Enter ---
-            if (tile.TileType.StartsWith("DOOR", StringComparison.OrdinalIgnoreCase))
+            else
             {
-                if (!HasValidConnection(tile))
-                    return;
-
-                var targetTile = GetTargetTile(tile);
-                if (targetTile == null)
-                    return;
-
-                buttons[0] = new ButtonBuilder()
-                    .WithLabel("Enter")
-                    .WithCustomId($"enter:{targetTile.TileId}")
-                    .WithStyle(ButtonStyle.Success)
-                    .WithDisabled(false);
-                return;
+                buttons[0].WithCustomId($"enter:{targetTile.TileId}");
             }
         }
 
@@ -190,8 +184,7 @@ namespace Adventure.Quest.Map
             // --- Exit: any tile type starting with "EXIT" (e.g., EXIT1, EXIT2)
             bool result = tile.TileType.StartsWith("DOOR", StringComparison.OrdinalIgnoreCase)
                        || tile.TileType.StartsWith("EXIT", StringComparison.OrdinalIgnoreCase)
-                       || tile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase)
-                       || tile.TileType.StartsWith("Tree", StringComparison.OrdinalIgnoreCase);
+                       || tile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase);
 
             return result;
         }

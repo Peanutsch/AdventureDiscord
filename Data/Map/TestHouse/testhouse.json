@@ -7,10 +7,10 @@
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "PLANT2", "Wall", "WISP3", "EXIT1" ],
-        [ "Wall", "Floor", "Wall", "Floor", "Floor", "Floor", "WISP1", "Wall", "NPC01", "Wall" ],
-        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "WISP1", "WISP1", "WISP1", "Wall" ],
+        [ "Wall", "Floor", "Wall", "Wall", "Floor", "Floor", "WISP1", "Wall", "NPC01", "Wall" ],
+        [ "Wall", "Floor", "Wall", "Wall", "Floor", "Wall", "WISP1", "WISP1", "WISP1", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Wall", "Wall", "Floor", "Wall" ],
-        [ "Wall", "Floor", "Wall", "Floor", "Floor", "Wall", "PLANT4", "Floor", "Floor", "Wall" ],
+        [ "Wall", "Floor", "Wall", "Wall", "Floor", "Wall", "PLANT4", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall", "Tree", "Tree" ],
         [ "Wall", "Floor", "Wall", "PLANT1", "Floor", "Floor", "PLANT3", "Wall", "Floor", "EXIT2", "BLOCKt", "Tree" ],
         [ "Wall", "EXIT3", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree" ]
@@ -19,7 +19,7 @@
     "small_pond": {
       "id": "small_pond",
       "name": "Small Pond",
-      "description": "Een kleine vijver met in het midden een klein eilandje.\nHelaas kan je niet zwemmen en is het water te diep om doorheen te waden. Misschien is er een andere manier om daar te komen...\nIn het oosten zie je iets wat op een bos lijkt...",
+      "description": "Een kleine vijver met in het midden wat lijkt op waardevolle voorwerpen.\nHelaas kan je niet zwemmen en is het water te diep om doorheen te waden. Misschien is er een andere manier om daar te komen...\nIn het oosten zie je iets wat op een bos lijkt...",
       "layout": [
         [ "Wall", "EXIT1", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree", "Tree", "Tree" ],
         [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "Wall", "Tree", "Tree", "Tree" ],
@@ -35,7 +35,7 @@
     "forest_south": {
       "id": "forest_south",
       "name": "Southern Forest",
-      "description": "Een klein stuk bos.\nDoor de bomen zie je bos bijna niet meer.\nPas maar op dat je niet verdwaalt!",
+      "description": "Een klein stuk bos.\nDoor de bomen zie je bos bijna niet meer.\nPas maar op dat je niet verdwaalt!\nEn Wees voorzichtig...\nAchter iedere boom kan gevaar schuilen...",
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
         [ "EXIT1", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
@@ -44,7 +44,7 @@
         [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
         [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
         [ "Wall", "Tree", "Tree", "Tree", "TXT1", "TXT1", "Wall" ],
-        [ "EXIT2", "Tree", "Tree", "Tree", "TXT1", "NPC1", "Wall" ],
+        [ "EXIT2", "Tree", "Tree", "Tree", "TXT1", "FEM1", "Wall" ],
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
       ]
     }
