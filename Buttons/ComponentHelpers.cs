@@ -88,7 +88,7 @@ namespace Adventure.Buttons
             {
                 msg.Embed = new EmbedBuilder()
                     .WithTitle("🏃 Flee 🏃")
-                    .WithDescription($"You fled as fast as possible...")
+                    .WithDescription($"You fled as fast as you can...")
                     .WithColor(Color.Orange)
                     .Build();
 

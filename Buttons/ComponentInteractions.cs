@@ -106,6 +106,15 @@ namespace Adventure.Buttons
                 return;
             }
 
+            await DeferAsync();
+
+            var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
+            var player = SlashCommandHelpers.GetOrCreatePlayer(user!.Id, user.GlobalName ?? user.Username);
+            var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint)
+                       ?? SlashCommandHelpers.FindStartTile();
+
+            await ComponentHelpers.TransferAnimationEmbed(Context, tile!);
+
             await ReturnToWalkAsync(Context);
         }
 
