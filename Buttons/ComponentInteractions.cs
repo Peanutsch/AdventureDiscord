@@ -108,6 +108,7 @@ namespace Adventure.Buttons
 
             await DeferAsync();
 
+            // --- Transition embed before calling EmbedWalk
             var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
             var player = SlashCommandHelpers.GetOrCreatePlayer(user!.Id, user.GlobalName ?? user.Username);
             var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint)
@@ -115,6 +116,7 @@ namespace Adventure.Buttons
 
             await ComponentHelpers.TransferAnimationEmbed(Context, tile!);
 
+            // --- Calling EmbedWalk for new embed
             await ReturnToWalkAsync(Context);
         }
 
