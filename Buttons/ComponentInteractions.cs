@@ -134,11 +134,11 @@ namespace Adventure.Buttons
 
             try
             {
-                // Chance to flee to tile nearby small: 20%
+                // Chance to flee to tile nearby : 10%
                 Random rnd = new Random();
                 int chance = rnd.Next(1, 100);
                 LogService.Info($"int chance: {chance}...");
-                if (chance <= 20)
+                if (chance <= 10)
                     await ComponentHelpers.TransitionFleeEmbed(Context, fleeMode: "nearby");
                 else
                     await ComponentHelpers.TransitionFleeEmbed(Context, fleeMode: "random");
@@ -164,8 +164,6 @@ namespace Adventure.Buttons
             // ⚠️ Disable auto encounter here
             await ComponentHelpers.MovePlayerAsync(context, tile!.TileId, showTravelAnimation: false, allowAutoEncounter: false);
         }
-
-
         #endregion
 
         #region === Walk Direction Handler ===

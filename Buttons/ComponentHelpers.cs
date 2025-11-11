@@ -9,6 +9,7 @@ using Adventure.Services;
 using Discord;
 using Discord.Interactions;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Adventure.Buttons
@@ -257,7 +258,8 @@ namespace Adventure.Buttons
                          && !t.TileName.StartsWith("TREASURE", StringComparison.OrdinalIgnoreCase)
                          && !t.TileName.StartsWith("Water", StringComparison.OrdinalIgnoreCase)
                          && !t.TileName.StartsWith("Lava", StringComparison.OrdinalIgnoreCase)
-                         && !t.TileName.StartsWith("Trap", StringComparison.OrdinalIgnoreCase))
+                         && !t.TileName.StartsWith("Trap", StringComparison.OrdinalIgnoreCase)
+                         && !t.TileName.StartsWith("BLOCKt", StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
             // Return null if no valid tiles exist

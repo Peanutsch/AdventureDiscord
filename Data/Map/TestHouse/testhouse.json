@@ -11,8 +11,8 @@
         [ "Wall", "Floor", "Wall", "Wall", "Floor", "Wall", "WISP1", "WISP1", "WISP1", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Wall", "Wall", "Floor", "Wall" ],
         [ "Wall", "Floor", "Wall", "Wall", "Floor", "Wall", "PLANT4", "Floor", "Floor", "Wall" ],
-        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall", "Tree", "Tree" ],
-        [ "Wall", "Floor", "Wall", "PLANT1", "Floor", "Floor", "PLANT3", "Wall", "Floor", "EXIT2", "BLOCKt", "Tree" ],
+        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall", "BLOCKt", "BLOCKt" ],
+        [ "Wall", "Floor", "Wall", "PLANT1", "Floor", "Floor", "PLANT3", "Wall", "Floor", "EXIT2", "BLOCKt", "BLOCKt" ],
         [ "Wall", "EXIT3", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree" ]
       ]
     },
@@ -21,13 +21,13 @@
       "name": "Small Pond",
       "description": "Een kleine vijver met in het midden wat lijkt op waardevolle voorwerpen.\nHelaas kan je niet zwemmen en is het water te diep om doorheen te waden. Misschien is er een andere manier om daar te komen...\nIn het oosten zie je iets wat op een bos lijkt...",
       "layout": [
-        [ "Wall", "EXIT1", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree", "Tree", "Tree" ],
-        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "Wall", "Tree", "Tree", "Tree" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree", "Tree" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree" ],
-        [ "Wall", "Grass", "Water", "EXIT2", "Water", "Grass", "Wall", "Tree", "Tree" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "Tree" ],
+        [ "Wall", "EXIT1", "Wall", "Wall", "Wall", "Wall", "Wall", "BLOCKt", "BLOCKt", "BLOCKt", "BLOCKt" ],
+        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "Wall", "BLOCKt", "BLOCKt", "BLOCKt" ],
+        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "BLOCKt", "BLOCKt" ],
+        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "BLOCKt" ],
+        [ "Wall", "Grass", "Water", "EXIT2", "Water", "Grass", "Wall", "BLOCKt", "BLOCKt" ],
+        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "BLOCKt" ],
+        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "BLOCKt" ],
         [ "Wall", "START", "Grass", "Grass", "Grass", "Grass", "EXIT3", "BLOCKt" ],
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree" ]
       ]

@@ -1,9 +1,10 @@
 {
   "locks": {
     "door_pond_living": {
-      "lockType": "iron",
-      "keyId": "iron_key",
-      "locked": true
-    }
+        "lockType": "iron",
+        "keyId": "iron_key",
+        "locked": true
+    },
+    "door_"
   }
 }
