@@ -44,7 +44,7 @@ namespace Adventure.Quest.Battle.Randomizers
         /// <returns>
         /// A randomly selected <see cref="NpcModel"/>, or <c>null</c> if no creatures are available.
         /// </returns>
-        public static NpcModel? NpcRandomizer(CRWeightMode crMode = CRWeightMode.Balanced, CreatureListPreference listPreference = CreatureListPreference.Random)
+        public static NpcModel? NpcRandomizer(CRWeightPreference crMode = CRWeightPreference.Balanced, CreatureListPreference listPreference = CreatureListPreference.Random)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace Adventure.Quest.Battle.Randomizers
         /// <summary>
         /// Modes for weighting NPC selection based on Challenge Rating (CR).
         /// </summary>
-        public enum CRWeightMode
+        public enum CRWeightPreference
         {
             LowCR,      // Lower CR = higher chance of being selected
             Balanced,   // Equal chance for all NPCs regardless of CR
@@ -182,7 +182,7 @@ namespace Adventure.Quest.Battle.Randomizers
         /// <returns>
         /// A randomly selected <see cref="NpcModel"/>, or <c>null</c> if the list is empty.
         /// </returns>
-        private static NpcModel? PickRandomNpcWeighted(List<NpcModel> list, CRWeightMode mode)
+        private static NpcModel? PickRandomNpcWeighted(List<NpcModel> list, CRWeightPreference mode)
         {
             if (list == null || list.Count == 0)
             {
@@ -195,17 +195,17 @@ namespace Adventure.Quest.Battle.Randomizers
             // Assign weights depending on the CR weighting mode
             switch (mode)
             {
-                case CRWeightMode.LowCR:
+                case CRWeightPreference.LowCR:
                     // Inverse weight: lower CR gets higher weight
                     weights = list.Select(npc => 1.0 / Math.Max(npc.CR, 0.01)).ToList();
                     break;
 
-                case CRWeightMode.Balanced:
+                case CRWeightPreference.Balanced:
                     // All NPCs have equal chance
                     weights = list.Select(_ => 1.0).ToList();
                     break;
 
-                case CRWeightMode.HighCR:
+                case CRWeightPreference.HighCR:
                     // Direct weight: higher CR gets higher weight
                     weights = list.Select(npc => Math.Max(npc.CR, 0.01)).ToList();
                     break;

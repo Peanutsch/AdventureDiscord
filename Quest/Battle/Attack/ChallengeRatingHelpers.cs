@@ -12,6 +12,7 @@ namespace Adventure.Quest.Battle.Attack
 {
     public class ChallengeRatingHelpers
     {
+        #region === Get Data by CR ===
         /// <summary>
         /// Returns a formatted string for a fractional or whole challenge rating.
         /// </summary>
@@ -25,6 +26,41 @@ namespace Adventure.Quest.Battle.Attack
             else return cr.ToString();
         }
 
+        /// <summary>
+        /// Returns hit dice (dice count, dice value) for a given CR.
+        /// Used to calculate NPC hitpoints.
+        /// </summary>
+        public static (int diceCount, int diceValue) GetHitDie(double cr)
+        {
+            if (cr <= 0.125) return (2, 6);
+            else if (cr <= 0.25) return (2, 8);
+            else if (cr <= 0.5) return (2, 8);
+            else if (cr <= 1) return (2, 8);
+            else if (cr <= 2) return (3, 8);
+            else if (cr <= 3) return (4, 10);
+            else if (cr <= 5) return (6, 10);
+            else if (cr <= 10) return (12, 10);
+            else return (20, 12);
+        }
+
+        /// <summary>
+        /// Returns XP awarded to the player for defeating an NPC of given CR.
+        /// </summary>
+        public static int GetRewardXP(double cr)
+        {
+            if (cr <= 0.125) return 25;
+            else if (cr <= 0.25) return 50;
+            else if (cr <= 0.5) return 100;
+            else if (cr <= 1) return 200;
+            else if (cr <= 2) return 450;
+            else if (cr <= 3) return 700;
+            else if (cr <= 5) return 1800;
+            else if (cr <= 10) return 5900;
+            else return 0;
+        }
+        #endregion
+
+        #region === Get NPC Hitpoints ===
         /// <summary>
         /// Determines the hitpoints for an NPC based on its challenge rating.
         /// Rolls the appropriate dice and stores the results in the battle state.
@@ -45,42 +81,10 @@ namespace Adventure.Quest.Battle.Attack
 
             var result = DiceRoller.RollWithoutDetails(diceCount, diceValue);
 
-            LogService.Info($"[NpcHitpoints.GetNpcHitpoints] Rolled {diceCount}d{diceValue} for NPC HP: {result}");
+            LogService.Info($"[ChallengeRatingHelpers.GetNpcHitpoints] Rolled {diceCount}d{diceValue} for NPC HP: {result}");
 
             return result;
         }
-
-        /// <summary>
-        /// Returns hit dice (dice count, dice value) for a given CR.
-        /// Used to calculate NPC hitpoints.
-        /// </summary>
-        public static (int diceCount, int diceValue) GetHitDie(double cr)
-        {
-            if (cr <= 0.125) return (2, 6);    
-            else if (cr <= 0.25) return (2, 8);   
-            else if (cr <= 0.5) return (2, 8);    
-            else if (cr <= 1) return (2, 8);    
-            else if (cr <= 2) return (3, 8);    
-            else if (cr <= 3) return (4, 10);   
-            else if (cr <= 5) return (6, 10);   
-            else if (cr <= 10) return (12, 10);
-            else return (20, 12);
-        }
-
-        /// <summary>
-        /// Returns XP awarded to the player for defeating an NPC of given CR.
-        /// </summary>
-        public static int GetRewardXP(double cr)
-        {
-            if (cr <= 0.125) return 25;
-            else if (cr <= 0.25) return 50;
-            else if (cr <= 0.5) return 100;
-            else if (cr <= 1) return 200;
-            else if (cr <= 2) return 450;
-            else if (cr <= 3) return 700;
-            else if (cr <= 5)  return 1800;
-            else if (cr <= 10) return 5900;
-            else return 0;
-        }
+        #endregion
     }
 }

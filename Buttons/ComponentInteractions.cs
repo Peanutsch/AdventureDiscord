@@ -22,7 +22,7 @@ namespace Adventure.Buttons
             LogService.Info($"[ComponentInteractions.DispatchComponentAction] component ID: {id}");
 
             if (id.StartsWith("weapon_"))
-                await HandleWeaponButton(id);
+                await HandleWeaponButton($"{id}");
             else if (id.StartsWith("move:"))
                 await WalkDirectionHandler(id);
             else if (id.StartsWith("enter:"))
@@ -69,7 +69,15 @@ namespace Adventure.Buttons
         [ComponentInteraction("weapon_*")]
         public async Task HandleWeaponButton(string weaponId)
         {
-            LogService.Info($"[HandleWeaponButton] weaponId: {weaponId}");
+            LogService.Info($"[ComponentInteractions.HandleWeaponButton] Received weaponId: {weaponId}");
+
+            if (!weaponId.Contains("weapon_"))
+            {
+                var correctedWeaponId = $"weapon_{weaponId}";
+                weaponId = correctedWeaponId;
+            }
+
+            LogService.Info($"[ComponentInteractions.HandleWeaponButton] Handling weaponId: {weaponId}");
 
             var state = BattleStateSetup.GetBattleState(Context.User.Id);
             if (state == null)
@@ -137,11 +145,17 @@ namespace Adventure.Buttons
                 // Chance to flee to tile nearby : 10%
                 Random rnd = new Random();
                 int chance = rnd.Next(1, 100);
-                LogService.Info($"int chance: {chance}...");
+                LogService.Info($"[ComponentInteractions.FleeBattleHandler] int chance: {chance}...");
                 if (chance <= 10)
+                {
+                    LogService.Info($"[ComponentInteractions.FleeBattleHandler] Flee to nearby tile...");
                     await ComponentHelpers.TransitionFleeEmbed(Context, fleeMode: "nearby");
+                }
                 else
+                {
+                    LogService.Info($"[ComponentInteractions.FleeBattleHandler] Flee to random tile...");
                     await ComponentHelpers.TransitionFleeEmbed(Context, fleeMode: "random");
+                }
             }
             catch (Exception ex)
             {
@@ -161,7 +175,7 @@ namespace Adventure.Buttons
             var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint)
                        ?? SlashCommandHelpers.FindStartTile();
 
-            // ⚠️ Disable auto encounter here
+            // ⚠️ Disable auto encounter
             await ComponentHelpers.MovePlayerAsync(context, tile!.TileId, showTravelAnimation: false, allowAutoEncounter: false);
         }
         #endregion

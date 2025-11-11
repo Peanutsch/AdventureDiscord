@@ -28,9 +28,9 @@ namespace Adventure.Quest.Battle.Attack
         /// <returns>
         /// A tuple containing:
         /// - <see cref="string"/> battleLog: formatted text describing the attack result.
-        /// - <see cref="BattleState"/> state: updated battle state after the attack.
+        /// - <see cref="BattleStateModel"/> state: updated battle state after the attack.
         /// </returns>
-        public static (string battleLog, BattleState state) ProcessAttack(ulong userId, WeaponModel weapon, bool isPlayerAttacker)
+        public static (string battleLog, BattleStateModel state) ProcessAttack(ulong userId, WeaponModel weapon, bool isPlayerAttacker)
         {
             // Determine hit/miss/critical and fetch participants from the active battle
             var (hitResult, state, player, npc, strength) = ValidateAndGetParticipants(userId, isPlayerAttacker);
@@ -56,7 +56,7 @@ namespace Adventure.Quest.Battle.Attack
         /// Validates whether the attack hits, misses, or crits,
         /// and retrieves the current participants (player, NPC, and strength values).
         /// </summary>
-        private static (ProcessRollsAndDamage.HitResult hitResult, BattleState state, PlayerModel player, NpcModel npc, int strength)
+        private static (ProcessRollsAndDamage.HitResult hitResult, BattleStateModel state, PlayerModel player, NpcModel npc, int strength)
             ValidateAndGetParticipants(ulong userId, bool isPlayerAttacker)
         {
             // Determine hit/miss/critical roll
@@ -82,7 +82,7 @@ namespace Adventure.Quest.Battle.Attack
             ulong userId,
             WeaponModel weapon,
             int strength,
-            BattleState state,
+            BattleStateModel state,
             PlayerModel player,
             NpcModel npc)
         {
@@ -126,7 +126,7 @@ namespace Adventure.Quest.Battle.Attack
         /// <summary>
         /// Updates HP status information (used for embed display like "Barely Standing", "Wounded", etc.).
         /// </summary>
-        private static void UpdateHPStatus(bool isPlayerAttacker, BattleState state, PlayerModel player)
+        private static void UpdateHPStatus(bool isPlayerAttacker, BattleStateModel state, PlayerModel player)
         {
             if (isPlayerAttacker)
             {
@@ -163,7 +163,7 @@ namespace Adventure.Quest.Battle.Attack
             PlayerModel player,
             NpcModel npc,
             WeaponModel weapon,
-            BattleState state)
+            BattleStateModel state)
         {
             // Convert enum result to string key (e.g., "hit", "miss", "criticalHit")
             string attackResult = GetAttackResult(hitResult);

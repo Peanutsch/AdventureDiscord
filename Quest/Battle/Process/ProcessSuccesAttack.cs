@@ -33,7 +33,7 @@ namespace Adventure.Quest.Battle.Process
         /// - dice: Dice notation string (e.g. "2d6")
         /// - newHP: The defender's new HP after damage is applied
         /// </returns>
-        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string dice, int newHP) ProcessSuccessfulHit(ulong userId, BattleState state, WeaponModel weapon, int strength, int currentHP, bool isPlayerAttacker)
+        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string dice, int newHP) ProcessSuccessfulHit(ulong userId, BattleStateModel state, WeaponModel weapon, int strength, int currentHP, bool isPlayerAttacker)
         {
             // Calculate and apply damage, including critical hit or miss logic
             var (damage, totalDamage, rolls, critRoll, dice, newHP) = ProcessRollsAndDamage.RollAndApplyDamage(
@@ -74,7 +74,7 @@ namespace Adventure.Quest.Battle.Process
         #endregion PROCESS SUCCESFULL ATTACK
 
         #region PROCESS XP AND LEVEL
-        public static (bool leveledUp, int oldLevel, int newLevel) ProcessXPReward(int rewardedXP, BattleState state)
+        public static (bool leveledUp, int oldLevel, int newLevel) ProcessXPReward(int rewardedXP, BattleStateModel state)
         {
             var currentXP = state.Player.XP;
             var newXP = currentXP + rewardedXP;
@@ -113,7 +113,7 @@ namespace Adventure.Quest.Battle.Process
         /// <summary>
         /// Updates the player's level in state and JSON based on their XP.
         /// </summary>
-        public static void UpdateLevelFromXP(BattleState state)
+        public static void UpdateLevelFromXP(BattleStateModel state)
         {
             int xp = state.Player.XP;
             int newLevel = 1;

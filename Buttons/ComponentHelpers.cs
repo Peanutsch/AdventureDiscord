@@ -5,68 +5,148 @@ using Adventure.Modules;
 using Adventure.Quest.Battle.Randomizers;
 using Adventure.Quest.Encounter;
 using Adventure.Quest.Map;
+using Adventure.Quest.Map.HashSets;
 using Adventure.Services;
 using Discord;
 using Discord.Interactions;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using static Adventure.Quest.Battle.Randomizers.EncounterRandomizer;
 
 namespace Adventure.Buttons
 {
     public static class ComponentHelpers
     {
         #region === Move Player ===
-        public static async Task<bool> MovePlayerAsync(
-    SocketInteractionContext context,
-    string key,
-    bool showTravelAnimation = false,
-    bool allowAutoEncounter = true)
+        /// <summary>
+        /// Handles player movement across the map, including saving their position,
+        /// performing automatic encounters, and updating the map display.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="key">The key identifying the target tile to move to.</param>
+        /// <param name="showTravelAnimation">Whether to show the travel animation during movement.</param>
+        /// <param name="allowAutoEncounter">Whether to allow automatic encounters during movement.</param>
+        /// <returns><c>true</c> if movement or encounter was successfully handled; otherwise, <c>false</c>.</returns>
+        public static async Task<bool> MovePlayerAsync(SocketInteractionContext context, string key, bool showTravelAnimation = false, bool allowAutoEncounter = true)
         {
-            if (!TestHouseLoader.TileLookup.TryGetValue(key, out var targetTile) || targetTile == null)
+            if (!TryGetTargetTile(key, out var targetTile))
+                return await HandleMissingTileAsync(context, key);
+
+            SavePlayerPosition(context, key);
+
+            if (allowAutoEncounter && await TryTriggerAutoEncounterAsync(context, targetTile!))
+                return true;
+
+            await HandleNormalMovementAsync(context, targetTile!, showTravelAnimation);
+            return true;
+        }
+        #endregion
+
+        #region === Move Player Helpers ===
+        /// <summary>
+        /// Attempts to find a tile in the map based on the provided key.
+        /// </summary>
+        /// <param name="key">The key identifying the tile.</param>
+        /// <param name="targetTile">The found tile, or <c>null</c> if not found.</param>
+        /// <returns><c>true</c> if the tile was found; otherwise, <c>false</c>.</returns>
+        private static bool TryGetTargetTile(string key, out TileModel? targetTile)
+        {
+            return TestHouseLoader.TileLookup.TryGetValue(key, out targetTile) && targetTile != null;
+        }
+
+        /// <summary>
+        /// Handles the scenario where a requested tile could not be found.
+        /// Sends an error message and logs the issue.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="key">The missing tile key.</param>
+        /// <returns>Always returns <c>false</c> to indicate the failure.</returns>
+        private static async Task<bool> HandleMissingTileAsync(SocketInteractionContext context, string key)
+        {
+            LogService.Error($"[MovePlayerAsync] ❌ Target tile '{key}' not found!");
+            await context.Interaction.FollowupAsync($"❌ Target tile '{key}' not found.", ephemeral: true);
+            return false;
+        }
+
+        /// <summary>
+        /// Saves the player’s current position to persistent storage.n
+        /// </summary>
+        /// <param name="context">The Discord interaction context containing user information.</param>
+        /// <param name="key">The key of the tile where the player is located.</param>
+        private static void SavePlayerPosition(SocketInteractionContext context, string key)
+        {
+            LogService.Info($"[MovePlayerAsync] Save location {key} for {context.User.GlobalName}");
+            JsonDataManager.UpdatePlayerSavepoint(context.User.Id, key);
+        }
+
+        /// <summary>
+        /// Determines whether an automatic encounter should be triggered based on tile type and random chance.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="targetTile">The tile where the player is moving.</param>
+        /// <returns>
+        /// <c>true</c> if an auto-encounter occurs and is handled successfully; otherwise, <c>false</c>.
+        /// </returns>
+        private static async Task<bool> TryTriggerAutoEncounterAsync(SocketInteractionContext context, TileModel targetTile)
+        {
+            Random rnd = new Random();
+            int chance = rnd.Next(1, 100);
+
+            bool isNpc = targetTile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase);
+            bool isTreeEncounter = targetTile.TileName.Equals("Tree", StringComparison.OrdinalIgnoreCase) && chance <= 25;
+
+            LogService.Info($"[ComponentHelpers.TryTriggerAutoEncounterAsync] int chance: {chance}");
+
+            if (isTreeEncounter)
+                return await HandleAutoEncounterAsync(context, targetTile, CreatureListPreference.Bestiary);
+
+            if (isNpc)
+                return await HandleAutoEncounterAsync(context, targetTile, CreatureListPreference.Humanoids);
+
+            return false;
+        }
+
+        /// <summary>
+        /// Executes the logic for an automatic encounter, including NPC generation,
+        /// battle setup, and displaying the encounter embed.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="tile">The tile on which the encounter occurs.</param>
+        /// <param name="preference">The type of creature list to use for randomization.</param>
+        /// <returns>
+        /// <c>true</c> if the encounter was successfully created and displayed; otherwise, <c>false</c>.
+        /// </returns>
+        private static async Task<bool> HandleAutoEncounterAsync(SocketInteractionContext context, TileModel tile, CreatureListPreference preference)
+        {
+            LogService.Info($"[MovePlayerAsync] Auto-encounter triggered on {tile.TileName}");
+
+            var npc = EncounterRandomizer.NpcRandomizer(CRWeightPreference.Balanced, preference);
+            if (npc == null)
             {
-                LogService.Error($"[ComponentHelpers.MovePlayerAsync] ❌ Target tile '{key}' not found!");
-                await context.Interaction.FollowupAsync($"❌ Target tile '{key}' not found.", ephemeral: true);
+                await context.Interaction.FollowupAsync("⚠️ Could not pick a random NPC.");
                 return false;
             }
 
-            // Save player position
-            LogService.Info($"[ComponentHelpers.MovePlayerAsync] Save location {key} for {context.User.GlobalName}");
-            JsonDataManager.UpdatePlayerSavepoint(context.User.Id, key);
+            await TransitionBattleEmbed(context, npc.Name!);
+            SlashCommandHelpers.SetupBattleState(context.User.Id, npc);
 
-            // === AUTO ENCOUNTER CHECK ===
-            if (allowAutoEncounter)
-            {
-                Random rnd = new Random();
-                int chance = rnd.Next(1, 100);
+            var embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
+            var buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
 
-                bool isNpc = targetTile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase);
-                bool isTreeEncounter = targetTile.TileName.Equals("Tree", StringComparison.OrdinalIgnoreCase) && chance <= 25;
+            await context.Interaction.FollowupAsync(embed: embed.Build(), components: buttons.Build());
+            return true;
+        }
 
-                if (isNpc || isTreeEncounter)
-                {
-                    LogService.Info($"[MovePlayerAsync] Auto-encounter triggered on {targetTile.TileName} (chance {chance})");
-
-                    var npc = EncounterRandomizer.NpcRandomizer();
-                    if (npc == null)
-                    {
-                        await context.Interaction.FollowupAsync("⚠️ Could not pick a random creature.");
-                        return false;
-                    }
-
-                    await ComponentHelpers.TransitionBattleEmbed(context, npc.Name!);
-
-                    SlashCommandHelpers.SetupBattleState(context.User.Id, npc);
-
-                    var embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
-                    var buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
-
-                    await context.Interaction.FollowupAsync(embed: embed.Build(), components: buttons.Build());
-                    return true;
-                }
-            }
-
-            // === NORMAL MOVEMENT ===
+        /// <summary>
+        /// Handles standard player movement when no encounter occurs.
+        /// Updates the map view and optionally displays a travel animation.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="targetTile">The tile to which the player is moving.</param>
+        /// <param name="showTravelAnimation">Whether to display the travel animation.</param>
+        private static async Task HandleNormalMovementAsync(SocketInteractionContext context, TileModel targetTile, bool showTravelAnimation)
+        {
             if (showTravelAnimation)
                 await TransitionTravelEmbed(context, targetTile);
 
@@ -78,8 +158,6 @@ namespace Adventure.Buttons
                 msg.Embed = embedWalk.Build();
                 msg.Components = components.Build();
             });
-
-            return true;
         }
         #endregion
 
@@ -157,12 +235,7 @@ namespace Adventure.Buttons
                 // If a valid destination is found, move the player there
                 if (destinationTile != null)
                 {
-                    await MovePlayerAsync(
-                        context,
-                        destinationTile.TileId,
-                        showTravelAnimation: fleeMode == "random",
-                        allowAutoEncounter: false
-                    );
+                    await MovePlayerAsync(context, destinationTile.TileId, showTravelAnimation: fleeMode == "random", allowAutoEncounter: false);
                     return;
                 }
 
@@ -172,7 +245,7 @@ namespace Adventure.Buttons
             catch (Exception ex)
             {
                 // Log any unexpected errors and reset player state to walking
-                LogService.Error($"[TransitionFleeEmbed] Error during flee relocation: {ex.Message}");
+                LogService.Error($"[TransitionFleeEmbed] Error during flee relocation:\n{ex.Message}");
                 await ComponentInteractions.ReturnToWalkAsync(context);
             }
         }
@@ -191,7 +264,7 @@ namespace Adventure.Buttons
             {
                 msg.Embed = new EmbedBuilder()
                     .WithTitle("🏃 Flee 🏃")
-                    .WithDescription("You fled as fast as far as you can...")
+                    .WithDescription("You flee as fast and as far as you can...")
                     .WithColor(Color.Orange)
                     .WithImageUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1437286170718371900/iu_.png")
                     .Build();
@@ -251,23 +324,23 @@ namespace Adventure.Buttons
         /// <returns>A random safe tile, or null if none are found.</returns>
         private static TileModel? GetRandomSafeTile()
         {
-            // Filter out unsafe or non-walkable tiles
+            // Combine all unsafe prefixes into one HashSet for quick O(1) lookup
+            var unsafePrefixes = HashSets.NonPassableTiles; // e.g. includes "NPC", "Wall", "TREASURE", etc.
+
+            // Filter tiles: only include those whose Name or Type does NOT start with any unsafe prefix
             var safeTiles = TestHouseLoader.TileLookup.Values
-                .Where(t => !t.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase)
-                         && !t.TileName.StartsWith("Wall", StringComparison.OrdinalIgnoreCase)
-                         && !t.TileName.StartsWith("TREASURE", StringComparison.OrdinalIgnoreCase)
-                         && !t.TileName.StartsWith("Water", StringComparison.OrdinalIgnoreCase)
-                         && !t.TileName.StartsWith("Lava", StringComparison.OrdinalIgnoreCase)
-                         && !t.TileName.StartsWith("Trap", StringComparison.OrdinalIgnoreCase)
-                         && !t.TileName.StartsWith("BLOCKt", StringComparison.OrdinalIgnoreCase))
+                .Where(t => !unsafePrefixes.Any(prefix =>
+                    t.TileName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ||
+                    t.TileType.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
-            // Return null if no valid tiles exist
-            if (safeTiles.Count == 0) return null;
+            if (safeTiles.Count == 0)
+                return null;
 
-            // Randomly select a safe tile
-            Random rnd = new Random();
+            // Randomly select one safe tile
+            var rnd = new Random();
             var randomTile = safeTiles[rnd.Next(safeTiles.Count)];
+
             LogService.Info($"[TransitionFleeEmbed] Player fled randomly to tile: {randomTile.TileId}");
             return randomTile;
         }

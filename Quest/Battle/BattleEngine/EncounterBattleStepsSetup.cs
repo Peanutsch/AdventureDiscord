@@ -53,7 +53,7 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// <summary>
         /// Tracks active battle states for each user by Discord user ID.
         /// </summary>
-        public static readonly ConcurrentDictionary<ulong, BattleState> battleStates = new();
+        public static readonly ConcurrentDictionary<ulong, BattleStateModel> battleStates = new();
 
         /// <summary>
         /// Gets the current step of the user's battle.

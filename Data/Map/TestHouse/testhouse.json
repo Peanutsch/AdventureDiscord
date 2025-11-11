@@ -3,7 +3,7 @@
     "living_room": {
       "id": "living_room",
       "name": "Living Room",
-      "description": "De woonkamer.\nHier is niet zoveel te zien, behalve wat planten en wat versleten meubels.\nAan de zuidkant zie je een deur. Aan de oostzijde zie je enkele bomen door een gat in de muur...",
+      "description": "De woonkamer.\nHier is niet zoveel te zien, behalve wat planten en wat versleten meubels.\nAan de zuid- en oostzijde zie je 2 deuren...",
       "layout": [
         [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "PLANT2", "Wall", "WISP3", "EXIT1" ],
@@ -13,7 +13,7 @@
         [ "Wall", "Floor", "Wall", "Wall", "Floor", "Wall", "PLANT4", "Floor", "Floor", "Wall" ],
         [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall", "BLOCKt", "BLOCKt" ],
         [ "Wall", "Floor", "Wall", "PLANT1", "Floor", "Floor", "PLANT3", "Wall", "Floor", "EXIT2", "BLOCKt", "BLOCKt" ],
-        [ "Wall", "EXIT3", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree" ]
+        [ "Wall", "EXIT3", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "BLOCKt", "BLOCKt" ]
       ]
     },
     "small_pond": {
@@ -29,7 +29,7 @@
         [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "BLOCKt" ],
         [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "BLOCKt" ],
         [ "Wall", "START", "Grass", "Grass", "Grass", "Grass", "EXIT3", "BLOCKt" ],
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Tree", "Tree" ]
+        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "BLOCKt", "BLOCKt" ]
       ]
     },
     "forest_south": {

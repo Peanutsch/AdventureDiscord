@@ -140,7 +140,7 @@ namespace Adventure.Quest.Rolls
         /// - Dice notation string
         /// - New HP of the defender after damage
         /// </returns>
-        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string diceNotation, int newHP) RollAndApplyDamage(BattleState state, WeaponModel weapon, int attackerStrength, int currentHitpoints, bool isPlayerAttacker)
+        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string diceNotation, int newHP) RollAndApplyDamage(BattleStateModel state, WeaponModel weapon, int attackerStrength, int currentHitpoints, bool isPlayerAttacker)
         {
             // Get weapon damage dice config
             var diceCount = weapon.Damage.DiceCount;

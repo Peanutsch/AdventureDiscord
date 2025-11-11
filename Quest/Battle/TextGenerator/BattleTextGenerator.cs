@@ -45,7 +45,7 @@ namespace Adventure.Quest.Battle.TextGenerator
                             int damage,
                             string statusLabel,
                             BattleTextModel battleText,
-                            BattleState state,
+                            BattleStateModel state,
                             Dictionary<string, string>? rollText,
                             bool isPlayerAttack = true
                                                )
@@ -118,7 +118,7 @@ namespace Adventure.Quest.Battle.TextGenerator
         /// <param name="rollText">Dictionary containing text templates for rolls (loaded from JSON).</param>
         /// <param name="isPlayerAttack">Whether the current attack is from the player.</param>
         /// <returns>A formatted multiline string with roll details, or null if not applicable.</returns>
-        public static string? GetRollDetails(BattleState state, Dictionary<string, string>? rollText, bool isPlayerAttack = true)
+        public static string? GetRollDetails(BattleStateModel state, Dictionary<string, string>? rollText, bool isPlayerAttack = true)
         {
             if (!isPlayerAttack || rollText == null)
                 return null;
@@ -178,7 +178,7 @@ namespace Adventure.Quest.Battle.TextGenerator
         /// <param name="template">Template string containing placeholders (e.g., {Damage}, {AttackRoll}).</param>
         /// <param name="state">The current battle state model with all relevant roll values.</param>
         /// <returns>String with all placeholders replaced by actual values.</returns>
-        public static string ReplacePlaceholders(string template, BattleState state)
+        public static string ReplacePlaceholders(string template, BattleStateModel state)
         {
             if (template == null)
                 return string.Empty;

@@ -175,7 +175,7 @@ namespace Adventure.Quest.Encounter
         /// </summary>
         /// <param name="state">The current player's battle state.</param>
         /// <returns>A ComponentBuilder containing all buttons.</returns>
-        public static ComponentBuilder BuildBattleButtons(BattleState state)
+        public static ComponentBuilder BuildBattleButtons(BattleStateModel state)
         {
             var builder = new ComponentBuilder();
 
@@ -208,7 +208,7 @@ namespace Adventure.Quest.Encounter
         /// </summary>
         /// <param name="state">The current player's battle state.</param>
         /// <returns>An EmbedBuilder containing the formatted pre-battle view.</returns>
-        private static EmbedBuilder BuildPreBattleEmbed(BattleState state)
+        private static EmbedBuilder BuildPreBattleEmbed(BattleStateModel state)
         {
             var embed = new EmbedBuilder()
                 .WithColor(Color.Blue)
@@ -230,7 +230,7 @@ namespace Adventure.Quest.Encounter
         /// </summary>
         /// <param name="embed">The embed builder to append fields to.</param>
         /// <param name="state">The current player's battle state.</param>
-        private static void AddWeaponFields(EmbedBuilder embed, BattleState state)
+        private static void AddWeaponFields(EmbedBuilder embed, BattleStateModel state)
         {
             foreach (var weapon in state.PlayerWeapons ?? Enumerable.Empty<WeaponModel>())
             {
@@ -245,7 +245,7 @@ namespace Adventure.Quest.Encounter
         /// </summary>
         /// <param name="embed">The embed builder to append fields to.</param>
         /// <param name="state">The current player's battle state.</param>
-        private static void AddArmorFields(EmbedBuilder embed, BattleState state)
+        private static void AddArmorFields(EmbedBuilder embed, BattleStateModel state)
         {
             foreach (var armor in state.PlayerArmor ?? Enumerable.Empty<ArmorModel>())
             {
@@ -260,7 +260,7 @@ namespace Adventure.Quest.Encounter
         /// </summary>
         /// <param name="embed">The embed builder to append fields to.</param>
         /// <param name="state">The current player's battle state.</param>
-        private static void AddItemFields(EmbedBuilder embed, BattleState state)
+        private static void AddItemFields(EmbedBuilder embed, BattleStateModel state)
         {
             foreach (var item in state.Items ?? Enumerable.Empty<ItemModel>())
             {

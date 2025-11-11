@@ -99,17 +99,5 @@ namespace Adventure.Quest.Map
 
             LogService.Info("[TestHouseLockService.ReloadLockStates] Updated TileLookup and LockLookup...");
         }
-
-        public string GetLockState(TileModel tile, string pos)
-        {
-            string result = "open";
-
-            if (tile.LockState!.Locked)
-            {
-                result = "op slot";
-            }
-
-            return result;
-        }
     }
 }

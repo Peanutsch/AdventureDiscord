@@ -15,6 +15,7 @@ namespace Adventure.Quest.Encounter
     /// </summary>
     public static class GameEntityFetcher
     {
+        #region === Retrieve Armor Attributes ===
         /// <summary>
         /// Resolves a list of armor IDs into their corresponding ArmorModel objects.
         /// </summary>
@@ -59,7 +60,9 @@ namespace Adventure.Quest.Encounter
             LogService.Error("[GameEntityFetcher.RetrieveArmorAttributes] > armorIds.Count is 0...");
             return new List<ArmorModel>();
         }
+        #endregion
 
+        #region === Retrieve Weapon Attributes ===
         /// <summary>
         /// Resolves a list of weapon IDs into their corresponding WeaponModel objects.
         /// </summary>
@@ -101,7 +104,9 @@ namespace Adventure.Quest.Encounter
 
             return weapons!;
         }
+        #endregion
 
+        #region === Retrieve Item Attributes ===
         /// <summary>
         /// Resolves a list of item IDs into their corresponding ItemModel objects.
         /// </summary>
@@ -143,5 +148,6 @@ namespace Adventure.Quest.Encounter
 
             return items!;
         }
+        #endregion
     }
 }
