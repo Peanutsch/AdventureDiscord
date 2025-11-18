@@ -50,6 +50,7 @@ namespace Adventure.Modules
 
         #region === Slashcommand "encounter" ===
         // Trigger encounter for testing
+        /*
         [SlashCommand("encounter", "Triggers a random encounter")]
         public async Task SlashCommandEncounterHandler()
         {
@@ -87,6 +88,7 @@ namespace Adventure.Modules
 
             await FollowupAsync(embed: embed.Build(), components: buttons.Build());
         }
+        */
         #endregion
 
         #region === Slashcommand "walk" ===

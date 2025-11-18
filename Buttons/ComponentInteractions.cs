@@ -28,7 +28,7 @@ namespace Adventure.Buttons
             else if (id.StartsWith("enter:"))
                 await EnterTileHandler(id);
             else if (id.StartsWith("encounter:"))
-                await EncounterHandler(id);
+                await EncounterHandler();
             else if (id.StartsWith("battle_continue"))
                 await ContinueBattleHandler(id);
             else if (id.StartsWith("battle_flee"))
@@ -37,7 +37,7 @@ namespace Adventure.Buttons
         #endregion
 
         #region === Battle ===
-        public async Task EncounterHandler(string data)
+        public async Task EncounterHandler()
         {
             await DeferAsync();
 

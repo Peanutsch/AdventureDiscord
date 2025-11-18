@@ -35,7 +35,7 @@ namespace Adventure.Buttons
 
             SavePlayerPosition(context, key);
 
-            if (allowAutoEncounter && await TryTriggerAutoEncounterAsync(context, targetTile!))
+            if (allowAutoEncounter && await HandleTriggerAutoEncounterAsync(context, targetTile!))
                 return true;
 
             await HandleNormalMovementAsync(context, targetTile!, showTravelAnimation);
@@ -88,13 +88,16 @@ namespace Adventure.Buttons
         /// <returns>
         /// <c>true</c> if an auto-encounter occurs and is handled successfully; otherwise, <c>false</c>.
         /// </returns>
-        private static async Task<bool> TryTriggerAutoEncounterAsync(SocketInteractionContext context, TileModel targetTile)
+        private static async Task<bool> HandleTriggerAutoEncounterAsync(SocketInteractionContext context, TileModel targetTile)
         {
             Random rnd = new Random();
             int chance = rnd.Next(1, 100);
 
             bool isNpc = targetTile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase);
-            bool isTreeEncounter = targetTile.TileName.Equals("Tree", StringComparison.OrdinalIgnoreCase) && chance <= 25;
+            bool isTreeEncounter = targetTile.TileName.Equals("Tree", StringComparison.OrdinalIgnoreCase) && 
+                
+                // --> Set change encounter enemy NPC
+                chance <= 15;
 
             LogService.Info($"[ComponentHelpers.TryTriggerAutoEncounterAsync] int chance: {chance}");
 
@@ -192,7 +195,7 @@ namespace Adventure.Buttons
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
                 msg.Embed = new EmbedBuilder()
-                    .WithTitle("⚔️ GET READY FOR BATTLE ⚔️")
+                    .WithTitle("⚔️ YOU ENCOUNTERED AN ENEMY! ⚔️")
                     .WithDescription($"Get ready to fight a **{npc.ToUpper()}**...")
                     .WithColor(Color.Red)
                     .WithImageUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1437286545307598969/iu_.png?ex=6912b0e7&is=69115f67&hm=78332d8954422f6b3a261847abea4eba4d30ffa38e10fe9b92da4a03949940ef&")

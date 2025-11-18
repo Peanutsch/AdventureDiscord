@@ -76,7 +76,7 @@
         "id": "PLANT2",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nHier is niets te vinden...\nMaar je hoort wel wat zacht gefluister...",
+        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nHier is ook niets te vinden...\nMaar je hoort wel wat zacht gefluister...",
         "pois": [],
         "items": []
       },

@@ -10,8 +10,10 @@ namespace Adventure.Loaders
 {
     public static class TestHouseLoader
     {
+        #region === Dictionaries for Lookup ===
         public static Dictionary<string, TileModel> TileLookup { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
         public static Dictionary<string, TestHouseAreaModel> AreaLookup { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+        #endregion
 
         #region === Load Environment ===
         public static List<TileModel> Load()
@@ -52,7 +54,7 @@ namespace Adventure.Loaders
         {
             LogService.Info("[TestHouseLoader.LoadTestHouseData] Starting TestHouse data load...");
 
-            // === Load testhouse layout testhouse.json ===
+            // === Load testhouse layout: testhouse.json ===
             var houseLayout = JsonDataManager.LoadObjectFromJson<TestHouseModel>("Data/Map/TestHouse/testhouse.json");
             if (houseLayout == null)
             {
@@ -61,7 +63,7 @@ namespace Adventure.Loaders
             }
             LogService.Info("[TestHouseLoader.LoadTestHouseData] Loaded testhouse.json successfully.");
 
-            // === Load tile details testhousetiles.json ===
+            // === Load tile details: testhousetiles.json ===
             var tileDetails = JsonDataManager.LoadObjectFromJson<TestHouseTilesModel>("Data/Map/TestHouse/testhousetiles.json");
             if (tileDetails == null)
             {
@@ -70,7 +72,7 @@ namespace Adventure.Loaders
             }
             LogService.Info("[TestHouseLoader.LoadTestHouseData] Loaded testhousetiles.json successfully.");
 
-            // === Load door lock configuration testhouselocks.json ===
+            // === Load door lock configuration: testhouselocks.json ===
             var lockData = JsonDataManager.LoadObjectFromJson<TestHouseLockCollection>("Data/Map/TestHouse/testhouselocks.json");
             if (lockData == null)
             {
