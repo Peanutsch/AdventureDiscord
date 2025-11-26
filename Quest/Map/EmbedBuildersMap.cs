@@ -28,10 +28,15 @@ namespace Adventure.Quest.Map
             // --- Handle locks (toggle if tile acts as a switch) ---
             TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup);
 
+            // Truncate area name if too long
+            string safeAreaName = area.Name.Length > 250
+                ? area.Name.Substring(0, 250) + "..."
+                : area.Name;
+
             // --- Build the main embed structure ---
             var embed = new EmbedBuilder()
                 .WithColor(Color.Blue)
-                .AddField($"[{area.Name}]", area.Description)
+                .AddField($"[{safeAreaName}]", area.Description)
                 .AddField($"{gridVisual}\n", $"**{tileTextSafe}**");
 
             // --- Add extra info, such as lock state ---

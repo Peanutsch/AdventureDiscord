@@ -1,19 +1,124 @@
-﻿{
+{
   "Areas": {
     "living_room": {
       "id": "living_room",
       "name": "Living Room",
       "description": "De woonkamer.\nHier is niet zoveel te zien, behalve wat planten en wat versleten meubels.\nAan de zuid- en oostzijde zie je 2 deuren...",
       "layout": [
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "PLANT2", "Wall", "WISP3", "EXIT1" ],
-        [ "Wall", "Floor", "Wall", "Wall", "Floor", "Floor", "WISP1", "Wall", "NPC01", "Wall" ],
-        [ "Wall", "Floor", "Wall", "Wall", "Floor", "Wall", "WISP1", "WISP1", "WISP1", "Wall" ],
-        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Wall", "Wall", "Wall", "Floor", "Wall" ],
-        [ "Wall", "Floor", "Wall", "Wall", "Floor", "Wall", "PLANT4", "Floor", "Floor", "Wall" ],
-        [ "Wall", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Floor", "Wall", "BLOCKt", "BLOCKt" ],
-        [ "Wall", "Floor", "Wall", "PLANT1", "Floor", "Floor", "PLANT3", "Wall", "Floor", "EXIT2", "BLOCKt", "BLOCKt" ],
-        [ "Wall", "EXIT3", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "BLOCKt", "BLOCKt" ]
+        [
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Floor",
+          "PLANT2",
+          "Wall",
+          "WISP3",
+          "EXIT1"
+        ],
+        [
+          "Wall",
+          "Floor",
+          "Wall",
+          "Wall",
+          "Floor",
+          "Floor",
+          "WISP1",
+          "Wall",
+          "NPC01",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Floor",
+          "Wall",
+          "Wall",
+          "Floor",
+          "Wall",
+          "WISP1",
+          "WISP1",
+          "WISP1",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Floor",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Floor",
+          "Wall",
+          "Wall",
+          "Floor",
+          "Wall",
+          "PLANT4",
+          "Floor",
+          "Floor",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Wall",
+          "BLOCKt",
+          "BLOCKt"
+        ],
+        [
+          "Wall",
+          "Floor",
+          "Wall",
+          "PLANT1",
+          "Floor",
+          "Floor",
+          "PLANT3",
+          "Wall",
+          "Floor",
+          "EXIT2",
+          "BLOCKt",
+          "BLOCKt"
+        ],
+        [
+          "Wall",
+          "EXIT3",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "BLOCKt",
+          "BLOCKt"
+        ]
       ]
     },
     "small_pond": {
@@ -21,15 +126,104 @@
       "name": "Small Pond",
       "description": "Een kleine vijver met in het midden wat lijkt op waardevolle voorwerpen.\nHelaas kan je niet zwemmen en is het water te diep om doorheen te waden. Misschien is er een andere manier om daar te komen...\nIn het oosten zie je iets wat op een bos lijkt...",
       "layout": [
-        [ "Wall", "EXIT1", "Wall", "Wall", "Wall", "Wall", "Wall", "BLOCKt", "BLOCKt", "BLOCKt", "BLOCKt" ],
-        [ "Wall", "Grass", "Grass", "Grass", "Grass", "Grass", "Wall", "BLOCKt", "BLOCKt", "BLOCKt" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "BLOCKt", "BLOCKt" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "BLOCKt" ],
-        [ "Wall", "Grass", "Water", "EXIT2", "Water", "Grass", "Wall", "BLOCKt", "BLOCKt" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "BLOCKt" ],
-        [ "Wall", "Grass", "Water", "Water", "Water", "Grass", "Wall", "BLOCKt" ],
-        [ "Wall", "START", "Grass", "Grass", "Grass", "Grass", "EXIT3", "BLOCKt" ],
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "BLOCKt", "BLOCKt" ]
+        [
+          "Wall",
+          "EXIT1",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "BLOCKt",
+          "BLOCKt",
+          "BLOCKt",
+          "BLOCKt"
+        ],
+        [
+          "Wall",
+          "Grass",
+          "Grass",
+          "Grass",
+          "Grass",
+          "Grass",
+          "Wall",
+          "BLOCKt",
+          "BLOCKt",
+          "BLOCKt"
+        ],
+        [
+          "Wall",
+          "Grass",
+          "Water",
+          "Water",
+          "Water",
+          "Grass",
+          "Wall",
+          "BLOCKt",
+          "BLOCKt"
+        ],
+        [
+          "Wall",
+          "Grass",
+          "Water",
+          "Water",
+          "Water",
+          "Grass",
+          "Wall",
+          "BLOCKt"
+        ],
+        [
+          "Wall",
+          "Grass",
+          "Water",
+          "EXIT2",
+          "Water",
+          "Grass",
+          "Wall",
+          "BLOCKt",
+          "BLOCKt"
+        ],
+        [
+          "Wall",
+          "Grass",
+          "Water",
+          "Water",
+          "Water",
+          "Grass",
+          "Wall",
+          "BLOCKt"
+        ],
+        [
+          "Wall",
+          "Grass",
+          "Water",
+          "Water",
+          "Water",
+          "Grass",
+          "Wall",
+          "BLOCKt"
+        ],
+        [
+          "Wall",
+          "START",
+          "Grass",
+          "Grass",
+          "Grass",
+          "Grass",
+          "EXIT3",
+          "BLOCKt"
+        ],
+        [
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "BLOCKt",
+          "BLOCKt"
+        ]
       ]
     },
     "forest_south": {
@@ -37,15 +231,129 @@
       "name": "Southern Forest",
       "description": "Een klein stuk bos.\nDoor de bomen zie je bos bijna niet meer.\nPas maar op dat je niet verdwaalt!\nEn Wees voorzichtig...\nAchter iedere boom kan gevaar schuilen...",
       "layout": [
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ],
-        [ "EXIT1", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Tree", "Tree", "Tree", "Tree", "Tree", "Wall" ],
-        [ "Wall", "Tree", "Tree", "Tree", "TXT1", "TXT1", "Wall" ],
-        [ "EXIT2", "Tree", "Tree", "Tree", "TXT1", "FEM1", "Wall" ],
-        [ "Wall", "Wall", "Wall", "Wall", "Wall", "Wall", "Wall" ]
+        [
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall"
+        ],
+        [
+          "EXIT1",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Tree",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Tree",
+          "Tree",
+          "Tree",
+          "TXT1",
+          "TXT1",
+          "Wall"
+        ],
+        [
+          "EXIT2",
+          "Tree",
+          "Tree",
+          "Tree",
+          "TXT1",
+          "FEM1",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall"
+        ]
+      ]
+    },
+    "try_out": {
+      "id": "try_out",
+      "name": "Try Out",
+      "description": "Try out for building layout with MapBuilder...",
+      "layout": [
+        [
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Floor",
+          "Floor",
+          "Floor",
+          "Wall"
+        ],
+        [
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall",
+          "Wall"
+        ]
       ]
     }
   }

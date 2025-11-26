@@ -51,7 +51,7 @@
 
   <ItemGroup>
     <None Update="Data\Map\TestHouse\testhouse.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Data\Map\TestHouse\testhousetiles.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
