@@ -3,7 +3,7 @@
     "living_room": {
       "id": "living_room",
       "name": "Living Room",
-      "description": "De woonkamer.\nHier is niet zoveel te zien, behalve wat planten en wat versleten meubels.\nAan de zuid- en oostzijde zie je 2 deuren...",
+      "description": "De woonkamer.\nHier is niet zoveel te zien, behalve wat planten en 2 deuren.",
       "layout": [
         [
           "Wall",

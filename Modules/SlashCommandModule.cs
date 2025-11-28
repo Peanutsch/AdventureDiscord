@@ -48,6 +48,15 @@ namespace Adventure.Modules
         }
         #endregion
 
+        #region === Slashcommand "reload map" ===
+        [SlashCommand("reload", "Reload map")]
+        public static async Task SlashcommandReloadMapHandler()
+        {
+            // Load Map data
+            GameData.TestHouse = TestHouseLoader.Load();
+        }
+        #endregion
+
         #region === Slashcommand "encounter" ===
         // Trigger encounter for testing
         /*
