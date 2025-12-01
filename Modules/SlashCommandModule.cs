@@ -18,7 +18,8 @@ namespace Adventure.Modules
 {
     public class SlashCommandModule : InteractionModuleBase<SocketInteractionContext>
     {
-        #region === Slashcommand "start" ===
+        #region === Slashcommand "start" (NOT IN USE) ===
+        /*
         /// <summary>
         /// Starts the player's adventure and initializes their state.
         /// </summary>
@@ -46,6 +47,7 @@ namespace Adventure.Modules
             //await FollowupAsync("Slash Command /start is executed");
             await FollowupAsync("Your adventure has begun!");
         }
+        */
         #endregion
 
         #region === Slashcommand "reload map" ===
@@ -54,12 +56,24 @@ namespace Adventure.Modules
         {
             await DeferAsync();
 
-            // Load Map data
-            GameData.TestHouse = TestHouseLoader.Load();
+            LogService.DividerParts(1, "Slashcommand /reload");
+
+            try
+            {
+                // Load Map data
+                GameData.TestHouse = TestHouseLoader.Load();
+                await FollowupAsync($"[INFO] Map is reloaded...", ephemeral: false);
+            }
+            catch (Exception ex)
+            {
+                await FollowupAsync($"[ERROR] Failed reloading map\n{ex}", ephemeral: false);
+            }
+
+            LogService.DividerParts(2, "Slashcommand /reload");
         }
         #endregion
 
-        #region === Slashcommand "encounter" ===
+        #region === Slashcommand "encounter" (NOT IN USE) ===
         // Trigger encounter for testing
         /*
         [SlashCommand("encounter", "Triggers a random encounter")]
@@ -102,12 +116,12 @@ namespace Adventure.Modules
         */
         #endregion
 
-        #region === Slashcommand "walk" ===
+        #region === Slashcommand "start" ===
         /// <summary>
         /// Handles the /walk slash command. Moves the player to the current tile, 
         /// toggles any lock if the tile has a switch, and builds the embed and directional buttons.
         /// </summary>
-        [SlashCommand("walk", "Simulate walking through tiles with directional buttons.")]
+        [SlashCommand("start", "Simulate walking through tiles with directional buttons.")]
         public async Task SlashCommandWalkHandler()
         {
             await DeferAsync();
