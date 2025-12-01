@@ -50,8 +50,10 @@ namespace Adventure.Modules
 
         #region === Slashcommand "reload map" ===
         [SlashCommand("reload", "Reload map")]
-        public static async Task SlashcommandReloadMapHandler()
+        public async Task SlashcommandReloadMapHandler()
         {
+            await DeferAsync();
+
             // Load Map data
             GameData.TestHouse = TestHouseLoader.Load();
         }
