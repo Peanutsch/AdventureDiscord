@@ -37,7 +37,7 @@ namespace Adventure.Quest.Map
             var embed = new EmbedBuilder()
                 .WithColor(Color.Blue)
                 .AddField($"[{safeAreaName}]", area.Description)
-                .AddField($"{gridVisual}\n", $"**{tileTextSafe}**");
+                .AddField($"{gridVisual}\n", $"{tileTextSafe}");
 
             // --- Add extra info, such as lock state ---
             AddLockInfo(embed, tile);

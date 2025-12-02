@@ -3,7 +3,7 @@
     "living_room": {
       "id": "living_room",
       "name": "Living Room",
-      "description": "De woonkamer.\nHier is niet zoveel te zien, behalve wat planten en 2 deuren...",
+      "description": "The Living Room...\nThere isn\u2019t much of interest here. \nJust a few scattered plants and two doors.",
       "layout": [
         [
           "Wall",
@@ -124,7 +124,7 @@
     "small_pond": {
       "id": "small_pond",
       "name": "Small Pond",
-      "description": "Een kleine vijver met in het midden wat lijkt op waardevolle voorwerpen.\nHelaas kan je niet zwemmen en is het water te diep om doorheen te waden. Misschien is er een andere manier om daar te komen...\nIn het oosten zie je iets wat op een bos lijkt...",
+      "description": "A small pond lies before you, and at its center glimmers what might be something valuable.\nUnfortunately, you cannot swim, and the water is far too deep to wade through.\nPerhaps there is another way to reach the treasure\u2026\n\nTo the east, you glimpse something that resembles a forest\u2026",
       "layout": [
         [
           "Wall",
@@ -229,7 +229,7 @@
     "forest_south": {
       "id": "forest_south",
       "name": "Southern Forest",
-      "description": "Een klein stuk bos.\nDoor de bomen zie je bos bijna niet meer.\nPas maar op dat je niet verdwaalt!\nEn Wees voorzichtig...\nAchter iedere boom kan gevaar schuilen...",
+      "description": "A small patch of a forest.\nThrough the trees, you can hardly see the forest at all!\nBe careful not to lose your way!\nAnd tread lightly\u2026\nFor behind every tree, danger may be waiting\u2026",
       "layout": [
         [
           "Wall",

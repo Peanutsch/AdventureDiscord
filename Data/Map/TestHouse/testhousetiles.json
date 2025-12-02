@@ -5,7 +5,7 @@
         "id": "WISP1",
         "base": "WISP1",
         "overlay": "Floor",
-        "text": "Je hoort zacht gefluister...",
+        "text": "You hear faint whispering...",
         "pois": [],
         "items": []
       },
@@ -13,7 +13,7 @@
         "id": "WISP2",
         "base": "WISP2",
         "overlay": "Floor",
-        "text": "Het gefluister wordt luider...",
+        "text": "The whispering grows louder...",
         "pois": [],
         "items": []
       },
@@ -21,7 +21,7 @@
         "id": "WISP3",
         "base": "WISP3",
         "overlay": "Floor",
-        "text": "Het gefluister is nu verstaan!\n'Deze kant op... Deze kant op!'",
+        "text": "The whispering becomes clear!\n“Over here… over here!”",
         "pois": [],
         "items": []
       },
@@ -37,7 +37,7 @@
         "id": "EXIT1",
         "base": "PORTAL",
         "overlay": "Wall",
-        "text": "Wat is dit??? Een geheime gang?\nWaar zou deze naar toe gaan?",
+        "text": "What is this??? A hidden passage?\nWhere could it lead?",
         "connections": [ "small_pond:4,3" ],
         "pois": [],
         "items": []
@@ -46,7 +46,7 @@
         "id": "EXIT2",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "Toegang naar het bos...",
+        "text": "An entrance leading into the forest...",
         "connections": [ "forest_south:1,0" ],
         "pois": [],
         "items": [],
@@ -56,7 +56,7 @@
         "id": "EXIT3",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "Een houten deur.\nDoor het raam zie je wat gras en water...",
+        "text": "A wooden door.\nThrough the small window you see grass and shimmering water...",
         "connections": [ "small_pond:0,1" ],
         "pois": [],
         "items": [],
@@ -66,7 +66,7 @@
         "id": "PLANT1",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nMaar zodra je er langs loopt, hoor je links van je zacht geratel en daarna een klik...",
+        "text": "Oh, look! A simple potted plant—nothing more, nothing less.\nBut as you pass by, you hear a soft rattling to your left, followed by a distinct click...",
         "pois": [],
         "items": [],
         "lockId": "door_pond_living",
@@ -76,7 +76,7 @@
         "id": "PLANT2",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "Oh, kijk! Het is een plant in een pot. Niets meer, niets minder.\nHier is ook niets te vinden...\nMaar je hoort wel wat zacht gefluister...",
+        "text": "A humble potted plant—ordinary and unremarkable.\nThere is nothing of worth here...\nYet you can still hear faint whispering nearby...",
         "pois": [],
         "items": []
       },
@@ -84,7 +84,7 @@
         "id": "PLANT3",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "Het is een plant in een pot.\nMaar zodra je er langs loopt, hoor je rechts van je zacht geratel en daarna een klik...",
+        "text": "A potted plant.\nBut as you walk past, a soft rattling sounds to your right, ending with a gentle click...",
         "pois": [],
         "items": [],
         "lockId": "door_forest_living",
@@ -94,7 +94,7 @@
         "id": "PLANT4",
         "base": "PLANT1",
         "overlay": "PLANT1",
-        "text": "Een plant in een pot. Niet zo heel bijzonder eigenlijk.\nHier is dan ook niets te vinden...",
+        "text": "A potted plant—nothing particularly remarkable.\nThere is nothing of value to be found here…",
         "pois": [],
         "items": []
       },
@@ -102,7 +102,7 @@
         "id": "NPC01",
         "base": "Floor",
         "overlay": "Floor",
-        "text": "Prepare for a fight!",
+        "text": "Prepare for battle!",
         "pois": [],
         "items": []
       }
@@ -120,7 +120,7 @@
         "id": "EXIT1",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "De deur naar de woonkamer...",
+        "text": "The door back to the living room...",
         "connections": [ "living_room:8,1" ],
         "pois": [],
         "items": [],
@@ -130,7 +130,7 @@
         "id": "EXIT2",
         "base": "COIN",
         "overlay": "COIN",
-        "text": "Terug naar de woonkamer...",
+        "text": "You did it! You have reached the center of the pond!\nNow, return to the living room and do nothing...",
         "connections": [ "living_room:1,9" ],
         "pois": [],
         "items": []
@@ -139,7 +139,7 @@
         "id": "EXIT3",
         "base": "Tree",
         "overlay": "Tree",
-        "text": "Naar het bos...",
+        "text": "Toward the forest...",
         "connections": [ "forest_south:7,0" ],
         "pois": [],
         "items": []
@@ -148,7 +148,7 @@
         "id": "ENEMY",
         "base": "Floor",
         "overlay": "ENEMY",
-        "text": "Maak je klaar voor een gevecht!",
+        "text": "Prepare yourself for combat!",
         "pois": [],
         "items": []
       }
@@ -166,7 +166,7 @@
         "id": "EXIT1",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "De deur naar de woonkamer...",
+        "text": "The door leading back to the living room",
         "connections": [ "living_room:7,9" ],
         "pois": [],
         "items": [],
@@ -176,7 +176,7 @@
         "id": "EXIT2",
         "base": "Tree",
         "overlay": "Tree",
-        "text": "Naar de vijver...",
+        "text": "Towards the pond...",
         "connections": [ "small_pond:7,6" ],
         "pois": [],
         "items": []
@@ -185,7 +185,7 @@
         "id": "FEM1",
         "base": "NPCFEM",
         "overlay": "NPCFEM",
-        "text": "Je vindt een mevrouw die een beetje in de war lijkt te zijn. Ze zegt:\n'Luister goed, want ik zeg dit maar één keer!\nEr is iets raars aan de hand met die muur...\nDie fluisterende muur rechtsboven in de woonkamer...'",
+        "text": "You encounter a woman who seems rather confused.\nShe says:\n“Listen carefully, for I shall say this only once! Something is amiss with that wall…\nDo you hear it whisper? That whispering wall?”",
         "pois": [],
         "items": []
       },
@@ -193,7 +193,7 @@
         "id": "TXT1",
         "base": "Tree",
         "overlay": "Tree",
-        "text": "Je ziet iemand onder een boom zitten...",
+        "text": "There is someone sitting beneath a tree!",
         "pois": [],
         "items": []
       }
