@@ -43,7 +43,7 @@ namespace Adventure.Quest.Map
             AddLockInfo(embed, tile);
 
             // --- Log all collected tile information for debugging ---
-            LogTileDebugInfo(tile, area, gridVisual, tileTextSafe, exitInfo);
+            LogTileDebugInfo(tile, area, tileTextSafe, exitInfo);
 
             return embed;
         }
@@ -122,13 +122,13 @@ namespace Adventure.Quest.Map
         /// <summary>
         /// Logs detailed tile information for debugging and tracing.
         /// </summary>
-        private static void LogTileDebugInfo(TileModel tile, TestHouseAreaModel area, string gridVisual, string tileTextSafe, string exitInfo)
+        private static void LogTileDebugInfo(TileModel tile, TestHouseAreaModel area, string tileTextSafe, string exitInfo)
         {
             LogService.Info(
                         $"\n[Area]\n{area.Name}\n" +
                         $"[Description]\n{area.Description}\n" +
                         $"[Location]\n{tile.TileId}\n" +
-                        $"[Layout]\n{gridVisual}" +
+                        //$"[Layout]\n{gridVisual}" +
                         $"[Tile Text]\n{tileTextSafe}\n" +
                         $"[Exits]\n{exitInfo}\n" +
                         $"[Current Tile Id/Name]\n{tile.TileId} / {tile.TileName}\n" +
