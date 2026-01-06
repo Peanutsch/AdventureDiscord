@@ -25,6 +25,9 @@ namespace Adventure.Loaders
             // Load JSON data
             var (houseLayout, tileDetails, lockData) = LoadTestHouseData();
 
+            // === Load testhouse lock data: testhouselocks.json ===
+            LoadLocks(lockData);
+
             // Build tiles
             var allTiles = BuildTilesFromAreas(houseLayout, tileDetails);
 
@@ -55,9 +58,6 @@ namespace Adventure.Loaders
         private static (TestHouseModel houseLayout, TestHouseTilesModel tileDetails, TestHouseLockCollection doorData) LoadTestHouseData()
         {
             LogService.Info("[TestHouseLoader.LoadTestHouseData] Starting TestHouse data load...");
-
-            // === Load testhouse lock data: testhouselocks.json ===
-            LoadLocks();
 
             // === Load testhouse layout: testhouse.json ===
             var houseLayout = JsonDataManager.LoadObjectFromJson<TestHouseModel>("Data/Map/TestHouse/testhouse.json");
@@ -97,10 +97,10 @@ namespace Adventure.Loaders
                 throw new InvalidDataException("Invalid door data in testhouselocks.json.");
             }
 
-            // === Apply lock states to all tiles ===
             LogService.Info($"[TestHouseLoader.LoadTestHouseData] Loaded tile details for {tileDetails.Areas.Count} areas.");
 
-            LogService.Info("[TestHouseLoader.LoadTestHouseData] TestHouse data load completed successfully.");
+            LogService.Info($"[TestHouseLoader.LoadTestHouseData] TestHouse data load completed successfully.\n");
+
             return (houseLayout!, tileDetails!, lockData!);
         }
         #endregion
@@ -223,59 +223,6 @@ namespace Adventure.Loaders
         }
         #endregion
 
-        #region === Lock Handling ===
-        /// <summary>
-        /// Loads all lock definitions from the TestHouse lock JSON file into memory.
-        /// This method initializes the <see cref="LockLookup"/> dictionary.
-        /// </summary>
-        public static void LoadLocks()
-        {
-            // Load lock data from JSON
-            var lockData = JsonDataManager.LoadObjectFromJson<TestHouseLockCollection>("Data/Map/Testhouse/testhouselocks.json");
-
-            // Ensure a clean state before loading
-            LockLookup.Clear();
-
-            // Register each lock using the dictionary key as its unique identifier
-            foreach (var (lockId, lockDef) in lockData!.LockedDoors)
-            {
-                // Store the lock definition under its lockId
-                LockLookup[lockId] = lockDef;
-
-                LogService.Info($"[TestHouseLoader.LoadLocks] Loading {lockId}. KeyId: {lockDef.KeyId} LockType: {lockDef.LockType} isLocked: {lockDef.Locked}");
-            }
-
-            LogService.Info($"[TestHouseLoader.LoadLocks] Loaded {LockLookup.Count} locks\n");
-        }
-
-        /// <summary>
-        /// Applies loaded lock definitions to the corresponding tiles.
-        /// Each tile that declares a LockId will receive a reference to the matching
-        /// lock instance from <see cref="LockLookup"/>.
-        /// </summary>
-        /// <param name="allTiles">
-        /// The complete list of tiles that were generated for the TestHouse map.
-        /// </param>
-        public static void ApplyLockStates(List<TileModel> allTiles)
-        {
-            foreach (var tile in allTiles)
-            {
-                // Skip tiles that do not reference a lock
-                if (string.IsNullOrEmpty(tile.LockId))
-                    continue;
-
-                // Attempt to resolve the lock definition by lockId
-                if (LockLookup.TryGetValue(tile.LockId, out var lockDef))
-                {
-                    // Assign the lock state to the tile (shared instance)
-                    tile.LockState = lockDef;
-
-                    LogService.Info($"[TestHouseLoader.ApplyLockStates] Applied lock '{tile.LockId}' to tile {tile.TileId}");
-                }
-            }
-        }
-        #endregion
-
         #region === Tile Connections ===
         /// <summary>
         /// Builds bidirectional connections between adjacent tiles based on their grid positions. 
@@ -350,5 +297,60 @@ namespace Adventure.Loaders
             return (int.Parse(parts[0]), int.Parse(parts[1]));
         }
         #endregion
+
+        #region === Lock Handling ===
+        /// <summary>
+        /// Loads all lock definitions from the TestHouse lock JSON file into memory.
+        /// This method initializes the <see cref="LockLookup"/> dictionary.
+        /// </summary>
+        public static void LoadLocks(TestHouseLockCollection lockData)
+        {
+            // Load lock data from JSON
+            //var lockData = JsonDataManager.LoadObjectFromJson<TestHouseLockCollection>("Data/Map/Testhouse/testhouselocks.json");
+
+            // Ensure a clean state before loading
+            LockLookup.Clear();
+
+            // Register each lock using the dictionary key as its unique identifier
+            foreach (var (lockId, lockDef) in lockData!.LockedDoors)
+            {
+                // Store the lock definition under its lockId
+                LockLookup[lockId] = lockDef;
+
+                LogService.Info($"[TestHouseLoader.LoadLocks] Loading {lockId}. KeyId: {lockDef.KeyId} LockType: {lockDef.LockType} isLocked: {lockDef.Locked}");
+            }
+
+            LogService.Info($"[TestHouseLoader.LoadLocks] Loaded {LockLookup.Count} locks\n");
+        }
+
+        /// <summary>
+        /// Applies loaded lock definitions to the corresponding tiles.
+        /// Each tile that declares a LockId will receive a reference to the matching
+        /// lock instance from <see cref="LockLookup"/>.
+        /// </summary>
+        /// <param name="allTiles">
+        /// The complete list of tiles that were generated for the TestHouse map.
+        /// </param>
+        public static void ApplyLockStates(List<TileModel> allTiles)
+        {
+            foreach (var tile in allTiles)
+            {
+                // Skip tiles that do not reference a lock
+                if (string.IsNullOrEmpty(tile.LockId))
+                    continue;
+
+                // Attempt to resolve the lock definition by lockId
+                if (LockLookup.TryGetValue(tile.LockId, out var lockDef))
+                {
+                    // Assign the lock state to the tile (shared instance)
+                    tile.LockState = lockDef;
+
+                    LogService.Info($"[TestHouseLoader.ApplyLockStates] Applied lock '{tile.LockId}' to tile {tile.TileId}");
+                }
+            }
+        }
+        #endregion
+
+        
     }
 }
