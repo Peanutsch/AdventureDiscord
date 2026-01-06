@@ -3,6 +3,7 @@ using Adventure.Models.Map;
 using Adventure.Services;
 using Discord;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Adventure.Quest.Map
 {
@@ -39,8 +40,9 @@ namespace Adventure.Quest.Map
                 .AddField($"[{safeAreaName}]", area.Description)
                 .AddField($"{gridVisual}\n", $"{tileTextSafe}");
 
-            // --- Add extra info, such as lock state ---
-            AddLockInfo(embed, tile);
+            // --- Add extra info as lock state ---
+            if (tile.LockState!.Locked || tile.LockSwitch)
+                AddLockInfo(embed, tile);
 
             // --- Log all collected tile information for debugging ---
             LogTileDebugInfo(tile, area, tileTextSafe, exitInfo);
@@ -110,11 +112,19 @@ namespace Adventure.Quest.Map
         /// </summary>
         private static void AddLockInfo(EmbedBuilder embed, TileModel tile)
         {
-            if (!tile.LockSwitch && tile.LockState!.Locked)
-            {
-                LogService.Info($"LockState.Locked is {tile.LockState!.LockType}");
+            LogService.Info($"> Running AddLockInfo");
+
+            if (!TestHouseLoader.LockLookup.TryGetValue(tile.LockId!, out var lockDef))
+                return;
+
+            LogService.Info($"LockId: {tile.LockId} KeyId: {tile.LockState!.KeyId} isLocked: {tile.LockState.Locked} KeyHole: {tile.LockState.KeyHole}");
+
+            if (!lockDef.KeyHole && !tile.LockSwitch)
                 embed.AddField("[Locked]", "The door is locked, but there is no keyhole...");
-            }
+            else if (lockDef.KeyHole && !tile.LockSwitch)
+                embed.AddField("[Locked]", "The door is locked.");
+            else
+                return;
         }
         #endregion
 
@@ -131,8 +141,7 @@ namespace Adventure.Quest.Map
                         //$"[Layout]\n{gridVisual}" +
                         $"[Tile Text]\n{tileTextSafe}\n" +
                         $"[Exits]\n{exitInfo}\n" +
-                        $"[Current Tile Id/Name]\n{tile.TileId} / {tile.TileName}\n" +
-                        $"[LockType/IsLocked]\n{tile.LockState?.LockType}/{tile.LockState?.Locked}"
+                        $"[Current Tile Id/Name]\n{tile.TileId} / {tile.TileName}\n"
             );
         }
         #endregion

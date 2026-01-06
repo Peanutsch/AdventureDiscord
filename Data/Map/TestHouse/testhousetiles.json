@@ -166,7 +166,7 @@
         "id": "EXIT1",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "The door leading back to the living room",
+        "text": "The door leading into the mansion.",
         "connections": [ "living_room:7,9" ],
         "pois": [],
         "items": [],
@@ -180,6 +180,16 @@
         "connections": [ "small_pond:7,6" ],
         "pois": [],
         "items": []
+      },
+      {
+        "id": "EXIT3",
+        "base": "Tree",
+        "overlay": "Tree",
+        "text": "Towards the testing grounds...",
+        "connections": [ "try_out:7,1" ],
+        "pois": [],
+        "items": [],
+        "lockId": "door_forest_tryout"
       },
       {
         "id": "FEM1",
@@ -196,6 +206,28 @@
         "text": "There is someone sitting beneath a tree!",
         "pois": [],
         "items": []
+      }
+    ],
+    "try_out": [
+      {
+        "id": "EXIT1",
+        "base": "Tree",
+        "overlay": "Tree",
+        "text": "The entrance leading to the Southern Forest.",
+        "connections": [ "forest_south:0,1" ],
+        "pois": [],
+        "items": [],
+        "lockId": "door_forest_tryout"
+      },
+      {
+        "id": "EXIT2",
+        "base": "EXIT",
+        "overlay": "EXIT",
+        "text": "The entrance to the mines. If it was not closed, this could be something awesome to explore!.",
+        "connections": [ "try_out:4,11" ],
+        "pois": [],
+        "items": [],
+        "lockId": "door_tryout_mine1"
       }
     ]
   }

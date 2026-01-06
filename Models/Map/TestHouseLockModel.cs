@@ -15,6 +15,9 @@ namespace Adventure.Models.Map
         [JsonPropertyName("keyId")]
         public string KeyId { get; set; } = "ERROR_KeyID";
 
+        [JsonPropertyName("keyhole")]
+        public bool KeyHole { get; set; }
+
         [JsonPropertyName("locked")]
         public bool Locked { get; set; }
     }

@@ -27,8 +27,8 @@ namespace Adventure.Loaders
             GameData.RollText = rollText;
 
             // Load Map data
-            GameData.TestHouse = TestHouseLoader.Load();
-            
+            GameData.TestHouse = TestHouseLoader.Load();            
+
             LogService.DividerParts(2, "Load Module");
         }
     }
