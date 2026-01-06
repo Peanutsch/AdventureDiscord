@@ -2,8 +2,6 @@
 using Adventure.Models.Map;
 using Adventure.Services;
 using Discord;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Adventure.Quest.Map
 {

@@ -9,9 +9,6 @@ using Adventure.Quest.Map.HashSets;
 using Adventure.Services;
 using Discord;
 using Discord.Interactions;
-using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using static Adventure.Quest.Battle.Randomizers.EncounterRandomizer;
 
 namespace Adventure.Buttons
@@ -92,17 +89,21 @@ namespace Adventure.Buttons
         {
             Random rnd = new Random();
             int chance = rnd.Next(1, 100);
+            int setChanceEncounter = 15; // --> Set change encounter enemy NPC at 15%
 
             bool isNpc = targetTile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase);
-            bool isTreeEncounter = targetTile.TileName.Equals("Tree", StringComparison.OrdinalIgnoreCase) && 
-                
-                // --> Set change encounter enemy NPC
-                chance <= 15;
+            bool isForestSouthEncounter = targetTile.TileName.Equals("Tree", StringComparison.OrdinalIgnoreCase) &&
+                                    chance <= setChanceEncounter;
+            bool isForestNorthEncounter = targetTile.TileName.Equals("TreeX", StringComparison.OrdinalIgnoreCase) &&
+                                    chance <= setChanceEncounter;
 
             LogService.Info($"[ComponentHelpers.TryTriggerAutoEncounterAsync] int chance: {chance}");
 
-            if (isTreeEncounter)
+            if (isForestSouthEncounter)
                 return await HandleAutoEncounterAsync(context, targetTile, CreatureListPreference.Bestiary);
+
+            if (isForestNorthEncounter)
+                return await HandleAutoEncounterAsync(context, targetTile, CreatureListPreference.Random);
 
             if (isNpc)
                 return await HandleAutoEncounterAsync(context, targetTile, CreatureListPreference.Humanoids);
@@ -195,7 +196,7 @@ namespace Adventure.Buttons
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
                 msg.Embed = new EmbedBuilder()
-                    .WithTitle("⚔️ YOU ENCOUNTERED AN ENEMY! ⚔️")
+                    .WithTitle("⚔️ YOU ENCOUNTER AN ENEMY! ⚔️")
                     .WithDescription($"Get ready to fight a **{npc.ToUpper()}**...")
                     .WithColor(Color.Red)
                     .WithImageUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1437286545307598969/iu_.png?ex=6912b0e7&is=69115f67&hm=78332d8954422f6b3a261847abea4eba4d30ffa38e10fe9b92da4a03949940ef&")

@@ -91,7 +91,7 @@ namespace Adventure.Quest.Battle.Randomizers
             Humanoids,  // Always select from humanoids
             Bestiary    // Always select from bestiary
         }
-
+        
         /// <summary>
         /// Ensures humanoids and bestiary lists are available.
         /// If both lists are null or empty, reload them using the loaders.

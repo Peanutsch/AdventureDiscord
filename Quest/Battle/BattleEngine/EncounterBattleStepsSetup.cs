@@ -1,17 +1,9 @@
-﻿using System.Collections.Concurrent;
-using System.Linq;
-using System.Numerics;
-using Adventure.Buttons;
-using Adventure.Data;
-using Adventure.Loaders;
-using Adventure.Models.BattleState;
-using Adventure.Models.Items;
-using Adventure.Quest.Battle.Attack;
+﻿using Adventure.Models.BattleState;
 using Adventure.Quest.Encounter;
 using Adventure.Services;
 using Discord;
-using Discord.Interactions;
 using Discord.WebSocket;
+using System.Collections.Concurrent;
 
 namespace Adventure.Quest.Battle.BattleEngine
 {

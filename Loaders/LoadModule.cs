@@ -1,10 +1,5 @@
 ﻿using Adventure.Data;
 using Adventure.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Loaders
 {
@@ -13,7 +8,7 @@ namespace Adventure.Loaders
         public static void Load()
         {
             LogService.DividerParts(1, "Load Module");
-            
+
             // Load static game data into memory at startup
             GameData.Weapons = WeaponLoader.Load();
             GameData.Armor = ArmorLoader.Load();
@@ -27,7 +22,7 @@ namespace Adventure.Loaders
             GameData.RollText = rollText;
 
             // Load Map data
-            GameData.TestHouse = TestHouseLoader.Load();            
+            GameData.TestHouse = TestHouseLoader.Load();
 
             LogService.DividerParts(2, "Load Module");
         }

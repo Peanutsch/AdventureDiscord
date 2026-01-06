@@ -26,7 +26,7 @@
     { "text": "⚔️ {attacker}'s {weapon} bites into {defender}, leaving `{damage}` damage behind." },
     { "text": "⚔️ {attacker} sneaks a strike with {weapon} and hits {defender}, causing `{damage}` damage." },
     { "text": "⚔️ {attacker} lunges at {defender}, the {weapon} finding its mark for `{damage}` damage." },
-    { "text": "⚔️ {attacker} swings wildly and the {weapon} connects with {defender}, dealing `{damage}` damage." },
+    { "text": "⚔️ {attacker} swings wildly and the {weapon} hits {defender}, dealing `{damage}` damage." },
     { "text": "⚔️ {attacker} executes a lightning-fast strike with {weapon} on {defender}, inflicting `{damage}` damage." },
     { "text": "⚔️ {attacker} channels fury through {weapon}, hitting {defender} for `{damage}` damage." },
     { "text": "⚔️ {attacker} spins gracefully, {weapon} slashing {defender} for `{damage}` damage." },

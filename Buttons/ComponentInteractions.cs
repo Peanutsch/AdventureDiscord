@@ -1,15 +1,11 @@
-﻿// ComponentInteractions.cs
-using Adventure.Data;
-using Adventure.Loaders;
+﻿using Adventure.Loaders;
 using Adventure.Modules;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Randomizers;
 using Adventure.Quest.Encounter;
-using Adventure.Quest.Map;
 using Adventure.Services;
 using Discord;
 using Discord.Interactions;
-using Discord.WebSocket;
 
 namespace Adventure.Buttons
 {
@@ -131,7 +127,7 @@ namespace Adventure.Buttons
         [ComponentInteraction("battle_flee_*")]
         public async Task FleeBattleHandler(string userIdRaw)
         {
-            LogService.Info($"Received userIdRaw: {userIdRaw}");
+            LogService.Info($"[ComponentInteractions.FleeBattleHandler] Received userIdRaw: {userIdRaw}");
 
             // Prevent other users from triggering this
             if (!userIdRaw.Contains(Context.User.Id.ToString()))

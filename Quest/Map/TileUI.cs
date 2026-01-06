@@ -1,11 +1,6 @@
 ﻿using Adventure.Loaders;
 using Adventure.Models.Map;
-using Adventure.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Adventure.Quest.Map
 {
@@ -22,9 +17,10 @@ namespace Adventure.Quest.Map
             { "Sand", "🟨" },
             { "Lava", "🟧" },
             { "Water", "🟦" },
-            { "Tree", "🌳" },
-            { "BLOCKt", "🌳" },
-            //{ "BLOCK", " ⠀  " }, // Braille blank
+            { "Tree", "🌳" }, // Tree tile with 15% chance NPC Beast attack
+            { "Tree2", "🌳" }, // Tree tile with 15% chance NPC Humanoid or Beast attack
+            { "BLOCKt", "🌳" }, // Blocked tree tile
+            { "BLOCKb", " ⠀  " }, // Blocked blank space
             // Passage
             { "DOOR", "🚪" },
             { "PORTAL", "🌀" },
@@ -32,7 +28,7 @@ namespace Adventure.Quest.Map
             { "ExitLeft", "⬅️" },
             { "ExitDown", "⬇️" },
             { "ExitRight", "➡️" },
-            { "EXIT", "      " }, // Braille blank
+            { "EXIT", "      " }, // Blank space
             // Objects
             { "MONEY", "💰" },
             { "COIN", "🪙" },

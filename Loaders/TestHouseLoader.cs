@@ -1,11 +1,5 @@
 ﻿using Adventure.Models.Map;
 using Adventure.Services;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
 
 namespace Adventure.Loaders
 {
@@ -44,18 +38,17 @@ namespace Adventure.Loaders
 
         #region === Load JSON ===
         /// <summary>
-        /// Loads all map-related data for the TestHouse environment:
+        /// Loads map-related data for the TestHouse environment:
         /// - The room layout (areas and tiles)
         /// - Tile-specific details
         /// - Door/lock states
-        /// After loading, the method automatically applies the door lock information
-        /// to the corresponding tiles based on matching LockIds.
+        /// Applies the door lock information to the corresponding tiles based on matching LockIds.
         /// </summary>
         /// <returns>
-        /// A tuple containing the house layout, tile details, and lock collection.
+        /// A tuple containing the house layout, tile details, and lock data.
         /// </returns>
         /// <exception cref="InvalidDataException">Thrown when any of the JSON files are invalid or missing.</exception>
-        private static (TestHouseModel houseLayout, TestHouseTilesModel tileDetails, TestHouseLockCollection doorData) LoadTestHouseData()
+        private static (TestHouseModel houseLayout, TestHouseTilesModel tileDetails, TestHouseLockCollection lockData) LoadTestHouseData()
         {
             LogService.Info("[TestHouseLoader.LoadTestHouseData] Starting TestHouse data load...");
 
@@ -350,7 +343,5 @@ namespace Adventure.Loaders
             }
         }
         #endregion
-
-        
     }
 }
