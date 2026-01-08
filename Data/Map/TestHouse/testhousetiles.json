@@ -50,7 +50,7 @@
         "connections": [ "forest_south:1,0" ],
         "pois": [],
         "items": [],
-        "lockId": "door_forest_living"
+        "lockId": "door_forestSouth_living"
       },
       {
         "id": "EXIT3",
@@ -63,7 +63,7 @@
         "lockId": "door_pond_living"
       },
       {
-        "id": "PLANT1",
+        "id": "Trap1",
         "base": "PLANT1",
         "overlay": "PLANT1",
         "text": "Oh, look! A simple potted plant—nothing more, nothing less.\nBut as you pass by, you hear a soft rattling to your left, followed by a distinct click...",
@@ -81,13 +81,13 @@
         "items": []
       },
       {
-        "id": "PLANT3",
+        "id": "Trap2",
         "base": "PLANT1",
         "overlay": "PLANT1",
         "text": "A potted plant.\nBut as you walk past, a soft rattling sounds to your right, ending with a gentle click...",
         "pois": [],
         "items": [],
-        "lockId": "door_forest_living",
+        "lockId": "door_forestSouth_living",
         "lockSwitch": true
       },
       {
@@ -105,6 +105,16 @@
         "text": "Prepare for battle!",
         "pois": [],
         "items": []
+      },
+      {
+        "id": "Trap3",
+        "base": "Floor",
+        "overlay": "Floor",
+        "text": "After entering the room, the door closes behind you and get locked!",
+        "pois": [],
+        "items": [],
+        "lockId": "door_forestSouth_living",
+        "lockSwitch": true
       }
     ],
     "small_pond": [
@@ -120,7 +130,7 @@
         "id": "EXIT1",
         "base": "DOOR",
         "overlay": "DOOR",
-        "text": "The door back to the living room...",
+        "text": "The door to the living room...",
         "connections": [ "living_room:8,1" ],
         "pois": [],
         "items": [],
@@ -170,7 +180,7 @@
         "connections": [ "living_room:7,9" ],
         "pois": [],
         "items": [],
-        "lockId": "door_forest_living"
+        "lockId": "door_forestSouth_living"
       },
       {
         "id": "EXIT2",
@@ -185,11 +195,11 @@
         "id": "EXIT3",
         "base": "Tree",
         "overlay": "Tree",
-        "text": "Towards the testing grounds...",
-        "connections": [ "try_out:7,1" ],
+        "text": "Towards the Northern Forest...",
+        "connections": [ "forest_north:7,1" ],
         "pois": [],
         "items": [],
-        "lockId": "door_forest_tryout"
+        "lockId": "door_forestSouth_door_forestNorth"
       },
       {
         "id": "FEM1",
@@ -208,26 +218,26 @@
         "items": []
       }
     ],
-    "try_out": [
+    "forest_north": [
       {
         "id": "EXIT1",
         "base": "Tree",
         "overlay": "Tree",
-        "text": "The entrance leading to the Southern Forest.",
+        "text": "The passage to the Southern Forest.",
         "connections": [ "forest_south:0,1" ],
         "pois": [],
         "items": [],
-        "lockId": "door_forest_tryout"
+        "lockId": "door_forestSouth_door_forestNorth"
       },
       {
         "id": "EXIT2",
         "base": "EXIT",
         "overlay": "EXIT",
-        "text": "The entrance to the mines. If it was not closed, this could be something awesome to explore!.",
-        "connections": [ "try_out:4,11" ],
+        "text": "The entrance to the mines. If it was not closed, this would be something awesome to explore!",
+        "connections": [ "forest_north:4,11" ],
         "pois": [],
         "items": [],
-        "lockId": "door_tryout_mine1"
+        "lockId": "door_forestNorth_mine1"
       }
     ]
   }

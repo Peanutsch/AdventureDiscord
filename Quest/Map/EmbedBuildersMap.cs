@@ -120,7 +120,7 @@ namespace Adventure.Quest.Map
             if (!lockDef.KeyHole && !tile.LockSwitch)
                 embed.AddField("[Locked]", "The door is locked, but there is no keyhole...");
             else if (lockDef.KeyHole && !tile.LockSwitch)
-                embed.AddField("[Locked]", "The door is locked.");
+                embed.AddField("[Locked]", $"The door is locked with an **{tile.LockState.LockType.ToUpper()}** lock.");
             else
                 return;
         }

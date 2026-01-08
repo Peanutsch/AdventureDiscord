@@ -121,7 +121,8 @@ namespace Adventure.Data {
 
             var defaultTemplate = JsonDataManager.LoadObjectFromJson<PlayerModel>("Data/Player/default_template_player.json");
 
-            LogService.Info("[CreateDefaultPlayer] Finished loading default template");
+            if (defaultTemplate != null)
+                LogService.Info("[CreateDefaultPlayer] Finished loading default template");
 
             var player = defaultTemplate ?? new PlayerModel {
                 Id = userId,

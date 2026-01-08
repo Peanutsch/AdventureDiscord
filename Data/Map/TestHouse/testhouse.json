@@ -94,12 +94,12 @@
           "Wall",
           "Floor",
           "Wall",
-          "PLANT1",
+          "Trap1",
           "Floor",
           "Floor",
-          "PLANT3",
+          "Trap2",
           "Wall",
-          "Floor",
+          "Trap3",
           "EXIT2",
           "BLOCKt",
           "BLOCKt"
@@ -314,9 +314,9 @@
         ]
       ]
     },
-    "try_out": {
-      "id": "try_out",
-      "name": "Try Out",
+    "forest_north": {
+      "id": "forest_north",
+      "name": "Northern Forest",
       "description": "TestMap, layout with MapBuilder...",
       "layout": [
         [

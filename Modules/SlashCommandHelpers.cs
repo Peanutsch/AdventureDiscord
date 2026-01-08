@@ -31,7 +31,7 @@ namespace Adventure.Modules
 
             if (!File.Exists(path))
             {
-                LogService.Error($"[SlashEncounterHelpers.GetOrCreatePlayer] No player file found. Creating for {playerName} ({userId})");
+                LogService.Error($"[SlashEncounterHelpers.GetOrCreatePlayer] No player file found. Create new file for {playerName} ({userId})");
                 return PlayerDataManager.CreateNewPlayer(userId, playerName);
             }
 
@@ -40,7 +40,7 @@ namespace Adventure.Modules
         }
         #endregion
 
-        #region === Load Inventory ===
+        #region === Load Inventory (Not in Use) ===
         /*
          * Temp setup method loading Inventory
         public static void EnsureInventoryLoaded(ulong userId)

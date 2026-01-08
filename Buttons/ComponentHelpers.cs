@@ -94,7 +94,7 @@ namespace Adventure.Buttons
             bool isNpc = targetTile.TileType.StartsWith("NPC", StringComparison.OrdinalIgnoreCase);
             bool isForestSouthEncounter = targetTile.TileName.Equals("Tree", StringComparison.OrdinalIgnoreCase) &&
                                     chance <= setChanceEncounter;
-            bool isForestNorthEncounter = targetTile.TileName.Equals("TreeX", StringComparison.OrdinalIgnoreCase) &&
+            bool isForestNorthEncounter = targetTile.TileName.Equals("Tree2", StringComparison.OrdinalIgnoreCase) &&
                                     chance <= setChanceEncounter;
 
             LogService.Info($"[ComponentHelpers.TryTriggerAutoEncounterAsync] int chance: {chance}");
