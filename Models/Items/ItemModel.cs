@@ -1,28 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace Adventure.Models.Items
 {
-    public class ItemModel
+    /// <summary>
+    /// Represents a general item with points, value, and effects.
+    /// Inherits shared item properties from BaseItemModel.
+    /// </summary>
+    public class ItemModel : BaseItemModel
     {
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
-
-        [JsonPropertyName("description")]
-        public string? Description { get; set; }
-
         [JsonPropertyName("points")]
         public int Points { get; set; }
-
-        [JsonPropertyName("weight")]
-        public double Weight { get; set; }
 
         [JsonPropertyName("amount")]
         public int Amount { get; set; }
@@ -34,6 +21,9 @@ namespace Adventure.Models.Items
         public EffectItems Effect { get; set; } = new();
     }
 
+    /// <summary>
+    /// Represents the effects an item can have when used.
+    /// </summary>
     public class EffectItems
     {
         [JsonPropertyName("diceCount")]
@@ -41,9 +31,8 @@ namespace Adventure.Models.Items
 
         [JsonPropertyName("diceValue")]
         public int DiceValue { get; set; }
-        
+
         [JsonPropertyName("bonusHP")]
         public int BonusHP { get; set; }
-
     }
 }

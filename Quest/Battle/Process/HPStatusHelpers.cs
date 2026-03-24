@@ -98,11 +98,11 @@ namespace Adventure.Quest.Battle.Process
         {
             return percentHP switch
             {
-                >= 90 => npc.ThumbnailNpc_100,
-                >= 50 => npc.ThumbnailNpc_50,
-                >= 10 => npc.ThumbnailNpc_10,
-                0 => npc.ThumbnailNpc_0,
-                _ => npc.ThumbnailNpc_100 // fallback for unexpected values
+                >= 90 => npc.ThumbHpNpc_100,
+                >= 50 => npc.ThumbHpNpc_50,
+                >= 10 => npc.ThumbHpNpc_10,
+                0 => npc.ThumbHpNpc_0,
+                _ => npc.ThumbHpNpc_100 // fallback for unexpected values
             };
         }
         #endregion Process HP Status

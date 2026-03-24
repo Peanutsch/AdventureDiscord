@@ -2,21 +2,13 @@
 
 namespace Adventure.Models.Items
 {
-    public class ValuablesModel
+    /// <summary>
+    /// Represents a valuable item with intrinsic value.
+    /// Inherits shared item properties from BaseItemModel.
+    /// </summary>
+    public class ValuablesModel : BaseItemModel
     {
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
-
-        [JsonPropertyName("description")]
-        public string? Description { get; set; }
-
         [JsonPropertyName("value")]
         public int Value { get; set; }
-
-        [JsonPropertyName("weight")]
-        public double Weight { get; set; }
     }
 }

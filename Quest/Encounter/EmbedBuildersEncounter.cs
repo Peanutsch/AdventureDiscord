@@ -35,7 +35,7 @@ namespace Adventure.Quest.Encounter
             var embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
-                .WithThumbnailUrl($"{npc.ThumbnailNpc_100}")
+                .WithThumbnailUrl($"{npc.ThumbHpNpc_100}")
                 .WithDescription($"**[{npc.Name!.ToUpper()}]**\n*{npc.Description}*");
 
             AddArmorFields(embed, npc);

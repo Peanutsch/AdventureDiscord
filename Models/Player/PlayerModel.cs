@@ -1,31 +1,23 @@
-﻿using Adventure.Models.Attributes;
+﻿using Adventure.Models.Characters;
 using Adventure.Models.Items;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
-using System.Threading.Tasks;
 
 namespace Adventure.Models.Player
 {
-    public class PlayerModel
+    /// <summary>
+    /// Represents a Player character with inventory and progression properties.
+    /// Inherits shared character properties from CharacterModel.
+    /// </summary>
+    public class PlayerModel : CharacterModel
     {
         [JsonPropertyName("id")]
         public ulong Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
 
         [JsonPropertyName("level")]
         public int Level { get; set; }
 
         [JsonPropertyName("xp")]
         public int XP { get; set; }
-
-        [JsonPropertyName("description")]
-        public string? Description { get; set; }
 
         [JsonPropertyName("hitpoints")]
         public int Hitpoints { get; set; }
@@ -36,14 +28,11 @@ namespace Adventure.Models.Player
         [JsonPropertyName("savepoint")]
         public string Savepoint { get; set; } = "ERROR_LAST_SAVEPOINT";
 
-        [JsonPropertyName("attributes")]
-        public AttributesModel Attributes { get; set; } = new();
-
         [JsonPropertyName("weapons")]
-        public List<PlayerInventoryWeaponsModel> Weapons { get; set; } = new();
+        public new List<PlayerInventoryWeaponsModel> Weapons { get; set; } = new();
 
         [JsonPropertyName("armor")]
-        public List<PlayerInventoryArmorModel> Armor { get; set; } = new();
+        public new List<PlayerInventoryArmorModel> Armor { get; set; } = new();
 
         [JsonPropertyName("items")]
         public List<PlayerInventoryItemModel> Items { get; set; } = new();

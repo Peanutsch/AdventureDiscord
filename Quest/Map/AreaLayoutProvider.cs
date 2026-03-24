@@ -13,7 +13,7 @@ namespace Adventure.Quest.Map
         /// Attempts to retrieve the area and its layout for a given tile.
         /// Returns false if area is missing or layout is invalid.
         /// </summary>
-        public bool TryGetAreaLayout(TileModel tile, out TestHouseAreaModel? area, out List<List<string>> layout)
+        public static bool TryGetAreaLayout(TileModel tile, out TestHouseAreaModel? area, out List<List<string>> layout)
         {
             layout = new();
             

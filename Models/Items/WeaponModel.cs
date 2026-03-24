@@ -1,34 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace Adventure.Models.Items
 {
-    public class WeaponModel
+    /// <summary>
+    /// Represents a weapon item with range and damage properties.
+    /// Inherits shared item properties from BaseItemModel.
+    /// </summary>
+    public class WeaponModel : BaseItemModel
     {
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
-
-        [JsonPropertyName("description")]
-        public string? Description { get; set; }
-
         [JsonPropertyName("range")]
         public double Range { get; set; }
 
-        [JsonPropertyName("weight")]
-        public double Weight { get; set; }
-
         [JsonPropertyName("damage")]
         public DamageModel Damage { get; set; } = new();
-
     }
 
+    /// <summary>
+    /// Represents damage properties for weapons.
+    /// </summary>
     public class DamageModel
     {
         [JsonPropertyName("diceCount")]
