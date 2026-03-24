@@ -8,7 +8,6 @@ namespace Adventure.Quest.Map
     /// </summary>
     public static class TileUI
     {
-        private static readonly TilePositionParser _positionParser = new();
         private static readonly TileIconProvider _iconProvider = new();
         private static readonly GridRenderer _renderer = new(_iconProvider);
 
@@ -22,7 +21,7 @@ namespace Adventure.Quest.Map
                 return "<Unknown Area>";
 
             // Parse player coordinates
-            var (playerRow, playerCol) = _positionParser.Parse(tile.TilePosition);
+            var (playerRow, playerCol) = TilePositionParser.Parse(tile.TilePosition);
 
             // Render the grid
             return _renderer.RenderGrid(area!, layout, playerRow, playerCol);

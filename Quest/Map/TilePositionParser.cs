@@ -10,7 +10,7 @@ namespace Adventure.Quest.Map
         /// Parses a tile position string "row,col" to row/col integers.
         /// Returns (-1, -1) if parsing fails.
         /// </summary>
-        public (int row, int col) Parse(string tilePos)
+        public static (int row, int col) Parse(string tilePos)
         {
             if (string.IsNullOrWhiteSpace(tilePos))
                 return (-1, -1);

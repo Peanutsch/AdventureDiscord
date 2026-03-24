@@ -13,6 +13,35 @@ using static Adventure.Quest.Battle.Randomizers.EncounterRandomizer;
 
 namespace Adventure.Buttons
 {
+    /// <summary>
+    /// Provides helper methods for handling Discord component interactions (buttons, select menus).
+    /// 
+    /// This static class handles:
+    /// - Player movement across the map with encounter detection
+    /// - Tile-based navigation and validation
+    /// - Automatic encounter triggers based on tile type and probability
+    /// - Normal movement processing and display updates
+    /// - Player position persistence
+    /// 
+    /// The class acts as a bridge between Discord button interactions and the game's
+    /// map/encounter systems, managing the complete flow of player movement.
+    /// 
+    /// <remarks>
+    /// Main Responsibilities:
+    /// 1. Validate target tiles exist
+    /// 2. Save player position to persistent storage
+    /// 3. Detect and trigger random encounters
+    /// 4. Update Discord embeds with new map state
+    /// 5. Handle movement failures gracefully
+    /// 
+    /// Common Workflow:
+    /// User clicks movement button → MovePlayerAsync() called
+    ///   → Validate tile exists
+    ///   → Save position
+    ///   → Check for auto-encounter
+    ///   → Update Discord embed
+    /// </remarks>
+    /// </summary>
     public static class ComponentHelpers
     {
         #region === Move Player ===
@@ -125,7 +154,7 @@ namespace Adventure.Buttons
         {
             LogService.Info($"[MovePlayerAsync] Auto-encounter triggered on {tile.TileName}");
 
-            var npc = EncounterRandomizer.NpcRandomizer(CRWeightPreference.Balanced, preference);
+            Models.NPC.NpcModel? npc = EncounterRandomizer.NpcRandomizer(CRWeightPreference.Balanced, preference);
             if (npc == null)
             {
                 await context.Interaction.FollowupAsync("⚠️ Could not pick a random NPC.");
@@ -135,8 +164,8 @@ namespace Adventure.Buttons
             await TransitionBattleEmbed(context, npc.Name!);
             SlashCommandHelpers.SetupBattleState(context.User.Id, npc);
 
-            var embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
-            var buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
+            EmbedBuilder embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
+            ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
 
             await context.Interaction.FollowupAsync(embed: embed.Build(), components: buttons.Build());
             return true;

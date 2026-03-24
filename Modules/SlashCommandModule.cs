@@ -6,6 +6,33 @@ using Discord.Interactions;
 
 namespace Adventure.Modules
 {
+    /// <summary>
+    /// Discord slash command handler module for game administration and control.
+    /// 
+    /// This module registers and processes Discord slash commands, providing:
+    /// - Map reloading functionality for updating game world data at runtime
+    /// - Testing and debugging commands
+    /// - Administrative functions for game state management
+    /// 
+    /// Implements IInteractionModuleBase to integrate with Discord.NET's interaction system.
+    /// Each slash command method corresponds to a Discord command users can execute
+    /// with a "/" prefix in the Discord client.
+    /// 
+    /// <remarks>
+    /// Registered Commands:
+    /// - /reload - Reload map data from disk
+    /// 
+    /// Disabled Commands (in comments):
+    /// - /start - Initialize adventure (unused, left for reference)
+    /// - /encounter - Trigger random encounter (testing only)
+    /// 
+    /// Command Execution Flow:
+    /// 1. User types /command in Discord
+    /// 2. Discord.NET routes to appropriate handler method
+    /// 3. Handler processes command and responds to user
+    /// 4. Deferred responses allow async processing
+    /// </remarks>
+    /// </summary>
     public class SlashCommandModule : InteractionModuleBase<SocketInteractionContext>
     {
         #region === Slashcommand "start" (NOT IN USE) ===
@@ -40,7 +67,35 @@ namespace Adventure.Modules
         */
         #endregion
 
-        #region === Slashcommand "reload map" ===
+        #region === Slash Command: /reload ===
+
+        /// <summary>
+        /// Reloads all map data from disk and updates the game state.
+        /// 
+        /// This command is useful for:
+        /// - Updating map content without restarting the application
+        /// - Testing map changes in real-time
+        /// - Refreshing area and tile data after editing JSON files
+        /// 
+        /// Admin-only in practice (though not technically restricted here).
+        /// </summary>
+        /// <remarks>
+        /// Process:
+        /// 1. Defer the interaction (prevents timeout for slow operations)
+        /// 2. Call TestHouseLoader.Load() to read map files from disk
+        /// 3. Update GameData.TestHouse with fresh map data
+        /// 4. Send success message to user
+        /// 5. If error occurs, send error message with exception details
+        /// 
+        /// Map Files Reloaded:
+        /// - testhousetiles.json (tile definitions)
+        /// - testhouse.json (areas and layouts)
+        /// - testhouselocks.json (lock definitions)
+        /// 
+        /// Example Usage:
+        /// User: "/reload"
+        /// Bot: "[INFO] Map is reloaded..."
+        /// </remarks>
         [SlashCommand("reload", "Reload map")]
         public async Task SlashcommandReloadMapHandler()
         {

@@ -9,96 +9,184 @@ using System.Linq;
 namespace Adventure.Quest.Battle.Randomizers
 {
     /// <summary>
-    /// Provides functionality to randomly select NPCs for encounters.
-    /// NPCs can be selected from humanoid or bestiary lists, and 
-    /// the selection can be weighted by challenge rating (CR).
+    /// Provides intelligent random NPC selection for encounters with flexible weighting options.
+    /// 
+    /// This class handles:
+    /// - Randomly selecting NPCs from humanoid or bestiary collections
+    /// - Applying Challenge Rating (CR) preferences (prefer low, high, or balanced)
+    /// - Weighted list selection (humanoids vs bestiary with configurable probability)
+    /// - Error handling and logging for debugging
+    /// 
+    /// Core Features:
+    /// - CR Weight Modes: LowCR (easy), Balanced (neutral), HighCR (hard)
+    /// - List Preferences: Random (50/50), Humanoids (always), Bestiary (always)
+    /// - Fully randomized or weighted selection based on game design needs
+    /// 
+    /// <remarks>
+    /// Usage Example:
+    /// 
+    /// // Random balanced encounter
+    /// var npc = EncounterRandomizer.NpcRandomizer();
+    /// 
+    /// // Hard encounter from bestiary only
+    /// var npc = EncounterRandomizer.NpcRandomizer(
+    ///     CRWeightMode.HighCR, 
+    ///     CreatureListPreference.Bestiary);
+    /// 
+    /// // Easy humanoid encounter
+    /// var npc = EncounterRandomizer.NpcRandomizer(
+    ///     CRWeightMode.LowCR,
+    ///     CreatureListPreference.Humanoids);
+    /// 
+    /// Thread Safety: Uses static Random instance. Consider thread-safety 
+    /// if called from multiple threads simultaneously.
+    /// </remarks>
     /// </summary>
     public class EncounterRandomizer
     {
         /*
-           Usage Examples:
-         
+           USAGE EXAMPLES:
+
            Low CR preference, but only from humanoids:
            var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.LowCR, CreatureListPreference.Humanoids);
-          
-           High CR preference, but always from bestiary
+
+           High CR preference, but always from bestiary:
            var npc = EncounterRandomizer.NpcRandomizer(CRWeightMode.HighCR, CreatureListPreference.Bestiary);
-         
+
            Balanced CR, 50/50 chance between humanoids and bestiary:
            var npc = EncounterRandomizer.NpcRandomizer();
-         */
+        */
 
         #region === NPC RANDOMIZER ===
+
         /// <summary>
-        /// Randomly selects an NPC from the humanoids or bestiary list.
-        /// The chosen list and weighting can be influenced by parameters.
+        /// Randomly selects an NPC from the humanoids or bestiary list with optional weighting.
+        /// 
+        /// This is the primary entry point for NPC selection. It handles:
+        /// 1. Loading NPC lists from data
+        /// 2. Choosing between humanoids/bestiary based on preference
+        /// 3. Selecting a random NPC with optional CR weighting
+        /// 4. Error handling and logging
+        /// 
+        /// The method is robust and will return null gracefully if NPCs cannot be loaded.
         /// </summary>
         /// <param name="crMode">
         /// Determines how Challenge Rating influences selection probability.
-        /// Defaults to <see cref="CRWeightMode.Balanced"/>.
+        /// - LowCR: Lower CR NPCs are more likely to be selected (easier encounters)
+        /// - Balanced: All NPCs have equal probability (default)
+        /// - HighCR: Higher CR NPCs are more likely to be selected (harder encounters)
+        /// Defaults to <see cref="CRWeightPreference.Balanced"/>.
         /// </param>
         /// <param name="listPreference">
-        /// Determines which creature list to select from.
+        /// Determines which NPC list to select from.
+        /// - Random: 50/50 chance between humanoids and bestiary
+        /// - Humanoids: Always select from humanoids (NPCs, friendly characters)
+        /// - Bestiary: Always select from bestiary (monsters, beasts)
         /// Defaults to <see cref="CreatureListPreference.Random"/>.
         /// </param>
         /// <returns>
-        /// A randomly selected <see cref="NpcModel"/>, or <c>null</c> if no creatures are available.
+        /// A randomly selected NpcModel if successful, or null if:
+        /// - NPC lists are empty or not loaded
+        /// - An error occurs during selection
         /// </returns>
+        /// <remarks>
+        /// Selection Algorithm:
+        /// 1. Load both humanoid and bestiary lists
+        /// 2. Choose one list based on listPreference (Random = coin flip)
+        /// 3. Apply CR weighting to selection within chosen list
+        /// 4. Return selected NPC
+        /// 5. If error occurs, log and return null
+        /// 
+        /// CR Weighting:
+        /// - LowCR: NPCs with low CR get higher selection probability
+        /// - Balanced: Linear probability distribution
+        /// - HighCR: NPCs with high CR get higher selection probability
+        /// 
+        /// Example:
+        /// var npc = NpcRandomizer(CRWeightPreference.HighCR, CreatureListPreference.Humanoids);
+        /// // Result: Random high-CR humanoid (boss-like encounter)
+        /// </remarks>
         public static NpcModel? NpcRandomizer(CRWeightPreference crMode = CRWeightPreference.Balanced, CreatureListPreference listPreference = CreatureListPreference.Random)
         {
             try
             {
-                // Ensure lists are loaded and not null
+                // Step 1: Ensure NPC lists are loaded and available
                 var (humanoids, bestiary) = LoadLists();
 
-                // Choose which list to use (humanoids or bestiary) depending on preference
+                // Step 2: Choose which list to use based on preference
                 var selectedList = ChooseListWeighted(humanoids, bestiary, listPreference);
 
-                // Select a random NPC from the chosen list, applying CR weighting
+                // Step 3: Select a random NPC from chosen list with CR weighting applied
                 var pickedNpcWeighted = PickRandomNpcWeighted(selectedList, crMode);
 
+                // Log the selected NPC for debugging
                 LogService.Info($"[EncounterRandomizer.NpcRandomizer]\n\n> Picked NPC: {pickedNpcWeighted!.Name}\n\n");
                 return pickedNpcWeighted;
             }
             catch (Exception ex)
             {
-                // Log unexpected errors and return null as a safe fallback
+                // Log any errors and return null as safe fallback
                 LogService.Error($"[EncounterService.NpcRandomizer] > Error:\n{ex.Message}");
                 return null;
             }
         }
+
         #endregion NPC RANDOMIZER
 
-        #region === HELPER METHODS ===
+        #region === HELPER METHODS & ENUMS ===
+
+        /// <summary>Random instance for all NPC selection operations.</summary>
         private static readonly Random _random = new Random();
 
         /// <summary>
-        /// Modes for weighting NPC selection based on Challenge Rating (CR).
+        /// Enumerates the different challenge rating weighting modes for NPC selection.
+        /// 
+        /// This determines how the Challenge Rating (CR) of NPCs influences their
+        /// probability of being selected in an encounter.
         /// </summary>
         public enum CRWeightPreference
         {
-            LowCR,      // Lower CR = higher chance of being selected
-            Balanced,   // Equal chance for all NPCs regardless of CR
-            HighCR      // Higher CR = higher chance of being selected
+            /// <summary>Lower CR NPCs are more likely to be selected (easier encounters).</summary>
+            LowCR,
+
+            /// <summary>All NPCs have equal selection probability regardless of CR (default).</summary>
+            Balanced,
+
+            /// <summary>Higher CR NPCs are more likely to be selected (harder encounters).</summary>
+            HighCR
         }
 
         /// <summary>
-        /// Preferences for which list of creatures to select from.
+        /// Enumerates the different creature list sources for NPC selection.
+        /// 
+        /// This determines which NPC collection (humanoids vs monsters) to draw encounters from.
         /// </summary>
         public enum CreatureListPreference
         {
-            Random,     // 50/50 chance between humanoids and bestiary
-            Humanoids,  // Always select from humanoids
-            Bestiary    // Always select from bestiary
+            /// <summary>50/50 chance between humanoids and bestiary (default).</summary>
+            Random,
+
+            /// <summary>Always select from humanoids (NPCs, people-like creatures).</summary>
+            Humanoids,
+
+            /// <summary>Always select from bestiary (monsters, beasts, non-humanoid creatures).</summary>
+            Bestiary
         }
-        
+
         /// <summary>
-        /// Ensures humanoids and bestiary lists are available.
-        /// If both lists are null or empty, reload them using the loaders.
+        /// Ensures humanoids and bestiary lists are loaded and available.
+        /// 
+        /// Checks if NPC lists exist in GameData. If both are empty or null,
+        /// attempts to reload them from the HumanoidLoader to ensure data is available.
         /// </summary>
         /// <returns>
-        /// A tuple containing the humanoid and bestiary lists (never null).
+        /// A tuple of (humanoids list, bestiary list). Neither will be null,
+        /// though they may be empty if loading fails.
         /// </returns>
+        /// <remarks>
+        /// This method prevents failures due to uninitialized data by providing
+        /// automatic fallback loading. It's defensive programming for robustness.
+        /// </remarks>
         private static (List<NpcModel> humanoids, List<NpcModel> bestiary) LoadLists()
         {
             var humanoids = GameData.Humanoids;

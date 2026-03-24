@@ -8,88 +8,158 @@ using System.Collections.Concurrent;
 namespace Adventure.Quest.Battle.BattleEngine
 {
     /// <summary>
-    /// Handles the step-by-step flow of an encounter battle.
-    /// Responsibilities include:
-    /// - Tracking active battle states per player
-    /// - Processing player and NPC actions
-    /// - Handling weapon selection
-    /// - Executing attacks
-    /// - Ending the battle when one side is defeated
+    /// Central orchestrator for multi-step encounter battle flow management.
+    /// 
+    /// This static class handles the state machine logic for battles, tracking:
+    /// - Current battle phase (start, weapon selection, combat, post-battle, end)
+    /// - Active battles per player using concurrent dictionary
+    /// - Routing player actions to appropriate handlers
+    /// - Managing turn sequencing and battle transitions
+    /// 
+    /// Battle Phases:
+    /// 1. START - Initial battle setup, player weapon selection prompt
+    /// 2. WEAPON_CHOICE - Player selects their equipment
+    /// 3. BATTLE (FIGHT) - Combat resolution loop
+    /// 4. POST_BATTLE - Victory/defeat aftermath
+    /// 5. END_BATTLE - Clean up and exit
+    /// 
+    /// This class works in conjunction with BattleStateSetup and specific action handlers
+    /// to provide a complete battle experience.
+    /// 
+    /// <remarks>
+    /// Thread Safety: Uses ConcurrentDictionary for thread-safe state tracking.
+    /// 
+    /// Usage Pattern:
+    /// 1. SetStep(userId, "start") - Initialize battle
+    /// 2. HandleEncounterAction() - Route player actions
+    /// 3. GetStep(userId) - Check current phase
+    /// 4. Clean up when step == "end_battle"
+    /// </remarks>
     /// </summary>
     public static class EncounterBattleStepsSetup
     {
         #region === Constants ===
+        // Battle step constants - represent the current phase of combat
+        public const string StepStart = "start";                    // Initial setup, awaiting weapon selection
+        public const string StepFlee = "flee";                      // Fleeing from battle
+        public const string StepWeaponChoice = "weapon_choice";     // Player selecting weapon
+        public const string StepBattle = "fight";                   // Active combat in progress
+        public const string StepPostBattle = "post_battle";         // After battle resolution
+        public const string StepEndBattle = "end_battle";           // Battle concluded, cleanup
 
-        // Battle step constants
-        public const string StepStart = "start";
-        public const string StepFlee = "flee";
-        public const string StepWeaponChoice = "weapon_choice";
-        public const string StepBattle = "fight";
-        public const string StepPostBattle = "post_battle";
-        public const string StepEndBattle = "end_battle";
+        // Player action constants
+        public const string ActionFlee = "flee";        // Flee attempt action
+        public const string ActionAttack = "attack";    // Attack action
 
-        // Player actions
-        public const string ActionFlee = "flee";
-        public const string ActionAttack = "attack";
-
-        // Predefined messages
+        // Predefined UI messages
         public const string MsgFlee = "You fled. The forest grows quiet.";
         public const string MsgChooseWeapon = "Choose your weapon:";
         public const string MsgBattleOver = "Battle is over!";
         public const string MsgNothingHappens = "Nothing happens...";
-
         #endregion
 
         #region === Battle State Tracking ===
 
         /// <summary>
-        /// Tracks active battle states for each user by Discord user ID.
+        /// Thread-safe dictionary tracking active battle states for each player.
+        /// Key: Discord user ID | Value: Current battle state (player vs NPC)
+        /// 
+        /// Used to maintain state across multiple button interactions in a single battle.
         /// </summary>
         public static readonly ConcurrentDictionary<ulong, BattleStateModel> battleStates = new();
 
         /// <summary>
-        /// Gets the current step of the user's battle.
-        /// Defaults to StepStart if no step is set.
+        /// Retrieves the current battle step/phase for a specific player.
+        /// 
+        /// Queries the player's battle state to determine which phase they're currently in
+        /// (e.g., weapon selection, active combat, post-battle, etc.).
         /// </summary>
+        /// <param name="userId">The Discord user ID of the player.</param>
+        /// <returns>
+        /// The current step as a string (e.g., "start", "weapon_choice", "fight").
+        /// Defaults to StepStart if no step is set or no battle exists for this player.
+        /// </returns>
         public static string GetStep(ulong userId) =>
             BattleStateSetup.GetBattleState(userId).Player.Step ?? StepStart;
 
         /// <summary>
-        /// Sets the current step for a user's battle.
-        /// Updates both the local state and the dictionary.
+        /// Sets the current battle step/phase for a specific player.
+        /// 
+        /// Updates both the internal BattleStateModel and the concurrent dictionary.
+        /// This transitions the battle to a new phase (e.g., from "weapon_choice" to "fight").
         /// </summary>
+        /// <param name="userId">The Discord user ID of the player.</param>
+        /// <param name="step">The new step/phase to set (e.g., "weapon_choice", "fight", "end_battle").</param>
         public static void SetStep(ulong userId, string step)
         {
+            // Get current battle state for this user
             var state = BattleStateSetup.GetBattleState(userId);
+
+            // Update the step field
             state.Player.Step = step;
+
+            // Persist to dictionary for other handlers to access
             battleStates[userId] = state;
         }
 
         #endregion
 
-        #region === Main Switch BattleEngine ===
+        #region === Main Switch - Battle Engine Dispatcher ===
 
         /// <summary>
-        /// Main dispatcher for handling player actions during a battle.
-        /// Routes execution to the correct step handler based on the current step.
+        /// Main dispatcher function that routes player actions to the appropriate handler
+        /// based on the current battle phase.
+        /// 
+        /// This is the central hub for all battle action processing. It:
+        /// 1. Determines current battle step
+        /// 2. Logs action details for debugging
+        /// 3. Routes to appropriate handler (START, WEAPON_CHOICE, BATTLE, POST_BATTLE, etc.)
+        /// 4. Delegates execution to step-specific handlers
+        /// 
+        /// This method receives all button interactions during combat and ensures they're
+        /// processed according to the current battle state machine.
         /// </summary>
-        /// <param name="interaction">The Discord interaction object (button or slash command).</param>
-        /// <param name="action">The player's chosen action (attack or flee).</param>
-        /// <param name="weaponId">The weapon ID selected by the player (if any).</param>
+        /// <param name="interaction">The Discord socket interaction (button click or response).</param>
+        /// <param name="action">The action the player chose (e.g., "attack", "flee").</param>
+        /// <param name="weaponId">The weapon ID if the action involves weapon selection.</param>
+        /// <remarks>
+        /// Action Routing Table:
+        /// ┌─────────────────┬──────────────┬─────────────────────┐
+        /// │ Current Step    │ Valid Action │ Handler             │
+        /// ├─────────────────┼──────────────┼─────────────────────┤
+        /// │ START           │ attack/flee  │ HandleStepStart()   │
+        /// │ WEAPON_CHOICE   │ weapon_id    │ HandleStepWeaponChoice()│
+        /// │ BATTLE (FIGHT)  │ (internal)   │ (battle processor)  │
+        /// │ POST_BATTLE     │ continue     │ HandleStepPostBattle()│
+        /// │ END_BATTLE      │ (none)       │ (cleanup)           │
+        /// └─────────────────┴──────────────┴─────────────────────┘
+        /// 
+        /// Example Flow:
+        /// 1. Player clicks "Attack" button → SetStep(userId, "weapon_choice")
+        /// 2. System presents weapon choices
+        /// 3. Player clicks weapon button → SetStep(userId, "fight")
+        /// 4. Combat is resolved
+        /// 5. Result is displayed → SetStep(userId, "post_battle" or "end_battle")
+        /// </remarks>
         public static async Task HandleEncounterAction(SocketInteraction interaction, string action, string weaponId)
         {
+            // Get user ID and retrieve current battle step
             ulong userId = interaction.User.Id;
             string currentStep = GetStep(userId);
 
+            // Log the current state for debugging
             LogService.Info($">>> [Current step: {currentStep}, action: {action}, weaponId: {weaponId}] <<<\n");
 
+            // Route to appropriate handler based on current step
             switch (currentStep)
             {
                 case StepStart:
+                    // Handle initial battle setup (weapon selection or flee)
                     await HandleStepStart((SocketMessageComponent)interaction, action);
                     break;
 
                 case StepWeaponChoice:
+                    // Handle weapon selection phase
                     await HandleStepWeaponChoice(interaction, weaponId);
                     break;
 
