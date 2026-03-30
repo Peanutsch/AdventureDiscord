@@ -199,12 +199,21 @@ namespace Adventure.Quest.Battle.BattleEngine
                 });
                 SetStep(userId, BattleStep.Flee);
             }
-            else if (action == PlayerAction.Attack.ToString().ToLower())
+            else if (action.Equals(PlayerAction.Attack.ToString(), StringComparison.CurrentCultureIgnoreCase))
             {
                 // Player chose attack → show weapon selection in DM
                 LogService.Info("[HandleStepStart] Player chooses attack, showing weapons in DM...");
                 await EmbedBuildersEncounter.EmbedPreBattleInDM(component);
                 SetStep(userId, BattleStep.WeaponChoice);
+
+                // Player chose to flee → remove buttons and show message
+                LogService.Info("[HandleStepStart] Removing buttons");
+                await component.UpdateAsync(msg =>
+                {
+                    msg.Content = BattleMessages.ChooseWeapon;
+                    msg.Components = new ComponentBuilder().Build(); // remove buttons
+                    msg.Embed = null;
+                });
             }
 
             LogService.DividerParts(2, "HandleStepStart");
