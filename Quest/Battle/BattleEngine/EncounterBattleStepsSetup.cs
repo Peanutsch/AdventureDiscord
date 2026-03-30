@@ -164,7 +164,7 @@ namespace Adventure.Quest.Battle.BattleEngine
                     break;
 
                 case BattleStep.EndBattle:
-                    await EmbedBuildersEncounter.EmbedEndBattle(interaction);
+                    await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction);
                     break;
 
                 default:
@@ -201,9 +201,9 @@ namespace Adventure.Quest.Battle.BattleEngine
             }
             else if (action == PlayerAction.Attack.ToString().ToLower())
             {
-                // Player chose attack → show weapon selection
-                LogService.Info("[HandleStepStart] Player chooses attack, showing weapons...");
-                await EmbedBuildersEncounter.EmbedPreBattle(component);
+                // Player chose attack → show weapon selection in DM
+                LogService.Info("[HandleStepStart] Player chooses attack, showing weapons in DM...");
+                await EmbedBuildersEncounter.EmbedPreBattleInDM(component);
                 SetStep(userId, BattleStep.WeaponChoice);
             }
 
@@ -267,14 +267,38 @@ namespace Adventure.Quest.Battle.BattleEngine
                 return;
             }
 
+            // --- Get the active message to remove buttons before showing battle ---
+            ulong activeMessageId = BattlePrivateMessageHelper.GetActiveBattleMessage(userId);
+
+            if (activeMessageId != 0)
+            {
+                try
+                {
+                    var dmChannel = await interaction.User.CreateDMChannelAsync();
+                    if (dmChannel != null && await dmChannel.GetMessageAsync(activeMessageId) is IUserMessage message)
+                    {
+                        // Remove buttons from weapon selection message before showing battle
+                        await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
+                            message,
+                            message.Embeds.FirstOrDefault()?.ToEmbedBuilder().Build() ?? new EmbedBuilder().Build(),
+                            null); // null = remove all components
+                        LogService.Info("[HandleStepBattle] Removed buttons from weapon selection message.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogService.Error($"[HandleStepBattle] Failed to remove buttons: {ex.Message}");
+                }
+            }
+
             // --- Player attack phase ---
             string playerAttackResult = PlayerAttack.ProcessPlayerAttack(userId, weapon);
 
             // --- Check if NPC is defeated after player's attack ---
             if (state.CurrentHitpointsNPC <= 0 || state.StateOfNPC == "Defeated")
             {
-                // End the battle and send victory embed
-                await EmbedBuildersEncounter.EmbedEndBattle(interaction, playerAttackResult);
+                // End the battle and send victory embed to DM
+                await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction, playerAttackResult);
                 return;
             }
 
@@ -290,29 +314,51 @@ namespace Adventure.Quest.Battle.BattleEngine
             var battleEmbed = EmbedBuildersEncounter.BuildBattleEmbed(userId, fullAttackLog);
             var battleButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
 
-            try
+            // --- Update the message with battle embed and buttons ---
+            if (activeMessageId != 0)
             {
-                // Update the existing Discord message if interaction is a component (button press)
-                if (interaction is SocketMessageComponent component)
+                try
                 {
-                    await component.UpdateAsync(msg =>
+                    var dmChannel = await interaction.User.CreateDMChannelAsync();
+                    if (dmChannel != null && await dmChannel.GetMessageAsync(activeMessageId) is IUserMessage message)
                     {
-                        msg.Embed = battleEmbed.Build();
-                        msg.Components = battleButtons.Build();
-                        msg.Content = string.Empty;
-                    });
+                        await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
+                            message,
+                            battleEmbed.Build(),
+                            battleButtons.Build());
+                        LogService.Info("[HandleStepBattle] Battle message updated in DM.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogService.Error($"[HandleStepBattle] Failed to update existing message: {ex.Message}");
+                    // Fallback: send new message
+                    var newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                        interaction,
+                        battleEmbed.Build(),
+                        battleButtons.Build());
+                    if (newMessage != null)
+                    {
+                        BattlePrivateMessageHelper.SetActiveBattleMessage(userId, newMessage.Id);
+                    }
+                }
+            }
+            else
+            {
+                // --- First battle message - send new ---
+                var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                    interaction,
+                    battleEmbed.Build(),
+                    battleButtons.Build());
+
+                if (dmMessage != null)
+                {
+                    BattlePrivateMessageHelper.SetActiveBattleMessage(userId, dmMessage.Id);
                 }
                 else
                 {
-                    // Fallback: handle as a follow-up if the interaction was not from a component
-                    await interaction.FollowupAsync(embed: battleEmbed.Build(), components: battleButtons.Build());
+                    LogService.Error("[HandleStepBattle] Failed to send battle message to DM.");
                 }
-            }
-            catch (Exception ex)
-            {
-                // If UpdateAsync fails (e.g. expired token or already acknowledged interaction)
-                LogService.Info($"[HandleStepBattle] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
-                await interaction.FollowupAsync(embed: battleEmbed.Build(), components: battleButtons.Build());
             }
 
             // --- Transition to post-battle step ---
@@ -325,7 +371,8 @@ namespace Adventure.Quest.Battle.BattleEngine
 
         /// <summary>
         /// Handles post-battle logic.
-        /// Ends the battle if the player or NPC is defeated; otherwise, returns to weapon selection.
+        /// If the NPC is defeated, ends the battle.
+        /// Otherwise, stays in the battle embed and updates buttons for next weapon selection.
         /// </summary>
         public static async Task HandleStepPostBattle(SocketInteraction interaction)
         {
@@ -343,12 +390,42 @@ namespace Adventure.Quest.Battle.BattleEngine
             if (state.Player.Hitpoints <= 0 || state.StateOfNPC == "Defeated")
             {
                 SetStep(userId, BattleStep.EndBattle);
-                await EmbedBuildersEncounter.EmbedEndBattle(interaction);
+                await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction);
                 return;
             }
 
-            // Otherwise, return to weapon choice step
+            // --- Otherwise, stay in battle and update buttons for next weapon selection ---
             SetStep(userId, BattleStep.WeaponChoice);
+
+            // --- Update the DM message with weapon buttons for next round ---
+            ulong activeMessageId = BattlePrivateMessageHelper.GetActiveBattleMessage(userId);
+
+            if (activeMessageId != 0)
+            {
+                try
+                {
+                    var dmChannel = await interaction.User.CreateDMChannelAsync();
+                    if (dmChannel != null)
+                    {
+                        var message = await dmChannel.GetMessageAsync(activeMessageId) as IUserMessage;
+                        if (message != null)
+                        {
+                            // Keep the battle embed but update only the buttons for weapon selection
+                            var weaponButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
+
+                            await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
+                                message,
+                                message.Embeds.FirstOrDefault()?.ToEmbedBuilder().Build() ?? new EmbedBuilder().Build(),
+                                weaponButtons.Build());
+                            LogService.Info("[HandleStepPostBattle] Battle continues with updated weapon buttons in DM.");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogService.Error($"[HandleStepPostBattle] Failed to update message with weapon buttons: {ex.Message}");
+                }
+            }
         }
 
         #endregion

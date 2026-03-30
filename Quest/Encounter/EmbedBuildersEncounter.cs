@@ -122,26 +122,19 @@ namespace Adventure.Quest.Encounter
 
         #region === Embed PreBattle ===
         /// <summary>
-        /// Displays the pre-battle preparation screen where the player can review their current gear,
-        /// stats, and available weapons before the fight begins.  
-        /// This method updates the existing Discord message with a new embed and weapon selection buttons.
+        /// Displays the pre-battle preparation screen in a private message (DM).
+        /// This keeps battle interactions private while keeping the main channel clean.
+        /// Sends weapon selection embed to DM with all available weapons and items as buttons.
         /// </summary>
         /// <param name="interaction">The Discord interaction triggered by the player's button click.</param>
-        public static async Task EmbedPreBattle(SocketInteraction interaction)
+        public static async Task EmbedPreBattleInDM(SocketInteraction interaction)
         {
-            // --- Validate the interaction type ---
-            if (interaction is not SocketMessageComponent component)
-            {
-                await interaction.RespondAsync("❌ Unable to update pre-battle screen: invalid interaction type.", ephemeral: true);
-                return;
-            }
-
             // --- Retrieve the current battle state for the user ---
-            var state = BattleStateSetup.GetBattleState(component.User.Id);
+            var state = BattleStateSetup.GetBattleState(interaction.User.Id);
             if (state == null)
             {
-                LogService.Error("[EmbedBuilders.EmbedPreBattle] > Battle state not found.");
-                await component.RespondAsync("❌ No active battle found.", ephemeral: true);
+                LogService.Error("[EmbedBuilders.EmbedPreBattleInDM] > Battle state not found.");
+                await interaction.RespondAsync("❌ No active battle found.", ephemeral: true);
                 return;
             }
 
@@ -149,23 +142,16 @@ namespace Adventure.Quest.Encounter
             var buttonBuilder = BuildBattleButtons(state);
             var embed = BuildPreBattleEmbed(state);
 
-            try
-            {
-                // --- Replaces the previous content with the new pre-battle embed and buttons. ---
-                await component.UpdateAsync(msg =>
-                {
-                    msg.Content = string.Empty;
-                    msg.Embed = embed.Build();
-                    msg.Components = buttonBuilder.Build();
-                });
+            // --- Send to DM instead of channel ---
+            var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                interaction,
+                embed.Build(),
+                buttonBuilder.Build());
 
-                LogService.Info("[EmbedBuilders.EmbedPreBattle] Embed successfully updated via UpdateAsync.");
-            }
-            catch (Exception ex)
+            if (dmMessage != null)
             {
-                // --- Fallback ---
-                LogService.Info($"[EmbedBuilders.EmbedPreBattle] UpdateAsync failed, fallback to FollowupAsync. {ex.Message}");
-                await component.FollowupAsync(embed: embed.Build(), components: buttonBuilder.Build(), ephemeral: false);
+                BattlePrivateMessageHelper.SetActiveBattleMessage(interaction.User.Id, dmMessage.Id);
+                LogService.Info("[EmbedBuilders.EmbedPreBattleInDM] Weapon selection sent to DM.");
             }
         }
 
@@ -208,7 +194,7 @@ namespace Adventure.Quest.Encounter
         /// </summary>
         /// <param name="state">The current player's battle state.</param>
         /// <returns>An EmbedBuilder containing the formatted pre-battle view.</returns>
-        private static EmbedBuilder BuildPreBattleEmbed(BattleStateModel state)
+        public static EmbedBuilder BuildPreBattleEmbed(BattleStateModel state)
         {
             var embed = new EmbedBuilder()
                 .WithColor(Color.Blue)
@@ -323,11 +309,11 @@ namespace Adventure.Quest.Encounter
 
         #region === Embed End Battle ===
         /// <summary>
-        /// Ends the battle.
-        /// Removes buttons and replaces the original message with
-        /// a final embed containing player stats and battle log.
+        /// Ends the battle and updates the DM message with final results.
+        /// Shows final battle stats, XP rewards, and continuation button.
+        /// Updates the existing DM message instead of creating a new one.
         /// </summary>
-        public static async Task EmbedEndBattle(SocketInteraction interaction, string? extraMessage = null)
+        public static async Task EmbedEndBattleInDM(SocketInteraction interaction, string? extraMessage = null)
         {
             ulong userId = interaction.User.Id;
             var state = BattleStateSetup.GetBattleState(userId);
@@ -341,8 +327,8 @@ namespace Adventure.Quest.Encounter
 
             var embed = new EmbedBuilder()
                 .WithColor(state.EmbedColor)
-                .WithTitle($"[Battle Report, Round {state.RoundCounter}]")
-                .WithThumbnailUrl(thumbUrl) //("https://cdn.discordapp.com/attachments/1425057075314167839/1425079786795176007/skull_dead.jpg")
+                .WithTitle($"⚔️ Battle Report — Round {state.RoundCounter}")
+                .WithThumbnailUrl(thumbUrl)
                 .AddField($"{state.Player.Name} (HP: {state.Player.Hitpoints}) VS {state.Npc.Name} ({state.StateOfNPC})",
                           $"| Level {state.Player.Level} | {state.Player.XP} XP | {state.Player.Hitpoints} HP |")
                 .AddField("\u200B", $"{finalLog}\n\n{battleOverText}");
@@ -350,15 +336,52 @@ namespace Adventure.Quest.Encounter
             var buttons = new ComponentBuilder()
                 .WithButton("CONTINUE", $"battle_continue_{userId}", ButtonStyle.Success);
 
-            if (interaction is SocketMessageComponent component)
+            // --- Get active message and update it instead of sending new ---
+            ulong activeMessageId = BattlePrivateMessageHelper.GetActiveBattleMessage(userId);
+
+            if (activeMessageId != 0)
             {
-                await component.UpdateAsync(msg =>
+                try
                 {
-                    msg.Embed = embed.Build();
-                    msg.Components = buttons.Build(); // Add button CONTINUE
-                    //msg.Components = new ComponentBuilder().Build(); // remove buttons
-                    msg.Content = string.Empty;
-                });
+                    var dmChannel = await interaction.User.CreateDMChannelAsync();
+                    if (dmChannel != null)
+                    {
+                        var message = await dmChannel.GetMessageAsync(activeMessageId) as IUserMessage;
+                        if (message != null)
+                        {
+                            await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
+                                message,
+                                embed.Build(),
+                                buttons.Build());
+                            LogService.Info("[EmbedEndBattleInDM] End battle message updated in existing DM.");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogService.Error($"[EmbedEndBattleInDM] Failed to update existing message: {ex.Message}");
+                    // Fallback: send new message
+                    var newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                        interaction,
+                        embed.Build(),
+                        buttons.Build());
+                    if (newMessage != null)
+                    {
+                        BattlePrivateMessageHelper.SetActiveBattleMessage(userId, newMessage.Id);
+                    }
+                }
+            }
+            else
+            {
+                // Fallback: send new message
+                var newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                    interaction,
+                    embed.Build(),
+                    buttons.Build());
+                if (newMessage != null)
+                {
+                    BattlePrivateMessageHelper.SetActiveBattleMessage(userId, newMessage.Id);
+                }
             }
 
             // Reset round counter
@@ -366,6 +389,7 @@ namespace Adventure.Quest.Encounter
 
             // Update battle step
             EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
+            BattlePrivateMessageHelper.ClearActiveBattleMessage(userId);
         }
         #endregion Embed End Battle
     }

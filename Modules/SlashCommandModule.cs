@@ -1,5 +1,6 @@
 using Adventure.Data;
 using Adventure.Loaders;
+using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Map;
 using Adventure.Services;
 using Discord.Interactions;
@@ -163,10 +164,10 @@ namespace Adventure.Modules
 
         #region === Slashcommand "start" ===
         /// <summary>
-        /// Handles the /walk slash command. Moves the player to the current tile, 
-        /// toggles any lock if the tile has a switch, and builds the embed and directional buttons.
+        /// Handles the /start slash command. Moves the player to the current tile, 
+        /// toggles any lock if the tile has a switch, and sends the embed and directional buttons to DM.
         /// </summary>
-        [SlashCommand("start", "Simulate walking through tiles with directional buttons.")]
+        [SlashCommand("start", "Start your adventure in private message.")]
         public async Task SlashCommandWalkHandler()
         {
             await DeferAsync();
@@ -179,8 +180,8 @@ namespace Adventure.Modules
                 return;
             }
 
-            LogService.DividerParts(1, "SlashCommand: walk");
-            LogService.Info($"[/walk] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
+            LogService.DividerParts(1, "SlashCommand: /start");
+            LogService.Info($"[/start] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
             // --- Get or create player profile ---
             var player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
@@ -196,7 +197,7 @@ namespace Adventure.Modules
             // --- Fallback to START tile if savepoint is invalid ---
             if (tile == null)
             {
-                LogService.Info($"[WalkCommand] Savepoint '{player.Savepoint}' invalid. Fallback to START tile.");
+                LogService.Info($"[/start] Savepoint '{player.Savepoint}' invalid. Fallback to START tile.");
                 tile = SlashCommandHelpers.FindStartTile();
 
                 if (tile != null)
@@ -204,7 +205,7 @@ namespace Adventure.Modules
                     // Update player's savepoint to START tile
                     player.Savepoint = $"{tile.AreaId}:{tile.TilePosition}";
                     JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, player.Savepoint);
-                    LogService.Info($"[WalkCommand] Position saved as new savepoint: {player.Savepoint}");
+                    LogService.Info($"[/start] Position saved as new savepoint: {player.Savepoint}");
                 }
                 else
                 {
@@ -216,21 +217,39 @@ namespace Adventure.Modules
             // --- Toggle lock if the current tile has a switch ---
             if (TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup))
             {
-                LogService.Info($"[WalkCommand] Tile {tile.TileId} switch toggled lock: {tile.LockId}");
+                LogService.Info($"[/start] Tile {tile.TileId} switch toggled lock: {tile.LockId}");
             }
 
             // --- Get name of area for logging ---
             string startArea = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var area)
                 ? area.Name
                 : "Unknown Area";
-            LogService.Info($"[/walk] Starting in area: {startArea}, position: {tile.TilePosition}");
+            LogService.Info($"[/start] Starting in area: {startArea}, position: {tile.TilePosition}");
 
             // --- Build embed and directional buttons ---
             var embed = EmbedBuildersMap.EmbedWalk(tile); // Reads current tile state (including lock)
             var components = ButtonBuildersMap.BuildDirectionButtons(tile);
 
-            // --- Send embed and buttons to Discord ---
-            await FollowupAsync(embed: embed.Build(), components: components?.Build());
+            // --- Send embed and buttons to DM ---
+            var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                Context.Interaction,
+                embed.Build(),
+                components?.Build());
+
+            if (dmMessage != null)
+            {
+                LogService.Info("[/start] Adventure map sent to DM.");
+            }
+            else
+            {
+                await FollowupAsync("⚠️ Failed to send adventure map to DM.");
+                return;
+            }
+
+            // --- Notify user in channel that adventure is in DM ---
+            await FollowupAsync($"🗺️ {player.Name}, your adventure has started! Check your DMs to explore.");
+
+            LogService.DividerParts(2, "SlashCommand: /start");
         }
         #endregion
     }
