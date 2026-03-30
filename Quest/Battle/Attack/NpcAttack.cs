@@ -13,14 +13,14 @@ public static class NpcAttack
         // If player is dead → end battle
         if (state.Player.Hitpoints <= 0)
         {
-            EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepEndBattle);
+            EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
             state.EmbedColor = Color.DarkRed;
 
             battleLog += $"\n\n💀 **{state.Player.Name} has been defeated by {state.Npc.Name}!**";
         }
         else
         {
-            EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepPostBattle);
+            EncounterBattleStepsSetup.SetStep(userId, BattleStep.PostBattle);
         }
 
         return battleLog;

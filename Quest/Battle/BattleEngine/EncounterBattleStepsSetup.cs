@@ -28,35 +28,17 @@ namespace Adventure.Quest.Battle.BattleEngine
     /// 
     /// <remarks>
     /// Thread Safety: Uses ConcurrentDictionary for thread-safe state tracking.
+    /// Type Safety: Uses BattleStep and PlayerAction enums to prevent string typos and ensure correctness.
     /// 
     /// Usage Pattern:
-    /// 1. SetStep(userId, "start") - Initialize battle
+    /// 1. SetStep(userId, BattleStep.Start) - Initialize battle
     /// 2. HandleEncounterAction() - Route player actions
     /// 3. GetStep(userId) - Check current phase
-    /// 4. Clean up when step == "end_battle"
+    /// 4. Clean up when step == BattleStep.EndBattle
     /// </remarks>
     /// </summary>
     public static class EncounterBattleStepsSetup
     {
-        #region === Constants ===
-        // Battle step constants - represent the current phase of combat
-        public const string StepStart = "start";                    // Initial setup, awaiting weapon selection
-        public const string StepFlee = "flee";                      // Fleeing from battle
-        public const string StepWeaponChoice = "weapon_choice";     // Player selecting weapon
-        public const string StepBattle = "fight";                   // Active combat in progress
-        public const string StepPostBattle = "post_battle";         // After battle resolution
-        public const string StepEndBattle = "end_battle";           // Battle concluded, cleanup
-
-        // Player action constants
-        public const string ActionFlee = "flee";        // Flee attempt action
-        public const string ActionAttack = "attack";    // Attack action
-
-        // Predefined UI messages
-        public const string MsgFlee = "You fled. The forest grows quiet.";
-        public const string MsgChooseWeapon = "Choose your weapon:";
-        public const string MsgBattleOver = "Battle is over!";
-        public const string MsgNothingHappens = "Nothing happens...";
-        #endregion
 
         #region === Battle State Tracking ===
 
@@ -76,27 +58,37 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// </summary>
         /// <param name="userId">The Discord user ID of the player.</param>
         /// <returns>
-        /// The current step as a string (e.g., "start", "weapon_choice", "fight").
-        /// Defaults to StepStart if no step is set or no battle exists for this player.
+        /// The current BattleStep for the player.
+        /// Defaults to BattleStep.Start if no step is set or no battle exists for this player.
         /// </returns>
-        public static string GetStep(ulong userId) =>
-            BattleStateSetup.GetBattleState(userId).Player.Step ?? StepStart;
+        public static BattleStep GetStep(ulong userId)
+        {
+            var state = BattleStateSetup.GetBattleState(userId);
+            if (string.IsNullOrEmpty(state.Player.Step))
+                return BattleStep.Start;
+
+            // Convert string to enum
+            if (Enum.TryParse<BattleStep>(state.Player.Step, ignoreCase: true, out var result))
+                return result;
+
+            return BattleStep.Start;
+        }
 
         /// <summary>
         /// Sets the current battle step/phase for a specific player.
         /// 
         /// Updates both the internal BattleStateModel and the concurrent dictionary.
-        /// This transitions the battle to a new phase (e.g., from "weapon_choice" to "fight").
+        /// This transitions the battle to a new phase (e.g., from WeaponChoice to Battle).
         /// </summary>
         /// <param name="userId">The Discord user ID of the player.</param>
-        /// <param name="step">The new step/phase to set (e.g., "weapon_choice", "fight", "end_battle").</param>
-        public static void SetStep(ulong userId, string step)
+        /// <param name="step">The new BattleStep phase to set.</param>
+        public static void SetStep(ulong userId, BattleStep step)
         {
             // Get current battle state for this user
             var state = BattleStateSetup.GetBattleState(userId);
 
-            // Update the step field
-            state.Player.Step = step;
+            // Update the step field (convert enum to string for storage)
+            state.Player.Step = step.ToString();
 
             // Persist to dictionary for other handlers to access
             battleStates[userId] = state;
@@ -127,25 +119,25 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// ┌─────────────────┬──────────────┬─────────────────────┐
         /// │ Current Step    │ Valid Action │ Handler             │
         /// ├─────────────────┼──────────────┼─────────────────────┤
-        /// │ START           │ attack/flee  │ HandleStepStart()   │
-        /// │ WEAPON_CHOICE   │ weapon_id    │ HandleStepWeaponChoice()│
-        /// │ BATTLE (FIGHT)  │ (internal)   │ (battle processor)  │
-        /// │ POST_BATTLE     │ continue     │ HandleStepPostBattle()│
-        /// │ END_BATTLE      │ (none)       │ (cleanup)           │
+        /// │ Start           │ Attack/Flee  │ HandleStepStart()   │
+        /// │ WeaponChoice    │ weapon_id    │ HandleStepWeaponChoice()│
+        /// │ Battle          │ (internal)   │ (battle processor)  │
+        /// │ PostBattle      │ continue     │ HandleStepPostBattle()│
+        /// │ EndBattle       │ (none)       │ (cleanup)           │
         /// └─────────────────┴──────────────┴─────────────────────┘
         /// 
         /// Example Flow:
-        /// 1. Player clicks "Attack" button → SetStep(userId, "weapon_choice")
+        /// 1. Player clicks "Attack" button → SetStep(userId, BattleStep.WeaponChoice)
         /// 2. System presents weapon choices
-        /// 3. Player clicks weapon button → SetStep(userId, "fight")
+        /// 3. Player clicks weapon button → SetStep(userId, BattleStep.Battle)
         /// 4. Combat is resolved
-        /// 5. Result is displayed → SetStep(userId, "post_battle" or "end_battle")
+        /// 5. Result is displayed → SetStep(userId, BattleStep.PostBattle or EndBattle)
         /// </remarks>
         public static async Task HandleEncounterAction(SocketInteraction interaction, string action, string weaponId)
         {
             // Get user ID and retrieve current battle step
             ulong userId = interaction.User.Id;
-            string currentStep = GetStep(userId);
+            BattleStep currentStep = GetStep(userId);
 
             // Log the current state for debugging
             LogService.Info($">>> [Current step: {currentStep}, action: {action}, weaponId: {weaponId}] <<<\n");
@@ -153,30 +145,30 @@ namespace Adventure.Quest.Battle.BattleEngine
             // Route to appropriate handler based on current step
             switch (currentStep)
             {
-                case StepStart:
+                case BattleStep.Start:
                     // Handle initial battle setup (weapon selection or flee)
                     await HandleStepStart((SocketMessageComponent)interaction, action);
                     break;
 
-                case StepWeaponChoice:
+                case BattleStep.WeaponChoice:
                     // Handle weapon selection phase
                     await HandleStepWeaponChoice(interaction, weaponId);
                     break;
 
-                case StepBattle:
+                case BattleStep.Battle:
                     // Battle is processed separately via button interactions
                     break;
 
-                case StepPostBattle:
+                case BattleStep.PostBattle:
                     await HandleStepPostBattle(interaction);
                     break;
 
-                case StepEndBattle:
+                case BattleStep.EndBattle:
                     await EmbedBuildersEncounter.EmbedEndBattle(interaction);
                     break;
 
                 default:
-                    await interaction.RespondAsync(MsgNothingHappens, ephemeral: false);
+                    await interaction.RespondAsync(BattleMessages.NothingHappens, ephemeral: false);
                     break;
             }
         }
@@ -195,24 +187,24 @@ namespace Adventure.Quest.Battle.BattleEngine
             ulong userId = component.User.Id;
             LogService.DividerParts(1, "HandleStepStart");
 
-            if (action == ActionFlee)
+            if (action == PlayerAction.Flee.ToString().ToLower())
             {
                 // Player chose to flee → remove buttons and show message
                 LogService.Info("[HandleStepStart] Player flees");
                 await component.UpdateAsync(msg =>
                 {
-                    msg.Content = MsgFlee;
+                    msg.Content = BattleMessages.Flee;
                     msg.Components = new ComponentBuilder().Build(); // remove buttons
                     msg.Embed = null;
                 });
-                SetStep(userId, StepFlee);
+                SetStep(userId, BattleStep.Flee);
             }
-            else if (action == ActionAttack)
+            else if (action == PlayerAction.Attack.ToString().ToLower())
             {
                 // Player chose attack → show weapon selection
                 LogService.Info("[HandleStepStart] Player chooses attack, showing weapons...");
                 await EmbedBuildersEncounter.EmbedPreBattle(component);
-                SetStep(userId, StepWeaponChoice);
+                SetStep(userId, BattleStep.WeaponChoice);
             }
 
             LogService.DividerParts(2, "HandleStepStart");
@@ -244,8 +236,8 @@ namespace Adventure.Quest.Battle.BattleEngine
                 await interaction.RespondAsync($"Je rommelt met een onbekend wapen: {weapon.Name}...", ephemeral: true);
             }
 
-            // Zet stap naar battle
-            SetStep(userId, StepBattle);
+            // Transition to battle step
+            SetStep(userId, BattleStep.Battle);
 
             // Start battle
             await HandleStepBattle(interaction, weaponId);
@@ -324,7 +316,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             }
 
             // --- Transition to post-battle step ---
-            SetStep(userId, StepPostBattle);
+            SetStep(userId, BattleStep.PostBattle);
             await HandleStepPostBattle(interaction);
         }
         #endregion
@@ -350,13 +342,13 @@ namespace Adventure.Quest.Battle.BattleEngine
             // End battle if player or NPC is dead
             if (state.Player.Hitpoints <= 0 || state.StateOfNPC == "Defeated")
             {
-                SetStep(userId, StepEndBattle);
+                SetStep(userId, BattleStep.EndBattle);
                 await EmbedBuildersEncounter.EmbedEndBattle(interaction);
                 return;
             }
 
             // Otherwise, return to weapon choice step
-            SetStep(userId, StepWeaponChoice);
+            SetStep(userId, BattleStep.WeaponChoice);
         }
 
         #endregion

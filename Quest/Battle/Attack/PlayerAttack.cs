@@ -14,7 +14,7 @@ class PlayerAttack
         // If NPC is dead → end battle + reward XP
         if (state.CurrentHitpointsNPC <= 0)
         {
-            EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepEndBattle);
+            EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
             state.EmbedColor = Color.Purple;
 
             var rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
@@ -28,7 +28,7 @@ class PlayerAttack
         }   
         else
         {
-            EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepPostBattle);
+            EncounterBattleStepsSetup.SetStep(userId, BattleStep.PostBattle);
         }
 
         return battleLog;

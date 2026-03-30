@@ -88,7 +88,7 @@ namespace Adventure.Quest.Encounter
                 {
                     var weapon = GameData.Weapons!.FirstOrDefault(w => w.Id == id);
                     if (weapon == null)
-                        LogService.Error($"[GameEntityFetcher.RetrieveWeaponAttributes] > Weapon with ID '{id}' not found.");
+                        LogService.Error($"[GameEntityFetcher.RetrieveWeaponAttributes] > No Weapon with ID '{id}' found.");
                     return weapon;
                 })
                 .Where(w => w != null) // Filter out nulls
@@ -132,7 +132,7 @@ namespace Adventure.Quest.Encounter
                 {
                     var item = GameData.Items!.FirstOrDefault(i => i.Id == id);
                     if (item == null)
-                        LogService.Error($"[GameEntityFetcher.RetrieveItemAttributes] > Item with ID '{id}' not found.");
+                        LogService.Error($"[GameEntityFetcher.RetrieveItemAttributes] > No items with ID '{id}' found.");
                     return item;
                 })
                 .Where(i => i != null) // Filter out nulls

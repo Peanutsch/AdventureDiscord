@@ -149,7 +149,7 @@ namespace Adventure.Modules
             NpcSetup.SetupNpc(userId, npc);
 
             // Initialize battle to the starting phase
-            EncounterBattleStepsSetup.SetStep(userId, "start");
+            EncounterBattleStepsSetup.SetStep(userId, BattleStep.Start);
         }
 
         /// <summary>

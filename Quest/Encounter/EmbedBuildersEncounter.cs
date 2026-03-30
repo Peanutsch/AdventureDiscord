@@ -334,7 +334,7 @@ namespace Adventure.Quest.Encounter
             string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(state.Npc, state.PercentageHpNpc);
 
             string finalLog = extraMessage ?? "";
-            string battleOverText = $"{EncounterBattleStepsSetup.MsgBattleOver}";
+            string battleOverText = $"{BattleMessages.BattleOver}";
 
             // --- Increment round counter ---
             state.RoundCounter++;
@@ -365,7 +365,7 @@ namespace Adventure.Quest.Encounter
             state.RoundCounter = 0;
 
             // Update battle step
-            EncounterBattleStepsSetup.SetStep(userId, EncounterBattleStepsSetup.StepEndBattle);
+            EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
         }
         #endregion Embed End Battle
     }
