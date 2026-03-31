@@ -1,4 +1,6 @@
 ﻿using Adventure.Models.BattleState;
+using Adventure.Models.Items;
+using Adventure.Models.Player;
 using Adventure.Quest.Encounter;
 using Adventure.Services;
 using Discord;
@@ -63,12 +65,12 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// </returns>
         public static BattleStep GetStep(ulong userId)
         {
-            var state = BattleStateSetup.GetBattleState(userId);
+            BattleStateModel? state = BattleStateSetup.GetBattleState(userId);
             if (string.IsNullOrEmpty(state.Player.Step))
                 return BattleStep.Start;
 
             // Convert string to enum
-            if (Enum.TryParse<BattleStep>(state.Player.Step, ignoreCase: true, out var result))
+            if (Enum.TryParse<BattleStep>(state.Player.Step, ignoreCase: true, out BattleStep result))
                 return result;
 
             return BattleStep.Start;
@@ -85,7 +87,7 @@ namespace Adventure.Quest.Battle.BattleEngine
         public static void SetStep(ulong userId, BattleStep step)
         {
             // Get current battle state for this user
-            var state = BattleStateSetup.GetBattleState(userId);
+            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
 
             // Update the step field (convert enum to string for storage)
             state.Player.Step = step.ToString();
@@ -230,10 +232,10 @@ namespace Adventure.Quest.Battle.BattleEngine
         private static async Task HandleStepWeaponChoice(SocketInteraction interaction, string weaponId)
         {
             ulong userId = interaction.User.Id;
-            var state = BattleStateSetup.GetBattleState(userId);
-            var ownedWeaponIds = state.Player.Weapons.Select(w => w.Id).ToHashSet();
+            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
+            HashSet<string>? ownedWeaponIds = state.Player.Weapons.Select(w => w.Id).ToHashSet();
 
-            var weapon = GameEntityFetcher.RetrieveWeaponAttributes(new List<string> { weaponId }).FirstOrDefault();
+            WeaponModel? weapon = GameEntityFetcher.RetrieveWeaponAttributes(new List<string> { weaponId }).FirstOrDefault();
             if (weapon == null)
             {
                 await interaction.RespondAsync("Je hebt een onbekend wapen gekozen...", ephemeral: true);
@@ -266,10 +268,10 @@ namespace Adventure.Quest.Battle.BattleEngine
         public static async Task HandleStepBattle(SocketInteraction interaction, string weaponId)
         {
             ulong userId = interaction.User.Id;
-            var state = BattleStateSetup.GetBattleState(userId);
+            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
 
             // --- Validate weapon existence ---
-            var weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
+            WeaponModel? weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
             {
                 await interaction.FollowupAsync("⚠️ Weapon not found in your inventory.", ephemeral: true);
@@ -283,7 +285,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             {
                 try
                 {
-                    var dmChannel = await interaction.User.CreateDMChannelAsync();
+                    IDMChannel dmChannel = await interaction.User.CreateDMChannelAsync();
                     if (dmChannel != null && await dmChannel.GetMessageAsync(activeMessageId) is IUserMessage message)
                     {
                         // Remove buttons from weapon selection message before showing battle
@@ -320,15 +322,15 @@ namespace Adventure.Quest.Battle.BattleEngine
             string fullAttackLog = $"{playerAttackResult}\n\n{npcAttackResult}";
 
             // --- Build embed and battle buttons ---
-            var battleEmbed = EmbedBuildersEncounter.BuildBattleEmbed(userId, fullAttackLog);
-            var battleButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
+            EmbedBuilder battleEmbed = EmbedBuildersEncounter.BuildBattleEmbed(userId, fullAttackLog);
+            ComponentBuilder battleButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
 
             // --- Update the message with battle embed and buttons ---
             if (activeMessageId != 0)
             {
                 try
                 {
-                    var dmChannel = await interaction.User.CreateDMChannelAsync();
+                    IDMChannel dmChannel = await interaction.User.CreateDMChannelAsync();
                     if (dmChannel != null && await dmChannel.GetMessageAsync(activeMessageId) is IUserMessage message)
                     {
                         await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
@@ -342,7 +344,7 @@ namespace Adventure.Quest.Battle.BattleEngine
                 {
                     LogService.Error($"[HandleStepBattle] Failed to update existing message: {ex.Message}");
                     // Fallback: send new message
-                    var newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                    IUserMessage? newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
                         interaction,
                         battleEmbed.Build(),
                         battleButtons.Build());
@@ -355,7 +357,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             else
             {
                 // --- First battle message - send new ---
-                var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
                     interaction,
                     battleEmbed.Build(),
                     battleButtons.Build());
@@ -388,7 +390,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             if (interaction == null) return;
 
             ulong userId = interaction.User.Id;
-            var state = BattleStateSetup.GetBattleState(userId);
+            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
             if (state == null)
             {
                 await interaction.FollowupAsync("No battle found...", ephemeral: true);
@@ -413,14 +415,14 @@ namespace Adventure.Quest.Battle.BattleEngine
             {
                 try
                 {
-                    var dmChannel = await interaction.User.CreateDMChannelAsync();
+                    IDMChannel dmChannel = await interaction.User.CreateDMChannelAsync();
                     if (dmChannel != null)
                     {
-                        var message = await dmChannel.GetMessageAsync(activeMessageId) as IUserMessage;
+                        IUserMessage? message = await dmChannel.GetMessageAsync(activeMessageId) as IUserMessage;
                         if (message != null)
                         {
                             // Keep the battle embed but update only the buttons for weapon selection
-                            var weaponButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
+                            ComponentBuilder weaponButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
 
                             await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
                                 message,

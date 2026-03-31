@@ -99,7 +99,7 @@ namespace Adventure.Gateway
         /// </summary>
         private async Task HandleInteractionAsync(SocketInteraction interaction)
         {
-            var context = new SocketInteractionContext(_client, interaction);
+            SocketInteractionContext context = new SocketInteractionContext(_client, interaction);
             await _interactions.ExecuteCommandAsync(context, null);
         }
 
@@ -181,13 +181,13 @@ namespace Adventure.Gateway
         /// <returns>True if the bot can send messages; otherwise false.</returns>
         public async Task<bool> CanSendMessage(ulong channelId)
         {
-            var guildChannel = _client.GetChannel(channelId) as IGuildChannel;
+            IGuildChannel? guildChannel = _client.GetChannel(channelId) as IGuildChannel;
 
             if (guildChannel != null)
             {
                 // Get the bot's guild user to check permissions
-                var botUser = await guildChannel.Guild.GetCurrentUserAsync();
-                var perms = botUser.GetPermissions(guildChannel);
+                IGuildUser botUser = await guildChannel.Guild.GetCurrentUserAsync();
+                ChannelPermissions perms = botUser.GetPermissions(guildChannel);
 
                 // Ensure the bot can view and send messages
                 return perms.ViewChannel && perms.SendMessages;

@@ -27,21 +27,21 @@ namespace Adventure.Quest.Battle.BattleEngine
         {
             try
             {
-                var user = interaction.User as SocketUser;
+                SocketUser user = interaction.User as SocketUser;
                 if (user == null)
                 {
                     LogService.Error("[BattlePrivateMessageHelper] Unable to get user from interaction.");
                     return null;
                 }
 
-                var dmChannel = await user.CreateDMChannelAsync();
+                IDMChannel dmChannel = await user.CreateDMChannelAsync();
                 if (dmChannel == null)
                 {
                     LogService.Error("[BattlePrivateMessageHelper] Unable to create DM channel.");
                     return null;
                 }
 
-                var message = await dmChannel.SendMessageAsync(embed: embed, components: components);
+                IUserMessage message = await dmChannel.SendMessageAsync(embed: embed, components: components);
                 LogService.Info($"[BattlePrivateMessageHelper] Battle message sent to {user.Username}");
                 return message;
             }
@@ -111,7 +111,7 @@ namespace Adventure.Quest.Battle.BattleEngine
         {
             lock (ActiveBattleMessages)
             {
-                return ActiveBattleMessages.TryGetValue(userId, out var messageId) ? messageId : 0;
+                return ActiveBattleMessages.TryGetValue(userId, out ulong messageId) ? messageId : 0;
             }
         }
 

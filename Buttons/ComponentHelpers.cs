@@ -56,7 +56,7 @@ namespace Adventure.Buttons
         /// <returns><c>true</c> if movement or encounter was successfully handled; otherwise, <c>false</c>.</returns>
         public static async Task<bool> MovePlayerAsync(SocketInteractionContext context, string key, bool showTravelAnimation = false, bool allowAutoEncounter = true)
         {
-            if (!TryGetTargetTile(key, out var targetTile))
+            if (!TryGetTargetTile(key, out TileModel? targetTile))
                 return await HandleMissingTileAsync(context, key);
 
             SavePlayerPosition(context, key);
@@ -183,8 +183,8 @@ namespace Adventure.Buttons
             if (showTravelAnimation)
                 await TransitionTravelEmbed(context, targetTile);
 
-            var embedWalk = EmbedBuildersMap.EmbedWalk(targetTile);
-            var components = ButtonBuildersMap.BuildDirectionButtons(targetTile);
+            EmbedBuilder embedWalk = EmbedBuildersMap.EmbedWalk(targetTile);
+            ComponentBuilder components = ButtonBuildersMap.BuildDirectionButtons(targetTile);
 
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
@@ -197,7 +197,7 @@ namespace Adventure.Buttons
         #region === Transition Travel Embed ===
         public static async Task TransitionTravelEmbed(SocketInteractionContext context, TileModel targetTile)
         {
-            var areaName = TestHouseLoader.AreaLookup.TryGetValue(targetTile.AreaId, out var area)
+            string? areaName = TestHouseLoader.AreaLookup.TryGetValue(targetTile.AreaId, out TestHouseAreaModel? area)
                 ? area.Name
                 : targetTile.AreaId;
 
@@ -258,10 +258,10 @@ namespace Adventure.Buttons
             try
             {
                 // Retrieve or create the player instance based on the current Discord user
-                var player = await GetPlayerFromContextAsync(context);
+                PlayerModel player = await GetPlayerFromContextAsync(context);
 
                 // Choose a destination tile based on flee mode (random or nearby)
-                var destinationTile = fleeMode.Equals("random", StringComparison.OrdinalIgnoreCase)
+                TileModel? destinationTile = fleeMode.Equals("random", StringComparison.OrdinalIgnoreCase)
                     ? GetRandomSafeTile()
                     : GetRandomNeighborTile(player);
 
@@ -316,8 +316,8 @@ namespace Adventure.Buttons
         /// <returns>A task containing the associated player object.</returns>
         private static Task<PlayerModel> GetPlayerFromContextAsync(SocketInteractionContext context)
         {
-            var user = SlashCommandHelpers.GetDiscordUser(context, context.User.Id);
-            var player = SlashCommandHelpers.GetOrCreatePlayer(user!.Id, user.GlobalName ?? user.Username);
+            IUser? user = SlashCommandHelpers.GetDiscordUser(context, context.User.Id);
+            PlayerModel player = SlashCommandHelpers.GetOrCreatePlayer(user!.Id, user.GlobalName ?? user.Username);
 
             // Wrap the result in a completed Task to satisfy the Task<PlayerModel> return type
             return Task.FromResult(player);
@@ -331,11 +331,11 @@ namespace Adventure.Buttons
         private static TileModel? GetRandomNeighborTile(PlayerModel player)
         {
             // Get the current tile or fallback to the start tile
-            var currentTile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint)
+            TileModel? currentTile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint)
                               ?? SlashCommandHelpers.FindStartTile();
 
             // Retrieve valid connected neighbor tiles
-            var neighbors = currentTile?.Connections?
+            List<string>? neighbors = currentTile?.Connections?
                 .Where(id => TestHouseLoader.TileLookup.ContainsKey(id))
                 .ToList();
 
@@ -357,11 +357,11 @@ namespace Adventure.Buttons
         /// <returns>A random safe tile, or null if none are found.</returns>
         private static TileModel? GetRandomSafeTile()
         {
-            // Combine all unsafe prefixes into one HashSet for quick O(1) lookup
-            var unsafePrefixes = HashSets.NonPassableTiles; // e.g. includes "NPC", "Wall", "TREASURE", etc.
+            // Define unsafe prefixes that indicate non-walkable or hazardous tiles
+            HashSet<string>? unsafePrefixes = HashSets.NonPassableTiles; // e.g. includes "NPC", "Wall", "TREASURE", etc.
 
             // Filter tiles: only include those whose Name or Type does NOT start with any unsafe prefix
-            var safeTiles = TestHouseLoader.TileLookup.Values
+            List<TileModel> safeTiles = TestHouseLoader.TileLookup.Values
                 .Where(t => !unsafePrefixes.Any(prefix =>
                     t.TileName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ||
                     t.TileType.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
@@ -371,8 +371,8 @@ namespace Adventure.Buttons
                 return null;
 
             // Randomly select one safe tile
-            var rnd = new Random();
-            var randomTile = safeTiles[rnd.Next(safeTiles.Count)];
+            Random rnd = new Random();
+            TileModel randomTile = safeTiles[rnd.Next(safeTiles.Count)];
 
             LogService.Info($"[TransitionFleeEmbed] Player fled randomly to tile: {randomTile.TileId}");
             return randomTile;

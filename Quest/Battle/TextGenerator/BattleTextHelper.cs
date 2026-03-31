@@ -9,7 +9,7 @@ namespace Adventure.Quest.Battle.TextGenerator
 
         public static string GetRandomHpStatusText(string statusLabel, BattleTextModel battleText)
         {
-            if (battleText.HpStatus.TryGetValue(statusLabel, out var entries) && entries.Count > 0)
+            if (battleText.HpStatus.TryGetValue(statusLabel, out List<TextEntry>? entries) && entries.Count > 0)
             {
                 int index = rng.Next(entries.Count);
                 return entries[index].Text;

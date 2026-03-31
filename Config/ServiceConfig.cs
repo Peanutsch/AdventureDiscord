@@ -20,7 +20,7 @@ namespace Adventure.Config
         /// <returns>A fully built ServiceProvider with all dependencies registered.</returns>
         public static ServiceProvider Configure()
         {
-            var services = new ServiceCollection();
+            ServiceCollection services = new ServiceCollection();
 
             // Register the DiscordSocketClient with specific gateway intents
             services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
@@ -34,15 +34,15 @@ namespace Adventure.Config
             // Register the Discord's InteractionService for e.g. slashcommands and buttons)
             services.AddSingleton<InteractionService>(provider =>
             {
-                var client = provider.GetRequiredService<DiscordSocketClient>();
+                DiscordSocketClient client = provider.GetRequiredService<DiscordSocketClient>();
                 return new InteractionService(client.Rest);
             });
 
             // Register the AdventureBotGateway
             services.AddSingleton<AdventureBotGateway>(provider =>
             {
-                var client = provider.GetRequiredService<DiscordSocketClient>();
-                var interactions = provider.GetRequiredService<InteractionService>();
+                DiscordSocketClient client = provider.GetRequiredService<DiscordSocketClient>();
+                InteractionService interactions = provider.GetRequiredService<InteractionService>();
                 return new AdventureBotGateway(client, interactions, provider);
             });
 

@@ -68,7 +68,7 @@ namespace Adventure.Quest.Battle.TextGenerator
 
             // Determine random HP status text for the defender
             string statusText = "has an unknown status, because the dev fvcked up...";
-            if (battleText.HpStatus.TryGetValue(statusLabel, out var statusEntries) &&
+            if (battleText.HpStatus.TryGetValue(statusLabel, out List<TextEntry>? statusEntries) &&
                 statusEntries is List<TextEntry> entries && entries.Count > 0)
             {
                 int index = new Random().Next(entries.Count);
@@ -160,16 +160,16 @@ namespace Adventure.Quest.Battle.TextGenerator
 
             | Placeholder            | Description                                                                     |
             |------------------------|---------------------------------------------------------------------------------|
-            | {TotalAttackRoll}      | Final attack roll (base roll + modifiers).                                     |
-            | {AttackRoll}           | Raw dice result for the attack roll.                                           |
-            | {AbilityModifier}      | The attacker's ability modifier (e.g., Strength or Dexterity).                 |
-            | {Strength} / {strength}| The attacker's base Strength attribute.                                        |
-            | {ProficiencyModifier}  | The attacker's proficiency bonus.                                              |
-            | {PlayerLevel}          | The attacker's current level.                                                  |
-            | {Dice}                 | The damage dice used (e.g., d6, d8).                                           |
-            | {Damage} / {damage}    | Raw damage before modifiers.                                                   |
-            | {CritRoll} / {critRoll}| Critical damage dice roll result.                                              |
-            | {TotalDamage}          | Final total damage (including modifiers).                                      |
+            | {TotalAttackRoll}      | Final attack roll (base roll + modifiers).                                      |
+            | {AttackRoll}           | Raw dice result for the attack roll.                                            |
+            | {AbilityModifier}      | The attacker's ability modifier (e.g., Strength or Dexterity).                  |
+            | {Strength} / {strength}| The attacker's base Strength attribute.                                         |
+            | {ProficiencyModifier}  | The attacker's proficiency bonus.                                               |
+            | {PlayerLevel}          | The attacker's current level.                                                   |
+            | {Dice}                 | The damage dice used (e.g., d6, d8).                                            |
+            | {Damage} / {damage}    | Raw damage before modifiers.                                                    |
+            | {CritRoll} / {critRoll}| Critical damage dice roll result.                                               |
+            | {TotalDamage}          | Final total damage (including modifiers).                                       |
          */
 
         /// <summary>

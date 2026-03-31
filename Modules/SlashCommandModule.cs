@@ -1,8 +1,11 @@
 using Adventure.Data;
 using Adventure.Loaders;
+using Adventure.Models.Map;
+using Adventure.Models.Player;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Map;
 using Adventure.Services;
+using Discord;
 using Discord.Interactions;
 
 namespace Adventure.Modules
@@ -173,7 +176,7 @@ namespace Adventure.Modules
             await DeferAsync();
 
             // --- Get Discord user object ---
-            var user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
+            Discord.IUser? user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
             if (user == null)
             {
                 await FollowupAsync("⚠️ Error loading user data.");
@@ -184,7 +187,7 @@ namespace Adventure.Modules
             LogService.Info($"[/start] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
             // --- Get or create player profile ---
-            var player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
+            PlayerModel player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
             if (player == null)
             {
                 await FollowupAsync("⚠️ Internal error while creating or loading player.");
@@ -192,7 +195,7 @@ namespace Adventure.Modules
             }
 
             // --- Determine current tile from player's savepoint ---
-            var tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint);
+            TileModel? tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint);
 
             // --- Fallback to START tile if savepoint is invalid ---
             if (tile == null)
@@ -221,17 +224,17 @@ namespace Adventure.Modules
             }
 
             // --- Get name of area for logging ---
-            string startArea = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out var area)
+            string startArea = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out TestHouseAreaModel? area)
                 ? area.Name
                 : "Unknown Area";
             LogService.Info($"[/start] Starting in area: {startArea}, position: {tile.TilePosition}");
 
             // --- Build embed and directional buttons ---
-            var embed = EmbedBuildersMap.EmbedWalk(tile); // Reads current tile state (including lock)
-            var components = ButtonBuildersMap.BuildDirectionButtons(tile);
+            EmbedBuilder embed = EmbedBuildersMap.EmbedWalk(tile); // Reads current tile state (including lock)
+            ComponentBuilder components = ButtonBuildersMap.BuildDirectionButtons(tile);
 
             // --- Send embed and buttons to DM ---
-            var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+            IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
                 Context.Interaction,
                 embed.Build(),
                 components?.Build());

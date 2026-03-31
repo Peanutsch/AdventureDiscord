@@ -35,10 +35,10 @@ namespace Adventure.Quest.Encounter
                 }
 
                 // Match each ID to an armor model in GameData.Armor
-                var armors = armorIds
+                List<ArmorModel?>? armors = armorIds
                     .Select(id =>
                     {
-                        var armor = GameData.Armor.FirstOrDefault(a => a.Id == id);
+                        ArmorModel? armor = GameData.Armor.FirstOrDefault(a => a.Id == id);
                         if (armor == null)
                             LogService.Error($"[GameEntityFetcher.RetrieveArmorAttributes] > Armor with ID '{id}' not found.");
                         return armor;
@@ -48,7 +48,7 @@ namespace Adventure.Quest.Encounter
 
                 // Log each resolved armor for debugging
                 int counter = 1;
-                foreach (var item in armors)
+                foreach (ArmorModel? item in armors)
                 {
                     LogService.Info($"Armor Item #{counter}: {item}");
                     counter++;
@@ -83,10 +83,10 @@ namespace Adventure.Quest.Encounter
             }
 
             // Match each ID to a weapon model in GameData.Weapons
-            var weapons = weaponIds
+            List<WeaponModel> weapons = weaponIds
                 .Select(id =>
                 {
-                    var weapon = GameData.Weapons!.FirstOrDefault(w => w.Id == id);
+                    WeaponModel? weapon = GameData.Weapons!.FirstOrDefault(w => w.Id == id);
                     if (weapon == null)
                         LogService.Error($"[GameEntityFetcher.RetrieveWeaponAttributes] > No Weapon with ID '{id}' found.");
                     return weapon;
@@ -96,7 +96,7 @@ namespace Adventure.Quest.Encounter
 
             // Log each resolved weapon for debugging
             int counter = 1;
-            foreach (var item in weapons)
+            foreach (WeaponModel item in weapons)
             {
                 LogService.Info($"Weapon Item #{counter}: {item!.Name}");
                 counter++;
@@ -127,10 +127,10 @@ namespace Adventure.Quest.Encounter
             }
 
             // Match each ID to an item model in GameData.Items
-            var items = itemIds
+            List<ItemModel> items = itemIds
                 .Select(id =>
                 {
-                    var item = GameData.Items!.FirstOrDefault(i => i.Id == id);
+                    ItemModel? item = GameData.Items!.FirstOrDefault(i => i.Id == id);
                     if (item == null)
                         LogService.Error($"[GameEntityFetcher.RetrieveItemAttributes] > No items with ID '{id}' found.");
                     return item;
@@ -140,7 +140,7 @@ namespace Adventure.Quest.Encounter
 
             // Log each resolved item for debugging
             int counter = 1;
-            foreach (var item in items)
+            foreach (ItemModel item in items)
             {
                 LogService.Info($"Item #{counter}: {item!.Name}");
                 counter++;

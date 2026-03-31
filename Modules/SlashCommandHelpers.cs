@@ -104,7 +104,7 @@ namespace Adventure.Modules
             }
 
             // Load existing player or create new if load fails
-            var player = PlayerDataManager.LoadByUserId(userId);
+            PlayerModel player = PlayerDataManager.LoadByUserId(userId);
             return player ?? PlayerDataManager.CreateNewPlayer(userId, playerName);
         }
 
@@ -216,7 +216,7 @@ namespace Adventure.Modules
         /// - "BOSS_ROOM" → Found via TileName search in all areas
         /// 
         /// Usage:
-        /// var tile = GetTileFromSavePoint(player.Savepoint);
+        /// TileModel tile = GetTileFromSavePoint(player.Savepoint);
         /// if (tile != null)
         ///     await DisplayTile(tile);
         /// else
@@ -229,15 +229,15 @@ namespace Adventure.Modules
             if (string.IsNullOrWhiteSpace(savepoint))
                 return null;
 
-            // 1️⃣ Direct TileId lookup (preferred)
-            if (TestHouseLoader.TileLookup.TryGetValue(savepoint, out var tile))
+            // Direct TileId lookup
+            if (TestHouseLoader.TileLookup.TryGetValue(savepoint, out TileModel? tile))
             {
                 LogService.Info($"[SlashCommandHelpers.GetTileFromSavePoint] Found savepoint {savepoint} on map...");
                 return tile;
             }
 
-            // 2️⃣ Fallback: search TileName in all areas
-            foreach (var area in TestHouseLoader.AreaLookup.Values)
+            // Fallback: search TileName in all areas
+            foreach (TestHouseAreaModel area in TestHouseLoader.AreaLookup.Values)
             {
                 tile = area.Tiles.FirstOrDefault(t =>
                     string.Equals(t.TileName, savepoint, StringComparison.OrdinalIgnoreCase));
@@ -257,16 +257,16 @@ namespace Adventure.Modules
         /// </summary>
         public static TileModel? FindStartTile()
         {
-            foreach (var area in TestHouseLoader.AreaLookup.Values)
+            foreach (TestHouseAreaModel area in TestHouseLoader.AreaLookup.Values)
             {
-                // Zoek een tile met type "START"
-                var startTile = area.Tiles.FirstOrDefault(t => t.TileName.Equals("START", StringComparison.OrdinalIgnoreCase));
+                // Search for a tile with TileName "START" (case-insensitive)
+                TileModel? startTile = area.Tiles.FirstOrDefault(t => t.TileName.Equals("START", StringComparison.OrdinalIgnoreCase));
                 if (startTile != null)
                 {
-                    // Zorg dat TilePosition correct is ingesteld (row,col)
+                    // If TilePosition is missing or invalid, find it in the layout
                     if (string.IsNullOrWhiteSpace(startTile.TilePosition) || startTile.TilePosition == "ERROR_TILE_POSITION")
                     {
-                        // Vind de positie in de layout
+                        // Search the area's layout for the "START" tile to determine its position
                         for (int row = 0; row < area.Layout.Count; row++)
                         {
                             for (int col = 0; col < area.Layout[row].Count; col++)

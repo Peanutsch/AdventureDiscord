@@ -32,7 +32,7 @@ namespace Adventure.Quest.Encounter
             LogService.DividerParts(1, "Data NPC");
             LogService.Info($"[EmbedBuilders.GetRandomEncounter] > Encountered: [{npc.Name}]");
 
-            var embed = new EmbedBuilder()
+            EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Red)
                 .WithTitle("⚔️ Encounter")
                 .WithThumbnailUrl($"{npc.ThumbHpNpc_100}")
@@ -63,7 +63,7 @@ namespace Adventure.Quest.Encounter
             }
 
             // Retrieve detailed armor attributes using the NPC's armor IDs/names
-            var armorList = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
+            List<ArmorModel> armorList = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
 
             // If no armor attributes could be found, log an error and add "None"
             if (armorList.Count == 0)
@@ -74,7 +74,7 @@ namespace Adventure.Quest.Encounter
             }
 
             // Add a separate field for each armor piece with its name, type, and description
-            foreach (var armor in armorList)
+            foreach (ArmorModel armor in armorList)
             {
                 embed.AddField($"**[{armor.Name}]**",
                     $"Type: {armor.Type} armor\n" +  // Display armor type (e.g., light, heavy)
@@ -100,7 +100,7 @@ namespace Adventure.Quest.Encounter
             }
 
             // Retrieve detailed weapon attributes using the NPC's weapon IDs/names
-            var weaponList = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons!);
+            List<WeaponModel> weaponList = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons!);
 
             // If no weapon data was found, log an error and display "None"
             if (weaponList.Count == 0)
@@ -111,7 +111,7 @@ namespace Adventure.Quest.Encounter
             }
 
             // Add a separate field for each weapon with its name, range, and description
-            foreach (var weapon in weaponList)
+            foreach (WeaponModel weapon in weaponList)
             {
                 embed.AddField($"**[{weapon.Name}]**",
                     //$"Range: {weapon.Range} meter\n" +  // Show attack range
@@ -130,7 +130,7 @@ namespace Adventure.Quest.Encounter
         public static async Task EmbedPreBattleInDM(SocketInteraction interaction)
         {
             // --- Retrieve the current battle state for the user ---
-            var state = BattleStateSetup.GetBattleState(interaction.User.Id);
+            BattleStateModel state = BattleStateSetup.GetBattleState(interaction.User.Id);
             if (state == null)
             {
                 LogService.Error("[EmbedBuilders.EmbedPreBattleInDM] > Battle state not found.");
@@ -139,11 +139,11 @@ namespace Adventure.Quest.Encounter
             }
 
             // --- Build the pre-battle UI elements ---
-            var buttonBuilder = BuildBattleButtons(state);
-            var embed = BuildPreBattleEmbed(state);
-
+            EmbedBuilder embed = BuildPreBattleEmbed(state);
+            ComponentBuilder buttonBuilder = BuildBattleButtons(state);
+            
             // --- Send to DM instead of channel ---
-            var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+            IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
                 interaction,
                 embed.Build(),
                 buttonBuilder.Build());
@@ -163,20 +163,20 @@ namespace Adventure.Quest.Encounter
         /// <returns>A ComponentBuilder containing all buttons.</returns>
         public static ComponentBuilder BuildBattleButtons(BattleStateModel state)
         {
-            var builder = new ComponentBuilder();
+            ComponentBuilder buttonBuilder = new ComponentBuilder();
 
             // --- Add a button for each weapon the player currently owns --- 
             if (state.PlayerWeapons != null && state.PlayerWeapons.Any())
             {
-                foreach (var weapon in state.PlayerWeapons)
-                    builder.WithButton(weapon.Name, weapon.Id, ButtonStyle.Primary);
+                foreach (WeaponModel weapon in state.PlayerWeapons)
+                    buttonBuilder.WithButton(weapon.Name, weapon.Id, ButtonStyle.Primary);
             }
 
             // --- Add a button for each item (like potions or consumables) --- 
             if (state.Items != null && state.Items.Any())
             {
-                foreach (var item in state.Items)
-                    builder.WithButton(item.Name, item.Id, ButtonStyle.Success, row: 2);
+                foreach (ItemModel item in state.Items)
+                    buttonBuilder.WithButton(item.Name, item.Id, ButtonStyle.Success, row: 2);
             }
             else
             {
@@ -184,9 +184,9 @@ namespace Adventure.Quest.Encounter
             }
 
             // --- Add the 'Flee' or 'Break' button to allow exiting the battle --- 
-            builder.WithButton("Flee", $"battle_flee_{state.Player.Id}", ButtonStyle.Secondary);
+            buttonBuilder.WithButton("Flee", $"battle_flee_{state.Player.Id}", ButtonStyle.Secondary);
 
-            return builder;
+            return buttonBuilder;
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Adventure.Quest.Encounter
         /// <returns>An EmbedBuilder containing the formatted pre-battle view.</returns>
         public static EmbedBuilder BuildPreBattleEmbed(BattleStateModel state)
         {
-            var embed = new EmbedBuilder()
+            EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Blue)
                 .WithTitle("[Prepare for Battle]")
                 .WithThumbnailUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1425077955121381427/weaponrack2.jpg?ex=68e646c5&is=68e4f545&hm=0f79e4a059c952bda3811786473f42769493eaea55fc71105b2925024727022c&")
@@ -218,7 +218,7 @@ namespace Adventure.Quest.Encounter
         /// <param name="state">The current player's battle state.</param>
         private static void AddWeaponFields(EmbedBuilder embed, BattleStateModel state)
         {
-            foreach (var weapon in state.PlayerWeapons ?? Enumerable.Empty<WeaponModel>())
+            foreach (WeaponModel weapon in state.PlayerWeapons ?? Enumerable.Empty<WeaponModel>())
             {
                 string diceNotation = $"{weapon.Damage.DiceCount}d{weapon.Damage.DiceValue}";
                 string nameNotation = $"[{weapon.Name} ({diceNotation})]";
@@ -233,7 +233,7 @@ namespace Adventure.Quest.Encounter
         /// <param name="state">The current player's battle state.</param>
         private static void AddArmorFields(EmbedBuilder embed, BattleStateModel state)
         {
-            foreach (var armor in state.PlayerArmor ?? Enumerable.Empty<ArmorModel>())
+            foreach (ArmorModel armor in state.PlayerArmor ?? Enumerable.Empty<ArmorModel>())
             {
                 string acNotation = $"Armor Class: {armor.ArmorClass}";
                 string nameNotation = $"[{armor.Name} ({acNotation})]";
@@ -248,7 +248,7 @@ namespace Adventure.Quest.Encounter
         /// <param name="state">The current player's battle state.</param>
         private static void AddItemFields(EmbedBuilder embed, BattleStateModel state)
         {
-            foreach (var item in state.Items ?? Enumerable.Empty<ItemModel>())
+            foreach (ItemModel item in state.Items ?? Enumerable.Empty<ItemModel>())
             {
                 string diceNotation = $"{item.Effect.DiceCount}d{item.Effect.DiceValue}+{item.Effect.BonusHP}";
                 string nameNotation = $"[{item.Name} ({diceNotation})]";
@@ -271,9 +271,9 @@ namespace Adventure.Quest.Encounter
         public static EmbedBuilder BuildBattleEmbed(ulong userId, string attackSummary)
         {
             // --- Retrieve the current battle state --- 
-            var state = BattleStateSetup.GetBattleState(userId);
-            var player = state.Player;
-            var npc = state.Npc;
+            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
+            PlayerModel player = state.Player;
+            NpcModel npc = state.Npc;
 
             // --- Check for battle end (player or NPC HP <= 0) ---
             if (player.Hitpoints <= 0 || state.CurrentHitpointsNPC <= 0)
@@ -293,7 +293,7 @@ namespace Adventure.Quest.Encounter
             string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(npc, state.PercentageHpNpc);
 
             // --- Build the ongoing battle embed ---
-            var embed = new EmbedBuilder()
+            EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(state.EmbedColor)
                 .WithTitle($"⚔️ Battle Report — Round {state.RoundCounter}")
                 .WithThumbnailUrl(thumbUrl)
@@ -316,7 +316,7 @@ namespace Adventure.Quest.Encounter
         public static async Task EmbedEndBattleInDM(SocketInteraction interaction, string? extraMessage = null)
         {
             ulong userId = interaction.User.Id;
-            var state = BattleStateSetup.GetBattleState(userId);
+            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
             string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(state.Npc, state.PercentageHpNpc);
 
             string finalLog = extraMessage ?? "";
@@ -325,7 +325,7 @@ namespace Adventure.Quest.Encounter
             // --- Increment round counter ---
             state.RoundCounter++;
 
-            var embed = new EmbedBuilder()
+            EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(state.EmbedColor)
                 .WithTitle($"⚔️ Battle Report — Round {state.RoundCounter}")
                 .WithThumbnailUrl(thumbUrl)
@@ -333,7 +333,7 @@ namespace Adventure.Quest.Encounter
                           $"| Level {state.Player.Level} | {state.Player.XP} XP | {state.Player.Hitpoints} HP |")
                 .AddField("\u200B", $"{finalLog}\n\n{battleOverText}");
 
-            var buttons = new ComponentBuilder()
+            ComponentBuilder buttons = new ComponentBuilder()
                 .WithButton("CONTINUE", $"battle_continue_{userId}", ButtonStyle.Success);
 
             // --- Get active message and update it instead of sending new ---
@@ -343,10 +343,10 @@ namespace Adventure.Quest.Encounter
             {
                 try
                 {
-                    var dmChannel = await interaction.User.CreateDMChannelAsync();
+                    IDMChannel dmChannel = await interaction.User.CreateDMChannelAsync();
                     if (dmChannel != null)
                     {
-                        var message = await dmChannel.GetMessageAsync(activeMessageId) as IUserMessage;
+                        IUserMessage? message = await dmChannel.GetMessageAsync(activeMessageId) as IUserMessage;
                         if (message != null)
                         {
                             await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
@@ -361,7 +361,7 @@ namespace Adventure.Quest.Encounter
                 {
                     LogService.Error($"[EmbedEndBattleInDM] Failed to update existing message: {ex.Message}");
                     // Fallback: send new message
-                    var newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                    IUserMessage? newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
                         interaction,
                         embed.Build(),
                         buttons.Build());
@@ -374,7 +374,7 @@ namespace Adventure.Quest.Encounter
             else
             {
                 // Fallback: send new message
-                var newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                IUserMessage? newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
                     interaction,
                     embed.Build(),
                     buttons.Build());

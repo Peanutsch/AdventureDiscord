@@ -12,14 +12,14 @@ namespace Adventure.Loaders
         {
             try 
             {
-                var armor = JsonDataManager.LoadObjectFromJson<ArmorContainer>("Data/Items/Armor/armor.json");
+                ArmorContainer? armor = JsonDataManager.LoadObjectFromJson<ArmorContainer>("Data/Items/Armor/armor.json");
 
                 if (armor == null) {
                     LogService.Error("[ArmorLoader] > Failed to load ArmorModel.\n");
                     return null;
                 }
 
-                var allArmor = new List<ArmorModel>();
+                List<ArmorModel> allArmor = new List<ArmorModel>();
                 if (armor?.CraftedArmor != null)
                 {
                     LogService.Info($"Adding catagory Crafted Armor to allArmor: {armor.CraftedArmor.Count} of crafted armor");

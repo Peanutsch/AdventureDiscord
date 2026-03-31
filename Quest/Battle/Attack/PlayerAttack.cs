@@ -1,4 +1,5 @@
-﻿using Adventure.Models.Items;
+﻿using Adventure.Models.BattleState;
+using Adventure.Models.Items;
 using Adventure.Quest.Battle.Attack;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Process;
@@ -9,7 +10,7 @@ class PlayerAttack
     public static string ProcessPlayerAttack(ulong userId, WeaponModel weapon)
     {
         // // Get attack data from AttackProcessor
-        var (battleLog, state) = AttackProcessor.ProcessAttack(userId, weapon, true);
+        (string battleLog, BattleStateModel state) = AttackProcessor.ProcessAttack(userId, weapon, true);
 
         // If NPC is dead → end battle + reward XP
         if (state.CurrentHitpointsNPC <= 0)
@@ -17,8 +18,8 @@ class PlayerAttack
             EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
             state.EmbedColor = Color.Purple;
 
-            var rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
-            var (leveledUp, oldLevel, newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
+            int rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
+            (bool leveledUp, int oldLevel, int newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
 
             battleLog += $"\n\n💀 **VICTORY!!! {state.Npc.Name} is defeated after {state.RoundCounter} {UseOfS(state.RoundCounter)}!**";
             battleLog += $"\n🏆 **{state.Player.Name}** gains **{state.RewardXP} XP** (Total: {state.NewTotalXP} XP)";

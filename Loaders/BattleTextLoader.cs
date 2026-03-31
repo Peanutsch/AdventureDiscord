@@ -26,8 +26,8 @@ namespace Adventure.Loaders
                 LogService.Info("[BattleTextLoader] BattleText loaded...");
             }
 
-                // Roll text
-                var rollText = JsonDataManager.LoadObjectFromJson<Dictionary<string, string>>("Data/Text/battlerolldicetext.json");
+            // Roll text
+            var rollText = JsonDataManager.LoadObjectFromJson<Dictionary<string, string>>("Data/Text/battlerolldicetext.json");
             if (rollText == null)
                 throw new System.Exception($"Failed to load Data/Text/battlerolldicetext.json...");
            
