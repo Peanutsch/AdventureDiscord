@@ -2,11 +2,13 @@
 using Adventure.Loaders;
 using Adventure.Models.BattleState;
 using Adventure.Models.Items;
+using Adventure.Models.Map;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Modules;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Process;
+using Adventure.Quest.Map;
 using Adventure.Services;
 using Discord;
 using Discord.WebSocket;
@@ -337,55 +339,20 @@ namespace Adventure.Quest.Encounter
                           $"| Level {state.Player.Level} | {state.Player.XP} XP | {state.Player.Hitpoints} HP |")
                 .AddField("\u200B", $"{finalLog}\n\n{battleOverText}");
 
-            ComponentBuilder buttons = new ComponentBuilder()
-                .WithButton("CONTINUE", $"battle_continue_{userId}", ButtonStyle.Success);
+            // --- Send NEW message for end battle WITHOUT buttons ---
+            IUserMessage? newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                interaction,
+                embed.Build(),
+                null); // No buttons - battle has ended
 
-            // --- Get active message and update it instead of sending new ---
-            ulong activeMessageId = BattlePrivateMessageHelper.GetActiveBattleMessage(userId);
-
-            if (activeMessageId != 0)
+            if (newMessage != null)
             {
-                try
-                {
-                    IDMChannel dmChannel = await interaction.User.CreateDMChannelAsync();
-                    if (dmChannel != null)
-                    {
-                        IUserMessage? message = await dmChannel.GetMessageAsync(activeMessageId) as IUserMessage;
-                        if (message != null)
-                        {
-                            await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
-                                message,
-                                embed.Build(),
-                                buttons.Build());
-                            LogService.Info("[EmbedEndBattleInDM] End battle message updated in existing DM.");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogService.Error($"[EmbedEndBattleInDM] Failed to update existing message: {ex.Message}");
-                    // Fallback: send new message
-                    IUserMessage? newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
-                        interaction,
-                        embed.Build(),
-                        buttons.Build());
-                    if (newMessage != null)
-                    {
-                        BattlePrivateMessageHelper.SetActiveBattleMessage(userId, newMessage.Id);
-                    }
-                }
+                BattlePrivateMessageHelper.SetActiveBattleMessage(userId, newMessage.Id);
+                LogService.Info("[EmbedEndBattleInDM] ✅ End battle message sent as new DM (no buttons).");
             }
             else
             {
-                // Fallback: send new message
-                IUserMessage? newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
-                    interaction,
-                    embed.Build(),
-                    buttons.Build());
-                if (newMessage != null)
-                {
-                    BattlePrivateMessageHelper.SetActiveBattleMessage(userId, newMessage.Id);
-                }
+                LogService.Error("[EmbedEndBattleInDM] ❌ Failed to send end battle message");
             }
 
             // Reset round counter
@@ -394,6 +361,44 @@ namespace Adventure.Quest.Encounter
             // Update battle step
             EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
             BattlePrivateMessageHelper.ClearActiveBattleMessage(userId);
+
+            // --- Send map automatically as next message ---
+            try
+            {
+                await Task.Delay(500); // Small delay to ensure proper ordering
+
+                IUser? user = interaction.User as SocketUser;
+                if (user != null)
+                {
+                    PlayerModel? player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
+                    TileModel? tile = SlashCommandHelpers.GetTileFromSavePoint(player.Savepoint)
+                               ?? SlashCommandHelpers.FindStartTile();
+
+                    if (tile != null)
+                    {
+                        EmbedBuilder mapEmbed = EmbedBuildersMap.EmbedWalk(tile);
+                        ComponentBuilder mapButtons = ButtonBuildersMap.BuildDirectionButtons(tile);
+
+                        IUserMessage? mapMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                            interaction,
+                            mapEmbed.Build(),
+                            mapButtons.Build());
+
+                        if (mapMessage != null)
+                        {
+                            LogService.Info("[EmbedEndBattleInDM] ✅ Map sent automatically after battle end.");
+                        }
+                        else
+                        {
+                            LogService.Error("[EmbedEndBattleInDM] ❌ Failed to send map after battle");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[EmbedEndBattleInDM] Failed to send map: {ex.Message}");
+            }
         }
         #endregion Embed End Battle
     }
