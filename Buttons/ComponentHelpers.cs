@@ -2,6 +2,7 @@
 using Adventure.Models.Map;
 using Adventure.Models.Player;
 using Adventure.Modules;
+using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Randomizers;
 using Adventure.Quest.Encounter;
 using Adventure.Quest.Map;
@@ -167,7 +168,24 @@ namespace Adventure.Buttons
             EmbedBuilder embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
 
-            await context.Interaction.FollowupAsync(embed: embed.Build(), components: buttons.Build());
+            // Send encounter to DM instead of channel
+            var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                context.Interaction,
+                embed.Build(),
+                buttons.Build());
+
+            if (dmMessage != null)
+            {
+                LogService.Info($"[HandleAutoEncounterAsync] ✅ Storing active message {dmMessage.Id} for user {context.User.Id}");
+                BattlePrivateMessageHelper.SetActiveBattleMessage(context.User.Id, dmMessage.Id);
+            }
+            else
+            {
+                LogService.Error("[HandleAutoEncounterAsync] ❌ Failed to send encounter to DM");
+            }
+
+            // Notify user in channel that encounter started
+            // await context.Interaction.FollowupAsync($"🎲 **{npc.Name}** encountered! Check your DMs to battle.");
             return true;
         }
 

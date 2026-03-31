@@ -99,6 +99,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             lock (ActiveBattleMessages)
             {
                 ActiveBattleMessages[userId] = messageId;
+                LogService.Info($"[BattlePrivateMessageHelper.SetActiveBattleMessage] ✅ Stored message {messageId} for user {userId}");
             }
         }
 
@@ -111,7 +112,17 @@ namespace Adventure.Quest.Battle.BattleEngine
         {
             lock (ActiveBattleMessages)
             {
-                return ActiveBattleMessages.TryGetValue(userId, out ulong messageId) ? messageId : 0;
+                bool found = ActiveBattleMessages.TryGetValue(userId, out ulong messageId);
+                if (found)
+                {
+                    LogService.Info($"[BattlePrivateMessageHelper.GetActiveBattleMessage] ✅ Retrieved message {messageId} for user {userId}");
+                    return messageId;
+                }
+                else
+                {
+                    LogService.Error($"[BattlePrivateMessageHelper.GetActiveBattleMessage] ❌ No message found for user {userId}. Active messages: {string.Join(", ", ActiveBattleMessages.Keys)}");
+                    return 0;
+                }
             }
         }
 

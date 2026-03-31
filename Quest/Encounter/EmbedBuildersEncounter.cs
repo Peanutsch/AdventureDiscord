@@ -29,7 +29,7 @@ namespace Adventure.Quest.Encounter
         /// <returns>An EmbedBuilder with npc details formatted.</returns>
         public static EmbedBuilder EmbedRandomEncounter(NpcModel npc)
         {
-            LogService.DividerParts(1, "Data NPC");
+            LogService.DividerParts(1, "Embed Data NPC");
             LogService.Info($"[EmbedBuilders.GetRandomEncounter] > Encountered: [{npc.Name}]");
 
             EmbedBuilder embed = new EmbedBuilder()
@@ -41,7 +41,7 @@ namespace Adventure.Quest.Encounter
             AddArmorFields(embed, npc);
             AddWeaponFields(embed, npc);
 
-            LogService.DividerParts(2, "Data NPC");
+            LogService.DividerParts(2, "Embed Data NPC");
             return embed;
         }
 
@@ -141,8 +141,8 @@ namespace Adventure.Quest.Encounter
             // --- Build the pre-battle UI elements ---
             EmbedBuilder embed = BuildPreBattleEmbed(state);
             ComponentBuilder buttonBuilder = BuildBattleButtons(state);
-            
-            // --- Send to DM instead of channel ---
+
+            // --- Send new message for weapon selection (separate from encounter message) ---
             IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
                 interaction,
                 embed.Build(),
@@ -151,7 +151,11 @@ namespace Adventure.Quest.Encounter
             if (dmMessage != null)
             {
                 BattlePrivateMessageHelper.SetActiveBattleMessage(interaction.User.Id, dmMessage.Id);
-                LogService.Info("[EmbedBuilders.EmbedPreBattleInDM] Weapon selection sent to DM.");
+                LogService.Info("[EmbedBuilders.EmbedPreBattleInDM] ✅ Weapon selection sent as new DM message.");
+            }
+            else
+            {
+                LogService.Error("[EmbedBuilders.EmbedPreBattleInDM] ❌ Failed to send weapon selection message");
             }
         }
 

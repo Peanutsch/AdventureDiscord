@@ -189,33 +189,109 @@ namespace Adventure.Quest.Battle.BattleEngine
             ulong userId = component.User.Id;
             LogService.DividerParts(1, "HandleStepStart");
 
+            // Get the DM channel and active message first (needed for both Flee and Attack)
+            IDMChannel? dmChannel = null;
+            IUserMessage? message = null;
+            ulong activeMessageId = BattlePrivateMessageHelper.GetActiveBattleMessage(userId);
+
+            if (activeMessageId != 0)
+            {
+                try
+                {
+                    dmChannel = await component.User.CreateDMChannelAsync();
+                    if (dmChannel != null)
+                    {
+                        var fetchedMessage = await dmChannel.GetMessageAsync(activeMessageId);
+                        if (fetchedMessage is IUserMessage userMsg)
+                        {
+                            message = userMsg;
+                            LogService.Info($"[HandleStepStart] ✅ Retrieved DM message {activeMessageId}");
+                        }
+                        else
+                        {
+                            LogService.Error($"[HandleStepStart] ❌ Fetched message is not IUserMessage");
+                        }
+                    }
+                    else
+                    {
+                        LogService.Error("[HandleStepStart] ❌ DM channel is null");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogService.Error($"[HandleStepStart] ❌ Failed to retrieve DM message: {ex.Message}");
+                }
+            }
+            else
+            {
+                LogService.Error("[HandleStepStart] ❌ No active message ID found!");
+            }
+
             if (action == PlayerAction.Flee.ToString().ToLower())
             {
-                // Player chose to flee → remove buttons and show message
+                // Player chose to flee → disable buttons and show message
                 LogService.Info("[HandleStepStart] Player flees");
-                await component.UpdateAsync(msg =>
+
+                if (message != null)
                 {
-                    msg.Content = BattleMessages.Flee;
-                    msg.Components = new ComponentBuilder().Build(); // remove buttons
-                    msg.Embed = null;
-                });
+                    try
+                    {
+                        // Create flee embed
+                        var fleeEmbed = new EmbedBuilder()
+                            .WithTitle("🏃 Flee Attempt")
+                            .WithDescription(BattleMessages.Flee)
+                            .WithColor(Color.Orange)
+                            .Build();
+
+                        // Disable all buttons
+                        var disabledButtons = new ComponentBuilder(); // Empty = no buttons
+
+                        await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
+                            message,
+                            fleeEmbed,
+                            disabledButtons.Build()); // Empty ComponentBuilder = no components
+                        LogService.Info("[HandleStepStart] ✅ Flee message updated in DM with disabled buttons");
+                    }
+                    catch (Exception ex)
+                    {
+                        LogService.Error($"[HandleStepStart] ❌ Failed to update flee message: {ex.Message}");
+                    }
+                }
+
                 SetStep(userId, BattleStep.Flee);
             }
             else if (action.Equals(PlayerAction.Attack.ToString(), StringComparison.CurrentCultureIgnoreCase))
             {
-                // Player chose attack → show weapon selection in DM
-                LogService.Info("[HandleStepStart] Player chooses attack, showing weapons in DM...");
+                // Player chose attack → disable buttons from encounter embed, then show weapon selection
+                LogService.Info("[HandleStepStart] Player chooses attack");
+
+                if (message != null)
+                {
+                    try
+                    {
+                        // Disable all buttons but keep the encounter embed
+                        var disabledButtons = new ComponentBuilder(); // Empty = no buttons
+
+                        await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
+                            message,
+                            message.Embeds.FirstOrDefault()?.ToEmbedBuilder().Build() ?? new EmbedBuilder().Build(),
+                            disabledButtons.Build()); // Empty ComponentBuilder = no components
+                        LogService.Info("[HandleStepStart] ✅ Disabled buttons on encounter embed");
+                    }
+                    catch (Exception ex)
+                    {
+                        LogService.Error($"[HandleStepStart] ❌ Failed to disable buttons: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    LogService.Error("[HandleStepStart] ❌ Message is null, cannot disable buttons");
+                }
+
+                // Now show weapon selection in DM
+                LogService.Info("[HandleStepStart] Showing weapons in DM...");
                 await EmbedBuildersEncounter.EmbedPreBattleInDM(component);
                 SetStep(userId, BattleStep.WeaponChoice);
-
-                // Player chose to flee → remove buttons and show message
-                LogService.Info("[HandleStepStart] Removing buttons");
-                await component.UpdateAsync(msg =>
-                {
-                    msg.Content = BattleMessages.ChooseWeapon;
-                    msg.Components = new ComponentBuilder().Build(); // remove buttons
-                    msg.Embed = null;
-                });
             }
 
             LogService.DividerParts(2, "HandleStepStart");
@@ -278,7 +354,7 @@ namespace Adventure.Quest.Battle.BattleEngine
                 return;
             }
 
-            // --- Get the active message to remove buttons before showing battle ---
+            // --- Get the active message to disable buttons before showing battle ---
             ulong activeMessageId = BattlePrivateMessageHelper.GetActiveBattleMessage(userId);
 
             if (activeMessageId != 0)
@@ -288,17 +364,18 @@ namespace Adventure.Quest.Battle.BattleEngine
                     IDMChannel dmChannel = await interaction.User.CreateDMChannelAsync();
                     if (dmChannel != null && await dmChannel.GetMessageAsync(activeMessageId) is IUserMessage message)
                     {
-                        // Remove buttons from weapon selection message before showing battle
+                        // Disable buttons on weapon selection message before showing battle
+                        var disabledButtons = new ComponentBuilder(); // Empty = no buttons
                         await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
                             message,
                             message.Embeds.FirstOrDefault()?.ToEmbedBuilder().Build() ?? new EmbedBuilder().Build(),
-                            null); // null = remove all components
-                        LogService.Info("[HandleStepBattle] Removed buttons from weapon selection message.");
+                            disabledButtons.Build()); // Empty ComponentBuilder = no components
+                        LogService.Info("[HandleStepBattle] ✅ Disabled buttons on weapon selection message.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogService.Error($"[HandleStepBattle] Failed to remove buttons: {ex.Message}");
+                    LogService.Error($"[HandleStepBattle] Failed to disable buttons: {ex.Message}");
                 }
             }
 
@@ -325,51 +402,20 @@ namespace Adventure.Quest.Battle.BattleEngine
             EmbedBuilder battleEmbed = EmbedBuildersEncounter.BuildBattleEmbed(userId, fullAttackLog);
             ComponentBuilder battleButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
 
-            // --- Update the message with battle embed and buttons ---
-            if (activeMessageId != 0)
+            // --- Send battle as NEW message (separate from weapon selection) ---
+            IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                interaction,
+                battleEmbed.Build(),
+                battleButtons.Build());
+
+            if (dmMessage != null)
             {
-                try
-                {
-                    IDMChannel dmChannel = await interaction.User.CreateDMChannelAsync();
-                    if (dmChannel != null && await dmChannel.GetMessageAsync(activeMessageId) is IUserMessage message)
-                    {
-                        await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
-                            message,
-                            battleEmbed.Build(),
-                            battleButtons.Build());
-                        LogService.Info("[HandleStepBattle] Battle message updated in DM.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogService.Error($"[HandleStepBattle] Failed to update existing message: {ex.Message}");
-                    // Fallback: send new message
-                    IUserMessage? newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
-                        interaction,
-                        battleEmbed.Build(),
-                        battleButtons.Build());
-                    if (newMessage != null)
-                    {
-                        BattlePrivateMessageHelper.SetActiveBattleMessage(userId, newMessage.Id);
-                    }
-                }
+                BattlePrivateMessageHelper.SetActiveBattleMessage(userId, dmMessage.Id);
+                LogService.Info("[HandleStepBattle] ✅ Battle sent as new DM message.");
             }
             else
             {
-                // --- First battle message - send new ---
-                IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
-                    interaction,
-                    battleEmbed.Build(),
-                    battleButtons.Build());
-
-                if (dmMessage != null)
-                {
-                    BattlePrivateMessageHelper.SetActiveBattleMessage(userId, dmMessage.Id);
-                }
-                else
-                {
-                    LogService.Error("[HandleStepBattle] Failed to send battle message to DM.");
-                }
+                LogService.Error("[HandleStepBattle] ❌ Failed to send battle message to DM.");
             }
 
             // --- Transition to post-battle step ---
