@@ -10,6 +10,7 @@ using Adventure.Quest.Map.HashSets;
 using Adventure.Services;
 using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
 using static Adventure.Quest.Battle.Randomizers.EncounterRandomizer;
 
 namespace Adventure.Buttons
@@ -213,27 +214,54 @@ namespace Adventure.Buttons
         #endregion
 
         #region === Transition Travel Embed ===
-        public static async Task TransitionTravelEmbed(SocketInteractionContext context, TileModel targetTile)
+        /// <summary>
+        /// Builds a travel transition embed for moving between tiles.
+        /// </summary>
+        /// <param name="targetTile">The tile the player is moving to.</param>
+        /// <returns>An EmbedBuilder with the transition embed.</returns>
+        private static EmbedBuilder BuildTransitionEmbed(TileModel targetTile)
         {
             string? areaName = TestHouseLoader.AreaLookup.TryGetValue(targetTile.AreaId, out TestHouseAreaModel? area)
                 ? area.Name
                 : targetTile.AreaId;
 
+            return new EmbedBuilder()
+                .WithTitle("Travel 🏃")
+                .WithDescription($"To the **{areaName}**...")
+                .WithImageUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1437286889060175972/iu_.png?ex=6912b139&is=69115fb9&hm=5a328c96b633cf372af46cfb0cfd8a8ffddc22b602562905e69ca47c5c9d492d&")
+                .WithColor(Color.Orange);
+        }
+
+        /// <summary>
+        /// Shows a travel transition embed by updating the current interaction response.
+        /// Used for normal tile movement via direction buttons.
+        /// </summary>
+        public static async Task TransitionTravelEmbed(SocketInteractionContext context, TileModel targetTile)
+        {
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
-                msg.Embed = new EmbedBuilder()
-                    .WithTitle("Travel 🏃")
-                    .WithDescription($"To the **{areaName}**...")
-                    .WithImageUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1437286889060175972/iu_.png?ex=6912b139&is=69115fb9&hm=5a328c96b633cf372af46cfb0cfd8a8ffddc22b602562905e69ca47c5c9d492d&")
-                    .WithColor(Color.Orange)
-                    .Build();
-
+                msg.Embed = BuildTransitionEmbed(targetTile).Build();
                 msg.Components = new ComponentBuilder()
                     .WithButton("Please wait...", "none", ButtonStyle.Secondary, disabled: true)
                     .Build();
             });
 
             await Task.Delay(2500);
+        }
+
+        /// <summary>
+        /// Shows a travel transition embed as a new DM message.
+        /// Used for transitions that need a separate message (e.g., after battle continue).
+        /// </summary>
+        public static async Task<IUserMessage?> TransitionTravelEmbedAsDMAsync(SocketInteractionContext context, TileModel targetTile)
+        {
+            ComponentBuilder transitionButtons = new ComponentBuilder()
+                .WithButton("Please wait...", "none", ButtonStyle.Secondary, disabled: true);
+
+            return await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                context.Interaction,
+                BuildTransitionEmbed(targetTile).Build(),
+                transitionButtons.Build());
         }
         #endregion
 
