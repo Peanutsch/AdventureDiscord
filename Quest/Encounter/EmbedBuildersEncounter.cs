@@ -361,7 +361,6 @@ namespace Adventure.Quest.Encounter
 
             // Update battle step
             EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
-            BattlePrivateMessageHelper.ClearActiveBattleMessage(userId);
         }
         #endregion Embed End Battle
     }
