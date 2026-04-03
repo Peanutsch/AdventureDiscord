@@ -193,7 +193,7 @@ namespace Adventure.Buttons
             // Send encounter notification to guild channel
             if (encounterState.GuildChannelId != 0)
             {
-                Embed guildEmbed = EmbedBuildersEncounter.BuildGuildEncounterEmbed(encounterState.Player.Name, npc).Build();
+                Embed guildEmbed = EmbedBuildersEncounter.BuildGuildEncounterEmbed(encounterState.Player.Name!, npc).Build();
                 await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(encounterState.GuildChannelId, guildEmbed);
             }
 
@@ -212,7 +212,17 @@ namespace Adventure.Buttons
         private static async Task HandleNormalMovementAsync(SocketInteractionContext context, TileModel targetTile, bool showTravelAnimation)
         {
             if (showTravelAnimation)
+            {
                 await TransitionTravelEmbed(context, targetTile);
+
+                // Send travel notification to guild channel
+                ulong guildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
+                if (guildChannelId != 0)
+                {
+                    Embed guildEmbed = BuildGuildTravelEmbed(context.User.GlobalName ?? context.User.Username, targetTile).Build();
+                    await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(guildChannelId, guildEmbed);
+                }
+            }
 
             EmbedBuilder embedWalk = EmbedBuildersMap.EmbedWalk(targetTile);
             ComponentBuilder components = ButtonBuildersMap.BuildDirectionButtons(targetTile);
@@ -242,6 +252,23 @@ namespace Adventure.Buttons
                 .WithDescription($"To the **{areaName}**...")
                 .WithImageUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1437286889060175972/iu_.png?ex=6912b139&is=69115fb9&hm=5a328c96b633cf372af46cfb0cfd8a8ffddc22b602562905e69ca47c5c9d492d&")
                 .WithColor(Color.Orange);
+        }
+
+        /// <summary>
+        /// Builds a compact travel notification embed for the guild channel.
+        /// </summary>
+        /// <param name="playerName">The name of the traveling player.</param>
+        /// <param name="targetTile">The tile the player is traveling to.</param>
+        /// <returns>An EmbedBuilder with the travel notification.</returns>
+        private static EmbedBuilder BuildGuildTravelEmbed(string playerName, TileModel targetTile)
+        {
+            string areaName = TestHouseLoader.AreaLookup.TryGetValue(targetTile.AreaId, out TestHouseAreaModel? area)
+                ? area.Name
+                : targetTile.AreaId;
+
+            return new EmbedBuilder()
+                .WithColor(Color.Orange)
+                .WithTitle($"🏃 {playerName} travels to {areaName}");
         }
 
         /// <summary>
