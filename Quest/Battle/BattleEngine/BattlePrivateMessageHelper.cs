@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using Adventure.Data;
 using Adventure.Services;
 using Discord.Rest;
+using System.Collections.Concurrent;
 
 namespace Adventure.Quest.Battle.BattleEngine
 {
@@ -36,18 +37,15 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// Tracks the guild channel ID per user, so battle updates can be sent to the public channel.
         /// Key: Discord user ID | Value: Guild channel ID where the adventure was started.
         /// </summary>
-        private static readonly Dictionary<ulong, ulong> GuildChannelIds = new();
+        private static readonly ConcurrentDictionary<ulong, ulong> GuildChannelIds = new();
 
         /// <summary>
         /// Stores the guild channel ID for a user (called when /start is executed from a guild channel).
         /// </summary>
         public static void SetGuildChannelId(ulong userId, ulong channelId)
         {
-            lock (GuildChannelIds)
-            {
-                GuildChannelIds[userId] = channelId;
-                LogService.Info($"[BattlePrivateMessageHelper.SetGuildChannelId] Stored channel {channelId} for user {userId}");
-            }
+            GuildChannelIds[userId] = channelId;
+            LogService.Info($"[BattlePrivateMessageHelper.SetGuildChannelId] Stored channel {channelId} for user {userId}");
         }
 
         /// <summary>
@@ -58,11 +56,8 @@ namespace Adventure.Quest.Battle.BattleEngine
         public static ulong GetGuildChannelId(ulong userId)
         {
             // 1) Check per-user override (set via /start)
-            lock (GuildChannelIds)
-            {
-                if (GuildChannelIds.TryGetValue(userId, out ulong channelId))
-                    return channelId;
-            }
+            if (GuildChannelIds.TryGetValue(userId, out ulong channelId))
+                return channelId;
 
             // 2) Fallback to botconfig.json default
             ulong configChannelId = GameData.BotConfig?.GuildChannelId ?? 0;
@@ -194,7 +189,7 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// Stores a reference to the active battle DM message for a user.
         /// Allows us to update the message as the battle progresses.
         /// </summary>
-        private static readonly Dictionary<ulong, ulong> ActiveBattleMessages = new();
+        private static readonly ConcurrentDictionary<ulong, ulong> ActiveBattleMessages = new();
 
         /// <summary>
         /// Records the DM message ID for an active battle.
@@ -203,11 +198,8 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// <param name="messageId">The message ID of the DM.</param>
         public static void SetActiveBattleMessage(ulong userId, ulong messageId)
         {
-            lock (ActiveBattleMessages)
-            {
-                ActiveBattleMessages[userId] = messageId;
-                LogService.Info($"[BattlePrivateMessageHelper.SetActiveBattleMessage] Stored message {messageId} for user {userId}");
-            }
+            ActiveBattleMessages[userId] = messageId;
+            LogService.Info($"[BattlePrivateMessageHelper.SetActiveBattleMessage] Stored message {messageId} for user {userId}");
         }
 
         /// <summary>
@@ -217,20 +209,14 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// <returns>The message ID if found, 0 otherwise.</returns>
         public static ulong GetActiveBattleMessage(ulong userId)
         {
-            lock (ActiveBattleMessages)
+            if (ActiveBattleMessages.TryGetValue(userId, out ulong messageId))
             {
-                bool found = ActiveBattleMessages.TryGetValue(userId, out ulong messageId);
-                if (found)
-                {
-                    LogService.Info($"[BattlePrivateMessageHelper.GetActiveBattleMessage] Retrieved message {messageId} for user {userId}");
-                    return messageId;
-                }
-                else
-                {
-                    LogService.Error($"[BattlePrivateMessageHelper.GetActiveBattleMessage] No message found for user {userId}. Active messages: {string.Join(", ", ActiveBattleMessages.Keys)}");
-                    return 0;
-                }
+                LogService.Info($"[BattlePrivateMessageHelper.GetActiveBattleMessage] Retrieved message {messageId} for user {userId}");
+                return messageId;
             }
+
+            LogService.Error($"[BattlePrivateMessageHelper.GetActiveBattleMessage] No message found for user {userId}. Active messages: {string.Join(", ", ActiveBattleMessages.Keys)}");
+            return 0;
         }
 
         /// <summary>
@@ -239,10 +225,7 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// <param name="userId">The Discord user ID.</param>
         public static void ClearActiveBattleMessage(ulong userId)
         {
-            lock (ActiveBattleMessages)
-            {
-                ActiveBattleMessages.Remove(userId);
-            }
+            ActiveBattleMessages.TryRemove(userId, out _);
         }
     }
 }
