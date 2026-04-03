@@ -190,6 +190,13 @@ namespace Adventure.Buttons
                 LogService.Error("[HandleAutoEncounterAsync] ❌ Failed to send encounter to DM");
             }
 
+            // Send encounter notification to guild channel
+            if (encounterState.GuildChannelId != 0)
+            {
+                Embed guildEmbed = EmbedBuildersEncounter.BuildGuildEncounterEmbed(encounterState.Player.Name, npc).Build();
+                await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(encounterState.GuildChannelId, guildEmbed);
+            }
+
             // Notify user in channel that encounter started
             // await context.Interaction.FollowupAsync($"🎲 **{npc.Name}** encountered! Check your DMs to battle.");
             return true;

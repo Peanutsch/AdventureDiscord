@@ -120,6 +120,24 @@ namespace Adventure.Quest.Encounter
         }
         #endregion Embed Random Encounter
 
+        #region === Embed Guild Encounter Notification ===
+        /// <summary>
+        /// Builds a compact encounter notification embed for the guild channel,
+        /// so other members can see a player has entered a battle.
+        /// </summary>
+        /// <param name="playerName">The name of the player who encountered the NPC.</param>
+        /// <param name="npc">The NPC that was encountered.</param>
+        /// <returns>An EmbedBuilder with the encounter notification.</returns>
+        public static EmbedBuilder BuildGuildEncounterEmbed(string playerName, NpcModel npc)
+        {
+            return new EmbedBuilder()
+                .WithColor(Color.Red)
+                .WithTitle($"⚔️ {playerName} encounters a {npc.Name}!")
+                .WithThumbnailUrl($"{npc.ThumbHpNpc_100}")
+                .WithDescription($"**[{npc.Name!.ToUpper()}]**\n*{npc.Description}*");
+        }
+        #endregion Embed Guild Encounter Notification
+
         #region === Embed PreBattle ===
         /// <summary>
         /// Displays the pre-battle preparation screen in a private message (DM).
