@@ -326,8 +326,8 @@ namespace Adventure.Quest.Encounter
             return new EmbedBuilder()
                 .WithColor(state.EmbedColor)
                 .WithTitle($"⚔️ {state.Player.Name} VS {state.Npc.Name} — Round {state.RoundCounter}")
-                .WithThumbnailUrl(thumbUrl)
-                .AddField("🩸 Attack Summary", attackSummary, false)
+                //.WithThumbnailUrl(thumbUrl)
+                .AddField("\u200B", attackSummary, false)
                 .AddField("Status",
                     $"{state.Player.Name}: {state.Player.Hitpoints} HP ({state.StateOfPlayer}) | " +
                     $"{state.Npc.Name}: {state.StateOfNPC}", false)

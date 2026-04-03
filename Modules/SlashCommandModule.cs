@@ -100,6 +100,7 @@ namespace Adventure.Modules
         /// User: "/reload"
         /// Bot: "[INFO] Map is reloaded..."
         /// </remarks>
+        [CommandContextType(InteractionContextType.Guild)]
         [SlashCommand("reload", "Reload map")]
         public async Task SlashcommandReloadMapHandler()
         {
@@ -170,6 +171,7 @@ namespace Adventure.Modules
         /// Handles the /start slash command. Moves the player to the current tile, 
         /// toggles any lock if the tile has a switch, and sends the embed and directional buttons to DM.
         /// </summary>
+        [CommandContextType(InteractionContextType.Guild)]
         [SlashCommand("start", "Start your adventure in private message.")]
         public async Task SlashCommandWalkHandler()
         {
