@@ -290,10 +290,7 @@ namespace Adventure.Quest.Encounter
                     .WithDescription("The fight is over. One side has fallen...");
             }
 
-            // --- Increment round counter ---
-            state.RoundCounter++;
-
-            // --- Determine NPC thumbnail based on HP percentage --- 
+            // --- Determine NPC thumbnail based on HP percentage ---
             string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(npc, state.PercentageHpNpc);
 
             // --- Build the ongoing battle embed ---
@@ -326,12 +323,12 @@ namespace Adventure.Quest.Encounter
             return new EmbedBuilder()
                 .WithColor(state.EmbedColor)
                 .WithTitle($"⚔️ {state.Player.Name} VS {state.Npc.Name} — Round {state.RoundCounter}")
-                //.WithThumbnailUrl(thumbUrl)
+                .WithThumbnailUrl(thumbUrl)
                 .AddField("\u200B", attackSummary, false)
                 .AddField("Status",
                     $"{state.Player.Name}: {state.Player.Hitpoints} HP ({state.StateOfPlayer}) | " +
-                    $"{state.Npc.Name}: {state.StateOfNPC}", false)
-                .WithFooter($"Round {state.RoundCounter} completed.");
+                    $"{state.Npc.Name}: {state.StateOfNPC}", false);
+                //.WithFooter($"Round {state.RoundCounter} completed.");
         }
         #endregion Embed Guild Battle Update
 
@@ -349,9 +346,6 @@ namespace Adventure.Quest.Encounter
 
             string finalLog = extraMessage ?? "";
             string battleOverText = $"{BattleMessages.BattleOver}";
-
-            // --- Increment round counter ---
-            state.RoundCounter++;
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(state.EmbedColor)

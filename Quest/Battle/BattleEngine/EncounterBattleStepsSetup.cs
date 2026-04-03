@@ -346,6 +346,9 @@ namespace Adventure.Quest.Battle.BattleEngine
             ulong userId = interaction.User.Id;
             BattleStateModel state = BattleStateSetup.GetBattleState(userId);
 
+            // --- Increment round counter (once per round) ---
+            state.RoundCounter++;
+
             // --- Validate weapon existence ---
             WeaponModel? weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
@@ -385,7 +388,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             // --- Check if NPC is defeated after player's attack ---
             if (state.CurrentHitpointsNPC <= 0 || state.StateOfNPC == "Defeated")
             {
-                // End the battle and send victory embed to DM
+                await SendGuildBattleUpdateAsync(state, playerAttackResult);
                 await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction, playerAttackResult);
                 return;
             }
@@ -418,18 +421,27 @@ namespace Adventure.Quest.Battle.BattleEngine
                 LogService.Error("[HandleStepBattle] ❌ Failed to send battle message to DM.");
             }
 
-            // --- Send battle update to guild channeln(Gloabl Chat) for other members to follow ---
-            LogService.Info($"state.GuildChannelId: {state.GuildChannelId}");
-            if (state.GuildChannelId != 0)
-            {
-                EmbedBuilder guildEmbed = EmbedBuildersEncounter.BuildGuildBattleUpdateEmbed(state, fullAttackLog);
-                await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(state.GuildChannelId, guildEmbed.Build());
-            }
+            // --- Send battle update to guild channel for other members to follow ---
+            await SendGuildBattleUpdateAsync(state, fullAttackLog);
 
             // --- Transition to post-battle step ---
             SetStep(userId, BattleStep.PostBattle);
             await HandleStepPostBattle(interaction);
         }
+        /// <summary>
+        /// Sends a battle update embed to the guild channel if a guild channel is configured.
+        /// </summary>
+        /// <param name="state">The current battle state.</param>
+        /// <param name="attackLog">The attack summary text to display.</param>
+        private static async Task SendGuildBattleUpdateAsync(BattleStateModel state, string attackLog)
+        {
+            if (state.GuildChannelId == 0)
+                return;
+
+            EmbedBuilder guildEmbed = EmbedBuildersEncounter.BuildGuildBattleUpdateEmbed(state, attackLog);
+            await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(state.GuildChannelId, guildEmbed.Build());
+        }
+
         #endregion
 
         #region === Step: Post Battle ===
