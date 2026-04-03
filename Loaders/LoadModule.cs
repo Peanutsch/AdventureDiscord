@@ -21,6 +21,9 @@ namespace Adventure.Loaders
             GameData.BattleText = battleText;
             GameData.RollText = rollText;
 
+            // Load bot configuration
+            GameData.BotConfig = BotConfigLoader.Load();
+
             // Load Map data
             GameData.TestHouse = TestHouseLoader.Load();
 

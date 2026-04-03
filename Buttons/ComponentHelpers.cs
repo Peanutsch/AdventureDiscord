@@ -1,4 +1,5 @@
 ﻿using Adventure.Loaders;
+using Adventure.Models.BattleState;
 using Adventure.Models.Map;
 using Adventure.Models.Player;
 using Adventure.Modules;
@@ -165,6 +166,10 @@ namespace Adventure.Buttons
 
             await TransitionBattleEmbed(context, npc.Name!);
             SlashCommandHelpers.SetupBattleState(context.User.Id, npc);
+
+            // Store guild channel ID in battle state for public battle updates
+            BattleStateModel encounterState = BattleStateSetup.GetBattleState(context.User.Id);
+            encounterState.GuildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
 
             EmbedBuilder embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);

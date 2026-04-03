@@ -1,4 +1,5 @@
 ﻿using Adventure.Loaders;
+using Adventure.Models.Config;
 using Adventure.Models.Inventory;
 using Adventure.Models.Items;
 using Adventure.Models.Map;
@@ -182,6 +183,23 @@ namespace Adventure.Data
         {
             get => _rollText;
             set => _rollText = value;
+        }
+
+        #endregion
+
+        #region === Bot Config ===
+
+        /// <summary>Bot configuration data.</summary>
+        private static BotConfigModel? _botConfig;
+
+        /// <summary>
+        /// Gets or sets the bot configuration loaded from botconfig.json.
+        /// Contains settings like the default guild channel ID for battle updates.
+        /// </summary>
+        public static BotConfigModel? BotConfig
+        {
+            get => _botConfig;
+            set => _botConfig = value;
         }
 
         #endregion

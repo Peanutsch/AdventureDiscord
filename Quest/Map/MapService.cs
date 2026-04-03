@@ -8,7 +8,7 @@ namespace Adventure.Quest.Map
 {
     public static class MapService
     {
-        // Helper om richting te bepalen tussen twee tiles
+        // Determines the direction from the current tile to the target tile based on their positions.
         public static string? DetermineDirection(TileModel current, TileModel target)
         {
             var partsOrigin = current.TilePosition.Split(',');

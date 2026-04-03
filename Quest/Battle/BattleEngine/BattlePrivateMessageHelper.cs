@@ -1,6 +1,8 @@
 using Discord;
 using Discord.WebSocket;
+using Adventure.Data;
 using Adventure.Services;
+using Discord.Rest;
 
 namespace Adventure.Quest.Battle.BattleEngine
 {
@@ -13,6 +15,111 @@ namespace Adventure.Quest.Battle.BattleEngine
     /// </summary>
     public static class BattlePrivateMessageHelper
     {
+        #region === Discord Client Reference ===
+
+        /// <summary>
+        /// Static reference to the Discord client, used for sending messages to guild channels.
+        /// Set once during bot startup via <see cref="SetClient"/>.
+        /// </summary>
+        private static DiscordSocketClient? _client;
+
+        /// <summary>
+        /// Initializes the Discord client reference for guild channel messaging.
+        /// </summary>
+        public static void SetClient(DiscordSocketClient client) => _client = client;
+
+        #endregion
+
+        #region === Guild Channel Tracking ===
+
+        /// <summary>
+        /// Tracks the guild channel ID per user, so battle updates can be sent to the public channel.
+        /// Key: Discord user ID | Value: Guild channel ID where the adventure was started.
+        /// </summary>
+        private static readonly Dictionary<ulong, ulong> GuildChannelIds = new();
+
+        /// <summary>
+        /// Stores the guild channel ID for a user (called when /start is executed from a guild channel).
+        /// </summary>
+        public static void SetGuildChannelId(ulong userId, ulong channelId)
+        {
+            lock (GuildChannelIds)
+            {
+                GuildChannelIds[userId] = channelId;
+                LogService.Info($"[BattlePrivateMessageHelper.SetGuildChannelId] Stored channel {channelId} for user {userId}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the guild channel ID for a user.
+        /// Priority: 1) Per-user override from /start, 2) Default from botconfig.json.
+        /// </summary>
+        /// <returns>The guild channel ID if found, 0 otherwise.</returns>
+        public static ulong GetGuildChannelId(ulong userId)
+        {
+            // 1) Check per-user override (set via /start)
+            lock (GuildChannelIds)
+            {
+                if (GuildChannelIds.TryGetValue(userId, out ulong channelId))
+                    return channelId;
+            }
+
+            // 2) Fallback to botconfig.json default
+            ulong configChannelId = GameData.BotConfig?.GuildChannelId ?? 0;
+            if (configChannelId != 0)
+            {
+                LogService.Info($"[BattlePrivateMessageHelper.GetGuildChannelId] Using default from botconfig.json: {configChannelId}");
+                return configChannelId;
+            }
+
+            LogService.Info($"[BattlePrivateMessageHelper.GetGuildChannelId] No guild channel configured for user {userId}.");
+            return 0;
+        }
+
+        /// <summary>
+        /// Sends a battle update embed to the guild channel so other members can follow the fight.
+        /// Uses the gateway cache first, then falls back to the REST API if the channel is not cached.
+        /// </summary>
+        /// <param name="channelId">The guild channel ID to send the update to.</param>
+        /// <param name="embed">The embed containing the battle update.</param>
+        public static async Task SendGuildBattleUpdateAsync(ulong channelId, Embed embed)
+        {
+            if (_client == null)
+            {
+                LogService.Error("[BattlePrivateMessageHelper.SendGuildBattleUpdateAsync] Discord client not set.");
+                return;
+            }
+
+            try
+            {
+                // Try gateway cache first
+                IMessageChannel? channel = _client.GetChannel(channelId) as IMessageChannel;
+
+                // Fallback to REST API if channel not in gateway cache
+                if (channel == null)
+                {
+                    LogService.Info($"[BattlePrivateMessageHelper.SendGuildBattleUpdateAsync] Channel {channelId} not in cache, trying REST API...");
+                    RestChannel restChannel = await _client.Rest.GetChannelAsync(channelId);
+                    channel = restChannel as IMessageChannel;
+                }
+
+                if (channel != null)
+                {
+                    await channel.SendMessageAsync(embed: embed);
+                    LogService.Info($"[BattlePrivateMessageHelper.SendGuildBattleUpdateAsync] Battle update sent to channel {channelId}");
+                }
+                else
+                {
+                    LogService.Error($"[BattlePrivateMessageHelper.SendGuildBattleUpdateAsync] Channel {channelId} not found via cache or REST.");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[BattlePrivateMessageHelper.SendGuildBattleUpdateAsync] Failed to send guild update: {ex.Message}");
+            }
+        }
+
+        #endregion
         /// <summary>
         /// Gets the Discord user from an interaction and sends them a DM.
         /// </summary>
@@ -99,7 +206,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             lock (ActiveBattleMessages)
             {
                 ActiveBattleMessages[userId] = messageId;
-                LogService.Info($"[BattlePrivateMessageHelper.SetActiveBattleMessage] ✅ Stored message {messageId} for user {userId}");
+                LogService.Info($"[BattlePrivateMessageHelper.SetActiveBattleMessage] Stored message {messageId} for user {userId}");
             }
         }
 
@@ -115,12 +222,12 @@ namespace Adventure.Quest.Battle.BattleEngine
                 bool found = ActiveBattleMessages.TryGetValue(userId, out ulong messageId);
                 if (found)
                 {
-                    LogService.Info($"[BattlePrivateMessageHelper.GetActiveBattleMessage] ✅ Retrieved message {messageId} for user {userId}");
+                    LogService.Info($"[BattlePrivateMessageHelper.GetActiveBattleMessage] Retrieved message {messageId} for user {userId}");
                     return messageId;
                 }
                 else
                 {
-                    LogService.Error($"[BattlePrivateMessageHelper.GetActiveBattleMessage] ❌ No message found for user {userId}. Active messages: {string.Join(", ", ActiveBattleMessages.Keys)}");
+                    LogService.Error($"[BattlePrivateMessageHelper.GetActiveBattleMessage] No message found for user {userId}. Active messages: {string.Join(", ", ActiveBattleMessages.Keys)}");
                     return 0;
                 }
             }

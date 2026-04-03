@@ -25,7 +25,8 @@ namespace Adventure.Config
             // Register the DiscordSocketClient with specific gateway intents
             services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
             {
-                GatewayIntents = GatewayIntents.GuildMessages |
+                GatewayIntents = GatewayIntents.Guilds |
+                                 GatewayIntents.GuildMessages |
                                  GatewayIntents.DirectMessages |
                                  GatewayIntents.MessageContent
             }));

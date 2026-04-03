@@ -411,11 +411,19 @@ namespace Adventure.Quest.Battle.BattleEngine
             if (dmMessage != null)
             {
                 BattlePrivateMessageHelper.SetActiveBattleMessage(userId, dmMessage.Id);
-                LogService.Info("[HandleStepBattle] ✅ Battle sent as new DM message.");
+                LogService.Info("[HandleStepBattle] Battle sent as new DM message.");
             }
             else
             {
                 LogService.Error("[HandleStepBattle] ❌ Failed to send battle message to DM.");
+            }
+
+            // --- Send battle update to guild channeln(Gloabl Chat) for other members to follow ---
+            LogService.Info($"state.GuildChannelId: {state.GuildChannelId}");
+            if (state.GuildChannelId != 0)
+            {
+                EmbedBuilder guildEmbed = EmbedBuildersEncounter.BuildGuildBattleUpdateEmbed(state, fullAttackLog);
+                await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(state.GuildChannelId, guildEmbed.Build());
             }
 
             // --- Transition to post-battle step ---

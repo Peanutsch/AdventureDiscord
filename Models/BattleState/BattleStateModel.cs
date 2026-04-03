@@ -68,6 +68,14 @@ namespace Adventure.Models.BattleState
         public int NewTotalXP { get; set; }
         #endregion
 
+        #region === Guild Channel ===
+        /// <summary>
+        /// The guild channel ID where the battle was initiated.
+        /// Used to send battle updates to the public channel for other members to follow.
+        /// </summary>
+        public ulong GuildChannelId { get; set; }
+        #endregion
+
         #region === Embeds ===
         public Discord.Color EmbedColor { get; set; } = Color.Red;
         public int RoundCounter { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Adventure.Data;
 using Adventure.Loaders;
+using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Services;
 using Adventure.TokenAccess;
 using Discord;
@@ -59,6 +60,9 @@ namespace Adventure.Gateway
             // Login and connect to Discord using the provided token
             await _client.LoginAsync(TokenType.Bot, discordToken);
             await _client.StartAsync();
+
+            // Set client reference for guild channel messaging
+            BattlePrivateMessageHelper.SetClient(_client);
 
             // Register slash command modules from this assembly
             await _interactions.AddModulesAsync(typeof(AdventureBotGateway).Assembly, _provider);

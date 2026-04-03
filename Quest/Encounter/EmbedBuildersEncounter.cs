@@ -311,6 +311,30 @@ namespace Adventure.Quest.Encounter
         }
         #endregion Embed Battle
 
+        #region === Embed Guild Battle Update ===
+        /// <summary>
+        /// Builds a compact battle update embed for the guild channel,
+        /// allowing other members to follow the battle progress.
+        /// </summary>
+        /// <param name="state">The current battle state.</param>
+        /// <param name="attackSummary">The formatted attack summary for the current round.</param>
+        /// <returns>An EmbedBuilder with a compact battle summary for the guild channel.</returns>
+        public static EmbedBuilder BuildGuildBattleUpdateEmbed(BattleStateModel state, string attackSummary)
+        {
+            string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(state.Npc, state.PercentageHpNpc);
+
+            return new EmbedBuilder()
+                .WithColor(state.EmbedColor)
+                .WithTitle($"⚔️ {state.Player.Name} VS {state.Npc.Name} — Round {state.RoundCounter}")
+                .WithThumbnailUrl(thumbUrl)
+                .AddField("🩸 Attack Summary", attackSummary, false)
+                .AddField("Status",
+                    $"{state.Player.Name}: {state.Player.Hitpoints} HP ({state.StateOfPlayer}) | " +
+                    $"{state.Npc.Name}: {state.StateOfNPC}", false)
+                .WithFooter($"Round {state.RoundCounter} completed.");
+        }
+        #endregion Embed Guild Battle Update
+
         #region === Embed End Battle ===
         /// <summary>
         /// Ends the battle and updates the DM message with final results.

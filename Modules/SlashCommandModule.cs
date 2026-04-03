@@ -175,6 +175,9 @@ namespace Adventure.Modules
         {
             await DeferAsync();
 
+            // --- Store the guild channel ID for battle updates ---
+            BattlePrivateMessageHelper.SetGuildChannelId(Context.User.Id, Context.Channel.Id);
+
             // --- Get Discord user object ---
             Discord.IUser? user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
             if (user == null)
