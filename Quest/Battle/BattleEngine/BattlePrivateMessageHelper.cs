@@ -29,6 +29,11 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// </summary>
         public static void SetClient(DiscordSocketClient client) => _client = client;
 
+        /// <summary>
+        /// Returns the Discord client reference for use by other services.
+        /// </summary>
+        public static DiscordSocketClient? GetClient() => _client;
+
         #endregion
 
         #region === Guild Channel Tracking ===

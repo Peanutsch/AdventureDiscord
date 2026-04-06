@@ -73,13 +73,13 @@ namespace Adventure.Quest.Map
         /// 
         /// [Locked] The door is locked with a BRONZE lock.
         /// </remarks>
-        public static EmbedBuilder EmbedWalk(TileModel tile)
+        public static EmbedBuilder EmbedWalk(TileModel tile, ulong userId = 0)
         {
             LogService.Info("[EmbedBuildersMap.EmbedWalk] Building embed...");
 
             // Step 1: Fetch basic area and tile data
             var area = GetArea(tile);
-            string gridVisual = TileUI.RenderTileGrid(tile);
+            string gridVisual = TileUI.RenderTileGrid(tile, userId);
             string tileTextSafe = GetTileText(tile);
             string exitInfo = BuildExitInfo(tile);
 
@@ -101,8 +101,20 @@ namespace Adventure.Quest.Map
             if (tile.LockState!.Locked || tile.LockSwitch)
                 AddLockInfo(embed, tile);
 
-            // Step 6: Log all collected tile information for debugging and tracing
-            LogTileDebugInfo(tile, area, tileTextSafe, exitInfo);
+            // Step 6: Show other players on the same tile
+            if (userId != 0)
+            {
+                string tileId = $"{tile.AreaId}:{tile.TilePosition}";
+                var playersHere = ActivePlayerTracker.GetPlayersOnTile(tileId, excludeUserId: userId);
+                if (playersHere.Count > 0)
+                {
+                    string playerList = string.Join(", ", playersHere.Select(p => $"**{p.PlayerName}**"));
+                    embed.AddField("👥 Players nearby", playerList);
+                }
+            }
+
+            // Step 7: Log all collected tile information for debugging and tracing
+            // LogTileDebugInfo(tile, area, tileTextSafe, exitInfo);
 
             return embed;
         }

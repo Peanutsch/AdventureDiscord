@@ -224,8 +224,12 @@ namespace Adventure.Buttons
                 }
             }
 
-            EmbedBuilder embedWalk = EmbedBuildersMap.EmbedWalk(targetTile);
+            EmbedBuilder embedWalk = EmbedBuildersMap.EmbedWalk(targetTile, context.User.Id);
             ComponentBuilder components = ButtonBuildersMap.BuildDirectionButtons(targetTile);
+
+            // Track active player position and notify others
+            string playerName = context.User.GlobalName ?? context.User.Username;
+            await ActivePlayerTracker.UpdatePositionAsync(context.User.Id, playerName, targetTile.TileId);
 
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
@@ -337,6 +341,17 @@ namespace Adventure.Buttons
             // Display initial flee embed with waiting message
             await ShowFleeingEmbedAsync(context);
 
+            // Send flee notification to guild channel
+            ulong guildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
+            if (guildChannelId != 0)
+            {
+                BattleStateModel? state = BattleStateSetup.GetBattleState(context.User.Id);
+                string playerName = context.User.GlobalName ?? context.User.Username;
+                string npcName = state?.Npc?.Name ?? "unknown creature";
+                Embed guildEmbed = EmbedBuildersEncounter.BuildGuildFleeEmbed(playerName, npcName).Build();
+                await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(guildChannelId, guildEmbed);
+            }
+
             // Wait to simulate the fleeing animation
             await Task.Delay(2500);
 
@@ -376,8 +391,6 @@ namespace Adventure.Buttons
         /// <param name="context">The Discord interaction context.</param>
         private static async Task ShowFleeingEmbedAsync(SocketInteractionContext context)
         {
-            await context.Interaction.DeferAsync();
-
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
                 msg.Embed = new EmbedBuilder()

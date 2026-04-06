@@ -138,6 +138,22 @@ namespace Adventure.Quest.Encounter
         }
         #endregion Embed Guild Encounter Notification
 
+        #region === Embed Guild Flee Notification ===
+        /// <summary>
+        /// Builds a compact flee notification embed for the guild channel,
+        /// so other members can see a player has fled from battle.
+        /// </summary>
+        /// <param name="playerName">The name of the player who fled.</param>
+        /// <param name="npcName">The name of the NPC the player fled from.</param>
+        /// <returns>An EmbedBuilder with the flee notification.</returns>
+        public static EmbedBuilder BuildGuildFleeEmbed(string playerName, string npcName)
+        {
+            return new EmbedBuilder()
+                .WithColor(Color.Orange)
+                .WithTitle($"🏃 {playerName} flees from {npcName}!");
+        }
+        #endregion Embed Guild Flee Notification
+
         #region === Embed PreBattle ===
         /// <summary>
         /// Displays the pre-battle preparation screen in a private message (DM).

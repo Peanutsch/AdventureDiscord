@@ -18,16 +18,17 @@ namespace Adventure.Quest.Map
 
         /// <summary>
         /// Renders a visual grid for the given area with the player positioned at the specified coordinates.
+        /// Other active players in the area are also rendered on the grid.
         /// </summary>
-        public string RenderGrid(TestHouseAreaModel area, List<List<string>> layout, int playerRow, int playerCol)
+        public string RenderGrid(TestHouseAreaModel area, List<List<string>> layout, int playerRow, int playerCol, HashSet<(int Row, int Col)>? otherPlayerPositions = null)
         {
             var sb = new StringBuilder();
-            
+
             for (int row = 0; row < layout.Count; row++)
             {
                 for (int col = 0; col < layout[row].Count; col++)
                 {
-                    string icon = _iconProvider.GetTileIcon(area, row, col, playerRow, playerCol);
+                    string icon = _iconProvider.GetTileIcon(area, row, col, playerRow, playerCol, otherPlayerPositions);
                     sb.Append(icon);
                 }
                 sb.AppendLine();

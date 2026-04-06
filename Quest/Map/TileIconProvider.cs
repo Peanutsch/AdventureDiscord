@@ -59,13 +59,17 @@ namespace Adventure.Quest.Map
 
         /// <summary>
         /// Determines which emoji/icon should be shown for a given grid position.
-        /// Respects priority: player > tile overlay > tile base > layout type.
+        /// Respects priority: player > other players > tile overlay > tile base > layout type.
         /// </summary>
-        public string GetTileIcon(TestHouseAreaModel area, int row, int col, int playerRow, int playerCol)
+        public string GetTileIcon(TestHouseAreaModel area, int row, int col, int playerRow, int playerCol, HashSet<(int Row, int Col)>? otherPlayerPositions = null)
         {
             // Player always takes priority
             if (row == playerRow && col == playerCol)
                 return GetEmoji("PLAYER");
+
+            // Other active players shown with a distinct icon
+            if (otherPlayerPositions != null && otherPlayerPositions.Contains((row, col)))
+                return "👥";
 
             // Try to locate tile details for this grid position
             var tileDetail = area.Tiles.FirstOrDefault(t => t.TilePosition == $"{row},{col}");

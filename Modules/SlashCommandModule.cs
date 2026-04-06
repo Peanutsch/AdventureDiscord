@@ -235,8 +235,11 @@ namespace Adventure.Modules
             LogService.Info($"[/start] Starting in area: {startArea}, position: {tile.TilePosition}");
 
             // --- Build embed and directional buttons ---
-            EmbedBuilder embed = EmbedBuildersMap.EmbedWalk(tile); // Reads current tile state (including lock)
+            EmbedBuilder embed = EmbedBuildersMap.EmbedWalk(tile, Context.User.Id); // Reads current tile state (including lock)
             ComponentBuilder components = ButtonBuildersMap.BuildDirectionButtons(tile);
+
+            // --- Track active player position ---
+            await ActivePlayerTracker.UpdatePositionAsync(Context.User.Id, player.Name, tile.TileId);
 
             // --- Send embed and buttons to DM ---
             IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
