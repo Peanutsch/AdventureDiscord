@@ -1,0 +1,22 @@
+{
+  "locks": {
+    "door_pond_living": {
+      "lockType": "none",
+      "keyId": "none",
+      "keyhole": false,
+      "locked": false
+    },
+    "door_forestSouth_living": {
+      "lockType": "none",
+      "keyId": "none",
+      "keyhole": false,
+      "locked": true
+    },
+    "door_forestNorth_mine1": {
+      "lockType": "iron",
+      "keyId": "iron_key",
+      "keyhole": true,
+      "locked": true
+    }
+  }
+}

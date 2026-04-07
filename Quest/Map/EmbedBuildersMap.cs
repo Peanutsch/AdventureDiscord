@@ -27,10 +27,10 @@ namespace Adventure.Quest.Map
     /// 
     /// Embed Structure:
     /// ┌─────────────────────────────┐
-    /// │ [Area Name] - Area Desc      │
-    /// │ [Grid Visual with Player]    │
-    /// │ Tile Text Description        │
-    /// │ [Lock Info] (if applicable)  │
+    /// │ [Area Name] - Area Desc     │
+    /// │ [Grid Visual with Player]   │
+    /// │ Tile Text Description       │
+    /// │ [Lock Info] (if applicable) │
     /// └─────────────────────────────┘
     /// </remarks>
     /// </summary>

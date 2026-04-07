@@ -82,11 +82,11 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// </summary>
         /// <param name="channelId">The guild channel ID to send the update to.</param>
         /// <param name="embed">The embed containing the battle update.</param>
-        public static async Task SendGuildBattleUpdateAsync(ulong channelId, Embed embed)
+        public static async Task SendGuildMessageUpdateAsync(ulong channelId, Embed embed)
         {
             if (_client == null)
             {
-                LogService.Error("[BattlePrivateMessageHelper.SendGuildBattleUpdateAsync] Discord client not set.");
+                LogService.Error("[BattlePrivateMessageHelper.SendGuildMessageUpdateAsync] Discord client not set.");
                 return;
             }
 
@@ -98,7 +98,7 @@ namespace Adventure.Quest.Battle.BattleEngine
                 // Fallback to REST API if channel not in gateway cache
                 if (channel == null)
                 {
-                    LogService.Info($"[BattlePrivateMessageHelper.SendGuildBattleUpdateAsync] Channel {channelId} not in cache, trying REST API...");
+                    LogService.Info($"[BattlePrivateMessageHelper.SendGuildMessageUpdateAsync] Channel {channelId} not in cache, trying REST API...");
                     RestChannel restChannel = await _client.Rest.GetChannelAsync(channelId);
                     channel = restChannel as IMessageChannel;
                 }
@@ -106,20 +106,22 @@ namespace Adventure.Quest.Battle.BattleEngine
                 if (channel != null)
                 {
                     await channel.SendMessageAsync(embed: embed);
-                    LogService.Info($"[BattlePrivateMessageHelper.SendGuildBattleUpdateAsync] Battle update sent to channel {channelId}");
+                    LogService.Info($"[BattlePrivateMessageHelper.SendGuildMessageUpdateAsync] Battle update sent to channel {channelId}");
                 }
                 else
                 {
-                    LogService.Error($"[BattlePrivateMessageHelper.SendGuildBattleUpdateAsync] Channel {channelId} not found via cache or REST.");
+                    LogService.Error($"[BattlePrivateMessageHelper.SendGuildMessageUpdateAsync] Channel {channelId} not found via cache or REST.");
                 }
             }
             catch (Exception ex)
             {
-                LogService.Error($"[BattlePrivateMessageHelper.SendGuildBattleUpdateAsync] Failed to send guild update: {ex.Message}");
+                LogService.Error($"[BattlePrivateMessageHelper.SendGuildMessageUpdateAsync] Failed to send guild update: {ex.Message}");
             }
         }
 
         #endregion
+
+        #region === Private Message Management ===
         /// <summary>
         /// Gets the Discord user from an interaction and sends them a DM.
         /// </summary>
@@ -137,24 +139,24 @@ namespace Adventure.Quest.Battle.BattleEngine
                 SocketUser user = interaction.User as SocketUser;
                 if (user == null)
                 {
-                    LogService.Error("[BattlePrivateMessageHelper] Unable to get user from interaction.");
+                    LogService.Error("[BattlePrivateMessageHelper.SendBattleMessageAsync] Unable to get user from interaction.");
                     return null;
                 }
 
                 IDMChannel dmChannel = await user.CreateDMChannelAsync();
                 if (dmChannel == null)
                 {
-                    LogService.Error("[BattlePrivateMessageHelper] Unable to create DM channel.");
+                    LogService.Error("[BattlePrivateMessageHelper.SendBattleMessageAsync] Unable to create DM channel.");
                     return null;
                 }
 
                 IUserMessage message = await dmChannel.SendMessageAsync(embed: embed, components: components);
-                LogService.Info($"[BattlePrivateMessageHelper] Battle message sent to {user.Username}");
+                LogService.Info($"[BattlePrivateMessageHelper.SendBattleMessageAsync] Battle message sent to {user.Username}");
                 return message;
             }
             catch (Exception ex)
             {
-                LogService.Error($"[BattlePrivateMessageHelper] Failed to send DM: {ex.Message}");
+                LogService.Error($"[BattlePrivateMessageHelper.SendBattleMessageAsync] Failed to send DM: {ex.Message}");
                 return null;
             }
         }
@@ -180,12 +182,12 @@ namespace Adventure.Quest.Battle.BattleEngine
                     msg.Components = components;
                 });
 
-                LogService.Info("[BattlePrivateMessageHelper] Battle message updated successfully.");
+                LogService.Info("[BattlePrivateMessageHelper.UpdateBattleMessageAsync] Battle message updated successfully.");
                 return true;
             }
             catch (Exception ex)
             {
-                LogService.Error($"[BattlePrivateMessageHelper] Failed to update DM: {ex.Message}");
+                LogService.Error($"[BattlePrivateMessageHelper.UpdateBattleMessageAsync] Failed to update DM: {ex.Message}");
                 return false;
             }
         }
@@ -225,6 +227,8 @@ namespace Adventure.Quest.Battle.BattleEngine
         }
 
         /// <summary>
+        /// NOT IN USE. 
+        /// (Battle log messages are sent as new messages, no need to track the active battle message ID.)
         /// Clears the active battle message reference for a user (e.g., when battle ends).
         /// </summary>
         /// <param name="userId">The Discord user ID.</param>
@@ -232,5 +236,6 @@ namespace Adventure.Quest.Battle.BattleEngine
         {
             ActiveBattleMessages.TryRemove(userId, out _);
         }
+        #endregion
     }
 }

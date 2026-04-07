@@ -1,5 +1,6 @@
 ﻿using Adventure.Models.Map;
 using Adventure.Services;
+using Adventure.Quest.Map.HashSets;
 
 namespace Adventure.Loaders
 {
@@ -226,18 +227,10 @@ namespace Adventure.Loaders
         /// </param>
         private static void BuildTileConnections(List<TileModel> allTiles)
         {
-            // Tile types to be ignored as possible connections
-            var nonConnectable = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-                                {
-                                    "Wall",
-                                    "Water",
-                                    "BLOCKt"
-                                };
-
             foreach (var tile in allTiles)
             {
                 // Skip tiles that are not allowed to connect to neighbors
-                if (nonConnectable.Contains(tile.TileType))
+                if (HashSets.NonPassableTiles.Contains(tile.TileType))
                     continue;
 
                 // Parse the tile's grid position (row, column)
@@ -259,7 +252,7 @@ namespace Adventure.Loaders
 
                     // Check if a valid neighboring tile exists and is connectable
                     if (TileLookup.TryGetValue(targetKey, out var neighbor) &&
-                        !nonConnectable.Contains(neighbor.TileType))
+                        !HashSets.NonPassableTiles.Contains(neighbor.TileType))
                     {
                         // Prevent duplicate connections
                         if (!tile.Connections.Contains(neighbor.TileId))

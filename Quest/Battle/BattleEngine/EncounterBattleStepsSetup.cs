@@ -439,7 +439,7 @@ namespace Adventure.Quest.Battle.BattleEngine
                 return;
 
             EmbedBuilder guildEmbed = EmbedBuildersEncounter.BuildGuildBattleUpdateEmbed(state, attackLog);
-            await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(state.GuildChannelId, guildEmbed.Build());
+            await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(state.GuildChannelId, guildEmbed.Build());
         }
 
         #endregion

@@ -194,7 +194,7 @@ namespace Adventure.Buttons
             if (encounterState.GuildChannelId != 0)
             {
                 Embed guildEmbed = EmbedBuildersEncounter.BuildGuildEncounterEmbed(encounterState.Player.Name!, npc).Build();
-                await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(encounterState.GuildChannelId, guildEmbed);
+                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(encounterState.GuildChannelId, guildEmbed);
             }
 
             // Notify user in channel that encounter started
@@ -220,7 +220,7 @@ namespace Adventure.Buttons
                 if (guildChannelId != 0)
                 {
                     Embed guildEmbed = BuildGuildTravelEmbed(context.User.GlobalName ?? context.User.Username, targetTile).Build();
-                    await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(guildChannelId, guildEmbed);
+                    await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(guildChannelId, guildEmbed);
                 }
             }
 
@@ -349,7 +349,7 @@ namespace Adventure.Buttons
                 string playerName = context.User.GlobalName ?? context.User.Username;
                 string npcName = state?.Npc?.Name ?? "unknown creature";
                 Embed guildEmbed = EmbedBuildersEncounter.BuildGuildFleeEmbed(playerName, npcName).Build();
-                await BattlePrivateMessageHelper.SendGuildBattleUpdateAsync(guildChannelId, guildEmbed);
+                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(guildChannelId, guildEmbed);
             }
 
             // Wait to simulate the fleeing animation
