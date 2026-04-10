@@ -237,5 +237,128 @@ namespace Adventure.Quest.Battle.BattleEngine
             ActiveBattleMessages.TryRemove(userId, out _);
         }
         #endregion
+
+        #region === Shutdown: Disable Active Buttons ===
+        /// <summary>
+        /// Disables all buttons on active DM messages for all tracked players.
+        /// Called during bot shutdown to prevent stale button interactions.
+        /// Falls back to searching recent DM messages if no tracked message ID exists.
+        /// </summary>
+        public static async Task DisableAllActiveButtonsAsync()
+        {
+            if (_client == null)
+            {
+                LogService.Error("[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] Discord client not set.");
+                return;
+            }
+
+            var playerIds = ActivePlayerTracker.GetAllActivePlayerIds();
+            LogService.Info($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] Disabling buttons for {playerIds.Count} active player(s)...");
+
+            foreach (var userId in playerIds)
+            {
+                try
+                {
+                    SocketUser? user = _client.GetUser(userId);
+                    if (user == null)
+                    {
+                        LogService.Error($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] User {userId} not found in cache, skipping.");
+                        continue;
+                    }
+
+                    IDMChannel dmChannel = await user.CreateDMChannelAsync();
+
+                    // Try tracked message ID first, otherwise search recent DMs
+                    ulong messageId = GetActiveBattleMessage(userId);
+                    IUserMessage? targetMessage = null;
+
+                    if (messageId != 0)
+                    {
+                        IMessage? msg = await dmChannel.GetMessageAsync(messageId);
+                        targetMessage = msg as IUserMessage;
+                    }
+
+                    // Fallback: search recent DM messages for bot messages with active buttons
+                    if (targetMessage == null || targetMessage.Components.Count == 0)
+                    {
+                        LogService.Info($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] No tracked message for user {userId}, searching recent DMs...");
+
+                        var recentMessages = await dmChannel.GetMessagesAsync(limit: 20).FlattenAsync();
+
+                        foreach (var recentMsg in recentMessages)
+                        {
+                            if (recentMsg is not IUserMessage userMsg) continue;
+                            if (recentMsg.Author.Id != _client.CurrentUser.Id) continue;
+                            if (userMsg.Components.Count == 0) continue;
+
+                            // Check if any button is still enabled
+                            bool hasActiveButtons = false;
+                            foreach (var actionRow in userMsg.Components)
+                            {
+                                if (actionRow is not ActionRowComponent rowComponent) continue;
+                                foreach (var component in rowComponent.Components)
+                                {
+                                    if (component is ButtonComponent button && !button.IsDisabled)
+                                    {
+                                        hasActiveButtons = true;
+                                        break;
+                                    }
+                                }
+                                if (hasActiveButtons) break;
+                            }
+
+                            if (hasActiveButtons)
+                            {
+                                targetMessage = userMsg;
+                                LogService.Info($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] Found active message {userMsg.Id} for user {userId}");
+                                break;
+                            }
+                        }
+                    }
+
+                    if (targetMessage == null || targetMessage.Components.Count == 0)
+                    {
+                        LogService.Info($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] No message with active buttons found for user {userId}.");
+                        continue;
+                    }
+
+                    // Disable all buttons
+                    var builder = new ComponentBuilder();
+                    int row = 0;
+
+                    foreach (var actionRow in targetMessage.Components)
+                    {
+                        if (actionRow is not ActionRowComponent rowComponent)
+                            continue;
+
+                        foreach (var component in rowComponent.Components)
+                        {
+                            if (component is ButtonComponent button)
+                            {
+                                builder.WithButton(
+                                    button.Label ?? "...",
+                                    button.CustomId ?? $"disabled_{row}",
+                                    button.Style,
+                                    disabled: true,
+                                    row: row);
+                            }
+                        }
+                        row++;
+                    }
+
+                    await targetMessage.ModifyAsync(msg =>
+                    {
+                        msg.Components = builder.Build();
+                    });
+
+                    LogService.Info($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] ✅ Disabled buttons for user {user.Username}");
+                }
+                catch (Exception ex)
+                {
+                    LogService.Error($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] Failed for user {userId}: {ex.Message}");
+                }
+            }
+        }
+        #endregion
     }
 }

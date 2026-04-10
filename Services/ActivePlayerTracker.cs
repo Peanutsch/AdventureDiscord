@@ -86,6 +86,14 @@ namespace Adventure.Services
         }
 
         /// <summary>
+        /// Returns all currently tracked active player user IDs.
+        /// </summary>
+        public static List<ulong> GetAllActivePlayerIds()
+        {
+            return ActivePlayers.Keys.ToList();
+        }
+
+        /// <summary>
         /// Removes a player from the active tracker (e.g., when they go offline).
         /// </summary>
         public static void RemovePlayer(ulong userId)

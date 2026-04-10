@@ -158,6 +158,9 @@ namespace Adventure.Gateway
 
                 _cancellationTokenSource.Cancel();                  // Cancel any long-running tasks
 
+                // Disable all active buttons in player DMs before disconnecting
+                await BattlePrivateMessageHelper.DisableAllActiveButtonsAsync();
+
                 await _client.SetStatusAsync(UserStatus.Invisible); // Make bot appear offline
                 await _client.LogoutAsync();                        // Log out from Discord
                 await _client.StopAsync();                          // Close the WebSocket connection
