@@ -95,7 +95,7 @@ namespace Adventure.Gateway
         private async Task ReadyAsync()
         {
             await _interactions.RegisterCommandsGloballyAsync();
-            await SendGuildStatusMessageAsync("⚔️ AdventureBot is up and running! Use `/start` to begin your adventure.", Color.Green);
+            await SendGuildStatusMessageAsync("⚔️ AdventureBot is up and running! Use `/adventure` to begin or continue your adventure.", Color.Green);
         }
 
         /// <summary>
@@ -136,31 +136,35 @@ namespace Adventure.Gateway
         #region === Guild Status Messages ===
 
         /// <summary>
-        /// Sends a status embed to the configured guild channel (from botconfig.json).
-        /// Used to announce bot startup and shutdown.
+        /// Sends a status embed to all known guild channels.
+        /// At startup: only botconfig.json channel is known.
+        /// At shutdown: all channels where players used /start are also included.
         /// </summary>
         private async Task SendGuildStatusMessageAsync(string message, Color color)
         {
-            ulong channelId = GameData.BotConfig?.GuildChannelId ?? 0;
-            if (channelId == 0)
+            var channelIds = BattlePrivateMessageHelper.GetAllUniqueGuildChannelIds();
+            if (channelIds.Count == 0)
             {
-                LogService.Info("[AdventureBotGateway.SendGuildStatusMessageAsync] No guild channel configured in botconfig.json.");
+                LogService.Info("[AdventureBotGateway.SendGuildStatusMessageAsync] No guild channels configured.");
                 return;
             }
 
-            try
-            {
-                var embed = new EmbedBuilder()
-                    .WithDescription(message)
-                    .WithColor(color)
-                    .WithTimestamp(DateTimeOffset.UtcNow)
-                    .Build();
+            var embed = new EmbedBuilder()
+                .WithDescription(message)
+                .WithColor(color)
+                .WithTimestamp(DateTimeOffset.UtcNow)
+                .Build();
 
-                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(channelId, embed);
-            }
-            catch (Exception ex)
+            foreach (ulong channelId in channelIds)
             {
-                LogService.Error($"[AdventureBotGateway.SendGuildStatusMessageAsync] Failed: {ex.Message}");
+                try
+                {
+                    await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(channelId, embed);
+                }
+                catch (Exception ex)
+                {
+                    LogService.Error($"[AdventureBotGateway.SendGuildStatusMessageAsync] Failed for channel {channelId}: {ex.Message}");
+                }
             }
         }
 

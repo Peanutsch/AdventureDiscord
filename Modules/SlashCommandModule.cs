@@ -166,13 +166,13 @@ namespace Adventure.Modules
         */
         #endregion
 
-        #region === Slashcommand "start" ===
+        #region === Slashcommand "adventure" ===
         /// <summary>
         /// Handles the /start slash command. Moves the player to the current tile, 
         /// toggles any lock if the tile has a switch, and sends the embed and directional buttons to DM.
         /// </summary>
         [CommandContextType(InteractionContextType.Guild)]
-        [SlashCommand("start", "Start your adventure in private message.")]
+        [SlashCommand("adventure", "Start your adventure in private message.")]
         public async Task SlashCommandWalkHandler()
         {
             await DeferAsync();
@@ -188,8 +188,8 @@ namespace Adventure.Modules
                 return;
             }
 
-            LogService.DividerParts(1, "SlashCommand: /start");
-            LogService.Info($"[/start] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
+            LogService.DividerParts(1, "SlashCommand: /adventure");
+            LogService.Info($"[/adventure] Triggered by {user.GlobalName ?? user.Username} (userId: {user.Id})");
 
             // --- Get or create player profile ---
             PlayerModel player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
@@ -213,7 +213,7 @@ namespace Adventure.Modules
                     // Update player's savepoint to START tile
                     player.Savepoint = $"{tile.AreaId}:{tile.TilePosition}";
                     JsonDataManager.UpdatePlayerSavepoint(Context.User.Id, player.Savepoint);
-                    LogService.Info($"[/start] Position saved as new savepoint: {player.Savepoint}");
+                    LogService.Info($"[/adventure] Position saved as new savepoint: {player.Savepoint}");
                 }
                 else
                 {
@@ -225,14 +225,14 @@ namespace Adventure.Modules
             // --- Toggle lock if the current tile has a switch ---
             if (TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup))
             {
-                LogService.Info($"[/start] Tile {tile.TileId} switch toggled lock: {tile.LockId}");
+                LogService.Info($"[/adventure] Tile {tile.TileId} switch toggled lock: {tile.LockId}");
             }
 
             // --- Get name of area for logging ---
             string startArea = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out TestHouseAreaModel? area)
                 ? area.Name
                 : "Unknown Area";
-            LogService.Info($"[/start] Starting in area: {startArea}, position: {tile.TilePosition}");
+            LogService.Info($"[/adventure] Starting in area: {startArea}, position: {tile.TilePosition}");
 
             // --- Build embed and directional buttons ---
             EmbedBuilder embed = EmbedBuildersMap.EmbedWalk(tile, Context.User.Id); // Reads current tile state (including lock)
@@ -249,7 +249,7 @@ namespace Adventure.Modules
 
             if (dmMessage != null)
             {
-                LogService.Info("[/start] Adventure map sent to DM.");
+                LogService.Info("[/adventure] Adventure map sent to DM.");
             }
             else
             {
@@ -260,7 +260,7 @@ namespace Adventure.Modules
             // --- Notify user in channel that adventure is in DM ---
             await FollowupAsync($"🗺️ {player.Name}, your adventure has started! Check your DMs to explore.");
 
-            LogService.DividerParts(2, "SlashCommand: /start");
+            LogService.DividerParts(2, "SlashCommand: /adventure");
         }
         #endregion
     }

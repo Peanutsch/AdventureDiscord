@@ -77,6 +77,21 @@ namespace Adventure.Quest.Battle.BattleEngine
         }
 
         /// <summary>
+        /// Returns all unique guild channel IDs from both per-user tracking and botconfig.json fallback.
+        /// Used for broadcasting status messages (startup/shutdown) to all known guild channels.
+        /// </summary>
+        public static HashSet<ulong> GetAllUniqueGuildChannelIds()
+        {
+            var channelIds = new HashSet<ulong>(GuildChannelIds.Values);
+
+            ulong configChannelId = GameData.BotConfig?.GuildChannelId ?? 0;
+            if (configChannelId != 0)
+                channelIds.Add(configChannelId);
+
+            return channelIds;
+        }
+
+        /// <summary>
         /// Sends a battle update embed to the guild channel so other members can follow the fight.
         /// Uses the gateway cache first, then falls back to the REST API if the channel is not cached.
         /// </summary>
