@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Adventure.Models.Config
 {
     /// <summary>
@@ -8,6 +10,7 @@ namespace Adventure.Models.Config
         /// <summary>
         /// The default guild channel ID where battle updates are sent for other members to follow.
         /// </summary>
+        [JsonPropertyName("guildChannelId")]
         public ulong GuildChannelId { get; set; }
     }
 }

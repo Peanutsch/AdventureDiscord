@@ -90,11 +90,12 @@ namespace Adventure.Gateway
 
         /// <summary>
         /// Triggered when the Discord client is ready.
-        /// Registers all slash commands globally.
+        /// Registers all slash commands globally and announces the bot is online.
         /// </summary>
         private async Task ReadyAsync()
         {
             await _interactions.RegisterCommandsGloballyAsync();
+            await SendGuildStatusMessageAsync("⚔️ AdventureBot is up and running! Use `/start` to begin your adventure.", Color.Green);
         }
 
         /// <summary>
@@ -132,6 +133,39 @@ namespace Adventure.Gateway
 
         #endregion Logging
 
+        #region === Guild Status Messages ===
+
+        /// <summary>
+        /// Sends a status embed to the configured guild channel (from botconfig.json).
+        /// Used to announce bot startup and shutdown.
+        /// </summary>
+        private async Task SendGuildStatusMessageAsync(string message, Color color)
+        {
+            ulong channelId = GameData.BotConfig?.GuildChannelId ?? 0;
+            if (channelId == 0)
+            {
+                LogService.Info("[AdventureBotGateway.SendGuildStatusMessageAsync] No guild channel configured in botconfig.json.");
+                return;
+            }
+
+            try
+            {
+                var embed = new EmbedBuilder()
+                    .WithDescription(message)
+                    .WithColor(color)
+                    .WithTimestamp(DateTimeOffset.UtcNow)
+                    .Build();
+
+                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(channelId, embed);
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[AdventureBotGateway.SendGuildStatusMessageAsync] Failed: {ex.Message}");
+            }
+        }
+
+        #endregion Guild Status Messages
+
         #region === Shutdown ===
 
         /// <summary>
@@ -157,6 +191,9 @@ namespace Adventure.Gateway
                 LogService.Info("Shutting down bot...");
 
                 _cancellationTokenSource.Cancel();                  // Cancel any long-running tasks
+
+                // Notify guild channel that bot is going offline
+                await SendGuildStatusMessageAsync("🛑 AdventureBot is now offline. See you next time!", Color.Red);
 
                 // Disable all active buttons in player DMs before disconnecting
                 await BattlePrivateMessageHelper.DisableAllActiveButtonsAsync();
