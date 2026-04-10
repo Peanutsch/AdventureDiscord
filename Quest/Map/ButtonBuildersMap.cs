@@ -75,7 +75,7 @@ namespace Adventure.Quest.Map
         {
             return new List<ButtonBuilder>
             {
-                new ButtonBuilder().WithLabel("Action").WithCustomId("enter:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
+                new ButtonBuilder().WithLabel("⛔").WithCustomId("enter:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
                 new ButtonBuilder().WithLabel("⬆️").WithCustomId("move_up:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
                 new ButtonBuilder().WithLabel("⬅️").WithCustomId("move_left:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
                 new ButtonBuilder().WithLabel("⬇️").WithCustomId("move_down:none").WithStyle(ButtonStyle.Secondary).WithDisabled(true),
@@ -241,7 +241,8 @@ namespace Adventure.Quest.Map
         private static (string Label, ButtonStyle Style, bool Disabled) GetActionButtonState(TileModel tile)
         {
             // --- Default: the door or exit is open and can be entered ---
-            string label = "Enter";
+            //string label = "Enter";
+            string label = "🔓";
             var style = ButtonStyle.Success;
             bool disabled = false;
 
@@ -274,8 +275,8 @@ namespace Adventure.Quest.Map
         {
             // --- Row 0: Enter, Up, Break --- 
             builder.WithButton(buttons[0], row: 0)
-                   .WithButton(buttons[1], row: 0)
-                   .WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0);
+                   .WithButton(buttons[1], row: 0);
+                   //.WithButton("Break", "btn_flee", ButtonStyle.Danger, row: 0);
 
             // --- Row 1: Left, Down, Right
             builder.WithButton(buttons[2], row: 1)

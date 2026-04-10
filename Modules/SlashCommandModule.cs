@@ -239,7 +239,7 @@ namespace Adventure.Modules
             ComponentBuilder components = ButtonBuildersMap.BuildDirectionButtons(tile);
 
             // --- Track active player position ---
-            await ActivePlayerTracker.UpdatePositionAsync(Context.User.Id, player.Name, tile.TileId);
+            await ActivePlayerTracker.UpdatePositionAsync(Context.User.Id, player.Name!, tile.TileId);
 
             // --- Send embed and buttons to DM ---
             IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(

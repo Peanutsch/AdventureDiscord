@@ -41,6 +41,7 @@ namespace Adventure.Quest.Map
                 { "CHEST", "🧰" },
                 // Characters
                 { "PLAYER", "🧍" },
+                {"OTHERPLAYER", "👤" },
                 { "ENEMY", "⚔️" },
                 { "NPCFEM", "👩" },
                 // POI's
@@ -69,7 +70,7 @@ namespace Adventure.Quest.Map
 
             // Other active players shown with a distinct icon
             if (otherPlayerPositions != null && otherPlayerPositions.Contains((row, col)))
-                return "👥";
+                return GetEmoji("OTHERPLAYER");
 
             // Try to locate tile details for this grid position
             var tileDetail = area.Tiles.FirstOrDefault(t => t.TilePosition == $"{row},{col}");

@@ -9,8 +9,8 @@ namespace Adventure.Quest.Map
     /// </summary>
     public static class TileUI
     {
-        private static readonly TileIconProvider _iconProvider = new();
-        private static readonly GridRenderer _renderer = new(_iconProvider);
+        private static readonly TileIconProvider _iconProvider = new TileIconProvider();
+        private static readonly GridRenderer _renderer = new GridRenderer(_iconProvider);
 
         /// <summary>
         /// Renders a visual grid for the current area with the player icon placed at the correct position.
