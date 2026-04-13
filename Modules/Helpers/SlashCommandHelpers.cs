@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adventure.Modules
+namespace Adventure.Modules.Helpers
 {
     /// <summary>
     /// Provides helper methods for Discord slash command processing and execution.

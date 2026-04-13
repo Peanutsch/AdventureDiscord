@@ -2,7 +2,7 @@
 using Adventure.Models.BattleState;
 using Adventure.Models.Map;
 using Adventure.Models.Player;
-using Adventure.Modules;
+using Adventure.Modules.Helpers;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Randomizers;
 using Adventure.Quest.Encounter;

@@ -8,6 +8,7 @@ namespace Adventure.Quest.Map
     /// </summary>
     public class TileIconProvider
     {
+        // Mapping of tile type keys to their corresponding emojis/icons.
         private readonly Dictionary<string, string> _emojiMap;
 
         public TileIconProvider()
@@ -22,10 +23,11 @@ namespace Adventure.Quest.Map
                 { "Sand", "🟨" },
                 { "Lava", "🟧" },
                 { "Water", "🟦" },
-                { "Tree", "🌳" }, // Tree tile with 15% chance NPC Beast attack
-                { "Tree2", "🌳" }, // Tree tile with 15% chance NPC Humanoid or Beast attack
-                { "BLOCKt", "🌳" }, // Blocked tree tile
-                { "BLOCKb", " ⠀  " }, // Blocked blank space
+                // Obstacles
+                { "Tree", "🌳" },    // Tree tile with 15% chance NPC Beast attack
+                { "Tree2", "🌳" },   // Tree tile with 15% chance NPC Humanoid or Beast attack
+                { "BLOCKt", "🌳" },  // Blocked tree tile
+                { "BLOCKb", " ⠀  " },// Blocked blank space
                 // Passage
                 { "DOOR", "🚪" },
                 { "PORTAL", "🌀" },
@@ -41,7 +43,7 @@ namespace Adventure.Quest.Map
                 { "CHEST", "🧰" },
                 // Characters
                 { "PLAYER", "🧍" },
-                {"OTHERPLAYER", "👤" },
+                {"OTHERPLAYERS", "👤" },
                 { "ENEMY", "⚔️" },
                 { "NPCFEM", "👩" },
                 // POI's
@@ -70,8 +72,7 @@ namespace Adventure.Quest.Map
 
             // Other active players shown with a distinct icon
             if (otherPlayerPositions != null && otherPlayerPositions.Contains((row, col)))
-                return GetEmoji("OTHERPLAYER");
-
+                return GetEmoji("OTHERPLAYERS");
             // Try to locate tile details for this grid position
             var tileDetail = area.Tiles.FirstOrDefault(t => t.TilePosition == $"{row},{col}");
             string layoutType = area.Layout[row][col];

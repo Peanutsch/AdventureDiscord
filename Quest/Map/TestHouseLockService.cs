@@ -85,9 +85,7 @@ namespace Adventure.Quest.Map
 
             foreach (var kvp in TestHouseLoader.LockLookup.Values)
             {
-                LogService.Info($"\nLockType: {kvp.LockType}\n" +
-                                $"KeyId: {kvp.KeyId}\n" +
-                                $"Locked: {kvp.Locked}\n");
+                LogService.Info($"\n[LockType: {kvp.LockType}] [KeyId: {kvp.KeyId}] [Locked: {kvp.Locked}]\n");
             }
 
             // === Update LockLookup as well ===

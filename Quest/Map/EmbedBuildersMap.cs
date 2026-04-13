@@ -77,31 +77,31 @@ namespace Adventure.Quest.Map
         {
             LogService.Info("[EmbedBuildersMap.EmbedWalk] Building embed...");
 
-            // Step 1: Fetch basic area and tile data
+            // Fetch basic area and tile data
             var area = GetArea(tile);
             string gridVisual = TileUI.RenderTileGrid(tile, userId);
             string tileTextSafe = GetTileText(tile);
             string exitInfo = BuildExitInfo(tile);
 
-            // Step 2: Handle locks (toggle if tile acts as a switch)
+            // Handle locks (toggle if tile acts as a switch)
             TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup);
 
-            // Step 3: Truncate area name if too long to prevent embed field overflow
+            // Truncate area name if too long to prevent embed field overflow
             string safeAreaName = area.Name.Length > 250
                 ? area.Name.Substring(0, 250) + "..."
                 : area.Name;
 
-            // Step 4: Build the main embed structure with title, description, and grid
+            // Build the main embed structure with title, description, and grid
             var embed = new EmbedBuilder()
                 .WithColor(Color.Blue)
                 .AddField($"[{safeAreaName}]", area.Description)
                 .AddField($"{gridVisual}\n", $"{tileTextSafe}");
 
-            // Step 5: Add extra info about lock state if tile is locked
+            // Add extra info about lock state if tile is locked
             if (tile.LockState!.Locked || tile.LockSwitch)
                 AddLockInfo(embed, tile);
 
-            // Step 6: Show other players on the same tile
+            // Show other players on the same tile
             if (userId != 0)
             {
                 string tileId = $"{tile.AreaId}:{tile.TilePosition}";
