@@ -279,7 +279,8 @@ namespace Adventure.Modules.Commands
                             var resetEmbed = new EmbedBuilder()
                                 .WithColor(Color.Orange)
                                 .WithTitle("⚠️ Session Cleanup Notice")
-                                .WithDescription("Your previous adventure session was cleaned up due to a bot restart.")
+                                //.WithDescription("Your adventure was interrupted and reset to idle due to a bot restart.")
+                                .WithDescription("Your adventure session status is reset to idle due to a bot restart.")
                                 .AddField("What happened?", "The bot detected a stuck session and reset it to allow you to play again.")
                                 .AddField("What now?", "Your adventure continues as normal. Check the map and keep exploring!")
                                 .WithFooter("Session cleanup time: " + player.LastSessionResetTime.Value.ToString("g"))
@@ -291,7 +292,7 @@ namespace Adventure.Modules.Commands
                     }
                     catch (Exception ex)
                     {
-                        LogService.Error($"[NotifyIfSessionWasResetAsync] Failed to send notification: {ex.Message}");
+                        LogService.Error($"[GameplayCommandsModule.NotifyIfSessionWasResetAsync] Failed to send notification: {ex.Message}");
                     }
                 }
             }
