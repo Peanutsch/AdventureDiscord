@@ -1,9 +1,11 @@
 ﻿using Adventure.Data;
+using Adventure.Loaders;
 using Adventure.Models.BattleState;
 using Adventure.Models.Items;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Quest.Encounter;
+using Adventure.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,6 +74,13 @@ namespace Adventure.Quest.Battle.BattleEngine
                     TotalDamage = 0,
                     EmbedColor = Discord.Color.Red
                 };
+
+                // Set player state to InBattle and update activity time
+                player.CurrentState = PlayerState.InBattle;
+                player.LastActivityTime = DateTime.UtcNow;
+                JsonDataManager.UpdatePlayerState(userId, PlayerState.InBattle);
+                JsonDataManager.UpdatePlayerLastActivityTime(userId);
+                LogService.Info($"[BattleStateSetup.GetBattleState] Player {userId} state set to InBattle, activity time updated.");
             }
 
             return EncounterBattleStepsSetup.battleStates.GetOrAdd(userId, state);

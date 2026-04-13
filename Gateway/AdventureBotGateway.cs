@@ -90,12 +90,17 @@ namespace Adventure.Gateway
 
         /// <summary>
         /// Triggered when the Discord client is ready.
-        /// Registers all slash commands globally and announces the bot is online.
+        /// Performs session cleanup for stuck sessions, then registers all slash commands globally 
+        /// and announces the bot is online.
         /// </summary>
         private async Task ReadyAsync()
         {
+            // Clean up any stuck sessions from bot restarts/crashes
+            var sessionCleanupService = new SessionCleanupService();
+            await sessionCleanupService.CleanupAllStuckSessionsAsync();
+
             await _interactions.RegisterCommandsGloballyAsync();
-            await SendGuildStatusMessageAsync("⚔️ AdventureBot is up and running! Use `/adventure` to begin or continue your adventure.", Color.Green);
+            await SendGuildStatusMessageAsync("⚔️ AdventureBot is up and running!\nUse `/adventure` to begin or continue your adventure.", Color.Green);
         }
 
         /// <summary>

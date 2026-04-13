@@ -353,6 +353,91 @@ namespace Adventure.Loaders
                 LogService.Error($"[JsonDataManager.UpdatePlayerSavepoint] Exception:\n{ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Updates the player's last activity time in the JSON file.
+        /// </summary>
+        /// <param name="userId">Discord user ID.</param>
+        public static void UpdatePlayerLastActivityTime(ulong userId)
+        {
+            string path = Path.Combine("Data", "Player", $"{userId}.json");
+
+            if (!File.Exists(path))
+            {
+                LogService.Error($"[JsonDataManager.UpdatePlayerLastActivityTime] File not found: {path}");
+                return;
+            }
+
+            try
+            {
+                string json = File.ReadAllText(path);
+                var player = JsonSerializer.Deserialize<PlayerModel>(json);
+
+                if (player == null)
+                {
+                    LogService.Error("[JsonDataManager.UpdatePlayerLastActivityTime] Failed to deserialize PlayerModel.");
+                    return;
+                }
+
+                player.LastActivityTime = DateTime.UtcNow;
+
+                string updatedJson = JsonSerializer.Serialize(player, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+                File.WriteAllText(path, updatedJson);
+
+                LogService.Info($"[JsonDataManager.UpdatePlayerLastActivityTime] Last activity time updated for userId {userId}");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[JsonDataManager.UpdatePlayerLastActivityTime] Exception:\n{ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Updates the player's current state in the JSON file.
+        /// </summary>
+        /// <param name="userId">Discord user ID.</param>
+        /// <param name="newState">The new PlayerState value.</param>
+        public static void UpdatePlayerState(ulong userId, PlayerState newState)
+        {
+            string path = Path.Combine("Data", "Player", $"{userId}.json");
+
+            if (!File.Exists(path))
+            {
+                LogService.Error($"[JsonDataManager.UpdatePlayerState] File not found: {path}");
+                return;
+            }
+
+            try
+            {
+                string json = File.ReadAllText(path);
+                var player = JsonSerializer.Deserialize<PlayerModel>(json);
+
+                if (player == null)
+                {
+                    LogService.Error("[JsonDataManager.UpdatePlayerState] Failed to deserialize PlayerModel.");
+                    return;
+                }
+
+                player.CurrentState = newState;
+
+                string updatedJson = JsonSerializer.Serialize(player, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+                File.WriteAllText(path, updatedJson);
+
+                LogService.Info($"[JsonDataManager.UpdatePlayerState] Player state updated to {newState} for userId {userId}");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[JsonDataManager.UpdatePlayerState] Exception:\n{ex.Message}");
+            }
+        }
         #endregion
 
         #region === Update Door Locks ===

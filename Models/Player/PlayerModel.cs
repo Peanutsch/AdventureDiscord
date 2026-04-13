@@ -42,6 +42,12 @@ namespace Adventure.Models.Player
 
         public ArmorModel ArmorElements { get; set; } = new();
 
+        [JsonPropertyName("currentState")]
+        public PlayerState CurrentState { get; set; } = PlayerState.Idle;
+
+        [JsonPropertyName("lastActivityTime")]
+        public DateTime LastActivityTime { get; set; } = DateTime.UtcNow;
+
         [JsonIgnore]
         public string? Step { get; set; }
     }

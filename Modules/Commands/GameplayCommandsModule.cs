@@ -30,12 +30,14 @@ namespace Adventure.Modules.Commands
         /// loads their current position, and sends the map embed with navigation to their DM.
         /// 
         /// Orchestrates the full adventure startup flow:
-        /// 1. Validate and get Discord user
-        /// 2. Initialize player profile
-        /// 3. Determine current tile (savepoint or START)
-        /// 4. Handle lock switches
-        /// 5. Send map to DM
-        /// 6. Send channel notification
+        /// 1. Validate no active session (with inactivity cleanup)
+        /// 2. Validate and get Discord user
+        /// 3. Initialize player profile
+        /// 4. Determine current tile (savepoint or START)
+        /// 5. Handle lock switches
+        /// 6. Send map to DM
+        /// 7. Send channel notification
+        /// 8. Set player state to InAdventure
         /// </summary>
         [CommandContextType(InteractionContextType.Guild)]
         [SlashCommand("adventure", "Start your adventure in private message.")]
@@ -47,27 +49,34 @@ namespace Adventure.Modules.Commands
             // Store guild channel ID for battle notifications
             BattlePrivateMessageHelper.SetGuildChannelId(Context.User.Id, Context.Channel.Id);
 
-            // Step 1: Validate user
+            // Step 1: Validate no active session
+            bool sessionValid = await ValidateNoActiveSessionAsync();
+            if (!sessionValid) return;
+
+            // Step 2: Validate user
             Discord.IUser? user = await ValidateAndGetUserAsync();
             if (user == null) return;
 
-            // Step 2: Initialize player
+            // Step 3: Initialize player
             PlayerModel? player = await InitializePlayerAsync(user);
             if (player == null) return;
 
-            // Step 3: Determine tile
+            // Step 4: Determine tile
             TileModel? tile = await DetermineTileAsync(player);
             if (tile == null) return;
 
-            // Step 4: Handle lock switches
+            // Step 5: Handle lock switches
             await HandleTileLockSwitchAsync(tile);
 
-            // Step 5: Send map to DM
+            // Step 6: Send map to DM
             bool mapSent = await SendMapToDMAsync(player, tile);
             if (!mapSent) return;
 
-            // Step 6: Notify in channel
+            // Step 7: Notify in channel
             await SendChannelNotificationAsync(player);
+
+            // Step 8: Set player state to InAdventure and update activity time
+            SetPlayerStateInAdventure(player);
 
             LogService.DividerParts(2, "SlashCommand: /adventure");
         }
@@ -75,6 +84,44 @@ namespace Adventure.Modules.Commands
         #endregion
 
         #region === Helper Methods ===
+
+        /// <summary>
+        /// Validates that the player does not have an active adventure or battle session.
+        /// If a session is stuck (> 5 minutes old), auto-cleanup and allow new session.
+        /// </summary>
+        /// <returns>True if player can start a new session; false if actively in one.</returns>
+        private async Task<bool> ValidateNoActiveSessionAsync()
+        {
+            PlayerModel? player = SlashCommandHelpers.GetOrCreatePlayer(Context.User.Id, "");
+            if (player == null)
+            {
+                await FollowupAsync("⚠️ Error loading player data.");
+                return false;
+            }
+
+            if (player.CurrentState != PlayerState.Idle)
+            {
+                TimeSpan inactivityTime = DateTime.UtcNow - player.LastActivityTime;
+                const int INACTIVITY_TIMEOUT_MINUTES = 5;
+
+                // Auto-cleanup if session is stuck (> 5 minutes old)
+                if (inactivityTime > TimeSpan.FromMinutes(INACTIVITY_TIMEOUT_MINUTES))
+                {
+                    LogService.Info($"[/adventure] Player {Context.User.Id} session stuck (inactive {inactivityTime.TotalMinutes:F1}min). Auto-cleanup.");
+                    player.CurrentState = PlayerState.Idle;
+                    JsonDataManager.UpdatePlayerState(Context.User.Id, PlayerState.Idle);
+                    return true;  // Allow new session
+                }
+
+                // Session is recent, block it
+                string sessionType = player.CurrentState == PlayerState.InAdventure ? "adventure" : "battle";
+                await FollowupAsync($"⚠️ You already have an active {sessionType} session.");
+                LogService.Info($"[/adventure] Player {Context.User.Id} attempted to start adventure while in {player.CurrentState} state.");
+                return false;
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Validates and retrieves the Discord user who triggered the command.
@@ -201,6 +248,19 @@ namespace Adventure.Modules.Commands
         private async Task SendChannelNotificationAsync(PlayerModel player)
         {
             await FollowupAsync($"🗺️ {player.Name}, your adventure has started! Check your DMs to explore.");
+        }
+
+        /// <summary>
+        /// Sets the player's state to InAdventure and updates activity time in JSON.
+        /// </summary>
+        /// <param name="player">The player to update.</param>
+        private void SetPlayerStateInAdventure(PlayerModel player)
+        {
+            player.CurrentState = PlayerState.InAdventure;
+            player.LastActivityTime = DateTime.UtcNow;
+            JsonDataManager.UpdatePlayerState(Context.User.Id, PlayerState.InAdventure);
+            JsonDataManager.UpdatePlayerLastActivityTime(Context.User.Id);
+            LogService.Info($"[/adventure] Player {Context.User.Id} state set to InAdventure, activity time updated.");
         }
 
         #endregion
