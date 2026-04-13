@@ -48,6 +48,9 @@ namespace Adventure.Models.Player
         [JsonPropertyName("lastActivityTime")]
         public DateTime LastActivityTime { get; set; } = DateTime.UtcNow;
 
+        [JsonPropertyName("lastSessionResetTime")]
+        public DateTime? LastSessionResetTime { get; set; } = null;
+
         [JsonIgnore]
         public string? Step { get; set; }
     }

@@ -438,6 +438,49 @@ namespace Adventure.Loaders
                 LogService.Error($"[JsonDataManager.UpdatePlayerState] Exception:\n{ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Updates the player's last session reset time in the JSON file.
+        /// Used to track when a stuck session was cleaned up.
+        /// </summary>
+        /// <param name="userId">Discord user ID.</param>
+        public static void UpdatePlayerLastSessionResetTime(ulong userId)
+        {
+            string path = Path.Combine("Data", "Player", $"{userId}.json");
+
+            if (!File.Exists(path))
+            {
+                LogService.Error($"[JsonDataManager.UpdatePlayerLastSessionResetTime] File not found: {path}");
+                return;
+            }
+
+            try
+            {
+                string json = File.ReadAllText(path);
+                var player = JsonSerializer.Deserialize<PlayerModel>(json);
+
+                if (player == null)
+                {
+                    LogService.Error("[JsonDataManager.UpdatePlayerLastSessionResetTime] Failed to deserialize PlayerModel.");
+                    return;
+                }
+
+                player.LastSessionResetTime = DateTime.UtcNow;
+
+                string updatedJson = JsonSerializer.Serialize(player, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+                File.WriteAllText(path, updatedJson);
+
+                LogService.Info($"[JsonDataManager.UpdatePlayerLastSessionResetTime] Session reset time updated for userId {userId}");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[JsonDataManager.UpdatePlayerLastSessionResetTime] Exception:\n{ex.Message}");
+            }
+        }
         #endregion
 
         #region === Update Door Locks ===

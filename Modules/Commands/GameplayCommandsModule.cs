@@ -8,6 +8,7 @@ using Adventure.Quest.Map;
 using Adventure.Services;
 using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
 
 namespace Adventure.Modules.Commands
 {
@@ -35,9 +36,10 @@ namespace Adventure.Modules.Commands
         /// 3. Initialize player profile
         /// 4. Determine current tile (savepoint or START)
         /// 5. Handle lock switches
-        /// 6. Send map to DM
-        /// 7. Send channel notification
-        /// 8. Set player state to InAdventure
+        /// 6. Notify if session was recently reset (cleanup notification)
+        /// 7. Send map to DM
+        /// 8. Send channel notification
+        /// 9. Set player state to InAdventure
         /// </summary>
         [CommandContextType(InteractionContextType.Guild)]
         [SlashCommand("adventure", "Start your adventure in private message.")]
@@ -68,14 +70,17 @@ namespace Adventure.Modules.Commands
             // Step 5: Handle lock switches
             await HandleTileLockSwitchAsync(tile);
 
-            // Step 6: Send map to DM
+            // Step 6: Check if session was recently reset and notify player FIRST
+            await NotifyIfSessionWasResetAsync(player);
+
+            // Step 7: Send map to DM
             bool mapSent = await SendMapToDMAsync(player, tile);
             if (!mapSent) return;
 
-            // Step 7: Notify in channel
+            // Step 8: Notify in channel
             await SendChannelNotificationAsync(player);
 
-            // Step 8: Set player state to InAdventure and update activity time
+            // Step 9: Set player state to InAdventure and update activity time
             SetPlayerStateInAdventure(player);
 
             LogService.DividerParts(2, "SlashCommand: /adventure");
@@ -248,6 +253,48 @@ namespace Adventure.Modules.Commands
         private async Task SendChannelNotificationAsync(PlayerModel player)
         {
             await FollowupAsync($"🗺️ {player.Name}, your adventure has started! Check your DMs to explore.");
+        }
+
+        /// <summary>
+        /// Checks if the player's session was recently reset due to bot restart/cleanup.
+        /// If so, notifies the player in DM about what happened.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        private async Task NotifyIfSessionWasResetAsync(PlayerModel player)
+        {
+            if (player.LastSessionResetTime.HasValue)
+            {
+                TimeSpan timeSinceReset = DateTime.UtcNow - player.LastSessionResetTime.Value;
+
+                // Only notify if reset happened recently (within last 5 minutes)
+                if (timeSinceReset < TimeSpan.FromMinutes(5))
+                {
+                    try
+                    {
+                        SocketUser? user = Context.User as SocketUser;
+                        if (user != null)
+                        {
+                            IDMChannel dmChannel = await user.CreateDMChannelAsync();
+
+                            var resetEmbed = new EmbedBuilder()
+                                .WithColor(Color.Orange)
+                                .WithTitle("⚠️ Session Cleanup Notice")
+                                .WithDescription("Your previous adventure session was cleaned up due to a bot restart.")
+                                .AddField("What happened?", "The bot detected a stuck session and reset it to allow you to play again.")
+                                .AddField("What now?", "Your adventure continues as normal. Check the map and keep exploring!")
+                                .WithFooter("Session cleanup time: " + player.LastSessionResetTime.Value.ToString("g"))
+                                .Build();
+
+                            await dmChannel.SendMessageAsync(embed: resetEmbed);
+                            LogService.Info($"[/adventure] Sent session reset notification to player {Context.User.Id}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogService.Error($"[NotifyIfSessionWasResetAsync] Failed to send notification: {ex.Message}");
+                    }
+                }
+            }
         }
 
         /// <summary>

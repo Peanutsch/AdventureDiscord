@@ -73,13 +73,15 @@ namespace Adventure.Services
                         if (player.CurrentState != PlayerState.Idle)
                         {
                             LogService.Info($"[SessionCleanupService] Resetting stuck session for player {userId} ({player.Name}) from {player.CurrentState} → Idle");
-                            
+
                             // Reset state and save
                             player.CurrentState = PlayerState.Idle;
                             player.LastActivityTime = DateTime.UtcNow;
+                            player.LastSessionResetTime = DateTime.UtcNow;
                             JsonDataManager.UpdatePlayerState(userId, PlayerState.Idle);
                             JsonDataManager.UpdatePlayerLastActivityTime(userId);
-                            
+                            JsonDataManager.UpdatePlayerLastSessionResetTime(userId);
+
                             cleanedPlayers++;
                         }
                     }
