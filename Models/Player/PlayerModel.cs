@@ -42,6 +42,7 @@ namespace Adventure.Models.Player
 
         public ArmorModel ArmorElements { get; set; } = new();
 
+        // Tracking Player's current state (e.g., Idle, InCombat, inAdventure)
         [JsonPropertyName("currentState")]
         public PlayerState CurrentState { get; set; } = PlayerState.Idle;
 

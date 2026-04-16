@@ -104,8 +104,9 @@ namespace Adventure.Modules.Helpers
             }
 
             // Load existing player or create new if load fails
-            PlayerModel player = PlayerDataManager.LoadByUserId(userId);
-            return player ?? PlayerDataManager.CreateNewPlayer(userId, playerName);
+            //PlayerModel player = PlayerDataManager.LoadByUserId(userId);
+            //return player ?? PlayerDataManager.CreateNewPlayer(userId, playerName);
+            return PlayerDataManager.LoadByUserId(userId) ?? PlayerDataManager.CreateNewPlayer(userId, playerName);
         }
 
         #endregion

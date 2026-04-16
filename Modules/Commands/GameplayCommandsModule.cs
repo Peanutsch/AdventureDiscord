@@ -88,6 +88,29 @@ namespace Adventure.Modules.Commands
 
         #endregion
 
+        #region === Player stats command ===
+        [CommandContextType(InteractionContextType.Guild)]
+        [SlashCommand("stats", "View your player stats.")]
+        public async Task SlashCommandStatsHandler()
+        {
+            await DeferAsync();
+            LogService.DividerParts(1, "SlashCommand: /stats");
+
+            // Validate user
+            Discord.IUser? user = await ValidateAndGetUserAsync();
+            if (user == null) return;
+
+            // Get player
+            PlayerModel? player = await GetPlayerForStatsAsync(user);
+            if (player == null) return;
+
+            // Build and send stats embed
+            await SendStatsEmbedAsync(player);
+
+            LogService.DividerParts(2, "SlashCommand: /stats");
+        }
+        #endregion
+
         #region === Helper Methods ===
 
         /// <summary>
@@ -132,7 +155,7 @@ namespace Adventure.Modules.Commands
         /// Validates and retrieves the Discord user who triggered the command.
         /// </summary>
         /// <returns>The Discord user, or null if validation fails.</returns>
-        private async Task<Discord.IUser?> ValidateAndGetUserAsync()
+        private async Task<IUser?> ValidateAndGetUserAsync()
         {
             Discord.IUser? user = SlashCommandHelpers.GetDiscordUser(Context, Context.User.Id);
             if (user == null)
@@ -150,7 +173,7 @@ namespace Adventure.Modules.Commands
         /// </summary>
         /// <param name="user">The Discord user.</param>
         /// <returns>The player model, or null if initialization fails.</returns>
-        private async Task<PlayerModel?> InitializePlayerAsync(Discord.IUser user)
+        private async Task<PlayerModel?> InitializePlayerAsync(IUser user)
         {
             PlayerModel player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
             if (player == null)
@@ -160,6 +183,59 @@ namespace Adventure.Modules.Commands
             }
 
             return player;
+        }
+
+        /// <summary>
+        /// Gets or creates a player for the stats command.
+        /// </summary>
+        /// <param name="user">The Discord user.</param>
+        /// <returns>The player model, or null if retrieval fails.</returns>
+        private async Task<PlayerModel?> GetPlayerForStatsAsync(IUser user)
+        {
+            PlayerModel? player = SlashCommandHelpers.GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
+            if (player == null)
+            {
+                await FollowupAsync("⚠️ Error loading player data.");
+                return null;
+            }
+
+            LogService.Info($"[/stats] Retrieved player stats for {user.GlobalName ?? user.Username}");
+            return player;
+        }
+
+        /// <summary>
+        /// Builds a stats embed for the given player.
+        /// </summary>
+        /// <param name="player">The player to display stats for.</param>
+        /// <returns>An embed containing the player's stats.</returns>
+        private static Embed BuildStatsEmbed(PlayerModel player)
+        {
+            return new EmbedBuilder()
+                .WithTitle($"{player.Name}'s Stats")
+                .WithColor(Color.Green)
+                .AddField("Level", player.Level, true)
+                .AddField("HP", $"{player.Hitpoints}", true)
+                .AddField("Experience", $"{player.XP}", true)
+                .AddField("Strength", player.Attributes.Strength, true)
+                .AddField("Dexterity", player.Attributes.Dexterity, true)
+                .AddField("Constitution", player.Attributes.Constitution, true)
+                .AddField("Intelligence", player.Attributes.Intelligence, true)
+                .AddField("Wisdom", player.Attributes.Wisdom, true)
+                .AddField("Charisma", player.Attributes.Charisma, true)
+                //.AddField("Gold", player.Gold, true)
+                .WithFooter("Keep adventuring to improve your stats!")
+                .Build();
+        }
+
+        /// <summary>
+        /// Sends the stats embed to the user as an ephemeral message.
+        /// </summary>
+        /// <param name="player">The player whose stats to display.</param>
+        private async Task SendStatsEmbedAsync(PlayerModel player)
+        {
+            Embed statsEmbed = BuildStatsEmbed(player);
+            await FollowupAsync(embed: statsEmbed, ephemeral: true);
+            LogService.Info($"[/stats] Stats embed sent for player {player.Name}");
         }
 
         /// <summary>
@@ -199,7 +275,7 @@ namespace Adventure.Modules.Commands
         /// This allows tiles to act as triggers for door locks.
         /// </summary>
         /// <param name="tile">The current tile.</param>
-        private async Task HandleTileLockSwitchAsync(TileModel tile)
+        private static async Task HandleTileLockSwitchAsync(TileModel tile)
         {
             if (TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup))
             {

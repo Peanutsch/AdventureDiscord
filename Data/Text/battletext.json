@@ -70,7 +70,7 @@
     { "text": "🗡️ {attacker} attacks with intent, but {defender} evades skillfully!" },
     { "text": "🗡️ {attacker}'s swing is off-target, {defender} dodges effortlessly!" },
     { "text": "🗡️ {attacker}'s swings {weapon}, but {defender} jumps back and avoids the attack!" },
-    { "text": "🗡️ {defender} jumps back and avoids {defender}'s attack!" },
+    { "text": "🗡️ {defender} jumps back and avoids {attacker}'s attack!" },
     { "text": "🗡️ {defender} ducks just in time to dodge {attacker}'s attack!" }
   ],
   "hpStatus": {

@@ -44,6 +44,7 @@ class PlayerAttack
         return battleLog;
     }
 
+    // Helper method to determine correct pluralization of "round(s)"
     public static string UseOfS(int round)
     {
         if (round > 0)
