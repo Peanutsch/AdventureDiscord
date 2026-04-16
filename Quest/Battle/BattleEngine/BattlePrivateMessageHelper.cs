@@ -10,7 +10,6 @@ namespace Adventure.Quest.Battle.BattleEngine
     /// <summary>
     /// Helper class for managing private message communications during battles.
     /// Centralizes DM sending logic for battle interactions, weapon selection, and battle logs.
-    /// 
     /// This enables battles to be played in private messages instead of public channels,
     /// keeping the main chat clean while showing only final results publicly.
     /// </summary>
@@ -267,112 +266,144 @@ namespace Adventure.Quest.Battle.BattleEngine
                 return;
             }
 
-            var playerIds = ActivePlayerTracker.GetAllActivePlayerIds();
+            List<ulong> playerIds = ActivePlayerTracker.GetAllActivePlayerIds();
             LogService.Info($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] Disabling buttons for {playerIds.Count} active player(s)...");
 
             foreach (var userId in playerIds)
             {
-                try
+                await DisableButtonsForUserAsync(userId);
+            }
+        }
+
+        /// <summary>
+        /// Disables buttons for a single user's active battle message.
+        /// Handles errors gracefully and logs results.
+        /// </summary>
+        private static async Task DisableButtonsForUserAsync(ulong userId)
+        {
+            try
+            {
+                SocketUser? user = _client?.GetUser(userId);
+                if (user == null)
                 {
-                    SocketUser? user = _client.GetUser(userId);
-                    if (user == null)
-                    {
-                        LogService.Error($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] User {userId} not found in cache, skipping.");
-                        continue;
-                    }
-
-                    IDMChannel dmChannel = await user.CreateDMChannelAsync();
-
-                    // Try tracked message ID first, otherwise search recent DMs
-                    ulong messageId = GetActiveBattleMessage(userId);
-                    IUserMessage? targetMessage = null;
-
-                    if (messageId != 0)
-                    {
-                        IMessage? msg = await dmChannel.GetMessageAsync(messageId);
-                        targetMessage = msg as IUserMessage;
-                    }
-
-                    // Fallback: search recent DM messages for bot messages with active buttons
-                    if (targetMessage == null || targetMessage.Components.Count == 0)
-                    {
-                        LogService.Info($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] No tracked message for user {userId}, searching recent DMs...");
-
-                        var recentMessages = await dmChannel.GetMessagesAsync(limit: 20).FlattenAsync();
-
-                        foreach (var recentMsg in recentMessages)
-                        {
-                            if (recentMsg is not IUserMessage userMsg) continue;
-                            if (recentMsg.Author.Id != _client.CurrentUser.Id) continue;
-                            if (userMsg.Components.Count == 0) continue;
-
-                            // Check if any button is still enabled
-                            bool hasActiveButtons = false;
-                            foreach (var actionRow in userMsg.Components)
-                            {
-                                if (actionRow is not ActionRowComponent rowComponent) continue;
-                                foreach (var component in rowComponent.Components)
-                                {
-                                    if (component is ButtonComponent button && !button.IsDisabled)
-                                    {
-                                        hasActiveButtons = true;
-                                        break;
-                                    }
-                                }
-                                if (hasActiveButtons) break;
-                            }
-
-                            if (hasActiveButtons)
-                            {
-                                targetMessage = userMsg;
-                                LogService.Info($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] Found active message {userMsg.Id} for user {userId}");
-                                break;
-                            }
-                        }
-                    }
-
-                    if (targetMessage == null || targetMessage.Components.Count == 0)
-                    {
-                        LogService.Info($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] No message with active buttons found for user {userId}.");
-                        continue;
-                    }
-
-                    // Disable all buttons
-                    var builder = new ComponentBuilder();
-                    int row = 0;
-
-                    foreach (var actionRow in targetMessage.Components)
-                    {
-                        if (actionRow is not ActionRowComponent rowComponent)
-                            continue;
-
-                        foreach (var component in rowComponent.Components)
-                        {
-                            if (component is ButtonComponent button)
-                            {
-                                builder.WithButton(
-                                    button.Label ?? "...",
-                                    button.CustomId ?? $"disabled_{row}",
-                                    button.Style,
-                                    disabled: true,
-                                    row: row);
-                            }
-                        }
-                        row++;
-                    }
-
-                    await targetMessage.ModifyAsync(msg =>
-                    {
-                        msg.Components = builder.Build();
-                    });
-
-                    LogService.Info($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] ✅ Disabled buttons for user {user.Username}");
+                    LogService.Error($"[BattlePrivateMessageHelper.DisableButtonsForUserAsync] User {userId} not found in cache, skipping.");
+                    return;
                 }
-                catch (Exception ex)
+
+                IDMChannel dmChannel = await user.CreateDMChannelAsync();
+                IUserMessage? targetMessage = await FindTargetMessageAsync(userId, dmChannel);
+
+                if (targetMessage == null)
                 {
-                    LogService.Error($"[BattlePrivateMessageHelper.DisableAllActiveButtonsAsync] Failed for user {userId}: {ex.Message}");
+                    LogService.Info($"[BattlePrivateMessageHelper.DisableButtonsForUserAsync] No message with active buttons found for user {userId}.");
+                    return;
+                }
+
+                ComponentBuilder builder = BuildDisabledButtonsComponent(targetMessage);
+                await targetMessage.ModifyAsync(msg => msg.Components = builder.Build());
+
+                LogService.Info($"[BattlePrivateMessageHelper.DisableButtonsForUserAsync] ✅ Disabled buttons for user {user.Username}");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[BattlePrivateMessageHelper.DisableButtonsForUserAsync] Failed for user {userId}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Finds the target message to disable buttons on.
+        /// First tries the tracked message ID, then searches recent DM messages.
+        /// </summary>
+        private static async Task<IUserMessage?> FindTargetMessageAsync(ulong userId, IDMChannel dmChannel)
+        {
+            // Try tracked message ID first
+            ulong messageId = GetActiveBattleMessage(userId);
+            if (messageId != 0)
+            {
+                IMessage? msg = await dmChannel.GetMessageAsync(messageId);
+                IUserMessage? userMsg = msg as IUserMessage;
+
+                if (userMsg != null && MessageHasActiveButtons(userMsg))
+                    return userMsg;
+            }
+
+            // Fallback: search recent DM messages
+            return await FindMessageWithActiveButtonsAsync(userId, dmChannel);
+        }
+
+        /// <summary>
+        /// Searches recent DM messages for a bot message with active buttons.
+        /// </summary>
+        private static async Task<IUserMessage?> FindMessageWithActiveButtonsAsync(ulong userId, IDMChannel dmChannel)
+        {
+            LogService.Info($"[BattlePrivateMessageHelper.FindMessageWithActiveButtonsAsync] Searching recent DMs for user {userId}...");
+
+            var recentMessages = await dmChannel.GetMessagesAsync(limit: 20).FlattenAsync();
+
+            foreach (var recentMsg in recentMessages)
+            {
+                if (recentMsg is not IUserMessage userMsg) continue;
+                if (recentMsg.Author.Id != _client?.CurrentUser.Id) continue;
+                if (!MessageHasActiveButtons(userMsg)) continue;
+
+                LogService.Info($"[BattlePrivateMessageHelper.FindMessageWithActiveButtonsAsync] Found active message {userMsg.Id} for user {userId}");
+                return userMsg;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Checks if a message has any active (enabled) buttons.
+        /// </summary>
+        private static bool MessageHasActiveButtons(IUserMessage message)
+        {
+            if (message.Components.Count == 0)
+                return false;
+
+            foreach (var actionRow in message.Components)
+            {
+                if (actionRow is not ActionRowComponent rowComponent) continue;
+
+                foreach (var component in rowComponent.Components)
+                {
+                    if (component is ButtonComponent button && !button.IsDisabled)
+                        return true;
                 }
             }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Builds a ComponentBuilder with all buttons from the message disabled.
+        /// </summary>
+        private static ComponentBuilder BuildDisabledButtonsComponent(IUserMessage message)
+        {
+            var builder = new ComponentBuilder();
+            int row = 0;
+
+            foreach (var actionRow in message.Components)
+            {
+                if (actionRow is not ActionRowComponent rowComponent)
+                    continue;
+
+                foreach (var component in rowComponent.Components)
+                {
+                    if (component is ButtonComponent button)
+                    {
+                        builder.WithButton(
+                            button.Label ?? "...",
+                            button.CustomId ?? $"disabled_{row}",
+                            button.Style,
+                            disabled: true,
+                            row: row);
+                    }
+                }
+                row++;
+            }
+
+            return builder;
         }
         #endregion
     }

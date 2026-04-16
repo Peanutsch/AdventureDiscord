@@ -13,7 +13,6 @@ namespace Adventure
             var bot = services.GetRequiredService<AdventureBotGateway>();
 
             await bot.StartBotAsync();
-
         }
     }
 }

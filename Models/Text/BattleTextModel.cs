@@ -16,6 +16,8 @@ namespace Adventure.Models.Text
         [JsonPropertyName("hit")]
         public List<TextEntry> Hit { get; set; } = new();
 
+        public List<TextEntry> Hit2 { get; set; } = new();
+
         [JsonPropertyName("criticalMiss")]
         public List<TextEntry> CriticalMiss { get; set; } = new();
 

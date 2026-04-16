@@ -7,6 +7,13 @@ using Discord;
 
 class PlayerAttack
 {
+    /// <summary>
+    /// Processes the player's attack on the NPC, updates the battle state, and generates the battle log. 
+    /// Handles the end of the battle and rewards XP to the player if the NPC is defeated.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="weapon"></param>
+    /// <returns></returns>
     public static string ProcessPlayerAttack(ulong userId, WeaponModel weapon)
     {
         // // Get attack data from AttackProcessor
@@ -21,6 +28,7 @@ class PlayerAttack
             int rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
             (bool leveledUp, int oldLevel, int newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
 
+            // Generate battle log for victory and XP reward
             battleLog += $"\n\n💀 **VICTORY!!! {state.Npc.Name} is defeated after {state.RoundCounter} {UseOfS(state.RoundCounter)}!**";
             battleLog += $"\n🏆 **{state.Player.Name}** gains **{state.RewardXP} XP** (Total: {state.NewTotalXP} XP)";
 
@@ -29,6 +37,7 @@ class PlayerAttack
         }   
         else
         {
+            // If NPC is still alive → set next step to PostBattle for NPC's turn
             EncounterBattleStepsSetup.SetStep(userId, BattleStep.PostBattle);
         }
 

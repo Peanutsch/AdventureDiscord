@@ -68,18 +68,23 @@
     { "text": "🗡️ {attacker} strikes, but {weapon} fails to connect with {defender}!" },
     { "text": "🗡️ {attacker}'s attack misses the mark, {defender} stays unharmed!" },
     { "text": "🗡️ {attacker} attacks with intent, but {defender} evades skillfully!" },
-    { "text": "🗡️ {attacker}'s swing is off-target, {defender} dodges effortlessly!" }
+    { "text": "🗡️ {attacker}'s swing is off-target, {defender} dodges effortlessly!" },
+    { "text": "🗡️ {attacker}'s swings {weapon}, but {defender} jumps back and avoids the attack!" },
+    { "text": "🗡️ {defender} jumps back and avoids {defender}'s attack!" },
+    { "text": "🗡️ {defender} ducks just in time to dodge {attacker}'s attack!" }
   ],
   "hpStatus": {
     "Unscathed": [
       { "text": "stands tall and confident, showing no sign of injury or fatigue." },
       { "text": "looks ready for anything, completely unharmed." },
+      { "text": "is completely unharmed and looks ready for anything, " },
       { "text": "moves gracefully, without any sign of damage." },
+      { "text": "doesn't show any sign of damage." },
       { "text": "glows with vitality, each movement precise and sharp." },
       { "text": "shows no scratches or bruises, every action smooth and effortless." }
     ],
     "Healthy": [
-      { "text": "bears a few scratches, but their stance remains firm and steady." },
+      { "text": "bears a few scratches, but stance remains firm and steady." },
       { "text": "has minor cuts but remains alert and prepared." },
       { "text": "is slightly battered, yet continues to fight confidently." },
       { "text": "shrugs off minor blows, showing no concern for the damage taken." },

@@ -58,7 +58,8 @@ namespace Adventure.Quest.Battle.TextGenerator
                 "hit" => GetRandomText(battleText.Hit, attacker, defender, weapon, damage),
                 "criticalMiss" => GetRandomText(battleText.CriticalMiss, attacker, defender, weapon, damage),
                 "miss" => GetRandomText(battleText.Miss, attacker, defender, weapon, damage),
-                _ => $"The dev made a fvck up! {attacker} starts a striptease, which hurts the eyes of {defender} so much, {defender} commit's instantly hara-kiri.",// Fallback message if an unknown attackResult is passed
+                // Fallback message if an unknown attackResult is passed
+                _ => $"The dev made a fvck up! {attacker} starts a striptease, which hurts the eyes of {defender} so much, {defender} commit's instantly hara-kiri.",
             };
 
             // Add dice roll details if this is a player attack
@@ -93,7 +94,7 @@ namespace Adventure.Quest.Battle.TextGenerator
         public static string GetRandomText(List<TextEntry> entries, string attacker, string defender, string weapon, int damage)
         {
             if (entries == null || entries.Count == 0)
-                return "";
+                return "has an unknown status, because the dev fvcked up...";
 
             // Randomly select a text template
             int index = rng.Next(entries.Count);
