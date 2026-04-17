@@ -301,7 +301,12 @@ namespace Adventure.Modules.Commands
         /// <param name="player">The player profile.</param>
         private async Task SendChannelNotificationAsync(PlayerModel player)
         {
-            await FollowupAsync($"🗺️ {player.Name}, your adventure has started! Check your DMs to explore.");
+            var embed = new EmbedBuilder()
+                .WithColor(Color.Blue)
+                .WithDescription($"🗺️ Hello **{player.Name}**, your adventure has started! Check your DMs to explore.")
+                .Build();
+
+            await FollowupAsync(embed: embed);
         }
 
         /// <summary>
