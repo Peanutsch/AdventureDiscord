@@ -50,6 +50,8 @@ namespace Adventure.Quest.Map
         /// This is the primary method for generating map display embeds sent to players.
         /// </summary>
         /// <param name="tile">The TileModel representing the player's current position.</param>
+        /// <param name="userId">The Discord user ID viewing this tile (used for player markers).</param>
+        /// <param name="playerName">The name of the player viewing this tile (for lock toggle notifications).</param>
         /// <returns>
         /// A fully constructed EmbedBuilder ready to be sent to Discord via FollowupAsync().
         /// The embed has a blue color scheme.
@@ -73,7 +75,7 @@ namespace Adventure.Quest.Map
         /// 
         /// [Locked] The door is locked with a BRONZE lock.
         /// </remarks>
-        public static EmbedBuilder EmbedWalk(TileModel tile, ulong userId = 0)
+        public static async Task<EmbedBuilder> EmbedWalkAsync(TileModel tile, ulong userId = 0, string playerName = "")
         {
             LogService.Info("[EmbedBuildersMap.EmbedWalk] Building embed...");
 
@@ -84,7 +86,10 @@ namespace Adventure.Quest.Map
             string exitInfo = BuildExitInfo(tile);
 
             // Handle locks (toggle if tile acts as a switch)
-            TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup);
+            if (userId != 0 && !string.IsNullOrEmpty(playerName))
+            {
+                await TestHouseLockService.ToggleLockBySwitchAsync(tile, TestHouseLoader.LockLookup, userId, playerName);
+            }
 
             // Truncate area name if too long to prevent embed field overflow
             string safeAreaName = area.Name.Length > 250

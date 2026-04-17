@@ -1,6 +1,8 @@
 ﻿using Adventure.Loaders;
 using Adventure.Models.Map;
+using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Services;
+using Discord;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +17,17 @@ namespace Adventure.Quest.Map
         /// Toggles the locked state of a door or lock linked to a specific tile.
         /// The method checks if the current tile contains a switch (LockSwitch)
         /// and a valid LockId. If both exist, the corresponding lock's state
-        /// is inverted (locked ↔ unlocked).
+        /// is inverted (locked ↔ unlocked), and a notification is sent to the guild channel.
         /// </summary>
         /// <param name="currentTile">The current tile where the player stands.</param>
         /// <param name="locks">A dictionary containing all lock IDs and their states.</param>
+        /// <param name="userId">Discord user ID of the player toggling the lock.</param>
+        /// <param name="playerName">Name of the player toggling the lock.</param>
         /// <returns>
         /// True if a valid lock was toggled successfully; otherwise, false.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="currentTile"/> is null.</exception>
-        public static bool ToggleLockBySwitch(TileModel currentTile, Dictionary<string, TestHouseLockModel> locks)
+        public static async Task<bool> ToggleLockBySwitchAsync(TileModel currentTile, Dictionary<string, TestHouseLockModel> locks, ulong userId, string playerName)
         {
             if (currentTile == null)
                 throw new ArgumentNullException(nameof(currentTile));
@@ -36,6 +40,7 @@ namespace Adventure.Quest.Map
                 {
                     // Toggle the lock state (locked <-> unlocked)
                     lockState.Locked = !lockState.Locked;
+                    bool isNowLocked = lockState.Locked;
 
                     // Wrap updated locks dictionary into a TestHouseLockCollection
                     var updatedLocks = new TestHouseLockCollection
@@ -46,7 +51,10 @@ namespace Adventure.Quest.Map
                     // Save updated lock data to JSON file
                     JsonDataManager.UpdateLockStates(updatedLocks, "testhouselocks.json");
 
-                    LogService.Info($"[TestHouseLockService.ToggleLockBySwitch] Lock '{currentTile.LockId}' is now {(lockState.Locked ? "locked" : "unlocked")}.");
+                    LogService.Info($"[TestHouseLockService.ToggleLockBySwitch] Lock '{currentTile.LockId}' is now {(isNowLocked ? "locked" : "unlocked")} by {playerName}.");
+
+                    // Send guild notification
+                    await SendLockToggleNotificationAsync(userId, playerName, currentTile.LockId, isNowLocked);
 
                     // Reload updated lock data
                     ReloadLockStates();
@@ -59,6 +67,39 @@ namespace Adventure.Quest.Map
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Sends a notification to the guild channel when a player toggles a lock.
+        /// </summary>
+        private static async Task SendLockToggleNotificationAsync(ulong userId, string playerName, string lockId, bool isNowLocked)
+        {
+            try
+            {
+                ulong channelId = BattlePrivateMessageHelper.GetGuildChannelId(userId);
+                if (channelId == 0)
+                {
+                    LogService.Info($"[TestHouseLockService.SendLockToggleNotificationAsync] No guild channel configured for user {userId}.");
+                    return;
+                }
+
+                string statusEmoji = isNowLocked ? "🔒" : "🔓";
+                string statusText = isNowLocked ? "locked" : "unlocked";
+
+                var embed = new EmbedBuilder()
+                    .WithColor(isNowLocked ? Color.Orange : Color.Green)
+                    .WithTitle($"{statusEmoji} Lock Status Changed")
+                    .WithDescription($"**{playerName}** has `{statusText.ToUpper()}` the lock: `{lockId}`")
+                    .WithTimestamp(DateTimeOffset.UtcNow)
+                    .Build();
+
+                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(channelId, embed);
+                LogService.Info($"[TestHouseLockService.SendLockToggleNotificationAsync] Sent lock toggle notification to channel {channelId}");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[TestHouseLockService.SendLockToggleNotificationAsync] Failed to send notification: {ex.Message}");
+            }
         }
 
         public static void ReloadLockStates()

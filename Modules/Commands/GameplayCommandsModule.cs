@@ -67,20 +67,14 @@ namespace Adventure.Modules.Commands
             TileModel? tile = await DetermineTileAsync(player);
             if (tile == null) return;
 
-            // Step 5: Handle lock switches
-            await HandleTileLockSwitchAsync(tile);
-
-            // Step 6: Check if session was recently reset and notify player FIRST
-            await NotifyIfSessionWasResetAsync(player);
-
-            // Step 7: Send map to DM
+            // Step 5: Send map to DM (lock toggle happens in EmbedWalkAsync)
             bool mapSent = await SendMapToDMAsync(player, tile);
             if (!mapSent) return;
 
-            // Step 8: Notify in channel
+            // Step 6: Notify in channel
             await SendChannelNotificationAsync(player);
 
-            // Step 9: Set player state to InAdventure and update activity time
+            // Step 7: Set player state to InAdventure and update activity time
             SetPlayerStateInAdventure(player);
 
             LogService.DividerParts(2, "SlashCommand: /adventure");
@@ -271,27 +265,6 @@ namespace Adventure.Modules.Commands
         }
 
         /// <summary>
-        /// Handles lock switches for the current tile.
-        /// This allows tiles to act as triggers for door locks.
-        /// </summary>
-        /// <param name="tile">The current tile.</param>
-        private static async Task HandleTileLockSwitchAsync(TileModel tile)
-        {
-            if (TestHouseLockService.ToggleLockBySwitch(tile, TestHouseLoader.LockLookup))
-            {
-                LogService.Info($"[/adventure] Tile {tile.TileId} switch toggled lock: {tile.LockId}");
-            }
-
-            // Log area information
-            string areaName = TestHouseLoader.AreaLookup.TryGetValue(tile.AreaId, out TestHouseAreaModel? area)
-                ? area.Name
-                : "Unknown Area";
-            LogService.Info($"[/adventure] Starting in area: {areaName}, position: {tile.TilePosition}");
-
-            await Task.CompletedTask;
-        }
-
-        /// <summary>
         /// Builds and sends the map embed with navigation buttons to the player's DM.
         /// </summary>
         /// <param name="player">The player profile.</param>
@@ -300,7 +273,7 @@ namespace Adventure.Modules.Commands
         private async Task<bool> SendMapToDMAsync(PlayerModel player, TileModel tile)
         {
             // Build embed and buttons
-            EmbedBuilder embed = EmbedBuildersMap.EmbedWalk(tile, Context.User.Id);
+            EmbedBuilder embed = await EmbedBuildersMap.EmbedWalkAsync(tile, Context.User.Id, player.Name!);
             ComponentBuilder components = ButtonBuildersMap.BuildDirectionButtons(tile);
 
             // Track active player position
@@ -348,7 +321,8 @@ namespace Adventure.Modules.Commands
                     try
                     {
                         SocketUser? user = Context.User as SocketUser;
-                        if (user != null)
+                        //if (user != null)
+                        if (Context.User as SocketUser != null)
                         {
                             IDMChannel dmChannel = await user.CreateDMChannelAsync();
 

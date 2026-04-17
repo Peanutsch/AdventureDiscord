@@ -224,11 +224,11 @@ namespace Adventure.Buttons
                 }
             }
 
-            EmbedBuilder embedWalk = EmbedBuildersMap.EmbedWalk(targetTile, context.User.Id);
+            string playerName = context.User.GlobalName ?? context.User.Username;
+            EmbedBuilder embedWalk = await EmbedBuildersMap.EmbedWalkAsync(targetTile, context.User.Id, playerName);
             ComponentBuilder components = ButtonBuildersMap.BuildDirectionButtons(targetTile);
 
             // Track active player position and notify others
-            string playerName = context.User.GlobalName ?? context.User.Username;
             await ActivePlayerTracker.UpdatePositionAsync(context.User.Id, playerName, targetTile.TileId);
 
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
