@@ -289,5 +289,141 @@ namespace Adventure.Modules.Helpers
             return null;
         }
         #endregion
+
+        #region === Adventure Command Helpers ===
+
+        /// <summary>
+        /// Validates that the player does not have an active adventure or battle session.
+        /// If a session is stuck (> 5 minutes old), auto-cleanup and allow new session.
+        /// </summary>
+        /// <param name="userId">The Discord user ID.</param>
+        /// <returns>True if player can start a new session; false if actively in one.</returns>
+        public static (bool IsValid, string? ErrorMessage) ValidateNoActiveSession(ulong userId)
+        {
+            PlayerModel? player = GetOrCreatePlayer(userId, "");
+            if (player == null)
+                return (false, "⚠️ Error loading player data.");
+
+            if (player.CurrentState != PlayerState.Idle)
+            {
+                TimeSpan inactivityTime = DateTime.UtcNow - player.LastActivityTime;
+                const int INACTIVITY_TIMEOUT_MINUTES = 5;
+
+                // Auto-cleanup if session is stuck (> 5 minutes old)
+                if (inactivityTime > TimeSpan.FromMinutes(INACTIVITY_TIMEOUT_MINUTES))
+                {
+                    LogService.Info($"[SlashCommandHelpers.ValidateNoActiveSession] Player {userId} session stuck (inactive {inactivityTime.TotalMinutes:F1}min). Auto-cleanup.");
+                    player.CurrentState = PlayerState.Idle;
+                    JsonDataManager.UpdatePlayerState(userId, PlayerState.Idle);
+                    return (true, null);  // Allow new session
+                }
+
+                // Session is recent, block it
+                string sessionType = player.CurrentState == PlayerState.InAdventure ? "adventure" : "battle";
+                LogService.Info($"[SlashCommandHelpers.ValidateNoActiveSession] Player {userId} attempted to start adventure while in {player.CurrentState} state.");
+                return (false, $"⚠️ You already have an active {sessionType} session.");
+            }
+
+            return (true, null);
+        }
+
+        /// <summary>
+        /// Initializes or retrieves the player profile.
+        /// </summary>
+        /// <param name="user">The Discord user.</param>
+        /// <returns>The player model, or null if initialization fails.</returns>
+        public static PlayerModel? InitializePlayer(IUser user)
+        {
+            PlayerModel player = GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
+            if (player == null)
+                return null;
+
+            return player;
+        }
+
+        /// <summary>
+        /// Gets or creates a player for the stats command.
+        /// </summary>
+        /// <param name="user">The Discord user.</param>
+        /// <returns>The player model, or null if retrieval fails.</returns>
+        public static PlayerModel? GetPlayerForStats(IUser user)
+        {
+            PlayerModel? player = GetOrCreatePlayer(user.Id, user.GlobalName ?? user.Username);
+            if (player == null)
+                return null;
+
+            LogService.Info($"[SlashCommandHelpers.GetPlayerForStats] Retrieved player stats for {user.GlobalName ?? user.Username}");
+            return player;
+        }
+
+        /// <summary>
+        /// Determines the current tile for the player.
+        /// Uses savepoint if valid, otherwise falls back to START tile.
+        /// </summary>
+        /// <param name="player">The player profile.</param>
+        /// <param name="userId">The Discord user ID for updating savepoint.</param>
+        /// <returns>Tuple with tile and error message (tile null if error).</returns>
+        public static (TileModel? tile, string? errorMessage) DetermineTile(PlayerModel player, ulong userId)
+        {
+            // Try to get tile from savepoint
+            TileModel? tile = GetTileFromSavePoint(player.Savepoint);
+
+            // Fallback to START tile if savepoint invalid
+            if (tile == null)
+            {
+                LogService.Info($"[SlashCommandHelpers.DetermineTile] Savepoint '{player.Savepoint}' invalid. Fallback to START tile.");
+                tile = FindStartTile();
+
+                if (tile == null)
+                    return (null, "❌ No START tile found in any area. Cannot start.");
+
+                // Update player's savepoint to START tile
+                player.Savepoint = $"{tile.AreaId}:{tile.TilePosition}";
+                JsonDataManager.UpdatePlayerSavepoint(userId, player.Savepoint);
+                LogService.Info($"[SlashCommandHelpers.DetermineTile] Position saved as new savepoint: {player.Savepoint}");
+            }
+
+            return (tile, null);
+        }
+
+        /// <summary>
+        /// Builds a stats embed for the given player.
+        /// </summary>
+        /// <param name="player">The player to display stats for.</param>
+        /// <returns>An embed containing the player's stats.</returns>
+        public static Embed BuildStatsEmbed(PlayerModel player)
+        {
+            return new EmbedBuilder()
+                .WithTitle($"{player.Name}'s Stats")
+                .WithColor(Color.Green)
+                .AddField("Level", player.Level, true)
+                .AddField("HP", $"{player.Hitpoints}", true)
+                .AddField("Experience", $"{player.XP}", true)
+                .AddField("Strength", player.Attributes.Strength, true)
+                .AddField("Dexterity", player.Attributes.Dexterity, true)
+                .AddField("Constitution", player.Attributes.Constitution, true)
+                .AddField("Intelligence", player.Attributes.Intelligence, true)
+                .AddField("Wisdom", player.Attributes.Wisdom, true)
+                .AddField("Charisma", player.Attributes.Charisma, true)
+                //.AddField("Gold", player.Gold, true)
+                .WithFooter("Keep adventuring to improve your stats!")
+                .Build();
+        }
+
+        /// <summary>
+        /// Sets the player's state to InAdventure and updates activity time in JSON.
+        /// </summary>
+        /// <param name="player">The player to update.</param>
+        /// <param name="userId">The Discord user ID.</param>
+        public static void SetPlayerStateInAdventure(PlayerModel player, ulong userId)
+        {
+            player.CurrentState = PlayerState.InAdventure;
+            player.LastActivityTime = DateTime.UtcNow;
+            JsonDataManager.UpdatePlayerState(userId, PlayerState.InAdventure);
+            JsonDataManager.UpdatePlayerLastActivityTime(userId);
+            LogService.Info($"[SlashCommandHelpers.SetPlayerStateInAdventure] Player {userId} state set to InAdventure, activity time updated.");
+        }
+
+        #endregion
     }
 }
