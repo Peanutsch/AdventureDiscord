@@ -27,6 +27,7 @@ class PlayerAttack
 
             int rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
             (bool leveledUp, int oldLevel, int newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
+            state.PlayerLeveledUp = leveledUp;  // Track level-up for ASI trigger
 
             // Generate battle log for victory and XP reward
             battleLog += $"\n\n💀 **VICTORY!!! {state.Npc.Name} is defeated after {state.RoundCounter} {UseOfS(state.RoundCounter)}!**";
@@ -34,7 +35,7 @@ class PlayerAttack
 
             if (leveledUp)
                 battleLog += $"\n\n✨ **LEVEL UP!** {state.Player.Name} advanced from **Level {oldLevel} → Level {newLevel}**!";
-        }   
+        }
         else
         {
             // If NPC is still alive → set next step to PostBattle for NPC's turn

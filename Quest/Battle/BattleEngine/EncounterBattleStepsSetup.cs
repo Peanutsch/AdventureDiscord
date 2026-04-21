@@ -389,7 +389,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             if (state.CurrentHitpointsNPC <= 0 || state.StateOfNPC == "Defeated")
             {
                 await SendGuildBattleUpdateAsync(state, playerAttackResult);
-                await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction, playerAttackResult);
+                await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction, playerAttackResult, state.PlayerLeveledUp);
                 return;
             }
 
@@ -467,7 +467,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             if (state.Player.Hitpoints <= 0 || state.StateOfNPC == "Defeated")
             {
                 SetStep(userId, BattleStep.EndBattle);
-                await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction);
+                await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction, leveledUp: state.PlayerLeveledUp);
                 return;
             }
 

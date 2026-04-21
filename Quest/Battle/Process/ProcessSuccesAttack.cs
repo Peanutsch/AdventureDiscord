@@ -79,6 +79,9 @@ namespace Adventure.Quest.Battle.Process
             var currentXP = state.Player.XP;
             var newXP = currentXP + rewardedXP;
 
+            // Track reward XP for UI display
+            state.RewardXP = rewardedXP;
+
             // Update XP in memory en JSON
             state.NewTotalXP = newXP;
             state.Player.XP = newXP;

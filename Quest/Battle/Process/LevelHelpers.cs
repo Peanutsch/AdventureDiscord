@@ -8,6 +8,9 @@ namespace Adventure.Quest.Battle.Process
 {
     public static class LevelHelpers 
     {
+        // D&D 5e Ability Score Improvement (ASI) level milestones
+        public static readonly int[] LevelMilestones = { 4, 8, 12, 16, 19 };
+
         // D&D 5e cumulative XP thresholds for each level
         public static readonly int[] LevelXPThresholds = new int[]
         {

@@ -52,6 +52,9 @@ namespace Adventure.Models.Player
         [JsonPropertyName("lastSessionResetTime")]
         public DateTime? LastSessionResetTime { get; set; } = null;
 
+        [JsonPropertyName("ASIs")]
+        public int ASIs { get; set; } = 0;
+
         [JsonIgnore]
         public string? Step { get; set; }
     }

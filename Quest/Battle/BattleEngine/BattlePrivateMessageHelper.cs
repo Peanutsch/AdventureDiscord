@@ -279,7 +279,7 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// Disables buttons for a single user's active battle message.
         /// Handles errors gracefully and logs results.
         /// </summary>
-        private static async Task DisableButtonsForUserAsync(ulong userId)
+        public static async Task DisableButtonsForUserAsync(ulong userId)
         {
             try
             {

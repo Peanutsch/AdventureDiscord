@@ -5,6 +5,7 @@ using Adventure.Models.Items;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Modules;
+using Adventure.Modules.Helpers;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Process;
 using Adventure.Services;
@@ -372,7 +373,7 @@ namespace Adventure.Quest.Encounter
         /// Shows final battle stats, XP rewards, and continuation button.
         /// Updates the existing DM message instead of creating a new one.
         /// </summary>
-        public static async Task EmbedEndBattleInDM(SocketInteraction interaction, string? extraMessage = null)
+        public static async Task EmbedEndBattleInDM(SocketInteraction interaction, string? extraMessage = null, bool leveledUp = false)
         {
             ulong userId = interaction.User.Id;
             BattleStateModel state = BattleStateSetup.GetBattleState(userId);
@@ -380,6 +381,15 @@ namespace Adventure.Quest.Encounter
 
             string finalLog = extraMessage ?? "";
             string battleOverText = $"{BattleMessages.BattleOver}";
+
+            // --- Check ASI eligibility VOORAF if level up occurred ---
+            bool shouldDisableButton = false;
+            if (leveledUp)
+            {
+                PlayerModel? player = SlashCommandHelpers.GetOrCreatePlayer(userId, "");
+                shouldDisableButton = SlashCommandHelpers.CheckAbilityScoreEligibility(player);
+                LogService.Info($"[EmbedEndBattleInDM] ASI eligibility check: {(shouldDisableButton ? "ELIGIBLE" : "NOT ELIGIBLE")}");
+            }
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(state.EmbedColor)
@@ -390,7 +400,7 @@ namespace Adventure.Quest.Encounter
                 .AddField("\u200B", $"{finalLog}\n\n{battleOverText}");
 
             ComponentBuilder buttons = new ComponentBuilder()
-                .WithButton("CONTINUE", $"battle_continue_{userId}", ButtonStyle.Success);
+                .WithButton("CONTINUE", $"battle_continue_{userId}", ButtonStyle.Success, disabled: shouldDisableButton);
 
             // --- Send NEW message for end battle (don't update existing) ---
             IUserMessage? newMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
@@ -413,6 +423,22 @@ namespace Adventure.Quest.Encounter
 
             // Update battle step
             EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
+
+            // --- Check if player leveled up and offer Ability Score Improvement ---
+            if (leveledUp && shouldDisableButton)
+            {
+                LogService.Info($"[EmbedEndBattleInDM] 🎉 Player {userId} leveled up and is eligible for ASI! Sending options...");
+                await Task.Delay(1000);
+                bool asiSent = await SlashCommandHelpers.SendAbilityScoreImprovementIfEligibleAsync(userId, interaction);
+                if (asiSent)
+                {
+                    LogService.Info($"[EmbedEndBattleInDM] ✅ ASI options sent to player {userId}");
+                }
+                else
+                {
+                    LogService.Error($"[EmbedEndBattleInDM] ❌ Failed to send ASI options to player {userId}");
+                }
+            }
         }
         #endregion Embed End Battle
     }

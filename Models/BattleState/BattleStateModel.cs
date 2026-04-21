@@ -66,6 +66,7 @@ namespace Adventure.Models.BattleState
         #region === XP Reward ===
         public int RewardXP { get; set; }
         public int NewTotalXP { get; set; }
+        public bool PlayerLeveledUp { get; set; } = false;
         #endregion
 
         #region === Guild Channel ===

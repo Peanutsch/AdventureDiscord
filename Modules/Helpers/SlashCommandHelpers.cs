@@ -1,12 +1,15 @@
 ﻿using Adventure.Data;
 using Adventure.Loaders;
+using Adventure.Models.Attributes;
 using Adventure.Models.Map;
 using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Quest.Battle.BattleEngine;
+using Adventure.Quest.Battle.Process;
 using Adventure.Services;
 using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -422,6 +425,182 @@ namespace Adventure.Modules.Helpers
             JsonDataManager.UpdatePlayerState(userId, PlayerState.InAdventure);
             JsonDataManager.UpdatePlayerLastActivityTime(userId);
             LogService.Info($"[SlashCommandHelpers.SetPlayerStateInAdventure] Player {userId} state set to InAdventure, activity time updated.");
+        }
+
+        #endregion
+
+        #region === Ability Score Improvements ===
+
+        /// <summary>
+        /// Checks if a player is eligible for an Ability Score Improvement at their current level.
+        /// Players are eligible at levels: 4, 8, 12, 16, 19 (D&D 5e milestones).
+        /// </summary>
+        public static bool CheckAbilityScoreEligibility(PlayerModel player)
+        {
+            int[] asiLevels = LevelHelpers.LevelMilestones;
+            return Array.Exists(asiLevels, level => level == player.Level);
+        }
+
+        /// <summary>
+        /// Builds an embed and button components for the Ability Score Improvement selection screen.
+        /// Shows current ability scores and 6 buttons (one for each attribute).
+        /// </summary>
+        public static (EmbedBuilder embed, ComponentBuilder components) BuildAbilityScoreImprovementEmbed(PlayerModel player)
+        {
+            var embed = new EmbedBuilder()
+                .WithTitle("⭐ Ability Score Improvement")
+                .WithDescription($"Congratulations **{player.Name}**! You've reached level {player.Level} and are eligible for an Ability Score Improvement!")
+                .WithColor(Color.Purple)
+                .AddField("📊 Current Scores",
+                    $"STR: {player.Attributes.Strength} | DEX: {player.Attributes.Dexterity} | CON: {player.Attributes.Constitution}\n" +
+                    $"INT: {player.Attributes.Intelligence} | WIS: {player.Attributes.Wisdom} | CHA: {player.Attributes.Charisma}", false)
+                .AddField("🎁 Your Reward", "Choose ONE attribute to increase by +2", false)
+                .WithFooter("Click a button below to apply your improvement");
+
+            var components = new ComponentBuilder()
+                .WithButton("Strength +2", $"asi_str_{player.Id}", ButtonStyle.Primary)
+                .WithButton("Dexterity +2", $"asi_dex_{player.Id}", ButtonStyle.Primary)
+                .WithButton("Constitution +2", $"asi_con_{player.Id}", ButtonStyle.Primary, row: 1)
+                .WithButton("Intelligence +2", $"asi_int_{player.Id}", ButtonStyle.Primary, row: 1)
+                .WithButton("Wisdom +2", $"asi_wis_{player.Id}", ButtonStyle.Primary, row: 1)
+                .WithButton("Charisma +2", $"asi_cha_{player.Id}", ButtonStyle.Primary, row: 2);
+
+            return (embed, components);
+        }
+
+        /// <summary>
+        /// Applies a +2 ability score improvement to the specified attribute and persists to JSON.
+        /// </summary>
+        public static (bool Success, string Message) ApplyAbilityScoreImprovement(
+            PlayerModel player,
+            ulong userId,
+            string attribute)
+        {
+            // 1. Validate eligibility
+            if (!CheckAbilityScoreEligibility(player))
+                return (false, "❌ You are not eligible for an ability score improvement at this level.");
+
+            // 2. Apply the improvement
+            try
+            {
+                switch (attribute.ToLower())
+                {
+                    case "strength" or "str":
+                        player.Attributes.Strength += 2;
+                        break;
+                    case "dexterity" or "dex":
+                        player.Attributes.Dexterity += 2;
+                        break;
+                    case "constitution" or "con":
+                        player.Attributes.Constitution += 2;
+                        break;
+                    case "intelligence" or "int":
+                        player.Attributes.Intelligence += 2;
+                        break;
+                    case "wisdom" or "wis":
+                        player.Attributes.Wisdom += 2;
+                        break;
+                    case "charisma" or "cha":
+                        player.Attributes.Charisma += 2;
+                        break;
+                    default:
+                        return (false, $"❌ Unknown attribute: {attribute}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[SlashCommandHelpers.ApplyAbilityScoreImprovement] Error: {ex.Message}");
+                return (false, "❌ An error occurred while applying the improvement.");
+            }
+
+            // 3. Increment ASI counter
+            player.ASIs++;
+
+            // 4. Persist to JSON
+            try
+            {
+                JsonDataManager.SaveNewPlayerToJson(userId, player);
+                LogService.Info($"[SlashCommandHelpers.ApplyAbilityScoreImprovement] Applied +2 {attribute} for player {userId}. Total ASIs: {player.ASIs}");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[SlashCommandHelpers.ApplyAbilityScoreImprovement] Failed to persist: {ex.Message}");
+                return (false, "⚠️ Improvement applied locally, but failed to save.");
+            }
+
+            int newScore = GetAttributeValue(player.Attributes, attribute);
+            return (true, $"✅ +2 {attribute.ToUpper()} applied! Your new score is {newScore}");
+        }
+
+        /// <summary>
+        /// Helper to get the current value of an attribute.
+        /// </summary>
+        private static int GetAttributeValue(AttributesModel attributes, string attribute)
+        {
+            return attribute.ToLower() switch
+            {
+                "strength" or "str" => attributes.Strength,
+                "dexterity" or "dex" => attributes.Dexterity,
+                "constitution" or "con" => attributes.Constitution,
+                "intelligence" or "int" => attributes.Intelligence,
+                "wisdom" or "wis" => attributes.Wisdom,
+                "charisma" or "cha" => attributes.Charisma,
+                _ => 0
+            };
+        }
+
+        /// <summary>
+        /// Sends ASI options to player's DM if they are eligible at their current level.
+        /// Automatically triggered when a player levels up to a milestone.
+        /// </summary>
+        public static async Task<bool> SendAbilityScoreImprovementIfEligibleAsync(ulong userId, SocketInteraction interaction)
+        {
+            try
+            {
+                LogService.Info($"[SendAbilityScoreImprovementIfEligibleAsync] Checking ASI for player {userId}");
+
+                // Load player
+                PlayerModel? player = GetOrCreatePlayer(userId, "");
+                if (player == null)
+                {
+                    LogService.Error($"[SendAbilityScoreImprovementIfEligibleAsync] Failed to load player {userId}");
+                    return false;
+                }
+
+                // Check eligibility
+                if (!CheckAbilityScoreEligibility(player))
+                {
+                    LogService.Info($"[SendAbilityScoreImprovementIfEligibleAsync] Player {userId} not eligible at level {player.Level}");
+                    return false;
+                }
+
+                LogService.Info($"[SendAbilityScoreImprovementIfEligibleAsync] Player {userId} IS eligible at level {player.Level}! Sending ASI options...");
+
+                // Build ASI embed and buttons
+                var (embed, components) = BuildAbilityScoreImprovementEmbed(player);
+
+                // Send to DM
+                IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                    interaction,
+                    embed.Build(),
+                    components.Build());
+
+                if (dmMessage != null)
+                {
+                    // Track message ID for button state management
+                    BattlePrivateMessageHelper.SetActiveBattleMessage(userId, dmMessage.Id);
+                    LogService.Info($"[SendAbilityScoreImprovementIfEligibleAsync] ✅ ASI options sent to DM for player {player.Name} at level {player.Level}");
+                    return true;
+                }
+
+                LogService.Error($"[SendAbilityScoreImprovementIfEligibleAsync] Failed to send ASI message to DM for player {userId}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[SendAbilityScoreImprovementIfEligibleAsync] Exception: {ex.Message}");
+                return false;
+            }
         }
 
         #endregion
