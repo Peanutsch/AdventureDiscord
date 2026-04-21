@@ -143,10 +143,7 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// <param name="embed">The embed to send in the DM.</param>
         /// <param name="components">Optional components (buttons) to include.</param>
         /// <returns>The sent message, or null if sending failed.</returns>
-        public static async Task<IUserMessage?> SendBattleMessageAsync(
-            SocketInteraction interaction,
-            Embed embed,
-            MessageComponent? components = null)
+        public static async Task<IUserMessage?> SendBattleMessageAsync(SocketInteraction interaction, Embed embed, MessageComponent? components = null)
         {
             try
             {
@@ -201,7 +198,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             }
             catch (Exception ex)
             {
-                LogService.Error($"[BattlePrivateMessageHelper.UpdateBattleMessageAsync] Failed to update DM: {ex.Message}");
+                LogService.Error($"[BattlePrivateMessageHelper.UpdateBattleMessageAsync] Failed to update DM:\n{ex.Message}");
                 return false;
             }
         }

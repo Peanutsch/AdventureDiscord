@@ -427,7 +427,7 @@ namespace Adventure.Quest.Encounter
             // --- Check if player leveled up and offer Ability Score Improvement ---
             if (leveledUp && shouldDisableButton)
             {
-                LogService.Info($"[EmbedEndBattleInDM] 🎉 Player {userId} leveled up and is eligible for ASI! Sending options...");
+                LogService.Info($"[EmbedEndBattleInDM] Player {userId} leveled up and is eligible for ASI! Sending options...");
                 await Task.Delay(1000);
                 bool asiSent = await SlashCommandHelpers.SendAbilityScoreImprovementIfEligibleAsync(userId, interaction);
                 if (asiSent)

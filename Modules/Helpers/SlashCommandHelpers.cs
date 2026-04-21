@@ -535,7 +535,7 @@ namespace Adventure.Modules.Helpers
         /// <summary>
         /// Helper to get the current value of an attribute.
         /// </summary>
-        private static int GetAttributeValue(AttributesModel attributes, string attribute)
+        public static int GetAttributeValue(AttributesModel attributes, string attribute)
         {
             return attribute.ToLower() switch
             {
@@ -600,6 +600,38 @@ namespace Adventure.Modules.Helpers
             {
                 LogService.Error($"[SendAbilityScoreImprovementIfEligibleAsync] Exception: {ex.Message}");
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Sends a guild notification when a player applies an Ability Score Improvement.
+        /// This allows other guild members to see the player's stat increase.
+        /// </summary>
+        public static async Task SendASIGuildNotificationAsync(ulong userId, string playerName, string attribute, int newScore)
+        {
+            try
+            {
+                ulong guildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(userId);
+
+                if (guildChannelId == 0)
+                {
+                    LogService.Info($"[SendASIGuildNotificationAsync] No guild channel set for player {userId}. Skipping notification.");
+                    return;
+                }
+
+                var embed = new EmbedBuilder()
+                    .WithColor(Color.Gold)
+                    .WithTitle("⭐ Ability Score Improvement!")
+                    .WithDescription($"**{playerName}** has improved their abilities!")
+                    .AddField("Improved Attribute", $"{attribute.ToUpper()} → {newScore}", false)
+                    .WithFooter("Keep leveling up to gain more improvements!");
+
+                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(guildChannelId, embed.Build());
+                LogService.Info($"[SendASIGuildNotificationAsync] ✅ ASI notification sent to guild channel for {playerName}");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error($"[SendASIGuildNotificationAsync] Failed to send guild notification: {ex.Message}");
             }
         }
 
