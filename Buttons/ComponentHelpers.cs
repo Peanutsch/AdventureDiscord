@@ -274,13 +274,27 @@ namespace Adventure.Buttons
             JsonDataManager.UpdatePlayerState(context.User.Id, PlayerState.InBattle);
             JsonDataManager.UpdatePlayerLastActivityTime(context.User.Id);
 
+            // Disable the previous map message buttons (like TransitionBattleEmbed does)
+            await context.Interaction.ModifyOriginalResponseAsync(msg =>
+            {
+                msg.Embed = new EmbedBuilder()
+                    .WithTitle("⚔️ ENCOUNTER RESUMED!")
+                    .WithDescription($"Get ready to continue fighting **{state.Npc.Name!.ToUpper()}**...")
+                    .WithColor(Color.Orange)
+                    .Build();
+
+                msg.Components = new ComponentBuilder()
+                    .WithButton("Please wait...", "none", ButtonStyle.Secondary, disabled: true)
+                    .Build();
+            });
+
+            await Task.Delay(1500);
+
             // Build encounter resume embed
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Orange)
                 .WithTitle($"⚔️ Encounter Resumed!")
                 .WithDescription($"You return to face the {state.StateOfNPC} **{state.Npc.Name}**!\n\n" +
-                                //$"**{state.Npc.Name}**: {state.StateOfNPC}\n" +
-                                //$"**{state.Player.Name}** HP: {state.Player.Hitpoints}\n\n" +
                                 $"The battle continues...");
 
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
@@ -372,6 +386,22 @@ namespace Adventure.Buttons
             state.Player.LastActivityTime = DateTime.UtcNow;
             JsonDataManager.UpdatePlayerState(context.User.Id, PlayerState.InBattle);
             JsonDataManager.UpdatePlayerLastActivityTime(context.User.Id);
+
+            // Disable the previous map message buttons (transition effect)
+            await context.Interaction.ModifyOriginalResponseAsync(msg =>
+            {
+                msg.Embed = new EmbedBuilder()
+                    .WithTitle("⚔️ JOINING BATTLE!")
+                    .WithDescription($"You rush to join the fight against **{encounterData.NpcName.ToUpper()}**...")
+                    .WithColor(Color.Gold)
+                    .Build();
+
+                msg.Components = new ComponentBuilder()
+                    .WithButton("Please wait...", "none", ButtonStyle.Secondary, disabled: true)
+                    .Build();
+            });
+
+            await Task.Delay(1500);
 
             // Build join encounter embed
             int playerCount = encounterData.ParticipatingPlayers.Count;
