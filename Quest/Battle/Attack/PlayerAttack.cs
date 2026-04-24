@@ -25,6 +25,15 @@ class PlayerAttack
             EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
             state.EmbedColor = Color.Purple;
 
+            // Calculate damage ratio: percentage of NPC HP the player dealt
+            int totalDamageDealt = state.HitpointsAtStartNPC - state.CurrentHitpointsNPC;
+            state.RatioDamageDealt = state.HitpointsAtStartNPC > 0 
+                ? (int)Math.Round((double)totalDamageDealt / state.HitpointsAtStartNPC * 100) 
+                : 100;
+
+            // Ensure ratio is capped between 0-100%
+            state.RatioDamageDealt = Math.Clamp(state.RatioDamageDealt, 0, 100);
+
             int rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
             (bool leveledUp, int oldLevel, int newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
             state.PlayerLeveledUp = leveledUp;  // Track level-up for ASI trigger

@@ -64,6 +64,7 @@ namespace Adventure.Models.BattleState
         #endregion
 
         #region === XP Reward ===
+        public int RatioDamageDealt { get; set; }
         public int RewardXP { get; set; }
         public int NewTotalXP { get; set; }
         public bool PlayerLeveledUp { get; set; } = false;

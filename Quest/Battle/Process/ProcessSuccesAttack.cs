@@ -76,18 +76,23 @@ namespace Adventure.Quest.Battle.Process
         #region PROCESS XP AND LEVEL
         public static (bool leveledUp, int oldLevel, int newLevel) ProcessXPReward(int rewardedXP, BattleStateModel state)
         {
+            // Adjust XP based on damage ratio (percentage of NPC HP the player dealt)
+            int adjustedRewardXP = (rewardedXP * state.RatioDamageDealt) / 100;
+
+            LogService.Info($"[ProcessSuccesAttack.ProcessXPReward] Base XP: {rewardedXP}, Damage Ratio: {state.RatioDamageDealt}%, Adjusted XP: {adjustedRewardXP}");
+
             var currentXP = state.Player.XP;
-            var newXP = currentXP + rewardedXP;
+            var newXP = currentXP + adjustedRewardXP;
 
             // Track reward XP for UI display
-            state.RewardXP = rewardedXP;
+            state.RewardXP = adjustedRewardXP;
 
-            // Update XP in memory en JSON
+            // Update XP in memory and JSON
             state.NewTotalXP = newXP;
             state.Player.XP = newXP;
             JsonDataManager.UpdatePlayerXP(state.Player.Id, state.Player.Name!, newXP);
 
-            // Bepaal huidig en nieuw level
+            // Determine new level based on updated XP
             int oldLevel = state.Player.Level;
             int newLevel = 1;
 
@@ -100,7 +105,7 @@ namespace Adventure.Quest.Battle.Process
                 }
             }
 
-            // Check of speler een level up heeft
+            // If player has leveled up, update level in memory and JSON
             if (newLevel > oldLevel)
             {
                 state.Player.Level = newLevel;
