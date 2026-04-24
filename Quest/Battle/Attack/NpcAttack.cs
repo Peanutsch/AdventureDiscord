@@ -29,7 +29,9 @@ public static class NpcAttack
             // Remove player from encounter (not entire encounter - other players may still be fighting)
             Adventure.Services.ActiveEncounterTracker.RemovePlayerFromEncounter(userId);
 
-            battleLog += $"\n\n💀 **{state.Player.Name} has been defeated by {state.Npc.Name}!**";
+            // Load correct player name for defeat message (important for multiplayer)
+            var defeatedPlayer = Adventure.Data.PlayerDataManager.LoadByUserId(userId);
+            battleLog += $"\n\n💀 **{defeatedPlayer.Name} has been defeated by {state.Npc.Name}!**";
         }
         else
         {

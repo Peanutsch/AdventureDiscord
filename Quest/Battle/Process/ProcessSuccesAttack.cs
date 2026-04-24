@@ -46,11 +46,12 @@ namespace Adventure.Quest.Battle.Process
                 // Player attacks, update NPC HP
                 state.CurrentHitpointsNPC = newHP;
 
-                // Track damage in multiplayer encounter system
+                // Track damage in multiplayer encounter system (thread-safe)
                 if (!string.IsNullOrEmpty(state.EncounterTileId))
                 {
-                    Adventure.Services.ActiveEncounterTracker.RecordDamage(userId, state.EncounterTileId, totalDamage);
-                    Adventure.Services.ActiveEncounterTracker.UpdateNpcHitpoints(state.EncounterTileId, newHP);
+                    var (actualNewHp, isDefeated) = Adventure.Services.ActiveEncounterTracker.RecordDamage(userId, state.EncounterTileId, totalDamage);
+                    // Sync HP from thread-safe tracker (prevents race conditions)
+                    state.CurrentHitpointsNPC = actualNewHp;
                 }
 
                 // Update player's HP in JSON file (even if unchanged) for consistency

@@ -14,9 +14,12 @@ namespace Adventure.Services
     {
         /// <summary>
         /// Data structure for tracking an active encounter with multiplayer support.
+        /// Thread-safe for concurrent attacks from multiple players.
         /// </summary>
         public class EncounterData
         {
+            private readonly object _hpLock = new object();
+
             public string TileId { get; set; } = string.Empty;
             public string NpcName { get; set; } = string.Empty;
             public int CurrentHitpoints { get; set; }
@@ -37,6 +40,29 @@ namespace Adventure.Services
             /// List of all player IDs participating in this encounter
             /// </summary>
             public HashSet<ulong> ParticipatingPlayers { get; set; } = new();
+
+            /// <summary>
+            /// Thread-safe method to apply damage and update NPC HP.
+            /// Prevents race conditions when multiple players attack simultaneously.
+            /// </summary>
+            /// <param name="userId">Player dealing damage</param>
+            /// <param name="damage">Amount of damage dealt</param>
+            /// <returns>Tuple of (new NPC HP, was NPC defeated)</returns>
+            public (int newHp, bool isDefeated) ApplyDamage(ulong userId, int damage)
+            {
+                lock (_hpLock)
+                {
+                    // Record player damage
+                    PlayerDamage.AddOrUpdate(userId, damage, (_, existingDamage) => existingDamage + damage);
+
+                    // Apply damage to NPC
+                    int oldHp = CurrentHitpoints;
+                    CurrentHitpoints = Math.Max(0, CurrentHitpoints - damage);
+                    bool isDefeated = CurrentHitpoints <= 0 && oldHp > 0;
+
+                    return (CurrentHitpoints, isDefeated);
+                }
+            }
         }
 
         /// <summary>
@@ -77,26 +103,18 @@ namespace Adventure.Services
 
         /// <summary>
         /// Records damage dealt by a specific player to the NPC.
+        /// Thread-safe for concurrent attacks.
         /// </summary>
-        public static void RecordDamage(ulong userId, string tileId, int damage)
+        /// <returns>Tuple of (new NPC HP, was NPC defeated by this hit)</returns>
+        public static (int newHp, bool isDefeated) RecordDamage(ulong userId, string tileId, int damage)
         {
             if (ActiveEncounters.TryGetValue(tileId, out var encounter))
             {
-                encounter.PlayerDamage.AddOrUpdate(userId, damage, (_, existingDamage) => existingDamage + damage);
-                encounter.CurrentHitpoints = Math.Max(0, encounter.CurrentHitpoints - damage);
-                LogService.Info($"[ActiveEncounterTracker.RecordDamage] User {userId} dealt {damage} damage at {tileId}. Total: {encounter.PlayerDamage[userId]}, NPC HP: {encounter.CurrentHitpoints}/{encounter.MaxHitpoints}");
+                var (newHp, isDefeated) = encounter.ApplyDamage(userId, damage);
+                LogService.Info($"[ActiveEncounterTracker.RecordDamage] User {userId} dealt {damage} damage at {tileId}. Total: {encounter.PlayerDamage[userId]}, NPC HP: {newHp}/{encounter.MaxHitpoints}, Defeated: {isDefeated}");
+                return (newHp, isDefeated);
             }
-        }
-
-        /// <summary>
-        /// Updates the current HP of the NPC in the encounter.
-        /// </summary>
-        public static void UpdateNpcHitpoints(string tileId, int currentHp)
-        {
-            if (ActiveEncounters.TryGetValue(tileId, out var encounter))
-            {
-                encounter.CurrentHitpoints = currentHp;
-            }
+            return (0, false);
         }
 
         /// <summary>
@@ -124,19 +142,11 @@ namespace Adventure.Services
         }
 
         /// <summary>
-        /// Gets all players participating in an encounter on a specific tile.
-        /// </summary>
-        public static List<ulong> GetParticipatingPlayers(string tileId)
-        {
-            if (ActiveEncounters.TryGetValue(tileId, out var encounter))
-                return encounter.ParticipatingPlayers.ToList();
-            return new List<ulong>();
-        }
-
-        /// <summary>
         /// Removes an entire encounter from tracking (called when NPC is defeated).
+        /// Thread-safe: only the first caller gets true, preventing duplicate victory processing.
         /// </summary>
-        public static void RemoveEncounter(string tileId)
+        /// <returns>True if encounter was removed, false if already removed by another player</returns>
+        public static bool TryRemoveEncounter(string tileId)
         {
             if (ActiveEncounters.TryRemove(tileId, out var encounter))
             {
@@ -145,8 +155,19 @@ namespace Adventure.Services
                 {
                     PlayerToEncounter.TryRemove(playerId, out _);
                 }
-                LogService.Info($"[ActiveEncounterTracker.RemoveEncounter] Removed encounter at {tileId} with {encounter.ParticipatingPlayers.Count} participants");
+                LogService.Info($"[ActiveEncounterTracker.TryRemoveEncounter] Removed encounter at {tileId} with {encounter.ParticipatingPlayers.Count} participants");
+                return true;
             }
+            LogService.Info($"[ActiveEncounterTracker.TryRemoveEncounter] Encounter at {tileId} already removed (concurrent victory)");
+            return false;
+        }
+
+        /// <summary>
+        /// Removes an entire encounter from tracking (called when NPC is defeated).
+        /// </summary>
+        public static void RemoveEncounter(string tileId)
+        {
+            TryRemoveEncounter(tileId);
         }
 
         /// <summary>
@@ -189,46 +210,12 @@ namespace Adventure.Services
         }
 
         /// <summary>
-        /// Gets the encounter NPC name for a specific tile.
-        /// </summary>
-        public static string? GetEncounterNpcName(string tileId)
-        {
-            return GetEncounter(tileId)?.NpcName;
-        }
-
-        /// <summary>
         /// Gets the encounter tile ID for a specific user.
         /// </summary>
         public static string? GetEncounterTileForUser(ulong userId)
         {
             PlayerToEncounter.TryGetValue(userId, out var tileId);
             return tileId;
-        }
-
-        /// <summary>
-        /// Gets all active encounter locations in a specific area.
-        /// </summary>
-        public static List<string> GetEncountersInArea(string areaId)
-        {
-            return ActiveEncounters.Values
-                .Where(e =>
-                {
-                    string encounterArea = GetAreaFromTileId(e.TileId);
-                    return encounterArea == areaId;
-                })
-                .Select(e => GetPositionFromTileId(e.TileId))
-                .ToList();
-        }
-
-        /// <summary>
-        /// Clears all encounters (useful for debugging or server restart).
-        /// </summary>
-        public static void ClearAll()
-        {
-            int count = ActiveEncounters.Count;
-            ActiveEncounters.Clear();
-            PlayerToEncounter.Clear();
-            LogService.Info($"[ActiveEncounterTracker.ClearAll] Cleared {count} active encounters");
         }
 
         /// <summary>

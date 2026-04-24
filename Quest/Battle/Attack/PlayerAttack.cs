@@ -29,6 +29,7 @@ class PlayerAttack
             // Get multiplayer damage distribution from encounter tracker
             string? encounterTileId = state.EncounterTileId;
             Dictionary<ulong, int> damageRatios = new Dictionary<ulong, int>();
+            bool isFirstVictory = true;
 
             if (!string.IsNullOrEmpty(encounterTileId))
             {
@@ -50,8 +51,8 @@ class PlayerAttack
 
                 state.RatioDamageDealt = Math.Clamp(state.RatioDamageDealt, 0, 100);
 
-                // Remove encounter from tracker
-                Adventure.Services.ActiveEncounterTracker.RemoveEncounter(encounterTileId);
+                // Thread-safe removal - only first player gets true (prevents duplicate XP awards)
+                isFirstVictory = Adventure.Services.ActiveEncounterTracker.TryRemoveEncounter(encounterTileId);
             }
             else
             {
@@ -63,50 +64,60 @@ class PlayerAttack
                 state.RatioDamageDealt = Math.Clamp(state.RatioDamageDealt, 0, 100);
             }
 
-            // Calculate XP for THIS player based on their damage ratio
-            int rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
-            (bool leveledUp, int oldLevel, int newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
-            state.PlayerLeveledUp = leveledUp;
-
-            // Award XP to all other participating players in multiplayer
-            if (damageRatios.Count > 1)
+            // Only award XP if this is the first victory (prevents duplicate XP from concurrent attacks)
+            if (isFirstVictory)
             {
-                foreach (var kvp in damageRatios)
+                // Calculate XP for THIS player based on their damage ratio
+                int rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
+                (bool leveledUp, int oldLevel, int newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
+                state.PlayerLeveledUp = leveledUp;
+
+                // Award XP to all other participating players in multiplayer
+                if (damageRatios.Count > 1)
                 {
-                    ulong participantId = kvp.Key;
-                    int participantRatio = kvp.Value;
-
-                    // Skip current player (already processed above)
-                    if (participantId == userId)
-                        continue;
-
-                    // Award XP to other participants
-                    var participantState = BattleStateSetup.GetBattleState(participantId);
-                    if (participantState != null)
+                    foreach (var kvp in damageRatios)
                     {
-                        participantState.RatioDamageDealt = participantRatio;
-                        ProcessSuccesAttack.ProcessXPReward(rewardXP, participantState);
+                        ulong participantId = kvp.Key;
+                        int participantRatio = kvp.Value;
 
-                        // End battle for this participant too
-                        EncounterBattleStepsSetup.SetStep(participantId, BattleStep.EndBattle);
+                        // Skip current player (already processed above)
+                        if (participantId == userId)
+                            continue;
 
-                        LogService.Info($"[PlayerAttack] Awarded {participantState.RewardXP} XP to participant {participantId} ({participantRatio}% damage)");
+                        // Award XP to other participants
+                        var participantState = BattleStateSetup.GetBattleState(participantId);
+                        if (participantState != null)
+                        {
+                            participantState.RatioDamageDealt = participantRatio;
+                            ProcessSuccesAttack.ProcessXPReward(rewardXP, participantState);
+
+                            // End battle for this participant too
+                            EncounterBattleStepsSetup.SetStep(participantId, BattleStep.EndBattle);
+
+                            LogService.Info($"[PlayerAttack] Awarded {participantState.RewardXP} XP to participant {participantId} ({participantRatio}% damage)");
+                        }
                     }
                 }
+
+                // Generate battle log for victory and XP reward
+                battleLog += $"\n\n💀 **VICTORY!!! {state.Npc.Name} is defeated after {state.RoundCounter} {UseOfS(state.RoundCounter)}!**";
+                battleLog += $"\n🏆 **{state.Player.Name}** gains **{state.RewardXP} XP** (Total: {state.NewTotalXP} XP)";
+
+                // Show multiplayer contribution if applicable
+                if (damageRatios.Count > 1)
+                {
+                    battleLog += $"\n⚔️ **Team Effort!** You contributed **{state.RatioDamageDealt}%** of total damage";
+                }
+
+                if (leveledUp)
+                    battleLog += $"\n\n✨ **LEVEL UP!** {state.Player.Name} advanced from **Level {oldLevel} → Level {newLevel}**!";
             }
-
-            // Generate battle log for victory and XP reward
-            battleLog += $"\n\n💀 **VICTORY!!! {state.Npc.Name} is defeated after {state.RoundCounter} {UseOfS(state.RoundCounter)}!**";
-            battleLog += $"\n🏆 **{state.Player.Name}** gains **{state.RewardXP} XP** (Total: {state.NewTotalXP} XP)";
-
-            // Show multiplayer contribution if applicable
-            if (damageRatios.Count > 1)
+            else
             {
-                battleLog += $"\n⚔️ **Team Effort!** You contributed **{state.RatioDamageDealt}%** of total damage";
+                // Another player already claimed victory (concurrent attack)
+                battleLog += $"\n\n⚔️ **{state.Npc.Name} was already defeated by another player!**";
+                battleLog += $"\n🏆 XP has already been distributed to all participants";
             }
-
-            if (leveledUp)
-                battleLog += $"\n\n✨ **LEVEL UP!** {state.Player.Name} advanced from **Level {oldLevel} → Level {newLevel}**!";
         }
         else
         {
