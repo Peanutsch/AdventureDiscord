@@ -3,6 +3,7 @@ using Adventure.Models.Items;
 using Adventure.Quest.Battle.Attack;
 using Adventure.Quest.Battle.BattleEngine;
 using Adventure.Quest.Battle.Process;
+using Adventure.Services;
 using Discord;
 
 class PlayerAttack
@@ -25,25 +26,84 @@ class PlayerAttack
             EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
             state.EmbedColor = Color.Purple;
 
-            // Calculate damage ratio: percentage of NPC HP the player dealt
-            int totalDamageDealt = state.HitpointsAtStartNPC - state.CurrentHitpointsNPC;
-            state.RatioDamageDealt = state.HitpointsAtStartNPC > 0 
-                ? (int)Math.Round((double)totalDamageDealt / state.HitpointsAtStartNPC * 100) 
-                : 100;
+            // Get multiplayer damage distribution from encounter tracker
+            string? encounterTileId = state.EncounterTileId;
+            Dictionary<ulong, int> damageRatios = new Dictionary<ulong, int>();
 
-            // Ensure ratio is capped between 0-100%
-            state.RatioDamageDealt = Math.Clamp(state.RatioDamageDealt, 0, 100);
+            if (!string.IsNullOrEmpty(encounterTileId))
+            {
+                damageRatios = Adventure.Services.ActiveEncounterTracker.GetDamageRatios(encounterTileId);
 
-            // Remove encounter marker from map
-            Adventure.Services.ActiveEncounterTracker.RemoveEncounter(userId);
+                // If damage ratios exist (multiplayer), use them; otherwise fallback to single player
+                if (damageRatios.ContainsKey(userId))
+                {
+                    state.RatioDamageDealt = damageRatios[userId];
+                }
+                else
+                {
+                    // Fallback for single player or if tracking failed
+                    int totalDamageDealt = state.HitpointsAtStartNPC - state.CurrentHitpointsNPC;
+                    state.RatioDamageDealt = state.HitpointsAtStartNPC > 0 
+                        ? (int)Math.Round((double)totalDamageDealt / state.HitpointsAtStartNPC * 100) 
+                        : 100;
+                }
 
+                state.RatioDamageDealt = Math.Clamp(state.RatioDamageDealt, 0, 100);
+
+                // Remove encounter from tracker
+                Adventure.Services.ActiveEncounterTracker.RemoveEncounter(encounterTileId);
+            }
+            else
+            {
+                // No encounter tile (shouldn't happen, but fallback)
+                int totalDamageDealt = state.HitpointsAtStartNPC - state.CurrentHitpointsNPC;
+                state.RatioDamageDealt = state.HitpointsAtStartNPC > 0 
+                    ? (int)Math.Round((double)totalDamageDealt / state.HitpointsAtStartNPC * 100) 
+                    : 100;
+                state.RatioDamageDealt = Math.Clamp(state.RatioDamageDealt, 0, 100);
+            }
+
+            // Calculate XP for THIS player based on their damage ratio
             int rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
             (bool leveledUp, int oldLevel, int newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
-            state.PlayerLeveledUp = leveledUp;  // Track level-up for ASI trigger
+            state.PlayerLeveledUp = leveledUp;
+
+            // Award XP to all other participating players in multiplayer
+            if (damageRatios.Count > 1)
+            {
+                foreach (var kvp in damageRatios)
+                {
+                    ulong participantId = kvp.Key;
+                    int participantRatio = kvp.Value;
+
+                    // Skip current player (already processed above)
+                    if (participantId == userId)
+                        continue;
+
+                    // Award XP to other participants
+                    var participantState = BattleStateSetup.GetBattleState(participantId);
+                    if (participantState != null)
+                    {
+                        participantState.RatioDamageDealt = participantRatio;
+                        ProcessSuccesAttack.ProcessXPReward(rewardXP, participantState);
+
+                        // End battle for this participant too
+                        EncounterBattleStepsSetup.SetStep(participantId, BattleStep.EndBattle);
+
+                        LogService.Info($"[PlayerAttack] Awarded {participantState.RewardXP} XP to participant {participantId} ({participantRatio}% damage)");
+                    }
+                }
+            }
 
             // Generate battle log for victory and XP reward
             battleLog += $"\n\n💀 **VICTORY!!! {state.Npc.Name} is defeated after {state.RoundCounter} {UseOfS(state.RoundCounter)}!**";
             battleLog += $"\n🏆 **{state.Player.Name}** gains **{state.RewardXP} XP** (Total: {state.NewTotalXP} XP)";
+
+            // Show multiplayer contribution if applicable
+            if (damageRatios.Count > 1)
+            {
+                battleLog += $"\n⚔️ **Team Effort!** You contributed **{state.RatioDamageDealt}%** of total damage";
+            }
 
             if (leveledUp)
                 battleLog += $"\n\n✨ **LEVEL UP!** {state.Player.Name} advanced from **Level {oldLevel} → Level {newLevel}**!";

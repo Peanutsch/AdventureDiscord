@@ -46,6 +46,13 @@ namespace Adventure.Quest.Battle.Process
                 // Player attacks, update NPC HP
                 state.CurrentHitpointsNPC = newHP;
 
+                // Track damage in multiplayer encounter system
+                if (!string.IsNullOrEmpty(state.EncounterTileId))
+                {
+                    Adventure.Services.ActiveEncounterTracker.RecordDamage(userId, state.EncounterTileId, totalDamage);
+                    Adventure.Services.ActiveEncounterTracker.UpdateNpcHitpoints(state.EncounterTileId, newHP);
+                }
+
                 // Update player's HP in JSON file (even if unchanged) for consistency
                 JsonDataManager.UpdatePlayerHitpoints(userId, state.Player.Name!, state.Player.Hitpoints);
 

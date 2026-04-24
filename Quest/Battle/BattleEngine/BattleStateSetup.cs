@@ -82,6 +82,19 @@ namespace Adventure.Quest.Battle.BattleEngine
                 JsonDataManager.UpdatePlayerLastActivityTime(userId);
                 LogService.Info($"[BattleStateSetup.GetBattleState] Player {userId} state set to InBattle, activity time updated.");
             }
+            else
+            {
+                // State exists - sync NPC HP from multiplayer encounter if applicable
+                if (!string.IsNullOrEmpty(state.EncounterTileId))
+                {
+                    var encounterData = Adventure.Services.ActiveEncounterTracker.GetEncounter(state.EncounterTileId);
+                    if (encounterData != null)
+                    {
+                        // Sync current HP from shared encounter
+                        state.CurrentHitpointsNPC = encounterData.CurrentHitpoints;
+                    }
+                }
+            }
 
             return EncounterBattleStepsSetup.battleStates.GetOrAdd(userId, state);
         }

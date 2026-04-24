@@ -373,12 +373,12 @@ namespace Adventure.Quest.Battle.BattleEngine
                             message,
                             message.Embeds.FirstOrDefault()?.ToEmbedBuilder().Build() ?? new EmbedBuilder().Build(),
                             disabledButtons.Build()); // Empty ComponentBuilder = no components
-                        LogService.Info("[HandleStepBattle] ✅ Disabled buttons on weapon selection message.");
+                        LogService.Info("[EncounterBattleStepsSetup.HandleStepBattle] ✅ Disabled buttons on weapon selection message.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogService.Error($"[HandleStepBattle] Failed to disable buttons: {ex.Message}");
+                    LogService.Error($"[EncounterBattleStepsSetup.HandleStepBattle] Failed to disable buttons: {ex.Message}");
                 }
             }
 
@@ -414,11 +414,11 @@ namespace Adventure.Quest.Battle.BattleEngine
             if (dmMessage != null)
             {
                 BattlePrivateMessageHelper.SetActiveBattleMessage(userId, dmMessage.Id);
-                LogService.Info("[HandleStepBattle] Battle sent as new DM message.");
+                LogService.Info("[EncounterBattleStepsSetup.HandleStepBattle] Battle sent as new DM message.");
             }
             else
             {
-                LogService.Error("[HandleStepBattle] ❌ Failed to send battle message to DM.");
+                LogService.Error("[EncounterBattleStepsSetup.HandleStepBattle] ❌ Failed to send battle message to DM.");
             }
 
             // --- Send battle update to guild channel for other members to follow ---
@@ -494,13 +494,13 @@ namespace Adventure.Quest.Battle.BattleEngine
                                 message,
                                 message.Embeds.FirstOrDefault()?.ToEmbedBuilder().Build() ?? new EmbedBuilder().Build(),
                                 weaponButtons.Build());
-                            LogService.Info("[HandleStepPostBattle] Battle continues with updated weapon buttons in DM.");
+                            LogService.Info("[EncounterBattleStepsSetup.HandleStepPostBattle] Battle continues with updated weapon buttons in DM.");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogService.Error($"[HandleStepPostBattle] Failed to update message with weapon buttons: {ex.Message}");
+                    LogService.Error($"[EncounterBattleStepsSetup.HandleStepPostBattle] Failed to update message with weapon buttons: {ex.Message}");
                 }
             }
         }
