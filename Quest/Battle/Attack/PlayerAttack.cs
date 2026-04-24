@@ -34,6 +34,9 @@ class PlayerAttack
             // Ensure ratio is capped between 0-100%
             state.RatioDamageDealt = Math.Clamp(state.RatioDamageDealt, 0, 100);
 
+            // Remove encounter marker from map
+            Adventure.Services.ActiveEncounterTracker.RemoveEncounter(userId);
+
             int rewardXP = ChallengeRatingHelpers.GetRewardXP(state.Npc.CR);
             (bool leveledUp, int oldLevel, int newLevel) = ProcessSuccesAttack.ProcessXPReward(rewardXP, state);
             state.PlayerLeveledUp = leveledUp;  // Track level-up for ASI trigger

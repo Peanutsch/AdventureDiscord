@@ -62,7 +62,7 @@ namespace Adventure.Quest.Map
 
         /// <summary>
         /// Determines which emoji/icon should be shown for a given grid position.
-        /// Respects priority: player > other players > tile overlay > tile base > layout type.
+        /// Respects priority: player > other players > active encounter > tile overlay > tile base > layout type.
         /// </summary>
         public string GetTileIcon(TestHouseAreaModel area, int row, int col, int playerRow, int playerCol, HashSet<(int Row, int Col)>? otherPlayerPositions = null)
         {
@@ -73,13 +73,19 @@ namespace Adventure.Quest.Map
             // Other active players shown with a distinct icon
             if (otherPlayerPositions != null && otherPlayerPositions.Contains((row, col)))
                 return GetEmoji("OTHERPLAYERS");
+
+            // Check for active encounter on this tile
+            string tileId = $"{area.Id}:{row},{col}";
+            if (Adventure.Services.ActiveEncounterTracker.HasEncounterOnTile(tileId))
+                return GetEmoji("ENEMY");
+
             // Try to locate tile details for this grid position
             var tileDetail = area.Tiles.FirstOrDefault(t => t.TilePosition == $"{row},{col}");
             string layoutType = area.Layout[row][col];
 
             // Determine which key to use: overlay > base > layout type
             string? key = null;
-            
+
             if (tileDetail != null)
             {
                 key = !string.IsNullOrWhiteSpace(tileDetail.TileOverlay)

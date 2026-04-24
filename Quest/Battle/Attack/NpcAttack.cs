@@ -26,6 +26,9 @@ public static class NpcAttack
             EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
             state.EmbedColor = Color.DarkRed;
 
+            // Remove encounter marker from map
+            Adventure.Services.ActiveEncounterTracker.RemoveEncounter(userId);
+
             battleLog += $"\n\n💀 **{state.Player.Name} has been defeated by {state.Npc.Name}!**";
         }
         else

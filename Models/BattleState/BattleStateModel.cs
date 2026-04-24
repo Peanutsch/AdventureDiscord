@@ -78,6 +78,14 @@ namespace Adventure.Models.BattleState
         public ulong GuildChannelId { get; set; }
         #endregion
 
+        #region === Encounter Location ===
+        /// <summary>
+        /// The tile ID where the encounter was triggered (e.g., "living_room:2,8").
+        /// Used to display encounter marker on the map.
+        /// </summary>
+        public string EncounterTileId { get; set; } = string.Empty;
+        #endregion
+
         #region === Embeds ===
         public Discord.Color EmbedColor { get; set; } = Color.Red;
         public int RoundCounter { get; set; }

@@ -1,4 +1,5 @@
-﻿using Adventure.Loaders;
+﻿using Adventure.Data;
+using Adventure.Loaders;
 using Adventure.Models.BattleState;
 using Adventure.Models.Map;
 using Adventure.Models.Player;
@@ -63,6 +64,15 @@ namespace Adventure.Buttons
                 return await HandleMissingTileAsync(context, key);
 
             SavePlayerPosition(context, key);
+
+            // Check if player is returning to their own active encounter
+            string? existingEncounterTile = ActiveEncounterTracker.GetEncounterTileForUser(context.User.Id);
+            if (existingEncounterTile != null && existingEncounterTile == key)
+            {
+                // Player returned to their encounter - resume battle
+                LogService.Info($"[MovePlayerAsync] Player returning to active encounter at {key}");
+                return await HandleResumeEncounterAsync(context);
+            }
 
             if (allowAutoEncounter && await HandleTriggerAutoEncounterAsync(context, targetTile!))
                 return true;
@@ -155,7 +165,7 @@ namespace Adventure.Buttons
         /// </returns>
         private static async Task<bool> HandleAutoEncounterAsync(SocketInteractionContext context, TileModel tile, CreatureListPreference preference)
         {
-            LogService.Info($"[MovePlayerAsync] Auto-encounter triggered on {tile.TileName}");
+            LogService.Info($"[ComponentHelpers.MovePlayerAsync] Auto-encounter triggered on {tile.TileName}");
 
             Models.NPC.NpcModel? npc = EncounterRandomizer.NpcRandomizer(CRWeightPreference.Balanced, preference);
             if (npc == null)
@@ -167,9 +177,13 @@ namespace Adventure.Buttons
             await TransitionBattleEmbed(context, npc.Name!);
             SlashCommandHelpers.SetupBattleState(context.User.Id, npc);
 
-            // Store guild channel ID in battle state for public battle updates
+            // Store guild channel ID and encounter tile ID in battle state
             BattleStateModel encounterState = BattleStateSetup.GetBattleState(context.User.Id);
             encounterState.GuildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
+            encounterState.EncounterTileId = tile.TileId;
+
+            // Register encounter in tracker for map visualization
+            ActiveEncounterTracker.RegisterEncounter(context.User.Id, tile.TileId, npc.Name!);
 
             EmbedBuilder embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
@@ -182,12 +196,12 @@ namespace Adventure.Buttons
 
             if (dmMessage != null)
             {
-                LogService.Info($"[HandleAutoEncounterAsync] ✅ Storing active message {dmMessage.Id} for user {context.User.Id}");
+                LogService.Info($"[ComponentHelpers.HandleAutoEncounterAsync] ✅ Storing active message {dmMessage.Id} for user {context.User.Id}");
                 BattlePrivateMessageHelper.SetActiveBattleMessage(context.User.Id, dmMessage.Id);
             }
             else
             {
-                LogService.Error("[HandleAutoEncounterAsync] ❌ Failed to send encounter to DM");
+                LogService.Error("[ComponentHelpers.HandleAutoEncounterAsync] ❌ Failed to send encounter to DM");
             }
 
             // Send encounter notification to guild channel
@@ -200,6 +214,90 @@ namespace Adventure.Buttons
             // Notify user in channel that encounter started
             // await context.Interaction.FollowupAsync($"🎲 **{npc.Name}** encountered! Check your DMs to battle.");
             return true;
+        }
+
+        /// <summary>
+        /// Resumes an existing encounter when player returns to the tile.
+        /// Restores battle state with current NPC HP and continues the fight.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <returns><c>true</c> if encounter was successfully resumed.</returns>
+        private static async Task<bool> HandleResumeEncounterAsync(SocketInteractionContext context)
+        {
+            LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] Player {context.User.Id} resuming encounter");
+
+            // Get existing battle state
+            BattleStateModel state = BattleStateSetup.GetBattleState(context.User.Id);
+            if (state == null || state.Npc == null)
+            {
+                LogService.Error("[ComponentHelpers.HandleResumeEncounterAsync] Battle state not found - removing stale encounter");
+                ActiveEncounterTracker.RemoveEncounter(context.User.Id);
+                return false;
+            }
+
+            // Reload player weapons/armor/items in case they changed or were not persisted
+            ReloadPlayerInventory(context.User.Id, state);
+
+            // Update player state back to InBattle
+            state.Player.CurrentState = PlayerState.InBattle;
+            state.Player.LastActivityTime = DateTime.UtcNow;
+            JsonDataManager.UpdatePlayerState(context.User.Id, PlayerState.InBattle);
+            JsonDataManager.UpdatePlayerLastActivityTime(context.User.Id);
+
+            // Build encounter resume embed
+            EmbedBuilder embed = new EmbedBuilder()
+                .WithColor(Color.Orange)
+                .WithTitle($"⚔️ Encounter Resumed!")
+                .WithDescription($"You return to face the {state.StateOfNPC} **{state.Npc.Name}**!\n\n" +
+                                //$"**{state.Npc.Name}**: {state.StateOfNPC}\n" +
+                                //$"**{state.Player.Name}** HP: {state.Player.Hitpoints}\n\n" +
+                                $"The battle continues...");
+
+            ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
+
+            // Send resume message to DM
+            var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
+                context.Interaction,
+                embed.Build(),
+                buttons.Build());
+
+            if (dmMessage != null)
+            {
+                BattlePrivateMessageHelper.SetActiveBattleMessage(context.User.Id, dmMessage.Id);
+                LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] ✅ Resume message sent to user {context.User.Id}");
+            }
+
+            // Send guild notification
+            if (state.GuildChannelId != 0)
+            {
+                Embed guildEmbed = new EmbedBuilder()
+                    .WithColor(Color.Orange)
+                    .WithTitle("⚔️ Battle Resumed")
+                    .WithDescription($"**{state.Player.Name}** returned to fight **{state.Npc.Name}**!")
+                    .Build();
+                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(state.GuildChannelId, guildEmbed);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Reloads player inventory (weapons, armor, items) into the battle state.
+        /// Used when resuming an encounter after flee to ensure inventory is up-to-date.
+        /// </summary>
+        private static void ReloadPlayerInventory(ulong userId, BattleStateModel state)
+        {
+            PlayerModel player = PlayerDataManager.LoadByUserId(userId);
+
+            List<string> weaponIds = player.Weapons.Select(w => w.Id).ToList();
+            List<string> armorIds = player.Armor.Select(a => a.Id).ToList();
+            List<string> itemIds = player.Items.Select(i => i.Id).ToList();
+
+            state.PlayerWeapons = GameEntityFetcher.RetrieveWeaponAttributes(weaponIds);
+            state.PlayerArmor = GameEntityFetcher.RetrieveArmorAttributes(armorIds);
+            state.Items = GameEntityFetcher.RetrieveItemAttributes(itemIds);
+
+            LogService.Info($"[ComponentHelpers.ReloadPlayerInventory] Reloaded {state.PlayerWeapons.Count} weapons, {state.PlayerArmor.Count} armor, {state.Items.Count} items for user {userId}");
         }
 
         /// <summary>
