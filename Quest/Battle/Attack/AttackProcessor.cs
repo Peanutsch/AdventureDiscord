@@ -36,7 +36,7 @@ namespace Adventure.Quest.Battle.Attack
             var (hitResult, state, player, npc, strength) = ValidateAndGetParticipants(userId, isPlayerAttacker);
 
             // Apply damage based on attack result and attacker type
-            ApplyDamage(hitResult, isPlayerAttacker, userId, weapon, strength, state, player, npc);
+            ApplyDamage(hitResult, isPlayerAttacker, userId, weapon, state, player);
 
             // Update HP state descriptions (for embeds and logs)
             UpdateHPStatus(isPlayerAttacker, state, player);
@@ -76,15 +76,7 @@ namespace Adventure.Quest.Battle.Attack
         /// Applies the appropriate damage if the attack is successful or critical.
         /// Updates the HP of the target accordingly.
         /// </summary>
-        private static void ApplyDamage(
-            ProcessRollsAndDamage.HitResult hitResult,
-            bool isPlayerAttacker,
-            ulong userId,
-            WeaponModel weapon,
-            int strength,
-            BattleStateModel state,
-            PlayerModel player,
-            NpcModel npc)
+        private static void ApplyDamage(ProcessRollsAndDamage.HitResult hitResult, bool isPlayerAttacker, ulong userId, WeaponModel weapon, BattleStateModel state, PlayerModel player)
         {
             // Skip damage if the attack missed or was a critical miss
             if (hitResult != ProcessRollsAndDamage.HitResult.IsValidHit &&
@@ -99,7 +91,6 @@ namespace Adventure.Quest.Battle.Attack
                         userId,
                         state,
                         weapon,
-                        strength,
                         state.CurrentHitpointsNPC,
                         true
                     );
@@ -112,7 +103,6 @@ namespace Adventure.Quest.Battle.Attack
                         userId,
                         state,
                         weapon,
-                        strength,
                         player.Hitpoints,
                         false
                     );

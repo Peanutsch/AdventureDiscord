@@ -1,6 +1,7 @@
 ﻿using Adventure.Models.BattleState;
 using Adventure.Models.Items;
 using Adventure.Models.Player;
+using Adventure.Quest.Battle.Attack;
 using Adventure.Quest.Encounter;
 using Adventure.Services;
 using Discord;
@@ -142,7 +143,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             BattleStep currentStep = GetStep(userId);
 
             // Log the current state for debugging
-            LogService.Info($">>> [Current step: {currentStep}, action: {action}, weaponId: {weaponId}] <<<\n");
+            // LogService.Info($">>> [Current step: {currentStep}, action: {action}, weaponId: {weaponId}] <<<\n");
 
             // Route to appropriate handler based on current step
             switch (currentStep)

@@ -21,7 +21,6 @@ namespace Adventure.Quest.Battle.Process
         /// <param name="userId">The Discord user ID associated with the battle.</param>
         /// <param name="state">The current battle state model.</param>
         /// <param name="weapon">The weapon used in the attack.</param>
-        /// <param name="strength">The attacker's strength modifier.</param>
         /// <param name="currentHP">The defender's current hitpoints before the hit.</param>
         /// <param name="isPlayerAttacker">Whether the player is the attacker (true) or the creature (false).</param>
         /// <returns>
@@ -33,11 +32,11 @@ namespace Adventure.Quest.Battle.Process
         /// - dice: Dice notation string (e.g. "2d6")
         /// - newHP: The defender's new HP after damage is applied
         /// </returns>
-        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string dice, int newHP) ProcessSuccessfulHit(ulong userId, BattleStateModel state, WeaponModel weapon, int strength, int currentHP, bool isPlayerAttacker)
+        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string dice, int newHP) ProcessSuccessfulHit(ulong userId, BattleStateModel state, WeaponModel weapon, int currentHP, bool isPlayerAttacker)
         {
             // Calculate and apply damage, including critical hit or miss logic
             var (damage, totalDamage, rolls, critRoll, dice, newHP) = ProcessRollsAndDamage.RollAndApplyDamage(
-                state, weapon, strength, currentHP, isPlayerAttacker);
+                state, weapon, currentHP, isPlayerAttacker);
 
             if (isPlayerAttacker)
             {

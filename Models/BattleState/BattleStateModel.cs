@@ -5,6 +5,10 @@ using Discord;
 
 namespace Adventure.Models.BattleState
 {
+    /// <summary>
+    /// Object to hold all relevant information about the current battle state. 
+    /// Including player and NPC stats, weapons, armor, items, attack rolls, damage calculations, XP rewards, and more.
+    /// </summary>
     public class BattleStateModel
     {
         #region === Player / NPC / Weapons / Armor / Items ===

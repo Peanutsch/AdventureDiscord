@@ -27,9 +27,6 @@ namespace Adventure.Buttons
     /// - Normal movement processing and display updates
     /// - Player position persistence
     /// 
-    /// The class acts as a bridge between Discord button interactions and the game's
-    /// map/encounter systems, managing the complete flow of player movement.
-    /// 
     /// <remarks>
     /// Main Responsibilities:
     /// 1. Validate target tiles exist
