@@ -13,11 +13,11 @@ namespace Adventure.Quest.Battle.BattleEngine
     public class BattleStateSetup
     {
         /// <summary>
-        /// Retrieves or initializes the battle state for the user.
+        /// Retrieves or initializes the battle session for the user.
         /// </summary>
-        public static BattleStateModel GetBattleState(ulong userId)
+        public static BattleSession GetBattleSession(ulong userId)
         {
-            if (!EncounterBattleStepsSetup.battleStates.TryGetValue(userId, out BattleStateModel? state))
+            if (!EncounterBattleStepsSetup.battleSessions.TryGetValue(userId, out BattleSession? session))
             {
                 // Load player data and inventory
                 PlayerModel player = PlayerDataManager.LoadByUserId(userId);
@@ -55,20 +55,27 @@ namespace Adventure.Quest.Battle.BattleEngine
                 }
 
 
-                // Create new battle state
-                state = new BattleStateModel {
-                    Player = player,
-                    Npc = new NpcModel(),
-                    PlayerWeapons = playerWeapons,
-                    PlayerArmor = playerArmor,
-                    Items = playerItems,
-                    NpcWeapons = new List<WeaponModel>(),
-                    NpcArmor = new List<ArmorModel>(),
-                    PreHpPlayer = player.Hitpoints,
-                    PreHpNPC = 0,
-                    LastUsedWeapon = "",
-                    TotalDamage = 0,
-                    EmbedColor = Discord.Color.Red
+                // Create new battle session with separated context and state
+                session = new BattleSession
+                {
+                    Context = new BattleContext
+                    {
+                        Player = player,
+                        Npc = new NpcModel(),
+                        PlayerWeapons = playerWeapons,
+                        PlayerArmor = playerArmor,
+                        Items = playerItems,
+                        NpcWeapons = new List<WeaponModel>(),
+                        NpcArmor = new List<ArmorModel>()
+                    },
+                    State = new BattleRuntimeState
+                    {
+                        PreHpPlayer = player.Hitpoints,
+                        PreHpNPC = 0,
+                        LastUsedWeapon = "",
+                        TotalDamage = 0,
+                        EmbedColor = Discord.Color.Red
+                    }
                 };
 
                 // Set player state to InBattle and update activity time
@@ -76,23 +83,34 @@ namespace Adventure.Quest.Battle.BattleEngine
                 player.LastActivityTime = DateTime.UtcNow;
                 JsonDataManager.UpdatePlayerState(userId, PlayerState.InBattle);
                 JsonDataManager.UpdatePlayerLastActivityTime(userId);
-                LogService.Info($"[BattleStateSetup.GetBattleState] Player {userId} state set to InBattle, activity time updated.");
+                LogService.Info($"[BattleStateSetup.GetBattleSession] Player {userId} state set to InBattle, activity time updated.");
             }
             else
             {
-                // State exists - sync NPC HP from multiplayer encounter if applicable
-                if (!string.IsNullOrEmpty(state.EncounterTileId))
+                // Session exists - sync NPC HP from multiplayer encounter if applicable
+                if (!string.IsNullOrEmpty(session.State.EncounterTileId))
                 {
-                    var encounterData = Adventure.Services.ActiveEncounterTracker.GetEncounter(state.EncounterTileId);
+                    var encounterData = Adventure.Services.ActiveEncounterTracker.GetEncounter(session.State.EncounterTileId);
                     if (encounterData != null)
                     {
                         // Sync current HP from shared encounter
-                        state.CurrentHitpointsNPC = encounterData.CurrentHitpoints;
+                        session.State.CurrentHitpointsNPC = encounterData.CurrentHitpoints;
                     }
                 }
             }
 
-            return EncounterBattleStepsSetup.battleStates.GetOrAdd(userId, state);
+            return EncounterBattleStepsSetup.battleSessions.GetOrAdd(userId, session);
+        }
+
+        /// <summary>
+        /// LEGACY: Backward compatibility wrapper for old code.
+        /// Use GetBattleSession() in new code instead.
+        /// </summary>
+        [Obsolete("Use GetBattleSession() instead")]
+        public static BattleStateModel GetBattleState(ulong userId)
+        {
+            BattleSession session = GetBattleSession(userId);
+            return BattleStateModel.FromSession(session);
         }
     }
 }

@@ -20,10 +20,10 @@ namespace Adventure.Quest.Battle.Attack
             (int diceCount, int diceValue) = GetHitDie(cr);
 
             // Save Dice to BattleState
-            var state = BattleStateSetup.GetBattleState(userId);
-            state.Npc = npc;
-            state.DiceCountHP = diceCount;
-            state.DiceValueHP = diceValue;
+            var session = BattleStateSetup.GetBattleSession(userId);
+            session.Context.Npc = npc;
+            session.Context.DiceCountHP = diceCount;
+            session.Context.DiceValueHP = diceValue;
 
             var result = DiceRoller.RollWithoutDetails(diceCount, diceValue);
 

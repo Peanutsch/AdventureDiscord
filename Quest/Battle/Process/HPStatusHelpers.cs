@@ -24,21 +24,21 @@ namespace Adventure.Quest.Battle.Process
         #region === Get HP Status ===
         /// <summary>
         /// Determines the HP status of a target (Player or NPC) based on starting HP and current HP.
-        /// Updates the corresponding state in the provided <see cref="BattleStateModel"/>.
+        /// Updates the corresponding state in the provided <see cref="BattleSession"/>.
         /// </summary>
         /// <param name="startHP">The starting HP value of the target.</param>
         /// <param name="currentHP">The current HP value of the target.</param>
         /// <param name="target">The target type (Player or NPC).</param>
-        /// <param name="battleState">The battle state model to update with HP status and percentage.</param>
-        public static void GetHPStatus(int startHP, int currentHP, TargetType target, BattleStateModel battleState)
+        /// <param name="session">The battle session to update with HP status and percentage.</param>
+        public static void GetHPStatus(int startHP, int currentHP, TargetType target, BattleSession session)
         {
             // If starting HP is invalid (0 or less), mark the state as unknown
             if (startHP <= 0)
             {
                 if (target == TargetType.Player)
-                    battleState.StateOfPlayer = "UNKNOWN: Player's startHP <= 0";
+                    session.State.StateOfPlayer = "UNKNOWN: Player's startHP <= 0";
                 else
-                    battleState.StateOfNPC = "UNKNOWN: NPC's startHP <= 0";
+                    session.State.StateOfNPC = "UNKNOWN: NPC's startHP <= 0";
 
                 return;
             }
@@ -61,7 +61,7 @@ namespace Adventure.Quest.Battle.Process
             };
 
             // Update the battle state with the calculated status
-            SetStatus(percentHP, target, result, battleState);
+            SetStatus(percentHP, target, result, session);
         }
         #endregion Get HP Status
 
@@ -72,19 +72,19 @@ namespace Adventure.Quest.Battle.Process
         /// <param name="percentHP">The HP percentage of the target.</param>
         /// <param name="target">The target type (Player or NPC).</param>
         /// <param name="result">The textual status (e.g., "Wounded").</param>
-        /// <param name="battleState">The battle state to update.</param>
-        public static void SetStatus(double percentHP, TargetType target, string result, BattleStateModel battleState)
+        /// <param name="session">The battle session to update.</param>
+        public static void SetStatus(double percentHP, TargetType target, string result, BattleSession session)
         {
             int roundedPercentHP = (int)Math.Round(percentHP);
 
             if (target == TargetType.Player)
                 // Update the player’s status
-                battleState.StateOfPlayer = result;
+                session.State.StateOfPlayer = result;
             else
             {
                 // Update the NPC’s status and percentage HP
-                battleState.StateOfNPC = result;
-                battleState.PercentageHpNpc = roundedPercentHP;
+                session.State.StateOfNPC = result;
+                session.State.PercentageHpNpc = roundedPercentHP;
             }
         }
 

@@ -165,8 +165,8 @@ namespace Adventure.Quest.Encounter
         public static async Task EmbedPreBattleInDM(SocketInteraction interaction)
         {
             // --- Retrieve the current battle state for the user ---
-            BattleStateModel state = BattleStateSetup.GetBattleState(interaction.User.Id);
-            if (state == null)
+            BattleSession session = BattleStateSetup.GetBattleSession(interaction.User.Id);
+            if (session == null)
             {
                 LogService.Error("[EmbedBuilders.EmbedPreBattleInDM] > Battle state not found.");
                 await interaction.RespondAsync("❌ No active battle found.", ephemeral: true);
@@ -174,8 +174,8 @@ namespace Adventure.Quest.Encounter
             }
 
             // --- Build the pre-battle UI elements ---
-            EmbedBuilder embed = BuildPreBattleEmbed(state);
-            ComponentBuilder buttonBuilder = BuildBattleButtons(state);
+            EmbedBuilder embed = BuildPreBattleEmbed(session);
+            ComponentBuilder buttonBuilder = BuildBattleButtons(session);
 
             // --- Send new message for weapon selection (separate from encounter message) ---
             IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
@@ -198,23 +198,23 @@ namespace Adventure.Quest.Encounter
         /// Builds all the interactive Discord buttons for the pre-battle screen,
         /// including weapon, item, and flee options.
         /// </summary>
-        /// <param name="state">The current player's battle state.</param>
+        /// <param name="session">The current player's battle session.</param>
         /// <returns>A ComponentBuilder containing all buttons.</returns>
-        public static ComponentBuilder BuildBattleButtons(BattleStateModel state)
+        public static ComponentBuilder BuildBattleButtons(BattleSession session)
         {
             ComponentBuilder buttonBuilder = new ComponentBuilder();
 
             // --- Add a button for each weapon the player currently owns --- 
-            if (state.PlayerWeapons != null && state.PlayerWeapons.Any())
+            if (session.Context.PlayerWeapons != null && session.Context.PlayerWeapons.Any())
             {
-                foreach (WeaponModel weapon in state.PlayerWeapons)
+                foreach (WeaponModel weapon in session.Context.PlayerWeapons)
                     buttonBuilder.WithButton(weapon.Name, weapon.Id, ButtonStyle.Primary);
             }
 
             // --- Add a button for each item (like potions or consumables) --- 
-            if (state.Items != null && state.Items.Any())
+            if (session.Context.Items != null && session.Context.Items.Any())
             {
-                foreach (ItemModel item in state.Items)
+                foreach (ItemModel item in session.Context.Items)
                     buttonBuilder.WithButton(item.Name, item.Id, ButtonStyle.Success, row: 2);
             }
             else
@@ -223,7 +223,7 @@ namespace Adventure.Quest.Encounter
             }
 
             // --- Add the 'Flee' or 'Break' button to allow exiting the battle --- 
-            buttonBuilder.WithButton("Flee", $"battle_flee_{state.Player.Id}", ButtonStyle.Secondary);
+            buttonBuilder.WithButton("Flee", $"battle_flee_{session.Context.Player.Id}", ButtonStyle.Secondary);
 
             return buttonBuilder;
         }
@@ -231,21 +231,21 @@ namespace Adventure.Quest.Encounter
         /// <summary>
         /// Builds the pre-battle embed containing player stats, equipped weapons, armor, and items.
         /// </summary>
-        /// <param name="state">The current player's battle state.</param>
+        /// <param name="session">The current player's battle session.</param>
         /// <returns>An EmbedBuilder containing the formatted pre-battle view.</returns>
-        public static EmbedBuilder BuildPreBattleEmbed(BattleStateModel state)
+        public static EmbedBuilder BuildPreBattleEmbed(BattleSession session)
         {
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Blue)
                 .WithTitle("[Prepare for Battle]")
                 .WithThumbnailUrl("https://cdn.discordapp.com/attachments/1425057075314167839/1425077955121381427/weaponrack2.jpg?ex=68e646c5&is=68e4f545&hm=0f79e4a059c952bda3811786473f42769493eaea55fc71105b2925024727022c&")
-                .AddField($"**{state.Player.Name}** prepares for battle...",
-                          $"| Level: {state.Player.Level} | XP: {state.Player.XP} | HP: {state.Player.Hitpoints} |");
+                .AddField($"**{session.Context.Player.Name}** prepares for battle...",
+                          $"| Level: {session.Context.Player.Level} | XP: {session.Context.Player.XP} | HP: {session.Context.Player.Hitpoints} |");
 
             // --- Add detailed sections for weapons, armor, and items --- 
-            AddWeaponFields(embed, state);
-            AddArmorFields(embed, state);
-            AddItemFields(embed, state);
+            AddWeaponFields(embed, session);
+            AddArmorFields(embed, session);
+            AddItemFields(embed, session);
 
             return embed;
         }
@@ -254,10 +254,10 @@ namespace Adventure.Quest.Encounter
         /// Adds weapon details to the pre-battle embed, including damage dice and descriptions.
         /// </summary>
         /// <param name="embed">The embed builder to append fields to.</param>
-        /// <param name="state">The current player's battle state.</param>
-        private static void AddWeaponFields(EmbedBuilder embed, BattleStateModel state)
+        /// <param name="session">The current player's battle session.</param>
+        private static void AddWeaponFields(EmbedBuilder embed, BattleSession session)
         {
-            foreach (WeaponModel weapon in state.PlayerWeapons ?? Enumerable.Empty<WeaponModel>())
+            foreach (WeaponModel weapon in session.Context.PlayerWeapons ?? Enumerable.Empty<WeaponModel>())
             {
                 string diceNotation = $"{weapon.Damage.DiceCount}d{weapon.Damage.DiceValue}";
                 string nameNotation = $"[{weapon.Name} ({diceNotation})]";
@@ -269,10 +269,10 @@ namespace Adventure.Quest.Encounter
         /// Adds armor details to the pre-battle embed, showing the armor class and description.
         /// </summary>
         /// <param name="embed">The embed builder to append fields to.</param>
-        /// <param name="state">The current player's battle state.</param>
-        private static void AddArmorFields(EmbedBuilder embed, BattleStateModel state)
+        /// <param name="session">The current player's battle session.</param>
+        private static void AddArmorFields(EmbedBuilder embed, BattleSession session)
         {
-            foreach (ArmorModel armor in state.PlayerArmor ?? Enumerable.Empty<ArmorModel>())
+            foreach (ArmorModel armor in session.Context.PlayerArmor ?? Enumerable.Empty<ArmorModel>())
             {
                 string acNotation = $"Armor Class: {armor.ArmorClass}";
                 string nameNotation = $"[{armor.Name} ({acNotation})]";
@@ -284,10 +284,10 @@ namespace Adventure.Quest.Encounter
         /// Adds item details to the pre-battle embed, including healing or bonus effects.
         /// </summary>
         /// <param name="embed">The embed builder to append fields to.</param>
-        /// <param name="state">The current player's battle state.</param>
-        private static void AddItemFields(EmbedBuilder embed, BattleStateModel state)
+        /// <param name="session">The current player's battle session.</param>
+        private static void AddItemFields(EmbedBuilder embed, BattleSession session)
         {
-            foreach (ItemModel item in state.Items ?? Enumerable.Empty<ItemModel>())
+            foreach (ItemModel item in session.Context.Items ?? Enumerable.Empty<ItemModel>())
             {
                 string diceNotation = $"{item.Effect.DiceCount}d{item.Effect.DiceValue}+{item.Effect.BonusHP}";
                 string nameNotation = $"[{item.Name} ({diceNotation})]";
@@ -310,14 +310,14 @@ namespace Adventure.Quest.Encounter
         public static EmbedBuilder BuildBattleEmbed(ulong userId, string attackSummary)
         {
             // --- Retrieve the current battle state --- 
-            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
-            PlayerModel player = state.Player;
-            NpcModel npc = state.Npc;
+            BattleSession session = BattleStateSetup.GetBattleSession(userId);
+            PlayerModel player = session.Context.Player;
+            NpcModel npc = session.Context.Npc;
 
             // --- Check for battle end (player or NPC HP <= 0) ---
-            if (player.Hitpoints <= 0 || state.CurrentHitpointsNPC <= 0)
+            if (player.Hitpoints <= 0 || session.State.CurrentHitpointsNPC <= 0)
             {
-                LogService.Info($"[EmbedBuilders.BuildBattleEmbed] Battle ended. Player HP: {player.Hitpoints}, NPC HP: {state.CurrentHitpointsNPC}");
+                LogService.Info($"[EmbedBuilders.BuildBattleEmbed] Battle ended. Player HP: {player.Hitpoints}, NPC HP: {session.State.CurrentHitpointsNPC}");
 
                 // Return a simple "battle ended" embed; the outer method should call EmbedEndBattle()
                 return new EmbedBuilder()
@@ -326,18 +326,18 @@ namespace Adventure.Quest.Encounter
             }
 
             // --- Determine NPC thumbnail based on HP percentage ---
-            string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(npc, state.PercentageHpNpc);
+            string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(npc, session.State.PercentageHpNpc);
 
             // --- Build the ongoing battle embed ---
             EmbedBuilder embed = new EmbedBuilder()
-                .WithColor(state.EmbedColor)
-                .WithTitle($"⚔️ Battle Report — Round {state.RoundCounter}")
+                .WithColor(session.State.EmbedColor)
+                .WithTitle($"⚔️ Battle Report — Round {session.State.RoundCounter}")
                 .WithThumbnailUrl(thumbUrl)
                 .AddField(
-                    $"{player.Name} ({state.StateOfPlayer}) VS {npc.Name} ({state.StateOfNPC})",
+                    $"{player.Name} ({session.State.StateOfPlayer}) VS {npc.Name} ({session.State.StateOfNPC})",
                     $"| Level {player.Level} | {player.XP} XP | {player.Hitpoints} HP |")
                 .AddField("🩸 Attack Summary", attackSummary, false)
-                .WithFooter($"Round {state.RoundCounter} completed.");
+                .WithFooter($"Round {session.State.RoundCounter} completed.");
 
             return embed;
         }
@@ -348,21 +348,21 @@ namespace Adventure.Quest.Encounter
         /// Builds a compact battle update embed for the guild channel,
         /// allowing other members to follow the battle progress.
         /// </summary>
-        /// <param name="state">The current battle state.</param>
+        /// <param name="session">The current battle session.</param>
         /// <param name="attackSummary">The formatted attack summary for the current round.</param>
         /// <returns>An EmbedBuilder with a compact battle summary for the guild channel.</returns>
-        public static EmbedBuilder BuildGuildBattleUpdateEmbed(BattleStateModel state, string attackSummary)
+        public static EmbedBuilder BuildGuildBattleUpdateEmbed(BattleSession session, string attackSummary)
         {
-            string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(state.Npc, state.PercentageHpNpc);
+            string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(session.Context.Npc, session.State.PercentageHpNpc);
 
             return new EmbedBuilder()
-                .WithColor(state.EmbedColor)
-                .WithTitle($"⚔️ {state.Player.Name} VS {state.Npc.Name} — Round {state.RoundCounter}")
+                .WithColor(session.State.EmbedColor)
+                .WithTitle($"⚔️ {session.Context.Player.Name} VS {session.Context.Npc.Name} — Round {session.State.RoundCounter}")
                 .WithThumbnailUrl(thumbUrl)
                 .AddField("\u200B", attackSummary, false)
                 .AddField("[Status]",
-                    $"{state.Player.Name}: {state.Player.Hitpoints} HP ({state.StateOfPlayer}) | " +
-                    $"{state.Npc.Name}: {state.StateOfNPC}", false);
+                    $"{session.Context.Player.Name}: {session.Context.Player.Hitpoints} HP ({session.State.StateOfPlayer}) | " +
+                    $"{session.Context.Npc.Name}: {session.State.StateOfNPC}", false);
                 //.WithFooter($"Round {state.RoundCounter} completed.");
         }
         #endregion Embed Guild Battle Update
@@ -376,8 +376,8 @@ namespace Adventure.Quest.Encounter
         public static async Task EmbedEndBattleInDM(SocketInteraction interaction, string? extraMessage = null, bool leveledUp = false)
         {
             ulong userId = interaction.User.Id;
-            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
-            string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(state.Npc, state.PercentageHpNpc);
+            BattleSession session = BattleStateSetup.GetBattleSession(userId);
+            string thumbUrl = HPStatusHelpers.GetNpcThumbnailByHP(session.Context.Npc, session.State.PercentageHpNpc);
 
             string finalLog = extraMessage ?? "";
             string battleOverText = $"{BattleMessages.BattleOver}";
@@ -392,11 +392,11 @@ namespace Adventure.Quest.Encounter
             }
 
             EmbedBuilder embed = new EmbedBuilder()
-                .WithColor(state.EmbedColor)
-                .WithTitle($"⚔️ Battle Report — Round {state.RoundCounter}")
+                .WithColor(session.State.EmbedColor)
+                .WithTitle($"⚔️ Battle Report — Round {session.State.RoundCounter}")
                 .WithThumbnailUrl(thumbUrl)
-                .AddField($"{state.Player.Name} (HP: {state.Player.Hitpoints}) VS {state.Npc.Name} ({state.StateOfNPC})",
-                          $"| Level {state.Player.Level} | {state.Player.XP} XP | {state.Player.Hitpoints} HP |")
+                .AddField($"{session.Context.Player.Name} (HP: {session.Context.Player.Hitpoints}) VS {session.Context.Npc.Name} ({session.State.StateOfNPC})",
+                          $"| Level {session.Context.Player.Level} | {session.Context.Player.XP} XP | {session.Context.Player.Hitpoints} HP |")
                 .AddField("\u200B", $"{finalLog}\n\n{battleOverText}");
 
             ComponentBuilder buttons = new ComponentBuilder()
@@ -419,7 +419,7 @@ namespace Adventure.Quest.Encounter
             }
 
             // Reset round counter
-            state.RoundCounter = 0;
+            session.State.RoundCounter = 0;
 
             // Update battle step
             EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);

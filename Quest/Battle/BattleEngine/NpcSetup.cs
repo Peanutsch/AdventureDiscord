@@ -17,25 +17,25 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// </summary>
         public static void SetupNpc(ulong userId, NpcModel npc)
         {
-            var state = BattleStateSetup.GetBattleState(userId);
-            state.Npc = npc;
+            var session = BattleStateSetup.GetBattleSession(userId);
+            session.Context.Npc = npc;
 
             // Save NPC stats to BattleState
             var RollHitpointsNPC = ChallengeRatingHelpers.GetNpcHitpoints(npc, npc.CR, userId);
-            state.HitpointsAtStartNPC = RollHitpointsNPC;
-            state.CurrentHitpointsNPC = RollHitpointsNPC;
-            state.PreHpNPC = RollHitpointsNPC;
-            state.RewardXP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
+            session.State.HitpointsAtStartNPC = RollHitpointsNPC;
+            session.State.CurrentHitpointsNPC = RollHitpointsNPC;
+            session.State.PreHpNPC = RollHitpointsNPC;
+            session.State.RewardXP = ChallengeRatingHelpers.GetRewardXP(npc.CR);
 
-            LogService.Info($"[BattleMethod.SetNpc]\n\n>NPC: {npc.Name} HP: {state.CurrentHitpointsNPC} RewardXP: {state.RewardXP}\n\n");
+            LogService.Info($"[BattleMethod.SetNpc]\n\n>NPC: {npc.Name} HP: {session.State.CurrentHitpointsNPC} RewardXP: {session.State.RewardXP}\n\n");
 
             if (npc.Weapons != null)
-                state.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);
+                session.Context.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);
 
             if (npc.Armor != null)
-                state.NpcArmor = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
+                session.Context.NpcArmor = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
 
-            EncounterBattleStepsSetup.battleStates[userId] = state;
+            EncounterBattleStepsSetup.battleSessions[userId] = session;
         }
     }
 }

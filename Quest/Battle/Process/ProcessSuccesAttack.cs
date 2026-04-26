@@ -19,7 +19,7 @@ namespace Adventure.Quest.Battle.Process
         /// logging the results, and returning detailed roll information.
         /// </summary>
         /// <param name="userId">The Discord user ID associated with the battle.</param>
-        /// <param name="state">The current battle state model.</param>
+        /// <param name="session">The current battle session.</param>
         /// <param name="weapon">The weapon used in the attack.</param>
         /// <param name="currentHP">The defender's current hitpoints before the hit.</param>
         /// <param name="isPlayerAttacker">Whether the player is the attacker (true) or the creature (false).</param>
@@ -32,47 +32,47 @@ namespace Adventure.Quest.Battle.Process
         /// - dice: Dice notation string (e.g. "2d6")
         /// - newHP: The defender's new HP after damage is applied
         /// </returns>
-        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string dice, int newHP) ProcessSuccessfulHit(ulong userId, BattleStateModel state, WeaponModel weapon, int currentHP, bool isPlayerAttacker)
+        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string dice, int newHP) ProcessSuccessfulHit(ulong userId, BattleSession session, WeaponModel weapon, int currentHP, bool isPlayerAttacker)
         {
             // Calculate and apply damage, including critical hit or miss logic
             var (damage, totalDamage, rolls, critRoll, dice, newHP) = ProcessRollsAndDamage.RollAndApplyDamage(
-                state, weapon, currentHP, isPlayerAttacker);
+                session, weapon, currentHP, isPlayerAttacker);
 
             if (isPlayerAttacker)
             {
                 LogService.Info($"\n\nPlayer's turn > Dice: {dice} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}\n\n");
 
                 // Player attacks, update NPC HP
-                state.CurrentHitpointsNPC = newHP;
+                session.State.CurrentHitpointsNPC = newHP;
 
                 // Track damage in multiplayer encounter system (thread-safe)
-                if (!string.IsNullOrEmpty(state.EncounterTileId))
+                if (!string.IsNullOrEmpty(session.State.EncounterTileId))
                 {
-                    var (actualNewHp, isDefeated) = Adventure.Services.ActiveEncounterTracker.RecordDamage(userId, state.EncounterTileId, totalDamage);
+                    var (actualNewHp, isDefeated) = Adventure.Services.ActiveEncounterTracker.RecordDamage(userId, session.State.EncounterTileId, totalDamage);
                     // Sync HP from thread-safe tracker (prevents race conditions)
-                    state.CurrentHitpointsNPC = actualNewHp;
+                    session.State.CurrentHitpointsNPC = actualNewHp;
                 }
 
                 // Update player's HP in JSON file (even if unchanged) for consistency
-                JsonDataManager.UpdatePlayerHitpoints(userId, state.Player.Name!, state.Player.Hitpoints);
+                JsonDataManager.UpdatePlayerHitpoints(userId, session.Context.Player.Name!, session.Context.Player.Hitpoints);
 
                 // Log HP status after player's attack
                 LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After player attack:\n\n" +
-                                $"HP {state.Player.Name}: {state.Player.Hitpoints} HP NPC: {state.CurrentHitpointsNPC}\n\n");
+                                $"HP {session.Context.Player.Name}: {session.Context.Player.Hitpoints} HP NPC: {session.State.CurrentHitpointsNPC}\n\n");
             }
             else
             {
                 LogService.Info($"\n\nNPC's turn > Dice: {dice} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}\n\n");
 
                 // NPC attacks, update player HP
-                state.Player.Hitpoints = newHP;
+                session.Context.Player.Hitpoints = newHP;
 
                 // Update player's HP in JSON
-                JsonDataManager.UpdatePlayerHitpoints(userId, state.Player.Name!, state.Player.Hitpoints);
+                JsonDataManager.UpdatePlayerHitpoints(userId, session.Context.Player.Name!, session.Context.Player.Hitpoints);
 
                 // Log HP status after creature's attack
                 LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After NPC attack:\n\n" +
-                                $"HP Player: {state.Player.Hitpoints} HP NPC: {state.CurrentHitpointsNPC}\n\n");
+                                $"HP Player: {session.Context.Player.Hitpoints} HP NPC: {session.State.CurrentHitpointsNPC}\n\n");
             }
 
             // Return detailed result of the damage roll
@@ -81,26 +81,26 @@ namespace Adventure.Quest.Battle.Process
         #endregion PROCESS SUCCESFULL ATTACK
 
         #region PROCESS XP AND LEVEL
-        public static (bool leveledUp, int oldLevel, int newLevel) ProcessXPReward(int rewardedXP, BattleStateModel state)
+        public static (bool leveledUp, int oldLevel, int newLevel) ProcessXPReward(int rewardedXP, BattleSession session)
         {
             // Adjust XP based on damage ratio (percentage of NPC HP the player dealt)
-            int adjustedRewardXP = (rewardedXP * state.RatioDamageDealt) / 100;
+            int adjustedRewardXP = (rewardedXP * session.State.RatioDamageDealt) / 100;
 
-            LogService.Info($"[ProcessSuccesAttack.ProcessXPReward] Base XP: {rewardedXP}, Damage Ratio: {state.RatioDamageDealt}%, Adjusted XP: {adjustedRewardXP}");
+            LogService.Info($"[ProcessSuccesAttack.ProcessXPReward] Base XP: {rewardedXP}, Damage Ratio: {session.State.RatioDamageDealt}%, Adjusted XP: {adjustedRewardXP}");
 
-            var currentXP = state.Player.XP;
+            var currentXP = session.Context.Player.XP;
             var newXP = currentXP + adjustedRewardXP;
 
             // Track reward XP for UI display
-            state.RewardXP = adjustedRewardXP;
+            session.State.RewardXP = adjustedRewardXP;
 
             // Update XP in memory and JSON
-            state.NewTotalXP = newXP;
-            state.Player.XP = newXP;
-            JsonDataManager.UpdatePlayerXP(state.Player.Id, state.Player.Name!, newXP);
+            session.State.NewTotalXP = newXP;
+            session.Context.Player.XP = newXP;
+            JsonDataManager.UpdatePlayerXP(session.Context.Player.Id, session.Context.Player.Name!, newXP);
 
             // Determine new level based on updated XP
-            int oldLevel = state.Player.Level;
+            int oldLevel = session.Context.Player.Level;
             int newLevel = 1;
 
             for (int level = LevelHelpers.LevelXPThresholds.Length; level > 0; level--)
@@ -115,8 +115,8 @@ namespace Adventure.Quest.Battle.Process
             // If player has leveled up, update level in memory and JSON
             if (newLevel > oldLevel)
             {
-                state.Player.Level = newLevel;
-                JsonDataManager.UpdatePlayerLevel(state.Player.Id, state.Player.Name!, newLevel);
+                session.Context.Player.Level = newLevel;
+                JsonDataManager.UpdatePlayerLevel(session.Context.Player.Id, session.Context.Player.Name!, newLevel);
 
                 return (true, oldLevel, newLevel);
             }
@@ -128,9 +128,9 @@ namespace Adventure.Quest.Battle.Process
         /// <summary>
         /// Updates the player's level in state and JSON based on their XP.
         /// </summary>
-        public static void UpdateLevelFromXP(BattleStateModel state)
+        public static void UpdateLevelFromXP(BattleSession session)
         {
-            int xp = state.Player.XP;
+            int xp = session.Context.Player.XP;
             int newLevel = 1;
 
             for (int level = LevelHelpers.LevelXPThresholds.Length; level > 0; level--)
@@ -142,16 +142,16 @@ namespace Adventure.Quest.Battle.Process
                 }
             }
 
-            if (newLevel > state.Player.Level)
+            if (newLevel > session.Context.Player.Level)
             {
                 //int oldLevel = state.Player.Level;
-                int oldLevel = state.Player.Level;
-                state.Player.Level = newLevel;
+                int oldLevel = session.Context.Player.Level;
+                session.Context.Player.Level = newLevel;
 
                 // Update JSON
-                JsonDataManager.UpdatePlayerLevel(state.Player.Id, state.Player.Name!, newLevel);
+                JsonDataManager.UpdatePlayerLevel(session.Context.Player.Id, session.Context.Player.Name!, newLevel);
 
-                LogService.Info($"[UpdateLevelFromXP] Player {state.Player.Name} leveled up from {oldLevel} → {newLevel}!");
+                LogService.Info($"[UpdateLevelFromXP] Player {session.Context.Player.Name} leveled up from {oldLevel} → {newLevel}!");
             }
         }
         #endregion PROCESS XP AND LEVEL

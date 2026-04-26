@@ -183,12 +183,12 @@ namespace Adventure.Buttons
             SlashCommandHelpers.SetupBattleState(context.User.Id, npc);
 
             // Store guild channel ID and encounter tile ID in battle state
-            BattleStateModel encounterState = BattleStateSetup.GetBattleState(context.User.Id);
-            encounterState.GuildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
-            encounterState.EncounterTileId = tile.TileId;
+            BattleSession encounterSession = BattleStateSetup.GetBattleSession(context.User.Id);
+            encounterSession.State.GuildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
+            encounterSession.State.EncounterTileId = tile.TileId;
 
             // Register encounter in tracker with full NPC model (for thumbnails etc)
-            ActiveEncounterTracker.RegisterEncounter(context.User.Id, tile.TileId, npc.Name!, encounterState.HitpointsAtStartNPC, npc);
+            ActiveEncounterTracker.RegisterEncounter(context.User.Id, tile.TileId, npc.Name!, encounterSession.State.HitpointsAtStartNPC, npc);
 
             EmbedBuilder embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
@@ -210,10 +210,10 @@ namespace Adventure.Buttons
             }
 
             // Send encounter notification to guild channel
-            if (encounterState.GuildChannelId != 0)
+            if (encounterSession.State.GuildChannelId != 0)
             {
-                Embed guildEmbed = EmbedBuildersEncounter.BuildGuildEncounterEmbed(encounterState.Player.Name!, npc).Build();
-                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(encounterState.GuildChannelId, guildEmbed);
+                Embed guildEmbed = EmbedBuildersEncounter.BuildGuildEncounterEmbed(encounterSession.Context.Player.Name!, npc).Build();
+                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(encounterSession.State.GuildChannelId, guildEmbed);
             }
 
             // Notify user in channel that encounter started
@@ -231,11 +231,11 @@ namespace Adventure.Buttons
         {
             LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] Player {context.User.Id} resuming encounter");
 
-            // Get existing battle state
-            BattleStateModel state = BattleStateSetup.GetBattleState(context.User.Id);
-            if (state == null)
+            // Get existing battle session
+            BattleSession session = BattleStateSetup.GetBattleSession(context.User.Id);
+            if (session == null)
             {
-                LogService.Error("[ComponentHelpers.HandleResumeEncounterAsync] Battle state not found - removing stale encounter");
+                LogService.Error("[ComponentHelpers.HandleResumeEncounterAsync] Battle session not found - removing stale encounter");
                 string? staleTileId = ActiveEncounterTracker.GetEncounterTileForUser(context.User.Id);
                 if (staleTileId != null)
                 {
@@ -245,10 +245,10 @@ namespace Adventure.Buttons
             }
 
             // Reload NPC data from encounter tracker (has all thumbnails and data)
-            var encounterData = ActiveEncounterTracker.GetEncounter(state.EncounterTileId);
+            var encounterData = ActiveEncounterTracker.GetEncounter(session.State.EncounterTileId);
             if (encounterData?.Npc != null)
             {
-                state.Npc = encounterData.Npc;
+                session.Context.Npc = encounterData.Npc;
                 LogService.Info("[ComponentHelpers.HandleResumeEncounterAsync] NPC data reloaded from encounter tracker");
             }
             else
@@ -260,14 +260,14 @@ namespace Adventure.Buttons
             }
 
             // Reload player weapons/armor/items in case they changed or were not persisted
-            ReloadPlayerInventory(context.User.Id, state);
+            ReloadPlayerInventory(context.User.Id, session);
 
             // Reset battle step to Start so player can choose weapon again
             EncounterBattleStepsSetup.SetStep(context.User.Id, BattleStep.Start);
 
             // Update player state back to InBattle
-            state.Player.CurrentState = PlayerState.InBattle;
-            state.Player.LastActivityTime = DateTime.UtcNow;
+            session.Context.Player.CurrentState = PlayerState.InBattle;
+            session.Context.Player.LastActivityTime = DateTime.UtcNow;
             JsonDataManager.UpdatePlayerState(context.User.Id, PlayerState.InBattle);
             JsonDataManager.UpdatePlayerLastActivityTime(context.User.Id);
 
@@ -276,7 +276,7 @@ namespace Adventure.Buttons
             {
                 msg.Embed = new EmbedBuilder()
                     .WithTitle("⚔️ ENCOUNTER RESUMED!")
-                    .WithDescription($"Get ready to continue fighting **{state.Npc.Name!.ToUpper()}**...")
+                    .WithDescription($"Get ready to continue fighting **{session.Context.Npc.Name!.ToUpper()}**...")
                     .WithColor(Color.Orange)
                     .Build();
 
@@ -291,7 +291,7 @@ namespace Adventure.Buttons
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Orange)
                 .WithTitle($"⚔️ Encounter Resumed!")
-                .WithDescription($"You return to face the {state.StateOfNPC} **{state.Npc.Name}**!\n\n" +
+                .WithDescription($"You return to face the {session.State.StateOfNPC} **{session.Context.Npc.Name}**!\n\n" +
                                 $"The battle continues...");
 
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
@@ -309,14 +309,14 @@ namespace Adventure.Buttons
             }
 
             // Send guild notification
-            if (state.GuildChannelId != 0)
+            if (session.State.GuildChannelId != 0)
             {
                 Embed guildEmbed = new EmbedBuilder()
                     .WithColor(Color.Orange)
                     .WithTitle("⚔️ Battle Resumed")
-                    .WithDescription($"**{state.Player.Name}** returned to fight **{state.Npc.Name}**!")
+                    .WithDescription($"**{session.Context.Player.Name}** returned to fight **{session.Context.Npc.Name}**!")
                     .Build();
-                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(state.GuildChannelId, guildEmbed);
+                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(session.State.GuildChannelId, guildEmbed);
             }
 
             return true;
@@ -350,8 +350,8 @@ namespace Adventure.Buttons
                 var firstPlayer = encounterData.ParticipatingPlayers.FirstOrDefault();
                 if (firstPlayer != 0)
                 {
-                    var firstPlayerState = BattleStateSetup.GetBattleState(firstPlayer);
-                    npc = firstPlayerState?.Npc;
+                    var firstPlayerSession = BattleStateSetup.GetBattleSession(firstPlayer);
+                    npc = firstPlayerSession?.Context.Npc;
                 }
             }
 
@@ -365,22 +365,22 @@ namespace Adventure.Buttons
 
             SlashCommandHelpers.SetupBattleState(context.User.Id, npc);
 
-            // Get this player's battle state and sync with shared encounter
-            BattleStateModel state = BattleStateSetup.GetBattleState(context.User.Id);
-            state.GuildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
-            state.EncounterTileId = tileId;
-            state.HitpointsAtStartNPC = encounterData.MaxHitpoints;
-            state.CurrentHitpointsNPC = encounterData.CurrentHitpoints;
+            // Get this player's battle session and sync with shared encounter
+            BattleSession session = BattleStateSetup.GetBattleSession(context.User.Id);
+            session.State.GuildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
+            session.State.EncounterTileId = tileId;
+            session.State.HitpointsAtStartNPC = encounterData.MaxHitpoints;
+            session.State.CurrentHitpointsNPC = encounterData.CurrentHitpoints;
 
             // Register this player in the encounter
             ActiveEncounterTracker.RegisterEncounter(context.User.Id, tileId, encounterData.NpcName, encounterData.MaxHitpoints);
 
             // Reload inventory
-            ReloadPlayerInventory(context.User.Id, state);
+            ReloadPlayerInventory(context.User.Id, session);
 
             // Update player state to InBattle
-            state.Player.CurrentState = PlayerState.InBattle;
-            state.Player.LastActivityTime = DateTime.UtcNow;
+            session.Context.Player.CurrentState = PlayerState.InBattle;
+            session.Context.Player.LastActivityTime = DateTime.UtcNow;
             JsonDataManager.UpdatePlayerState(context.User.Id, PlayerState.InBattle);
             JsonDataManager.UpdatePlayerLastActivityTime(context.User.Id);
 
@@ -425,25 +425,25 @@ namespace Adventure.Buttons
             }
 
             // Send guild notification
-            if (state.GuildChannelId != 0)
+            if (session.State.GuildChannelId != 0)
             {
                 Embed guildEmbed = new EmbedBuilder()
                     .WithColor(Color.Gold)
                     .WithTitle("⚔️ Player Joined Battle")
-                    .WithDescription($"**{state.Player.Name}** joined the fight against **{encounterData.NpcName}**!\n" +
+                    .WithDescription($"**{session.Context.Player.Name}** joined the fight against **{encounterData.NpcName}**!\n" +
                                    $"**Players fighting**: {playerCount}")
                     .Build();
-                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(state.GuildChannelId, guildEmbed);
+                await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(session.State.GuildChannelId, guildEmbed);
             }
 
             return true;
         }
 
         /// <summary>
-        /// Reloads player inventory (weapons, armor, items) into the battle state.
+        /// Reloads player inventory (weapons, armor, items) into the battle session.
         /// Used when resuming an encounter after flee to ensure inventory is up-to-date.
         /// </summary>
-        private static void ReloadPlayerInventory(ulong userId, BattleStateModel state)
+        private static void ReloadPlayerInventory(ulong userId, BattleSession session)
         {
             PlayerModel player = PlayerDataManager.LoadByUserId(userId);
 
@@ -451,11 +451,11 @@ namespace Adventure.Buttons
             List<string> armorIds = player.Armor.Select(a => a.Id).ToList();
             List<string> itemIds = player.Items.Select(i => i.Id).ToList();
 
-            state.PlayerWeapons = GameEntityFetcher.RetrieveWeaponAttributes(weaponIds);
-            state.PlayerArmor = GameEntityFetcher.RetrieveArmorAttributes(armorIds);
-            state.Items = GameEntityFetcher.RetrieveItemAttributes(itemIds);
+            session.Context.PlayerWeapons = GameEntityFetcher.RetrieveWeaponAttributes(weaponIds);
+            session.Context.PlayerArmor = GameEntityFetcher.RetrieveArmorAttributes(armorIds);
+            session.Context.Items = GameEntityFetcher.RetrieveItemAttributes(itemIds);
 
-            LogService.Info($"[ComponentHelpers.ReloadPlayerInventory] Reloaded {state.PlayerWeapons.Count} weapons, {state.PlayerArmor.Count} armor, {state.Items.Count} items for user {userId}");
+            LogService.Info($"[ComponentHelpers.ReloadPlayerInventory] Reloaded {session.Context.PlayerWeapons.Count} weapons, {session.Context.PlayerArmor.Count} armor, {session.Context.Items.Count} items for user {userId}");
         }
 
         /// <summary>
@@ -601,9 +601,9 @@ namespace Adventure.Buttons
             ulong guildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
             if (guildChannelId != 0)
             {
-                BattleStateModel? state = BattleStateSetup.GetBattleState(context.User.Id);
+                BattleSession? session = BattleStateSetup.GetBattleSession(context.User.Id);
                 string playerName = context.User.GlobalName ?? context.User.Username;
-                string npcName = state?.Npc?.Name ?? "unknown creature";
+                string npcName = session?.Context.Npc?.Name ?? "unknown creature";
                 Embed guildEmbed = EmbedBuildersEncounter.BuildGuildFleeEmbed(playerName, npcName).Build();
                 await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(guildChannelId, guildEmbed);
             }

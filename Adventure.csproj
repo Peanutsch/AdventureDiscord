@@ -111,6 +111,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Thumb\" />
+    <Folder Include="Models\Battle\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>

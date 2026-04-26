@@ -45,7 +45,7 @@ namespace Adventure.Quest.Battle.TextGenerator
                             int damage,
                             string statusLabel,
                             BattleTextModel battleText,
-                            BattleStateModel state,
+                            BattleSession session,
                             Dictionary<string, string>? rollText,
                             bool isPlayerAttack = true
                                                )
@@ -63,7 +63,7 @@ namespace Adventure.Quest.Battle.TextGenerator
             };
 
             // Add dice roll details if this is a player attack
-            string? rollDetails = GetRollDetails(state, rollText, isPlayerAttack);
+            string? rollDetails = GetRollDetails(session, rollText, isPlayerAttack);
             if (!string.IsNullOrEmpty(rollDetails))
                 attackText += $"\n{rollDetails}";
 
@@ -119,33 +119,33 @@ namespace Adventure.Quest.Battle.TextGenerator
         /// <param name="rollText">Dictionary containing text templates for rolls (loaded from JSON).</param>
         /// <param name="isPlayerAttack">Whether the current attack is from the player.</param>
         /// <returns>A formatted multiline string with roll details, or null if not applicable.</returns>
-        public static string? GetRollDetails(BattleStateModel state, Dictionary<string, string>? rollText, bool isPlayerAttack = true)
+        public static string? GetRollDetails(BattleSession session, Dictionary<string, string>? rollText, bool isPlayerAttack = true)
         {
             if (!isPlayerAttack || rollText == null)
                 return null;
 
             // Handle critical hit: show extra damage rolls
-            if (state.IsCriticalHit)
+            if (session.State.IsCriticalHit)
             {
-                string attackRoll = ReplacePlaceholders(rollText["attackRoll"], state);
-                string damageRoll = ReplacePlaceholders(rollText["damageRoll"], state);
-                string critDamageRoll = ReplacePlaceholders(rollText["critDamageRoll"], state);
-                string totalDamageCriticalRoll = ReplacePlaceholders(rollText["totalDamageCriticalRoll"], state);
+                string attackRoll = ReplacePlaceholders(rollText["attackRoll"], session);
+                string damageRoll = ReplacePlaceholders(rollText["damageRoll"], session);
+                string critDamageRoll = ReplacePlaceholders(rollText["critDamageRoll"], session);
+                string totalDamageCriticalRoll = ReplacePlaceholders(rollText["totalDamageCriticalRoll"], session);
 
                 return $"> {attackRoll}\n> {damageRoll}\n> {critDamageRoll}\n> {totalDamageCriticalRoll}";
             }
             // Handle miss and critical miss: show only attack roll
-            else if (state.IsCriticalMiss || state.HitResult == "isMiss")
+            else if (session.State.IsCriticalMiss || session.State.HitResult == "isMiss")
             {
-                string missRoll = ReplacePlaceholders(rollText["attackRoll"], state);
+                string missRoll = ReplacePlaceholders(rollText["attackRoll"], session);
                 return $"> {missRoll}";
             }
             else
             {
                 // Normal hit: show attack roll, damage roll, and total damage
-                string attackRoll = ReplacePlaceholders(rollText["attackRoll"], state);
-                string damageRoll = ReplacePlaceholders(rollText["damageRoll"], state);
-                string total = ReplacePlaceholders(rollText["totalDamage"], state);
+                string attackRoll = ReplacePlaceholders(rollText["attackRoll"], session);
+                string damageRoll = ReplacePlaceholders(rollText["damageRoll"], session);
+                string total = ReplacePlaceholders(rollText["totalDamage"], session);
 
                 return $"> {attackRoll}\n> {damageRoll}\n> {total}";
             }
@@ -174,32 +174,32 @@ namespace Adventure.Quest.Battle.TextGenerator
          */
 
         /// <summary>
-        /// Replaces placeholder variables in a roll text template with real values from the current battle state.
+        /// Replaces placeholder variables in a roll text template with real values from the current battle session.
         /// </summary>
         /// <param name="template">Template string containing placeholders (e.g., {Damage}, {AttackRoll}).</param>
-        /// <param name="state">The current battle state model with all relevant roll values.</param>
+        /// <param name="session">The current battle session with all relevant roll values.</param>
         /// <returns>String with all placeholders replaced by actual values.</returns>
-        public static string ReplacePlaceholders(string template, BattleStateModel state)
+        public static string ReplacePlaceholders(string template, BattleSession session)
         {
             if (template == null)
                 return string.Empty;
 
             // Replace placeholders one by one using battle state data
             return template
-                .Replace("{TotalAttackRoll}", $"{state.TotalAttackRoll}")
-                .Replace("{AttackRoll}", $"{state.AttackRoll}")
-                .Replace("{Attackroll}", $"{state.AttackRoll}")
-                .Replace("{AbilityModifier}", $"{state.AbilityModifier}")
-                .Replace("{Strength}", $"{state.Player.Attributes.Strength}")
-                .Replace("{strength}", $"{state.Player.Attributes.Strength}")
-                .Replace("{ProficiencyModifier}", $"{state.ProficiencyModifier}")
-                .Replace("{PlayerLevel}", $"{state.Player.Level}")
-                .Replace("{Dice}", $"{state.Dice}")
-                .Replace("{Damage}", $"{state.Damage}")
-                .Replace("{damage}", $"{state.Damage}")
-                .Replace("{CritRoll}", $"{state.CritRoll}")
-                .Replace("{critRoll}", $"{state.CritRoll}")
-                .Replace("{TotalDamage}", $"{state.TotalDamage}");
+                .Replace("{TotalAttackRoll}", $"{session.State.TotalAttackRoll}")
+                .Replace("{AttackRoll}", $"{session.State.AttackRoll}")
+                .Replace("{Attackroll}", $"{session.State.AttackRoll}")
+                .Replace("{AbilityModifier}", $"{session.State.AbilityModifier}")
+                .Replace("{Strength}", $"{session.Context.Player.Attributes.Strength}")
+                .Replace("{strength}", $"{session.Context.Player.Attributes.Strength}")
+                .Replace("{ProficiencyModifier}", $"{session.State.ProficiencyModifier}")
+                .Replace("{PlayerLevel}", $"{session.Context.Player.Level}")
+                .Replace("{Dice}", $"{session.State.Dice}")
+                .Replace("{Damage}", $"{session.State.Damage}")
+                .Replace("{damage}", $"{session.State.Damage}")
+                .Replace("{CritRoll}", $"{session.State.CritRoll}")
+                .Replace("{critRoll}", $"{session.State.CritRoll}")
+                .Replace("{TotalDamage}", $"{session.State.TotalDamage}");
         }
         #endregion Replace Placeholders
     }

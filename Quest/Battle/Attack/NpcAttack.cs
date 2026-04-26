@@ -20,20 +20,20 @@ namespace Adventure.Quest.Battle.Attack
         public static string ProcessNpcAttack(ulong userId, WeaponModel weapon)
         {
             // Get attack data from AttackProcessor
-            (string battleLog, BattleStateModel state) = AttackProcessor.ProcessAttack(userId, weapon, false);
+            (string battleLog, BattleSession session) = AttackProcessor.ProcessAttack(userId, weapon, false);
 
             // If player is dead → end battle
-            if (state.Player.Hitpoints <= 0)
+            if (session.Context.Player.Hitpoints <= 0)
             {
                 EncounterBattleStepsSetup.SetStep(userId, BattleStep.EndBattle);
-                state.EmbedColor = Color.DarkRed;
+                session.State.EmbedColor = Color.DarkRed;
 
                 // Remove player from encounter (not entire encounter - other players may still be fighting)
                 Adventure.Services.ActiveEncounterTracker.RemovePlayerFromEncounter(userId);
 
                 // Load correct player name for defeat message (important for multiplayer)
                 var defeatedPlayer = Adventure.Data.PlayerDataManager.LoadByUserId(userId);
-                battleLog += $"\n\n💀 **{defeatedPlayer.Name} has been defeated by {state.Npc.Name}!**";
+                battleLog += $"\n\n💀 **{defeatedPlayer.Name} has been defeated by {session.Context.Npc.Name}!**";
             }
             else
             {

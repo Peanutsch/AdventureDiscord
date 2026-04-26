@@ -33,7 +33,7 @@ namespace Adventure.Quest.Rolls
         /// <returns>The result of the hit attempt (hit, miss, critical, etc.).</returns>
         public static HitResult ValidateHit(ulong userId, bool isPlayerAttacker)
         {
-            var state = BattleStateSetup.GetBattleState(userId);
+            var session = BattleStateSetup.GetBattleSession(userId);
 
             // Perform the attack roll (1d20)
             int attackRoll = DiceRoller.RollWithoutDetails(1, 20);
@@ -48,22 +48,22 @@ namespace Adventure.Quest.Rolls
             if (isPlayerAttacker)
             {
                 // Ensure the creature has valid armor
-                state.Npc.ArmorElements = state.NpcArmor.FirstOrDefault() ?? new ArmorModel();
+                session.Context.Npc.ArmorElements = session.Context.NpcArmor.FirstOrDefault() ?? new ArmorModel();
 
                 turn = "Player's";
-                levelCR = state.Player.Level;
-                abilityStrength = state.Player.Attributes.Strength;
-                defenderAC = state.Npc.ArmorElements.ArmorClass;
+                levelCR = session.Context.Player.Level;
+                abilityStrength = session.Context.Player.Attributes.Strength;
+                defenderAC = session.Context.Npc.ArmorElements.ArmorClass;
             }
             else
             {
                 // Ensure the player has valid armor
-                state.Player.ArmorElements = state.PlayerArmor.FirstOrDefault() ?? new ArmorModel();
+                session.Context.Player.ArmorElements = session.Context.PlayerArmor.FirstOrDefault() ?? new ArmorModel();
 
                 turn = "NPC's";
-                abilityStrength = state.Npc.Attributes.Strength;
-                levelCR = (int)state.Npc.CR;
-                defenderAC = state.Player.ArmorElements.ArmorClass;
+                abilityStrength = session.Context.Npc.Attributes.Strength;
+                levelCR = (int)session.Context.Npc.CR;
+                defenderAC = session.Context.Player.ArmorElements.ArmorClass;
             }
 
             // Get modifiers
@@ -77,13 +77,13 @@ namespace Adventure.Quest.Rolls
                             $"> totalAttackRoll({totalAttackRoll}) = attackRoll(+{attackRoll}) + abilityModifier[{abilityStrength}](+{abilityModifier}) + proficiencyModifier(+{proficiencyModifier})\n");
 
             // Store relevant data in the battle state
-            state.AttackRoll = attackRoll;
-            state.ProficiencyModifier = proficiencyModifier;
-            state.AbilityModifier = abilityModifier;
-            state.TotalAttackRoll = totalAttackRoll;
-            state.ArmorElements.ArmorClass = defenderAC;
-            state.IsCriticalHit = attackRoll == 20;   // Natural 20 = critical hit
-            state.IsCriticalMiss = attackRoll == 1;   // Natural 1 = critical miss
+            session.State.AttackRoll = attackRoll;
+            session.State.ProficiencyModifier = proficiencyModifier;
+            session.State.AbilityModifier = abilityModifier;
+            session.State.TotalAttackRoll = totalAttackRoll;
+            session.Context.ArmorElements.ArmorClass = defenderAC;
+            session.State.IsCriticalHit = attackRoll == 20;   // Natural 20 = critical hit
+            session.State.IsCriticalMiss = attackRoll == 1;   // Natural 1 = critical miss
 
             // Log the calculation details for debugging
             LogService.Info($"[ProcessRollsAndDamage.ValidateHit] {turn}'s turn:\n" +
@@ -94,27 +94,27 @@ namespace Adventure.Quest.Rolls
                             $"> defenderAC: {defenderAC}\n");
 
             // Determine and return the hit result
-            if (state.IsCriticalHit) {
+            if (session.State.IsCriticalHit) {
                 LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Critical Hit");
-                state.HitResult = "isCriticalHit";
+                session.State.HitResult = "isCriticalHit";
 
                 return HitResult.IsCriticalHit;
             }
-            else if (state.IsCriticalMiss) {
+            else if (session.State.IsCriticalMiss) {
                 LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Critical Miss");
-                state.HitResult = "isCriticalMiss";
+                session.State.HitResult = "isCriticalMiss";
 
                 return HitResult.IsCriticalMiss;
             }
             else if (totalAttackRoll >= defenderAC) {
                 LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Hit");
-                state.HitResult = "isHit";
+                session.State.HitResult = "isHit";
 
                 return HitResult.IsValidHit;
             }
             else {
                 LogService.Info($"[ProcessRollsAndDamage.ValidateHit] HitResult: Miss");
-                state.HitResult = "isMiss";
+                session.State.HitResult = "isMiss";
 
                 return HitResult.IsMiss;
             }
@@ -140,7 +140,7 @@ namespace Adventure.Quest.Rolls
         /// - Dice notation string
         /// - New HP of the defender after damage
         /// </returns>
-        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string diceNotation, int newHP) RollAndApplyDamage(BattleStateModel state, WeaponModel weapon, int currentHitpoints, bool isPlayerAttacker)
+        public static (int damage, int totalDamage, List<int> rolls, int critRoll, string diceNotation, int newHP) RollAndApplyDamage(BattleSession session, WeaponModel weapon, int currentHitpoints, bool isPlayerAttacker)
         {
             // Get weapon damage dice config
             var diceCount = weapon.Damage.DiceCount;
@@ -158,24 +158,24 @@ namespace Adventure.Quest.Rolls
             var dice = $"{diceCount}d{diceValue}";
 
             // Base damage: normal roll + strength/ability modifier
-            var totalDamage = damage + state.AbilityModifier;
+            var totalDamage = damage + session.State.AbilityModifier;
             LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] Calculating totalDamage:\n" +
-                            $"totalDamage({totalDamage}) = damage({damage}) + abilityModifier({state.AbilityModifier})\n");
+                            $"totalDamage({totalDamage}) = damage({damage}) + abilityModifier({session.State.AbilityModifier})\n");
 
             // Critical extra damage
-            var totalCritDamage = damage + critRoll + state.AbilityModifier;
+            var totalCritDamage = damage + critRoll + session.State.AbilityModifier;
             LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] Calculating totalCriticalDamage:\n" +
-                            $"totalCritDamage({totalCritDamage}) = damage({damage}) + critRoll({critRoll}) + abilityModifier({state.AbilityModifier})\n");
+                            $"totalCritDamage({totalCritDamage}) = damage({damage}) + critRoll({critRoll}) + abilityModifier({session.State.AbilityModifier})\n");
 
             // Apply critical-hit rule first
-            if (state.IsCriticalHit)
+            if (session.State.IsCriticalHit)
             {
                 totalDamage = totalCritDamage;
             }
 
             // Apply critical-miss rule (no damage)
             // Ensure TotalDamage is not less then 0, combined with when totalDamage and totalCritDamage < = 0
-            if (state.IsCriticalMiss || totalDamage <= 0 || totalCritDamage <= 0) {
+            if (session.State.IsCriticalMiss || totalDamage <= 0 || totalCritDamage <= 0) {
                 totalDamage = 0;
             }
 
@@ -185,25 +185,25 @@ namespace Adventure.Quest.Rolls
                 newHP = 0;
 
             // Store all derived values in state (after all adjustments)
-            state.Damage = damage;
-            state.CritRoll = critRoll;
-            state.Rolls = rolls;
-            state.Dice = dice;
-            state.TotalDamage = totalDamage;
-            state.LastUsedWeapon = weapon.Name ?? state.LastUsedWeapon;
+            session.State.Damage = damage;
+            session.State.CritRoll = critRoll;
+            session.State.Rolls = rolls;
+            session.State.Dice = dice;
+            session.State.TotalDamage = totalDamage;
+            session.State.LastUsedWeapon = weapon.Name ?? session.State.LastUsedWeapon;
 
             // Store pre-damage HP for logging/visualization
             if (isPlayerAttacker)
             {
-                var preSavedHPNpc = state.PreHpNPC;
-                state.PreHpNPC = currentHitpoints - totalDamage;
-                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] pre HP NPC: {preSavedHPNpc}\nUpdated state.PreHPNPC to: {state.PreHpNPC}\n");
+                var preSavedHPNpc = session.State.PreHpNPC;
+                session.State.PreHpNPC = currentHitpoints - totalDamage;
+                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] pre HP NPC: {preSavedHPNpc}\nUpdated state.PreHPNPC to: {session.State.PreHpNPC}\n");
             }
             else
             {
-                var preSavedHPPlayer = state.PreHpPlayer;
-                state.PreHpPlayer = currentHitpoints - totalDamage;
-                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] pre HP Player: {preSavedHPPlayer}\nUpdated state.PreHPPlayer to: {state.PreHpPlayer}\n");
+                var preSavedHPPlayer = session.State.PreHpPlayer;
+                session.State.PreHpPlayer = currentHitpoints - totalDamage;
+                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] pre HP Player: {preSavedHPPlayer}\nUpdated state.PreHPPlayer to: {session.State.PreHpPlayer}\n");
             }
 
             // Return tuple with detailed damage info (damage = raw dice sum, totalDamage = final after mods/crit/miss)

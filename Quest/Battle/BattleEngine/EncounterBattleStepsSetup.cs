@@ -46,11 +46,18 @@ namespace Adventure.Quest.Battle.BattleEngine
         #region === Battle State Tracking ===
 
         /// <summary>
-        /// Thread-safe dictionary tracking active battle states for each player.
-        /// Key: Discord user ID | Value: Current battle state (player vs NPC)
+        /// Thread-safe dictionary tracking active battle sessions for each player.
+        /// Key: Discord user ID | Value: Current battle session (context + runtime state)
         /// 
         /// Used to maintain state across multiple button interactions in a single battle.
         /// </summary>
+        public static readonly ConcurrentDictionary<ulong, BattleSession> battleSessions = new();
+
+        /// <summary>
+        /// LEGACY: Backward compatibility wrapper for old code still using battleStates.
+        /// DO NOT USE in new code - use battleSessions instead.
+        /// </summary>
+        [Obsolete("Use battleSessions instead")]
         public static readonly ConcurrentDictionary<ulong, BattleStateModel> battleStates = new();
 
         /// <summary>
@@ -66,12 +73,12 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// </returns>
         public static BattleStep GetStep(ulong userId)
         {
-            BattleStateModel? state = BattleStateSetup.GetBattleState(userId);
-            if (string.IsNullOrEmpty(state.Player.Step))
+            BattleSession? session = BattleStateSetup.GetBattleSession(userId);
+            if (string.IsNullOrEmpty(session.Context.Player.Step))
                 return BattleStep.Start;
 
             // Convert string to enum
-            if (Enum.TryParse<BattleStep>(state.Player.Step, ignoreCase: true, out BattleStep result))
+            if (Enum.TryParse<BattleStep>(session.Context.Player.Step, ignoreCase: true, out BattleStep result))
                 return result;
 
             return BattleStep.Start;
@@ -80,21 +87,21 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// <summary>
         /// Sets the current battle step/phase for a specific player.
         /// 
-        /// Updates both the internal BattleStateModel and the concurrent dictionary.
+        /// Updates both the internal BattleSession and the concurrent dictionary.
         /// This transitions the battle to a new phase (e.g., from WeaponChoice to Battle).
         /// </summary>
         /// <param name="userId">The Discord user ID of the player.</param>
         /// <param name="step">The new BattleStep phase to set.</param>
         public static void SetStep(ulong userId, BattleStep step)
         {
-            // Get current battle state for this user
-            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
+            // Get current battle session for this user
+            BattleSession session = BattleStateSetup.GetBattleSession(userId);
 
             // Update the step field (convert enum to string for storage)
-            state.Player.Step = step.ToString();
+            session.Context.Player.Step = step.ToString();
 
             // Persist to dictionary for other handlers to access
-            battleStates[userId] = state;
+            battleSessions[userId] = session;
         }
 
         #endregion
@@ -309,8 +316,8 @@ namespace Adventure.Quest.Battle.BattleEngine
         private static async Task HandleStepWeaponChoice(SocketInteraction interaction, string weaponId)
         {
             ulong userId = interaction.User.Id;
-            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
-            HashSet<string>? ownedWeaponIds = state.Player.Weapons.Select(w => w.Id).ToHashSet();
+            BattleSession session = BattleStateSetup.GetBattleSession(userId);
+            HashSet<string>? ownedWeaponIds = session.Context.Player.Weapons.Select(w => w.Id).ToHashSet();
 
             WeaponModel? weapon = GameEntityFetcher.RetrieveWeaponAttributes(new List<string> { weaponId }).FirstOrDefault();
             if (weapon == null)
@@ -345,13 +352,13 @@ namespace Adventure.Quest.Battle.BattleEngine
         public static async Task HandleStepBattle(SocketInteraction interaction, string weaponId)
         {
             ulong userId = interaction.User.Id;
-            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
+            BattleSession session = BattleStateSetup.GetBattleSession(userId);
 
             // --- Increment round counter (once per round) ---
-            state.RoundCounter++;
+            session.State.RoundCounter++;
 
             // --- Validate weapon existence ---
-            WeaponModel? weapon = state.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
+            WeaponModel? weapon = session.Context.PlayerWeapons.FirstOrDefault(w => w.Id == weaponId);
             if (weapon == null)
             {
                 await interaction.FollowupAsync("⚠️ Weapon not found in your inventory.", ephemeral: true);
@@ -387,24 +394,24 @@ namespace Adventure.Quest.Battle.BattleEngine
             string playerAttackResult = PlayerAttack.ProcessPlayerAttack(userId, weapon);
 
             // --- Check if NPC is defeated after player's attack ---
-            if (state.CurrentHitpointsNPC <= 0 || state.StateOfNPC == "Defeated")
+            if (session.State.CurrentHitpointsNPC <= 0 || session.State.StateOfNPC == "Defeated")
             {
-                await SendGuildBattleUpdateAsync(state, playerAttackResult);
-                await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction, playerAttackResult, state.PlayerLeveledUp);
+                await SendGuildBattleUpdateAsync(session, playerAttackResult);
+                await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction, playerAttackResult, session.State.PlayerLeveledUp);
                 return;
             }
 
             // --- NPC attack phase ---
-            string npcAttackResult = state.NpcWeapons.FirstOrDefault() is { } npcWeapon
+            string npcAttackResult = session.Context.NpcWeapons.FirstOrDefault() is { } npcWeapon
                 ? NpcAttack.ProcessNpcAttack(userId, npcWeapon)
-                : $"⚠️ {state.Npc.Name} has nothing to attack with.";
+                : $"⚠️ {session.Context.Npc.Name} has nothing to attack with.";
 
             // Combine both attack summaries
             string fullAttackLog = $"{playerAttackResult}\n\n{npcAttackResult}";
 
             // --- Build embed and battle buttons ---
             EmbedBuilder battleEmbed = EmbedBuildersEncounter.BuildBattleEmbed(userId, fullAttackLog);
-            ComponentBuilder battleButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
+            ComponentBuilder battleButtons = EmbedBuildersEncounter.BuildBattleButtons(session);
 
             // --- Send battle as NEW message (separate from weapon selection) ---
             IUserMessage? dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
@@ -423,7 +430,7 @@ namespace Adventure.Quest.Battle.BattleEngine
             }
 
             // --- Send battle update to guild channel for other members to follow ---
-            await SendGuildBattleUpdateAsync(state, fullAttackLog);
+            await SendGuildBattleUpdateAsync(session, fullAttackLog);
 
             // --- Transition to post-battle step ---
             SetStep(userId, BattleStep.PostBattle);
@@ -432,15 +439,15 @@ namespace Adventure.Quest.Battle.BattleEngine
         /// <summary>
         /// Sends a battle update embed to the guild channel if a guild channel is configured.
         /// </summary>
-        /// <param name="state">The current battle state.</param>
+        /// <param name="session">The current battle session.</param>
         /// <param name="attackLog">The attack summary text to display.</param>
-        private static async Task SendGuildBattleUpdateAsync(BattleStateModel state, string attackLog)
+        private static async Task SendGuildBattleUpdateAsync(BattleSession session, string attackLog)
         {
-            if (state.GuildChannelId == 0)
+            if (session.State.GuildChannelId == 0)
                 return;
 
-            EmbedBuilder guildEmbed = EmbedBuildersEncounter.BuildGuildBattleUpdateEmbed(state, attackLog);
-            await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(state.GuildChannelId, guildEmbed.Build());
+            EmbedBuilder guildEmbed = EmbedBuildersEncounter.BuildGuildBattleUpdateEmbed(session, attackLog);
+            await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(session.State.GuildChannelId, guildEmbed.Build());
         }
 
         #endregion
@@ -457,18 +464,18 @@ namespace Adventure.Quest.Battle.BattleEngine
             if (interaction == null) return;
 
             ulong userId = interaction.User.Id;
-            BattleStateModel state = BattleStateSetup.GetBattleState(userId);
-            if (state == null)
+            BattleSession session = BattleStateSetup.GetBattleSession(userId);
+            if (session == null)
             {
                 await interaction.FollowupAsync("No battle found...", ephemeral: true);
                 return;
             }
 
             // End battle if player or NPC is dead
-            if (state.Player.Hitpoints <= 0 || state.StateOfNPC == "Defeated")
+            if (session.Context.Player.Hitpoints <= 0 || session.State.StateOfNPC == "Defeated")
             {
                 SetStep(userId, BattleStep.EndBattle);
-                await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction, leveledUp: state.PlayerLeveledUp);
+                await EmbedBuildersEncounter.EmbedEndBattleInDM(interaction, leveledUp: session.State.PlayerLeveledUp);
                 return;
             }
 
@@ -489,7 +496,7 @@ namespace Adventure.Quest.Battle.BattleEngine
                         if (message != null)
                         {
                             // Keep the battle embed but update only the buttons for weapon selection
-                            ComponentBuilder weaponButtons = EmbedBuildersEncounter.BuildBattleButtons(state);
+                            ComponentBuilder weaponButtons = EmbedBuildersEncounter.BuildBattleButtons(session);
 
                             await BattlePrivateMessageHelper.UpdateBattleMessageAsync(
                                 message,
