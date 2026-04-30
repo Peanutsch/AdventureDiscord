@@ -137,7 +137,7 @@
         "lockId": "door_pond_living"
       },
       {
-        "id": "EXIT2",
+        "id": "Treasure",
         "base": "COIN",
         "overlay": "COIN",
         "text": "You did it! You have reached the center of the pond!\nNow, return to the living room and do nothing...",

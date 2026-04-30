@@ -93,17 +93,26 @@ namespace Adventure.Quest.Battle.Process
         /// </summary>
         /// <param name="npc">The NPC model.</param>
         /// <param name="percentHP">The NPC's current HP as a percentage.</param>
-        /// <returns>The URL of the NPC thumbnail corresponding to its HP level.</returns>
+        /// <returns>The URL of the NPC thumbnail corresponding to its HP level, or empty string if invalid.</returns>
         public static string GetNpcThumbnailByHP(NpcModel npc, int percentHP)
         {
-            return percentHP switch
+            if (npc == null)
+                return string.Empty;
+
+            string thumbnail = percentHP switch
             {
-                >= 90 => npc.ThumbHpNpc_100,
-                >= 50 => npc.ThumbHpNpc_50,
-                >= 10 => npc.ThumbHpNpc_10,
-                0 => npc.ThumbHpNpc_0,
-                _ => npc.ThumbHpNpc_100 // fallback for unexpected values
+                >= 90 => npc.ThumbHpNpc_100 ?? string.Empty,
+                >= 50 => npc.ThumbHpNpc_50 ?? string.Empty,
+                >= 10 => npc.ThumbHpNpc_10 ?? string.Empty,
+                0 => npc.ThumbHpNpc_0 ?? string.Empty,
+                _ => npc.ThumbHpNpc_100 ?? string.Empty // fallback for unexpected values
             };
+
+            // Validate that thumbnail URL is not an error message
+            if (string.IsNullOrWhiteSpace(thumbnail) || thumbnail.StartsWith("Error loading", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+
+            return thumbnail;
         }
         #endregion Process HP Status
     }

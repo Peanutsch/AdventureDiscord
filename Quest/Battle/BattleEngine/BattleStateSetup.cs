@@ -101,16 +101,5 @@ namespace Adventure.Quest.Battle.BattleEngine
 
             return EncounterBattleStepsSetup.battleSessions.GetOrAdd(userId, session);
         }
-
-        /// <summary>
-        /// LEGACY: Backward compatibility wrapper for old code.
-        /// Use GetBattleSession() in new code instead.
-        /// </summary>
-        [Obsolete("Use GetBattleSession() instead")]
-        public static BattleStateModel GetBattleState(ulong userId)
-        {
-            BattleSession session = GetBattleSession(userId);
-            return BattleStateModel.FromSession(session);
-        }
     }
 }

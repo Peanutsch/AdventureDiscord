@@ -90,11 +90,14 @@ namespace Adventure.Gateway
 
         /// <summary>
         /// Triggered when the Discord client is ready.
-        /// Performs session cleanup for stuck sessions, then registers all slash commands globally 
-        /// and announces the bot is online.
+        /// Loads saved encounters from previous session, performs session cleanup for stuck sessions,
+        /// then registers all slash commands globally and announces the bot is online.
         /// </summary>
         private async Task ReadyAsync()
         {
+            // Load saved encounters from previous session
+            await ActiveEncounterTracker.LoadEncountersAsync();
+
             // Clean up any stuck sessions from bot restarts/crashes
             var sessionCleanupService = new SessionCleanupService();
             await sessionCleanupService.CleanupAllStuckSessionsAsync();
@@ -189,6 +192,7 @@ namespace Adventure.Gateway
 
         /// <summary>
         /// Performs a graceful shutdown:
+        /// - Saves active encounters to disk
         /// - Cancels active tasks
         /// - Sets bot status to invisible
         /// - Logs out and closes the WebSocket connection
@@ -198,6 +202,9 @@ namespace Adventure.Gateway
             try
             {
                 LogService.Info("Shutting down bot...");
+
+                // Save active encounters before disconnecting
+                await ActiveEncounterTracker.SaveEncountersAsync();
 
                 _cancellationTokenSource.Cancel();                  // Cancel any long-running tasks
 

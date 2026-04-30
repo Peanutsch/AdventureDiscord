@@ -54,13 +54,6 @@ namespace Adventure.Quest.Battle.BattleEngine
         public static readonly ConcurrentDictionary<ulong, BattleSession> battleSessions = new();
 
         /// <summary>
-        /// LEGACY: Backward compatibility wrapper for old code still using battleStates.
-        /// DO NOT USE in new code - use battleSessions instead.
-        /// </summary>
-        [Obsolete("Use battleSessions instead")]
-        public static readonly ConcurrentDictionary<ulong, BattleStateModel> battleStates = new();
-
-        /// <summary>
         /// Retrieves the current battle step/phase for a specific player.
         /// 
         /// Queries the player's battle state to determine which phase they're currently in

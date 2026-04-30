@@ -8,8 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\Battle\**" />
     <Compile Remove="Quest\PlayerHelpers\**" />
+    <EmbeddedResource Remove="Models\Battle\**" />
     <EmbeddedResource Remove="Quest\PlayerHelpers\**" />
+    <None Remove="Models\Battle\**" />
     <None Remove="Quest\PlayerHelpers\**" />
   </ItemGroup>
 
@@ -111,7 +114,6 @@
 
   <ItemGroup>
     <Folder Include="Data\Thumb\" />
-    <Folder Include="Models\Battle\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>

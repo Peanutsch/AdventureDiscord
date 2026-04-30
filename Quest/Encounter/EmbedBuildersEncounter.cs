@@ -46,6 +46,37 @@ namespace Adventure.Quest.Encounter
             return embed;
         }
 
+        #endregion Embed Random Encounter
+
+        #region === Thumbnail Validation ===
+
+        /// <summary>
+        /// Validates if a thumbnail URL has a valid protocol (http://, https://, or attachment://).
+        /// Returns false for null, empty, or URLs without proper protocol to prevent Discord embed errors.
+        /// </summary>
+        /// <param name="thumbnailUrl">The thumbnail URL to validate.</param>
+        /// <returns>True if URL is valid, false otherwise.</returns>
+        private static bool IsValidThumbnailUrl(string? thumbnailUrl)
+        {
+            if (string.IsNullOrWhiteSpace(thumbnailUrl))
+                return false;
+
+            // Check if URL contains valid protocol
+            if (thumbnailUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                thumbnailUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
+                thumbnailUrl.StartsWith("attachment://", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            // URL is invalid or missing protocol
+            LogService.Info($"[EmbedBuildersEncounter.IsValidThumbnailUrl] Invalid thumbnail URL: {thumbnailUrl}. Skipping thumbnail.");
+            return false;
+        }
+
+        #endregion Thumbnail Validation
+
+        #region === Embed Armor Fields ===
         /// <summary>
         /// Adds armor fields to the encounter embed, showing the NPC's equipped armor pieces.
         /// </summary>
@@ -117,9 +148,9 @@ namespace Adventure.Quest.Encounter
                 embed.AddField($"**[{weapon.Name}]**",
                     //$"Range: {weapon.Range} meter\n" +  // Show attack range
                     $"*{weapon.Description}*", false);  // Italicized description for style
+                }
             }
-        }
-        #endregion Embed Random Encounter
+            #endregion Embed Weapon Fields
 
         #region === Embed Guild Encounter Notification ===
         /// <summary>

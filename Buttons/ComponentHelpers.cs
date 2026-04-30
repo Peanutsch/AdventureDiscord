@@ -1,6 +1,7 @@
 ﻿using Adventure.Data;
 using Adventure.Loaders;
 using Adventure.Models.BattleState;
+using Adventure.Models.Items;
 using Adventure.Models.Map;
 using Adventure.Models.Player;
 using Adventure.Modules.Helpers;
@@ -67,7 +68,7 @@ namespace Adventure.Buttons
             if (existingEncounterTile != null && existingEncounterTile == key)
             {
                 // Player returned to their own encounter - resume battle
-                LogService.Info($"[MovePlayerAsync] Player {context.User.Id} returning to their own encounter at {key}");
+                LogService.Info($"[ComponentHelpers.MovePlayerAsync] Player {context.User.Id} returning to their own encounter at {key}");
                 return await HandleResumeEncounterAsync(context);
             }
 
@@ -75,7 +76,7 @@ namespace Adventure.Buttons
             if (ActiveEncounterTracker.HasEncounterOnTile(key))
             {
                 // Another player is fighting here - offer to join the battle!
-                LogService.Info($"[MovePlayerAsync] Tile {key} has an active encounter - offering to join");
+                LogService.Info($"[ComponentHelpers.MovePlayerAsync] Tile {key} has an active encounter - offering to join");
                 return await HandleJoinEncounterAsync(context, key);
             }
 
@@ -249,7 +250,12 @@ namespace Adventure.Buttons
             if (encounterData?.Npc != null)
             {
                 session.Context.Npc = encounterData.Npc;
+                // CRITICAL: Also restore NPC HP values from the encounter
+                session.State.HitpointsAtStartNPC = encounterData.MaxHitpoints;
+                session.State.CurrentHitpointsNPC = encounterData.CurrentHitpoints;
+                session.State.PreHpNPC = encounterData.CurrentHitpoints;
                 LogService.Info("[ComponentHelpers.HandleResumeEncounterAsync] NPC data reloaded from encounter tracker");
+                LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] NPC HP restored: {encounterData.CurrentHitpoints}/{encounterData.MaxHitpoints}");
             }
             else
             {
@@ -261,6 +267,9 @@ namespace Adventure.Buttons
 
             // Reload player weapons/armor/items in case they changed or were not persisted
             ReloadPlayerInventory(context.User.Id, session);
+
+            // Set guild channel ID for notifications
+            session.State.GuildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
 
             // Reset battle step to Start so player can choose weapon again
             EncounterBattleStepsSetup.SetStep(context.User.Id, BattleStep.Start);
@@ -334,11 +343,11 @@ namespace Adventure.Buttons
             var encounterData = ActiveEncounterTracker.GetEncounter(tileId);
             if (encounterData == null)
             {
-                LogService.Error($"[HandleJoinEncounterAsync] Encounter data not found for tile {tileId}");
+                LogService.Error($"[ComponentHelpers.HandleJoinEncounterAsync] Encounter data not found for tile {tileId}");
                 return false;
             }
 
-            LogService.Info($"[HandleJoinEncounterAsync] Player {context.User.Id} joining encounter at {tileId} with {encounterData.NpcName}");
+            LogService.Info($"[ComponentHelpers.HandleJoinEncounterAsync] Player {context.User.Id} joining encounter at {tileId} with {encounterData.NpcName}");
 
             // Get NPC from encounter data (stored when encounter was created)
             Models.NPC.NpcModel? npc = encounterData.Npc;
@@ -346,7 +355,7 @@ namespace Adventure.Buttons
             // Fallback: if NPC not in encounter data, try to get from another player
             if (npc == null)
             {
-                LogService.Info($"[HandleJoinEncounterAsync] NPC not in encounter data, trying to get from other players");
+                LogService.Info($"[ComponentHelpers.HandleJoinEncounterAsync] NPC not in encounter data, trying to get from other players");
                 var firstPlayer = encounterData.ParticipatingPlayers.FirstOrDefault();
                 if (firstPlayer != 0)
                 {
@@ -358,7 +367,7 @@ namespace Adventure.Buttons
             // If still no NPC, cannot continue
             if (npc == null)
             {
-                LogService.Error($"[HandleJoinEncounterAsync] Could not find NPC data");
+                LogService.Error($"[ComponentHelpers.HandleJoinEncounterAsync] Could not find NPC data");
                 await context.Interaction.FollowupAsync("⚠️ Error joining encounter - NPC data not found.");
                 return false;
             }
@@ -406,9 +415,46 @@ namespace Adventure.Buttons
                 .WithColor(Color.Gold)
                 .WithTitle($"⚔️ Joined Multiplayer Battle!")
                 .WithDescription($"You join the fight against **{encounterData.NpcName}**!\n\n" +
-                                //$"**{encounterData.NpcName}** HP: {encounterData.CurrentHitpoints}/{encounterData.MaxHitpoints}\n" +
                                 $"**Players in battle**: {playerCount}\n\n" +
                                 $"Work together to defeat the enemy!");
+
+            // Add NPC details if available (armor, weapons, thumbnail)
+            if (encounterData.Npc != null)
+            {
+                // Add thumbnail if valid
+                if (encounterData.Npc.ThumbHpNpc_100?.StartsWith("http", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    embed.WithThumbnailUrl(encounterData.Npc.ThumbHpNpc_100);
+                }
+
+                // Add armor fields
+                if (encounterData.Npc.Armor?.Any() == true)
+                {
+                    List<ArmorModel> armorList = GameEntityFetcher.RetrieveArmorAttributes(encounterData.Npc.Armor);
+                    if (armorList.Count > 0)
+                    {
+                        foreach (ArmorModel armor in armorList)
+                        {
+                            embed.AddField($"**[{armor.Name}]**",
+                                $"Type: {armor.Type} armor\n*{armor.Description}*", false);
+                        }
+                    }
+                }
+
+                // Add weapon fields
+                if (encounterData.Npc.Weapons?.Any() == true)
+                {
+                    List<WeaponModel> weaponList = GameEntityFetcher.RetrieveWeaponAttributes(encounterData.Npc.Weapons);
+                    if (weaponList.Count > 0)
+                    {
+                        foreach (WeaponModel weapon in weaponList)
+                        {
+                            embed.AddField($"**[{weapon.Name}]**",
+                                $"*{weapon.Description}*", false);
+                        }
+                    }
+                }
+            }
 
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
 
@@ -421,7 +467,7 @@ namespace Adventure.Buttons
             if (dmMessage != null)
             {
                 BattlePrivateMessageHelper.SetActiveBattleMessage(context.User.Id, dmMessage.Id);
-                LogService.Info($"[HandleJoinEncounterAsync] ✅ Join message sent to user {context.User.Id}");
+                LogService.Info($"[ComponentHelpers.HandleJoinEncounterAsync] ✅ Join message sent to user {context.User.Id}");
             }
 
             // Send guild notification

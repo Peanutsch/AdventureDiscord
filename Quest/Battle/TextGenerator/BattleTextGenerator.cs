@@ -156,7 +156,7 @@ namespace Adventure.Quest.Battle.TextGenerator
         /*
             Battle Roll Text Placeholders
 
-            These placeholders are dynamically replaced with values from `BattleStateModel`.
+            These placeholders are dynamically replaced with values from `BattleSession.State`.
             They allow flexible text templates for dice roll results.
 
             | Placeholder            | Description                                                                     |
