@@ -91,7 +91,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Move Player Helpers ===
+        #region === Tile Validation and Position Helpers ===
         /// <summary>
         /// Attempts to find a tile in the map based on the provided key.
         /// </summary>
@@ -112,7 +112,7 @@ namespace Adventure.Buttons
         /// <returns>Always returns <c>false</c> to indicate the failure.</returns>
         private static async Task<bool> HandleMissingTileAsync(SocketInteractionContext context, string key)
         {
-            LogService.Error($"[MovePlayerAsync] ❌ Target tile '{key}' not found!");
+            LogService.Error($"[ComponentHelpers.HandleMissingTileAsync] ❌ Target tile '{key}' not found!");
             await context.Interaction.FollowupAsync($"❌ Target tile '{key}' not found.", ephemeral: true);
             return false;
         }
@@ -124,7 +124,7 @@ namespace Adventure.Buttons
         /// <param name="key">The key of the tile where the player is located.</param>
         private static void SavePlayerPosition(SocketInteractionContext context, string key)
         {
-            LogService.Info($"[MovePlayerAsync] Save location {key} for {context.User.GlobalName}");
+            LogService.Info($"[ComponentHelpers.SavePlayerPosition] Save location {key} for {context.User.GlobalName}");
             JsonDataManager.UpdatePlayerSavepoint(context.User.Id, key);
         }
 
@@ -148,7 +148,7 @@ namespace Adventure.Buttons
             bool isForestNorthEncounter = targetTile.TileName.Equals("Tree2", StringComparison.OrdinalIgnoreCase) &&
                                     chance <= setChanceEncounter;
 
-            LogService.Info($"[ComponentHelpers.TryTriggerAutoEncounterAsync] int chance: {chance}");
+            LogService.Info($"[ComponentHelpers.HandleTriggerAutoEncounterAsync] int chance: {chance}");
 
             if (isForestSouthEncounter)
                 return await HandleAutoEncounterAsync(context, targetTile, CreatureListPreference.Bestiary);
@@ -161,7 +161,9 @@ namespace Adventure.Buttons
 
             return false;
         }
+        #endregion
 
+        #region === Auto Encounter Handling ===
         /// <summary>
         /// Executes the logic for an automatic encounter, including NPC generation,
         /// battle setup, and displaying the encounter embed.
@@ -174,9 +176,9 @@ namespace Adventure.Buttons
         /// </returns>
         private static async Task<bool> HandleAutoEncounterAsync(SocketInteractionContext context, TileModel tile, CreatureListPreference preference)
         {
-            LogService.Info($"[ComponentHelpers.MovePlayerAsync] Auto-encounter triggered on {tile.TileName}");
+            LogService.Info($"[ComponentHelpers.HandleAutoEncounterAsync] Auto-encounter triggered on {tile.TileName}");
 
-            Models.NPC.NpcModel? npc = EncounterRandomizer.NpcRandomizer(CRWeightPreference.Balanced, preference);
+            NpcModel? npc = EncounterRandomizer.NpcRandomizer(CRWeightPreference.Balanced, preference);
             if (npc == null)
             {
                 await context.Interaction.FollowupAsync("⚠️ Could not pick a random NPC.");
@@ -184,20 +186,43 @@ namespace Adventure.Buttons
             }
 
             await TransitionBattleEmbed(context, npc.Name!);
+            BattleSession encounterSession = SetupAutoEncounterBattleState(context, tile, npc);
+            await SendAutoEncounterMessages(context, encounterSession, npc);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Sets up the battle state for an automatic encounter.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="tile">The tile where the encounter occurs.</param>
+        /// <param name="npc">The NPC being encountered.</param>
+        /// <returns>The configured battle session.</returns>
+        private static BattleSession SetupAutoEncounterBattleState(SocketInteractionContext context, TileModel tile, NpcModel npc)
+        {
             SlashCommandHelpers.SetupBattleState(context.User.Id, npc);
 
-            // Store guild channel ID and encounter tile ID in battle state
             BattleSession encounterSession = BattleStateSetup.GetBattleSession(context.User.Id);
             encounterSession.State.GuildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
             encounterSession.State.EncounterTileId = tile.TileId;
 
-            // Register encounter in tracker with full NPC model (for thumbnails etc)
             ActiveEncounterTracker.RegisterEncounter(context.User.Id, tile.TileId, npc.Name!, encounterSession.State.HitpointsAtStartNPC, npc);
 
+            return encounterSession;
+        }
+
+        /// <summary>
+        /// Sends encounter messages to player DM and guild channel.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="encounterSession">The battle session.</param>
+        /// <param name="npc">The NPC being encountered.</param>
+        private static async Task SendAutoEncounterMessages(SocketInteractionContext context, BattleSession encounterSession, NpcModel npc)
+        {
             EmbedBuilder embed = EmbedBuildersEncounter.EmbedRandomEncounter(npc);
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
 
-            // Send encounter to DM instead of channel
             var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
                 context.Interaction,
                 embed.Build(),
@@ -205,26 +230,33 @@ namespace Adventure.Buttons
 
             if (dmMessage != null)
             {
-                LogService.Info($"[ComponentHelpers.HandleAutoEncounterAsync] ✅ Storing active message {dmMessage.Id} for user {context.User.Id}");
+                LogService.Info($"[ComponentHelpers.SendAutoEncounterMessages] ✅ Storing active message {dmMessage.Id} for user {context.User.Id}");
                 BattlePrivateMessageHelper.SetActiveBattleMessage(context.User.Id, dmMessage.Id);
             }
             else
             {
-                LogService.Error("[ComponentHelpers.HandleAutoEncounterAsync] ❌ Failed to send encounter to DM");
+                LogService.Error("[ComponentHelpers.SendAutoEncounterMessages] ❌ Failed to send encounter to DM");
             }
 
-            // Send encounter notification to guild channel
+            await SendGuildEncounterNotification(encounterSession, npc);
+        }
+
+        /// <summary>
+        /// Sends an encounter notification to the guild channel.
+        /// </summary>
+        /// <param name="encounterSession">The battle session.</param>
+        /// <param name="npc">The NPC being encountered.</param>
+        private static async Task SendGuildEncounterNotification(BattleSession encounterSession, NpcModel npc)
+        {
             if (encounterSession.State.GuildChannelId != 0)
             {
                 Embed guildEmbed = EmbedBuildersEncounter.BuildGuildEncounterEmbed(encounterSession.Context.Player.Name!, npc).Build();
                 await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(encounterSession.State.GuildChannelId, guildEmbed);
             }
-
-            // Notify user in channel that encounter started
-            // await context.Interaction.FollowupAsync($"🎲 **{npc.Name}** encountered! Check your DMs to battle.");
-            return true;
         }
+        #endregion
 
+        #region === Resume Encounter Handling ===
         /// <summary>
         /// Resumes an existing encounter when player returns to the tile.
         /// Restores battle state with current NPC HP and continues the fight.
@@ -235,87 +267,160 @@ namespace Adventure.Buttons
         {
             LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] Player {context.User.Id} resuming encounter");
 
-            // Get existing battle session
-            BattleSession session = BattleStateSetup.GetBattleSession(context.User.Id);
-            if (session == null)
-            {
-                LogService.Error("[ComponentHelpers.HandleResumeEncounterAsync] Battle session not found - removing stale encounter");
-                string? staleTileId = ActiveEncounterTracker.GetEncounterTileForUser(context.User.Id);
-                if (staleTileId != null)
-                {
-                    ActiveEncounterTracker.RemovePlayerFromEncounter(context.User.Id);
-                }
+            BattleSession? session = BattleStateSetup.GetBattleSession(context.User.Id);
+            if (!ValidateBattleSession(context, session))
                 return false;
-            }
 
-            // Reload NPC data from encounter tracker (has all thumbnails and data)
+            if (!await RestoreEncounterData(context, session!))
+                return false;
+
+            PreparePlayerForResumedBattle(context, session!);
+            await ShowResumeEncounterTransition(context, session!);
+            await SendResumeEncounterMessages(context, session!);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Validates that a battle session exists for the player.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="session">The battle session to validate.</param>
+        /// <returns><c>true</c> if session is valid, otherwise <c>false</c>.</returns>
+        private static bool ValidateBattleSession(SocketInteractionContext context, BattleSession? session)
+        {
+            if (session != null)
+                return true;
+
+            LogService.Error("[ComponentHelpers.ValidateBattleSession] Battle session not found - removing stale encounter");
+            string? staleTileId = ActiveEncounterTracker.GetEncounterTileForUser(context.User.Id);
+            if (staleTileId != null)
+            {
+                ActiveEncounterTracker.RemovePlayerFromEncounter(context.User.Id);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Restores NPC and encounter data from the encounter tracker.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="session">The battle session to restore data into.</param>
+        /// <returns><c>true</c> if data was successfully restored, otherwise <c>false</c>.</returns>
+        private static async Task<bool> RestoreEncounterData(SocketInteractionContext context, BattleSession session)
+        {
             var encounterData = ActiveEncounterTracker.GetEncounter(session.State.EncounterTileId);
-            if (encounterData?.Npc != null)
+            if (encounterData?.Npc == null)
             {
-                // Try to reload the full NPC model from both bestiary and humanoids by name
-                var fullNpc = encounterData.Npc;
-                var bestiaryNpcs = BestiaryLoader.Load();
-                var humanoidNpcs = HumanoidLoader.Load();
-
-                // Combine all NPCs and search by name
-                var allNpcs = new List<NpcModel>();
-                if (bestiaryNpcs != null)
-                    allNpcs.AddRange(bestiaryNpcs);
-                if (humanoidNpcs != null)
-                    allNpcs.AddRange(humanoidNpcs);
-
-                if (allNpcs.Count > 0)
-                {
-                    var reloadedNpc = allNpcs.FirstOrDefault(n => n.Name == encounterData.NpcName);
-                    if (reloadedNpc != null)
-                    {
-                        fullNpc = reloadedNpc;
-                        LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] Full NPC model reloaded: {reloadedNpc.Name}");
-                    }
-                }
-
-                session.Context.Npc = fullNpc;
-                // CRITICAL: Also restore NPC HP values from the encounter
-                session.State.HitpointsAtStartNPC = encounterData.MaxHitpoints;
-                session.State.CurrentHitpointsNPC = encounterData.CurrentHitpoints;
-                session.State.PreHpNPC = encounterData.CurrentHitpoints;
-                LogService.Info("[ComponentHelpers.HandleResumeEncounterAsync] NPC data reloaded from encounter tracker");
-                LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] NPC HP restored: {encounterData.CurrentHitpoints}/{encounterData.MaxHitpoints}");
-
-                // Reload NPC weapons and armor
-                if (fullNpc.Weapons != null)
-                    session.Context.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(fullNpc.Weapons);
-                if (fullNpc.Armor != null)
-                    session.Context.NpcArmor = GameEntityFetcher.RetrieveArmorAttributes(fullNpc.Armor);
-
-                // Recalculate NPC state based on current HP
-                HPStatusHelpers.GetHPStatus(encounterData.CurrentHitpoints, encounterData.MaxHitpoints, HPStatusHelpers.TargetType.NPC, session);
-                LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] NPC state recalculated: {session.State.StateOfNPC}");
-            }
-            else
-            {
-                LogService.Error("[ComponentHelpers.HandleResumeEncounterAsync] Encounter data or NPC not found");
+                LogService.Error("[ComponentHelpers.RestoreEncounterData] Encounter data or NPC not found");
                 await context.Interaction.FollowupAsync("⚠️ Error resuming encounter - NPC data not found. The encounter has been removed.");
                 ActiveEncounterTracker.RemovePlayerFromEncounter(context.User.Id);
                 return false;
             }
 
-            // Reload player weapons/armor/items in case they changed or were not persisted
+            NpcModel fullNpc = ReloadFullNpcModel(encounterData);
+            RestoreNpcToSession(session, fullNpc, encounterData);
+            ReloadNpcEquipment(session, fullNpc);
+            RecalculateNpcState(session, encounterData);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Reloads the full NPC model from loaders with all details.
+        /// </summary>
+        /// <param name="encounterData">The encounter data containing NPC name.</param>
+        /// <returns>The full NPC model.</returns>
+        private static NpcModel ReloadFullNpcModel(dynamic encounterData)
+        {
+            var fullNpc = encounterData.Npc;
+            var bestiaryNpcs = BestiaryLoader.Load();
+            var humanoidNpcs = HumanoidLoader.Load();
+
+            var allNpcs = new List<NpcModel>();
+            if (bestiaryNpcs != null)
+                allNpcs.AddRange(bestiaryNpcs);
+            if (humanoidNpcs != null)
+                allNpcs.AddRange(humanoidNpcs);
+
+            if (allNpcs.Count > 0)
+            {
+                var reloadedNpc = allNpcs.FirstOrDefault(n => n.Name == encounterData.NpcName);
+                if (reloadedNpc != null)
+                {
+                    fullNpc = reloadedNpc;
+                    LogService.Info($"[ComponentHelpers.ReloadFullNpcModel] Full NPC model reloaded: {reloadedNpc.Name}");
+                }
+            }
+
+            return fullNpc;
+        }
+
+        /// <summary>
+        /// Restores NPC and HP data to the battle session.
+        /// </summary>
+        /// <param name="session">The battle session.</param>
+        /// <param name="npc">The NPC model.</param>
+        /// <param name="encounterData">The encounter data with HP information.</param>
+        private static void RestoreNpcToSession(BattleSession session, NpcModel npc, dynamic encounterData)
+        {
+            session.Context.Npc = npc;
+            session.State.HitpointsAtStartNPC = encounterData.MaxHitpoints;
+            session.State.CurrentHitpointsNPC = encounterData.CurrentHitpoints;
+            session.State.PreHpNPC = encounterData.CurrentHitpoints;
+
+            LogService.Info("[ComponentHelpers.RestoreNpcToSession] NPC data reloaded from encounter tracker");
+            LogService.Info($"[ComponentHelpers.RestoreNpcToSession] NPC HP restored: {encounterData.CurrentHitpoints}/{encounterData.MaxHitpoints}");
+        }
+
+        /// <summary>
+        /// Reloads NPC weapons and armor into the session.
+        /// </summary>
+        /// <param name="session">The battle session.</param>
+        /// <param name="npc">The NPC model with equipment.</param>
+        private static void ReloadNpcEquipment(BattleSession session, NpcModel npc)
+        {
+            if (npc.Weapons != null)
+                session.Context.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);
+            if (npc.Armor != null)
+                session.Context.NpcArmor = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
+        }
+
+        /// <summary>
+        /// Recalculates the NPC's state based on current HP.
+        /// </summary>
+        /// <param name="session">The battle session.</param>
+        /// <param name="encounterData">The encounter data with HP information.</param>
+        private static void RecalculateNpcState(BattleSession session, dynamic encounterData)
+        {
+            HPStatusHelpers.GetHPStatus(encounterData.CurrentHitpoints, encounterData.MaxHitpoints, HPStatusHelpers.TargetType.NPC, session);
+            LogService.Info($"[ComponentHelpers.RecalculateNpcState] NPC state recalculated: {session.State.StateOfNPC}");
+        }
+
+        /// <summary>
+        /// Prepares the player for resuming battle (inventory, state, battle step).
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="session">The battle session.</param>
+        private static void PreparePlayerForResumedBattle(SocketInteractionContext context, BattleSession session)
+        {
             ReloadPlayerInventory(context.User.Id, session);
-
-            // Set guild channel ID for notifications
             session.State.GuildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
-
-            // Reset battle step to Start so player can choose weapon again
             EncounterBattleStepsSetup.SetStep(context.User.Id, BattleStep.Start);
 
-            // Update player state back to InBattle
             session.Context.Player.CurrentState = PlayerState.InBattle;
             session.Context.Player.LastActivityTime = DateTime.UtcNow;
             JsonDataManager.UpdatePlayerState(context.User.Id, PlayerState.InBattle);
             JsonDataManager.UpdatePlayerLastActivityTime(context.User.Id);
+        }
 
-            // Disable the previous map message buttons (like TransitionBattleEmbed does)
+        /// <summary>
+        /// Shows the transition animation when resuming an encounter.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="session">The battle session.</param>
+        private static async Task ShowResumeEncounterTransition(SocketInteractionContext context, BattleSession session)
+        {
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
                 msg.Embed = new EmbedBuilder()
@@ -330,8 +435,15 @@ namespace Adventure.Buttons
             });
 
             await Task.Delay(1500);
+        }
 
-            // Build encounter resume embed
+        /// <summary>
+        /// Sends DM and guild messages when resuming an encounter.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="session">The battle session.</param>
+        private static async Task SendResumeEncounterMessages(SocketInteractionContext context, BattleSession session)
+        {
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Orange)
                 .WithTitle($"⚔️ Encounter Resumed!")
@@ -340,7 +452,6 @@ namespace Adventure.Buttons
 
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
 
-            // Send resume message to DM
             var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
                 context.Interaction,
                 embed.Build(),
@@ -349,10 +460,18 @@ namespace Adventure.Buttons
             if (dmMessage != null)
             {
                 BattlePrivateMessageHelper.SetActiveBattleMessage(context.User.Id, dmMessage.Id);
-                LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] ✅ Resume message sent to user {context.User.Id}");
+                LogService.Info($"[ComponentHelpers.SendResumeEncounterMessages] ✅ Resume message sent to user {context.User.Id}");
             }
 
-            // Send guild notification
+            await SendGuildResumeNotification(session);
+        }
+
+        /// <summary>
+        /// Sends a notification to the guild channel when a battle is resumed.
+        /// </summary>
+        /// <param name="session">The battle session.</param>
+        private static async Task SendGuildResumeNotification(BattleSession session)
+        {
             if (session.State.GuildChannelId != 0)
             {
                 Embed guildEmbed = new EmbedBuilder()
@@ -362,10 +481,10 @@ namespace Adventure.Buttons
                     .Build();
                 await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(session.State.GuildChannelId, guildEmbed);
             }
-
-            return true;
         }
+        #endregion
 
+        #region === Join Encounter Handling ===
         /// <summary>
         /// Handles a player joining an existing multiplayer encounter.
         /// Allows multiple players to fight the same NPC together.
@@ -384,13 +503,33 @@ namespace Adventure.Buttons
 
             LogService.Info($"[ComponentHelpers.HandleJoinEncounterAsync] Player {context.User.Id} joining encounter at {tileId} with {encounterData.NpcName}");
 
-            // Get NPC from encounter data (stored when encounter was created)
-            Models.NPC.NpcModel? npc = encounterData.Npc;
-
-            // Fallback: if NPC not in encounter data, try to get from another player
+            NpcModel? npc = GetNpcFromEncounter(encounterData);
             if (npc == null)
             {
-                LogService.Info($"[ComponentHelpers.HandleJoinEncounterAsync] NPC not in encounter data, trying to get from other players");
+                LogService.Error($"[ComponentHelpers.HandleJoinEncounterAsync] Could not find NPC data");
+                await context.Interaction.FollowupAsync("⚠️ Error joining encounter - NPC data not found.");
+                return false;
+            }
+
+            BattleSession session = SetupPlayerForJoinEncounter(context, tileId, encounterData, npc);
+            await ShowJoinEncounterTransition(context, encounterData.NpcName);
+            await SendJoinEncounterMessages(context, session, encounterData);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Retrieves the NPC model from encounter data, with fallback to other player sessions.
+        /// </summary>
+        /// <param name="encounterData">The encounter data containing NPC information.</param>
+        /// <returns>The NPC model if found, otherwise null.</returns>
+        private static NpcModel? GetNpcFromEncounter(dynamic encounterData)
+        {
+            NpcModel? npc = encounterData.Npc;
+
+            if (npc == null)
+            {
+                LogService.Info($"[ComponentHelpers.GetNpcFromEncounter] NPC not in encounter data, trying to get from other players");
                 var firstPlayer = encounterData.ParticipatingPlayers.FirstOrDefault();
                 if (firstPlayer != 0)
                 {
@@ -399,41 +538,50 @@ namespace Adventure.Buttons
                 }
             }
 
-            // If still no NPC, cannot continue
-            if (npc == null)
-            {
-                LogService.Error($"[ComponentHelpers.HandleJoinEncounterAsync] Could not find NPC data");
-                await context.Interaction.FollowupAsync("⚠️ Error joining encounter - NPC data not found.");
-                return false;
-            }
+            return npc;
+        }
 
+        /// <summary>
+        /// Sets up the player's battle state when joining an encounter.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="tileId">The tile ID where the encounter is happening.</param>
+        /// <param name="encounterData">The encounter data.</param>
+        /// <param name="npc">The NPC being fought.</param>
+        /// <returns>The configured battle session.</returns>
+        private static BattleSession SetupPlayerForJoinEncounter(SocketInteractionContext context, string tileId, dynamic encounterData, NpcModel npc)
+        {
             SlashCommandHelpers.SetupBattleState(context.User.Id, npc);
 
-            // Get this player's battle session and sync with shared encounter
             BattleSession session = BattleStateSetup.GetBattleSession(context.User.Id);
             session.State.GuildChannelId = BattlePrivateMessageHelper.GetGuildChannelId(context.User.Id);
             session.State.EncounterTileId = tileId;
             session.State.HitpointsAtStartNPC = encounterData.MaxHitpoints;
             session.State.CurrentHitpointsNPC = encounterData.CurrentHitpoints;
 
-            // Register this player in the encounter
             ActiveEncounterTracker.RegisterEncounter(context.User.Id, tileId, encounterData.NpcName, encounterData.MaxHitpoints);
-
-            // Reload inventory
             ReloadPlayerInventory(context.User.Id, session);
 
-            // Update player state to InBattle
             session.Context.Player.CurrentState = PlayerState.InBattle;
             session.Context.Player.LastActivityTime = DateTime.UtcNow;
             JsonDataManager.UpdatePlayerState(context.User.Id, PlayerState.InBattle);
             JsonDataManager.UpdatePlayerLastActivityTime(context.User.Id);
 
-            // Disable the previous map message buttons (transition effect)
+            return session;
+        }
+
+        /// <summary>
+        /// Shows the transition animation when a player joins an encounter.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="npcName">The name of the NPC being fought.</param>
+        private static async Task ShowJoinEncounterTransition(SocketInteractionContext context, string npcName)
+        {
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
             {
                 msg.Embed = new EmbedBuilder()
                     .WithTitle("⚔️ JOINING BATTLE!")
-                    .WithDescription($"You rush to join the fight against **{encounterData.NpcName.ToUpper()}**...")
+                    .WithDescription($"You rush to join the fight against **{npcName.ToUpper()}**...")
                     .WithColor(Color.Gold)
                     .Build();
 
@@ -443,57 +591,20 @@ namespace Adventure.Buttons
             });
 
             await Task.Delay(1500);
+        }
 
-            // Build join encounter embed
+        /// <summary>
+        /// Sends DM and guild messages when a player joins an encounter.
+        /// </summary>
+        /// <param name="context">The Discord interaction context.</param>
+        /// <param name="session">The player's battle session.</param>
+        /// <param name="encounterData">The encounter data.</param>
+        private static async Task SendJoinEncounterMessages(SocketInteractionContext context, BattleSession session, dynamic encounterData)
+        {
             int playerCount = encounterData.ParticipatingPlayers.Count;
-            EmbedBuilder embed = new EmbedBuilder()
-                .WithColor(Color.Gold)
-                .WithTitle($"⚔️ Joined Multiplayer Battle!")
-                .WithDescription($"You join the fight against **{encounterData.NpcName}**!\n\n" +
-                                $"**Players in battle**: {playerCount}\n\n" +
-                                $"Work together to defeat the enemy!");
-
-            // Add NPC details if available (armor, weapons, thumbnail)
-            if (encounterData.Npc != null)
-            {
-                // Add thumbnail if valid
-                if (encounterData.Npc.ThumbHpNpc_100?.StartsWith("http", StringComparison.OrdinalIgnoreCase) == true)
-                {
-                    embed.WithThumbnailUrl(encounterData.Npc.ThumbHpNpc_100);
-                }
-
-                // Add armor fields
-                if (encounterData.Npc.Armor?.Any() == true)
-                {
-                    List<ArmorModel> armorList = GameEntityFetcher.RetrieveArmorAttributes(encounterData.Npc.Armor);
-                    if (armorList.Count > 0)
-                    {
-                        foreach (ArmorModel armor in armorList)
-                        {
-                            embed.AddField($"**[{armor.Name}]**",
-                                $"Type: {armor.Type} armor\n*{armor.Description}*", false);
-                        }
-                    }
-                }
-
-                // Add weapon fields
-                if (encounterData.Npc.Weapons?.Any() == true)
-                {
-                    List<WeaponModel> weaponList = GameEntityFetcher.RetrieveWeaponAttributes(encounterData.Npc.Weapons);
-                    if (weaponList.Count > 0)
-                    {
-                        foreach (WeaponModel weapon in weaponList)
-                        {
-                            embed.AddField($"**[{weapon.Name}]**",
-                                $"*{weapon.Description}*", false);
-                        }
-                    }
-                }
-            }
-
+            EmbedBuilder embed = BuildJoinEncounterEmbed(encounterData, playerCount);
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
 
-            // Send join message to DM
             var dmMessage = await BattlePrivateMessageHelper.SendBattleMessageAsync(
                 context.Interaction,
                 embed.Build(),
@@ -502,24 +613,90 @@ namespace Adventure.Buttons
             if (dmMessage != null)
             {
                 BattlePrivateMessageHelper.SetActiveBattleMessage(context.User.Id, dmMessage.Id);
-                LogService.Info($"[ComponentHelpers.HandleJoinEncounterAsync] ✅ Join message sent to user {context.User.Id}");
+                LogService.Info($"[ComponentHelpers.SendJoinEncounterMessages] ✅ Join message sent to user {context.User.Id}");
             }
 
-            // Send guild notification
+            await SendGuildJoinNotification(session, encounterData.NpcName, playerCount);
+        }
+
+        /// <summary>
+        /// Builds the embed for joining an encounter with NPC details.
+        /// </summary>
+        /// <param name="encounterData">The encounter data containing NPC and player information.</param>
+        /// <param name="playerCount">The number of players in the battle.</param>
+        /// <returns>An embed builder configured with encounter join information.</returns>
+        private static EmbedBuilder BuildJoinEncounterEmbed(dynamic encounterData, int playerCount)
+        {
+            EmbedBuilder embed = new EmbedBuilder()
+                .WithColor(Color.Gold)
+                .WithTitle($"⚔️ Joined Multiplayer Battle!")
+                .WithDescription($"You join the fight against **{encounterData.NpcName}**!\n\n" +
+                                $"**Players in battle**: {playerCount}\n\n" +
+                                $"Work together to defeat the enemy!");
+
+            if (encounterData.Npc != null)
+            {
+                AddNpcDetailsToEmbed(embed, encounterData.Npc);
+            }
+
+            return embed;
+        }
+
+        /// <summary>
+        /// Adds NPC details (thumbnail, armor, weapons) to an embed.
+        /// </summary>
+        /// <param name="embed">The embed builder to add details to.</param>
+        /// <param name="npc">The NPC model with details to display.</param>
+        private static void AddNpcDetailsToEmbed(EmbedBuilder embed, NpcModel npc)
+        {
+            if (npc.ThumbHpNpc_100?.StartsWith("http", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                embed.WithThumbnailUrl(npc.ThumbHpNpc_100);
+            }
+
+            if (npc.Armor?.Any() == true)
+            {
+                List<ArmorModel> armorList = GameEntityFetcher.RetrieveArmorAttributes(npc.Armor);
+                foreach (ArmorModel armor in armorList)
+                {
+                    embed.AddField($"**[{armor.Name}]**",
+                        $"Type: {armor.Type} armor\n*{armor.Description}*", false);
+                }
+            }
+
+            if (npc.Weapons?.Any() == true)
+            {
+                List<WeaponModel> weaponList = GameEntityFetcher.RetrieveWeaponAttributes(npc.Weapons);
+                foreach (WeaponModel weapon in weaponList)
+                {
+                    embed.AddField($"**[{weapon.Name}]**",
+                        $"*{weapon.Description}*", false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends a notification to the guild channel when a player joins a battle.
+        /// </summary>
+        /// <param name="session">The player's battle session.</param>
+        /// <param name="npcName">The name of the NPC being fought.</param>
+        /// <param name="playerCount">The number of players in the battle.</param>
+        private static async Task SendGuildJoinNotification(BattleSession session, string npcName, int playerCount)
+        {
             if (session.State.GuildChannelId != 0)
             {
                 Embed guildEmbed = new EmbedBuilder()
                     .WithColor(Color.Gold)
                     .WithTitle("⚔️ Player Joined Battle")
-                    .WithDescription($"**{session.Context.Player.Name}** joined the fight against **{encounterData.NpcName}**!\n" +
+                    .WithDescription($"**{session.Context.Player.Name}** joined the fight against **{npcName}**!\n" +
                                    $"**Players fighting**: {playerCount}")
                     .Build();
                 await BattlePrivateMessageHelper.SendGuildMessageUpdateAsync(session.State.GuildChannelId, guildEmbed);
             }
-
-            return true;
         }
+        #endregion
 
+        #region === Player Inventory Management ===
         /// <summary>
         /// Reloads player inventory (weapons, armor, items) into the battle session.
         /// Used when resuming an encounter after flee to ensure inventory is up-to-date.
@@ -538,7 +715,9 @@ namespace Adventure.Buttons
 
             LogService.Info($"[ComponentHelpers.ReloadPlayerInventory] Reloaded {session.Context.PlayerWeapons.Count} weapons, {session.Context.PlayerArmor.Count} armor, {session.Context.Items.Count} items for user {userId}");
         }
+        #endregion
 
+        #region === Normal Movement Handling ===
         /// <summary>
         /// Handles standard player movement when no encounter occurs.
         /// Updates the map view and optionally displays a travel animation.
@@ -576,7 +755,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Transition Travel Embed ===
+        #region === Travel Transition Embeds ===
         /// <summary>
         /// Builds a travel transition embed for moving between tiles.
         /// </summary>
@@ -645,7 +824,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Transition Battle Embed ===
+        #region === Battle Transition Embeds ===
         public static async Task TransitionBattleEmbed(SocketInteractionContext context, string npc)
         {
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
@@ -666,7 +845,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Transition Flee Embed ===
+        #region === Flee Transition Handling ===
         /// <summary>
         /// Handles the transition when a player chooses to flee from battle.
         /// Displays a "fleeing" embed, waits briefly, then moves the player to a nearby or random safe tile.

@@ -113,7 +113,9 @@ namespace Adventure.Quest.Encounter
                     $"*{armor.Description}*", false); // Italicized description for flavor
             }
         }
+        #endregion
 
+        #region === Embed Weapon Fields ===
         /// <summary>
         /// Adds weapon fields to the encounter embed, displaying each weapon's range and description.
         /// </summary>
@@ -150,7 +152,7 @@ namespace Adventure.Quest.Encounter
                     $"*{weapon.Description}*", false);  // Italicized description for style
                 }
             }
-            #endregion Embed Weapon Fields
+        #endregion
 
         #region === Embed Guild Encounter Notification ===
         /// <summary>
@@ -394,7 +396,6 @@ namespace Adventure.Quest.Encounter
                 .AddField("[Status]",
                     $"{session.Context.Player.Name}: {session.Context.Player.Hitpoints} HP ({session.State.StateOfPlayer}) | " +
                     $"{session.Context.Npc.Name}: {session.State.StateOfNPC}", false);
-                //.WithFooter($"Round {state.RoundCounter} completed.");
         }
         #endregion Embed Guild Battle Update
 

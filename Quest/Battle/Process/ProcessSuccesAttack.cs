@@ -40,7 +40,7 @@ namespace Adventure.Quest.Battle.Process
 
             if (isPlayerAttacker)
             {
-                LogService.Info($"\n\nPlayer's turn > Dice: {dice} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}\n\n");
+                LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] Player's turn > Dice: {dice} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}");
 
                 // Player attacks, update NPC HP
                 session.State.CurrentHitpointsNPC = newHP;
@@ -57,12 +57,11 @@ namespace Adventure.Quest.Battle.Process
                 JsonDataManager.UpdatePlayerHitpoints(userId, session.Context.Player.Name!, session.Context.Player.Hitpoints);
 
                 // Log HP status after player's attack
-                LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After player attack:\n\n" +
-                                $"HP {session.Context.Player.Name}: {session.Context.Player.Hitpoints} HP NPC: {session.State.CurrentHitpointsNPC}\n\n");
+                LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After player attack > HP {session.Context.Player.Name}: {session.Context.Player.Hitpoints} HP NPC: {session.State.CurrentHitpointsNPC}\n\n");
             }
             else
             {
-                LogService.Info($"\n\nNPC's turn > Dice: {dice} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}\n\n");
+                LogService.Info($"NPC's turn > Dice: {dice} Damage: {damage} Crit: {critRoll} Total Damage {totalDamage}");
 
                 // NPC attacks, update player HP
                 session.Context.Player.Hitpoints = newHP;
@@ -71,8 +70,7 @@ namespace Adventure.Quest.Battle.Process
                 JsonDataManager.UpdatePlayerHitpoints(userId, session.Context.Player.Name!, session.Context.Player.Hitpoints);
 
                 // Log HP status after creature's attack
-                LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After NPC attack:\n\n" +
-                                $"HP Player: {session.Context.Player.Hitpoints} HP NPC: {session.State.CurrentHitpointsNPC}\n\n");
+                LogService.Info($"[ProcessSuccesAttack.ProcessSuccessfulHit] After NPC attack > HP Player: {session.Context.Player.Hitpoints} HP NPC: {session.State.CurrentHitpointsNPC}");
             }
 
             // Return detailed result of the damage roll

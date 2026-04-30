@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
+using Adventure.Models.NPC;
 using Adventure.Quest.Battle.BattleEngine;
 
 namespace Adventure.Services
@@ -13,6 +14,7 @@ namespace Adventure.Services
     /// </summary>
     public static class ActiveEncounterTracker
     {
+        #region === Nested Classes ===
         /// <summary>
         /// Data structure for tracking an active encounter with multiplayer support.
         /// Thread-safe for concurrent attacks from multiple players.
@@ -30,7 +32,7 @@ namespace Adventure.Services
             /// Full NPC model with all data (thumbnails, CR, weapons, etc.)
             /// Shared across all players in this encounter
             /// </summary>
-            public Adventure.Models.NPC.NpcModel? Npc { get; set; }
+            public NpcModel? Npc { get; set; }
 
             /// <summary>
             /// Tracks total damage dealt by each player. Key: userId, Value: total damage
@@ -65,7 +67,9 @@ namespace Adventure.Services
                 }
             }
         }
+        #endregion
 
+        #region === Private Fields ===
         /// <summary>
         /// Stores active encounters. Key: tileId, Value: EncounterData
         /// </summary>
@@ -75,7 +79,9 @@ namespace Adventure.Services
         /// Mapping of userId to their active encounter tileId for quick lookup
         /// </summary>
         private static readonly ConcurrentDictionary<ulong, string> PlayerToEncounter = new();
+        #endregion
 
+        #region === Encounter Registration & Removal ===
         /// <summary>
         /// Registers a new encounter on a specific tile, or adds a player to an existing encounter.
         /// </summary>
@@ -100,46 +106,6 @@ namespace Adventure.Services
             PlayerToEncounter[userId] = tileId;
 
             LogService.Info($"[ActiveEncounterTracker.RegisterEncounter] User {userId} joined encounter at {tileId} with {npcName}");
-        }
-
-        /// <summary>
-        /// Records damage dealt by a specific player to the NPC.
-        /// Thread-safe for concurrent attacks.
-        /// </summary>
-        /// <returns>Tuple of (new NPC HP, was NPC defeated by this hit)</returns>
-        public static (int newHp, bool isDefeated) RecordDamage(ulong userId, string tileId, int damage)
-        {
-            if (ActiveEncounters.TryGetValue(tileId, out var encounter))
-            {
-                var (newHp, isDefeated) = encounter.ApplyDamage(userId, damage);
-                LogService.Info($"[ActiveEncounterTracker.RecordDamage] User {userId} dealt {damage} damage at {tileId}. Total: {encounter.PlayerDamage[userId]}, NPC HP: {newHp}/{encounter.MaxHitpoints}, Defeated: {isDefeated}");
-                return (newHp, isDefeated);
-            }
-            return (0, false);
-        }
-
-        /// <summary>
-        /// Gets damage statistics for XP distribution when NPC is defeated.
-        /// Returns dictionary of userId -> percentage of total damage (0-100).
-        /// </summary>
-        public static Dictionary<ulong, int> GetDamageRatios(string tileId)
-        {
-            if (!ActiveEncounters.TryGetValue(tileId, out var encounter))
-                return new Dictionary<ulong, int>();
-
-            int totalDamage = encounter.PlayerDamage.Values.Sum();
-            if (totalDamage == 0)
-                return new Dictionary<ulong, int>();
-
-            var ratios = new Dictionary<ulong, int>();
-            foreach (var kvp in encounter.PlayerDamage)
-            {
-                int percentage = (int)Math.Round((double)kvp.Value / totalDamage * 100);
-                ratios[kvp.Key] = percentage;
-                LogService.Info($"[ActiveEncounterTracker.GetDamageRatios] User {kvp.Key}: {kvp.Value}/{totalDamage} damage = {percentage}% XP");
-            }
-
-            return ratios;
         }
 
         /// <summary>
@@ -192,7 +158,51 @@ namespace Adventure.Services
                 }
             }
         }
+        #endregion
 
+        #region === Damage Tracking ===
+        /// <summary>
+        /// Records damage dealt by a specific player to the NPC.
+        /// Thread-safe for concurrent attacks.
+        /// </summary>
+        /// <returns>Tuple of (new NPC HP, was NPC defeated by this hit)</returns>
+        public static (int newHp, bool isDefeated) RecordDamage(ulong userId, string tileId, int damage)
+        {
+            if (ActiveEncounters.TryGetValue(tileId, out var encounter))
+            {
+                var (newHp, isDefeated) = encounter.ApplyDamage(userId, damage);
+                LogService.Info($"[ActiveEncounterTracker.RecordDamage] User {userId} dealt {damage} damage at {tileId}. Total: {encounter.PlayerDamage[userId]}, NPC HP: {newHp}/{encounter.MaxHitpoints}, Defeated: {isDefeated}");
+                return (newHp, isDefeated);
+            }
+            return (0, false);
+        }
+
+        /// <summary>
+        /// Gets damage statistics for XP distribution when NPC is defeated.
+        /// Returns dictionary of userId -> percentage of total damage (0-100).
+        /// </summary>
+        public static Dictionary<ulong, int> GetDamageRatios(string tileId)
+        {
+            if (!ActiveEncounters.TryGetValue(tileId, out var encounter))
+                return new Dictionary<ulong, int>();
+
+            int totalDamage = encounter.PlayerDamage.Values.Sum();
+            if (totalDamage == 0)
+                return new Dictionary<ulong, int>();
+
+            var ratios = new Dictionary<ulong, int>();
+            foreach (var kvp in encounter.PlayerDamage)
+            {
+                int percentage = (int)Math.Round((double)kvp.Value / totalDamage * 100);
+                ratios[kvp.Key] = percentage;
+                LogService.Info($"[ActiveEncounterTracker.GetDamageRatios] User {kvp.Key}: {kvp.Value}/{totalDamage} damage = {percentage}% XP");
+            }
+
+            return ratios;
+        }
+        #endregion
+
+        #region === Query Methods ===
         /// <summary>
         /// Checks if there is an active encounter on a specific tile.
         /// </summary>
@@ -218,27 +228,10 @@ namespace Adventure.Services
             PlayerToEncounter.TryGetValue(userId, out var tileId);
             return tileId;
         }
-
-        /// <summary>
-        /// Extracts the area ID from a tile ID. E.g., "living_room:2,8" → "living_room"
-        /// </summary>
-        private static string GetAreaFromTileId(string tileId)
-        {
-            int colonIndex = tileId.IndexOf(':');
-            return colonIndex > 0 ? tileId[..colonIndex] : tileId;
-        }
-
-        /// <summary>
-        /// Extracts the position from a tile ID. E.g., "living_room:2,8" → "2,8"
-        /// </summary>
-        private static string GetPositionFromTileId(string tileId)
-        {
-            int colonIndex = tileId.IndexOf(':');
-            return colonIndex > 0 ? tileId[(colonIndex + 1)..] : "0,0";
-        }
+        #endregion
 
         #region === Persistence (Save/Load) ===
-
+        #region >>> Persistence DTOs <<<
         /// <summary>
         /// Data Transfer Object for serializing encounter data to JSON.
         /// Used to persist active encounters and player mappings to disk.
@@ -268,6 +261,7 @@ namespace Adventure.Services
             public Dictionary<ulong, string> PlayerToEncounter { get; set; } = new();
             public DateTime SavedAt { get; set; } = DateTime.UtcNow;
         }
+        #endregion
 
         /// <summary>
         /// Saves all active encounters and player-to-encounter mappings to a JSON file.
@@ -278,67 +272,109 @@ namespace Adventure.Services
         {
             try
             {
-                // Convert ConcurrentDictionary to DTO format for serialization
-                var encounters = new List<EncounterDataDto>();
-                foreach (var kvp in ActiveEncounters)
-                {
-                    if (kvp.Value == null)
-                    {
-                        LogService.Info($"[ActiveEncounterTracker.SaveEncountersAsync] Null encounter data for tile {kvp.Key}, skipping.");
-                        continue;
-                    }
+                var encounters = ConvertEncountersToDtos();
+                var persistenceData = BuildPersistenceData(encounters);
+                string filePath = EnsureDataDirectoryExists();
 
-                    encounters.Add(new EncounterDataDto
-                    {
-                        TileId = kvp.Value.TileId ?? string.Empty,
-                        NpcName = kvp.Value.NpcName ?? string.Empty,
-                        CurrentHitpoints = kvp.Value.CurrentHitpoints,
-                        MaxHitpoints = kvp.Value.MaxHitpoints,
-                        PlayerDamage = kvp.Value.PlayerDamage?.ToDictionary(x => x.Key, x => x.Value) ?? new Dictionary<ulong, int>(),
-                        ParticipatingPlayers = kvp.Value.ParticipatingPlayers ?? new HashSet<ulong>(),
-                        // Save NPC thumbnail URLs for embed display
-                        ThumbHpNpc_100 = kvp.Value.Npc?.ThumbHpNpc_100 ?? string.Empty,
-                        ThumbHpNpc_50 = kvp.Value.Npc?.ThumbHpNpc_50 ?? string.Empty,
-                        ThumbHpNpc_10 = kvp.Value.Npc?.ThumbHpNpc_10 ?? string.Empty,
-                        ThumbHpNpc_0 = kvp.Value.Npc?.ThumbHpNpc_0 ?? string.Empty
-                    });
-                }
-
-                var persistenceData = new PersistenceData
-                {
-                    Encounters = encounters,
-                    PlayerToEncounter = PlayerToEncounter.ToDictionary(x => x.Key, x => x.Value ?? string.Empty),
-                    SavedAt = DateTime.UtcNow
-                };
-
-                // Ensure data directory exists
-                string dataDir = Path.Combine(AppContext.BaseDirectory, "Data");
-                if (!Directory.Exists(dataDir))
-                {
-                    Directory.CreateDirectory(dataDir);
-                }
-
-                string filePath = Path.Combine(dataDir, "ActiveEncounters.json");
-
-                // Serialize with indentation for readability
-                var options = new JsonSerializerOptions { WriteIndented = true };
-                string json = JsonSerializer.Serialize(persistenceData, options);
-
-                // Write to file asynchronously (always write, even if empty - this clears stale data)
-                await File.WriteAllTextAsync(filePath, json);
-
-                if (encounters.Count == 0 && persistenceData.PlayerToEncounter.Count == 0)
-                {
-                    LogService.Info($"[ActiveEncounterTracker.SaveEncountersAsync] ✅ Cleared all encounters (file updated)");
-                }
-                else
-                {
-                    LogService.Info($"[ActiveEncounterTracker.SaveEncountersAsync] ✅ Saved {encounters.Count} active encounters to {filePath}");
-                }
+                await WriteEncountersToFileAsync(filePath, persistenceData);
+                LogSaveResult(encounters.Count, persistenceData.PlayerToEncounter.Count, filePath);
             }
             catch (Exception ex)
             {
                 LogService.Error($"[ActiveEncounterTracker.SaveEncountersAsync] ❌ Failed to save encounters: {ex.Message}\n{ex}");
+            }
+        }
+        #endregion
+
+        #region Save Helpers
+        /// <summary>
+        /// Converts active encounters to DTOs for serialization.
+        /// </summary>
+        /// <returns>List of encounter DTOs.</returns>
+        private static List<EncounterDataDto> ConvertEncountersToDtos()
+        {
+            var encounters = new List<EncounterDataDto>();
+            foreach (var kvp in ActiveEncounters)
+            {
+                if (kvp.Value == null)
+                {
+                    LogService.Info($"[ActiveEncounterTracker.ConvertEncountersToDtos] Null encounter data for tile {kvp.Key}, skipping.");
+                    continue;
+                }
+
+                encounters.Add(new EncounterDataDto
+                {
+                    TileId = kvp.Value.TileId ?? string.Empty,
+                    NpcName = kvp.Value.NpcName ?? string.Empty,
+                    CurrentHitpoints = kvp.Value.CurrentHitpoints,
+                    MaxHitpoints = kvp.Value.MaxHitpoints,
+                    PlayerDamage = kvp.Value.PlayerDamage?.ToDictionary(x => x.Key, x => x.Value) ?? new Dictionary<ulong, int>(),
+                    ParticipatingPlayers = kvp.Value.ParticipatingPlayers ?? new HashSet<ulong>(),
+                    ThumbHpNpc_100 = kvp.Value.Npc?.ThumbHpNpc_100 ?? string.Empty,
+                    ThumbHpNpc_50 = kvp.Value.Npc?.ThumbHpNpc_50 ?? string.Empty,
+                    ThumbHpNpc_10 = kvp.Value.Npc?.ThumbHpNpc_10 ?? string.Empty,
+                    ThumbHpNpc_0 = kvp.Value.Npc?.ThumbHpNpc_0 ?? string.Empty
+                });
+            }
+            return encounters;
+        }
+
+        /// <summary>
+        /// Builds the persistence data object from encounters and player mappings.
+        /// </summary>
+        /// <param name="encounters">List of encounter DTOs.</param>
+        /// <returns>Complete persistence data object.</returns>
+        private static PersistenceData BuildPersistenceData(List<EncounterDataDto> encounters)
+        {
+            return new PersistenceData
+            {
+                Encounters = encounters,
+                PlayerToEncounter = PlayerToEncounter.ToDictionary(x => x.Key, x => x.Value ?? string.Empty),
+                SavedAt = DateTime.UtcNow
+            };
+        }
+
+        /// <summary>
+        /// Ensures the data directory exists and returns the full file path.
+        /// </summary>
+        /// <returns>Full path to the ActiveEncounters.json file.</returns>
+        private static string EnsureDataDirectoryExists()
+        {
+            string dataDir = Path.Combine(AppContext.BaseDirectory, "Data");
+            if (!Directory.Exists(dataDir))
+            {
+                Directory.CreateDirectory(dataDir);
+            }
+            return Path.Combine(dataDir, "ActiveEncounters.json");
+        }
+
+        /// <summary>
+        /// Writes persistence data to JSON file asynchronously.
+        /// </summary>
+        /// <param name="filePath">Path to the file.</param>
+        /// <param name="persistenceData">Data to serialize.</param>
+        private static async Task WriteEncountersToFileAsync(string filePath, PersistenceData persistenceData)
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string json = JsonSerializer.Serialize(persistenceData, options);
+            await File.WriteAllTextAsync(filePath, json);
+        }
+
+        /// <summary>
+        /// Logs the result of the save operation.
+        /// </summary>
+        /// <param name="encounterCount">Number of encounters saved.</param>
+        /// <param name="playerMappingCount">Number of player mappings saved.</param>
+        /// <param name="filePath">Path where data was saved.</param>
+        private static void LogSaveResult(int encounterCount, int playerMappingCount, string filePath)
+        {
+            if (encounterCount == 0 && playerMappingCount == 0)
+            {
+                LogService.Info($"[ActiveEncounterTracker.SaveEncountersAsync] ✅ Cleared all encounters (file updated)");
+            }
+            else
+            {
+                LogService.Info($"[ActiveEncounterTracker.SaveEncountersAsync] ✅ Saved {encounterCount} active encounters to {filePath}");
             }
         }
 
@@ -351,106 +387,22 @@ namespace Adventure.Services
         {
             try
             {
-                string filePath = Path.Combine(AppContext.BaseDirectory, "Data", "ActiveEncounters.json");
+                string filePath = GetPersistenceFilePath();
 
-                // Check if persistence file exists
                 if (!File.Exists(filePath))
                 {
                     LogService.Info("[ActiveEncounterTracker.LoadEncountersAsync] No saved encounters file found. Starting with clean state.");
                     return;
                 }
 
-                // Read and deserialize JSON
-                string json = await File.ReadAllTextAsync(filePath);
-                if (string.IsNullOrWhiteSpace(json))
-                {
-                    LogService.Info("[ActiveEncounterTracker.LoadEncountersAsync] Encounters file is empty.");
-                    return;
-                }
-
-                var persistenceData = JsonSerializer.Deserialize<PersistenceData>(json);
+                var persistenceData = await ReadAndDeserializePersistenceDataAsync(filePath);
                 if (persistenceData == null)
-                {
-                    LogService.Info("[ActiveEncounterTracker.LoadEncountersAsync] Failed to deserialize encounters data.");
                     return;
-                }
 
-                // Restore encounters
-                if (persistenceData.Encounters != null && persistenceData.Encounters.Count > 0)
-                {
-                    foreach (var encounterDto in persistenceData.Encounters)
-                    {
-                        if (string.IsNullOrWhiteSpace(encounterDto?.TileId))
-                        {
-                            LogService.Info("[ActiveEncounterTracker.LoadEncountersAsync] Skipping invalid encounter with no TileId.");
-                            continue;
-                        }
+                RestoreEncountersFromDtos(persistenceData.Encounters);
+                RestorePlayerMappings(persistenceData.PlayerToEncounter);
 
-                        // Create a basic NPC object with thumbnail URLs for embed display
-                        var basicNpc = new Models.NPC.NpcModel
-                        {
-                            Name = encounterDto.NpcName ?? string.Empty,
-                            ThumbHpNpc_100 = encounterDto.ThumbHpNpc_100 ?? string.Empty,
-                            ThumbHpNpc_50 = encounterDto.ThumbHpNpc_50 ?? string.Empty,
-                            ThumbHpNpc_10 = encounterDto.ThumbHpNpc_10 ?? string.Empty,
-                            ThumbHpNpc_0 = encounterDto.ThumbHpNpc_0 ?? string.Empty
-                        };
-
-                        var encounterData = new EncounterData
-                        {
-                            TileId = encounterDto.TileId,
-                            NpcName = encounterDto.NpcName ?? string.Empty,
-                            CurrentHitpoints = encounterDto.CurrentHitpoints,
-                            MaxHitpoints = encounterDto.MaxHitpoints,
-                            PlayerDamage = new ConcurrentDictionary<ulong, int>(encounterDto.PlayerDamage ?? new Dictionary<ulong, int>()),
-                            ParticipatingPlayers = encounterDto.ParticipatingPlayers ?? new HashSet<ulong>(),
-                            Npc = basicNpc
-                        };
-
-                        // Add to active encounters
-                        if (!ActiveEncounters.TryAdd(encounterDto.TileId, encounterData))
-                        {
-                            LogService.Info($"[ActiveEncounterTracker.LoadEncountersAsync] Failed to add encounter at {encounterDto.TileId} (already exists).");
-                        }
-                    }
-                }
-
-                // Restore player-to-encounter mappings
-                if (persistenceData.PlayerToEncounter != null && persistenceData.PlayerToEncounter.Count > 0)
-                {
-                    foreach (var kvp in persistenceData.PlayerToEncounter)
-                    {
-                        if (string.IsNullOrWhiteSpace(kvp.Value))
-                        {
-                            LogService.Info($"[ActiveEncounterTracker.LoadEncountersAsync] Skipping player {kvp.Key} with invalid tileId.");
-                            continue;
-                        }
-
-                        if (!PlayerToEncounter.TryAdd(kvp.Key, kvp.Value))
-                        {
-                            LogService.Info($"[ActiveEncounterTracker.LoadEncountersAsync] Failed to add player {kvp.Key} mapping (already exists).");
-                        }
-                        else
-                        {
-                            // Also update the player's BattleSession.State.EncounterTileId for resume functionality
-                            try
-                            {
-                                var session = BattleStateSetup.GetBattleSession(kvp.Key);
-                                if (session != null && session.State != null)
-                                {
-                                    session.State.EncounterTileId = kvp.Value;
-                                    LogService.Info($"[ActiveEncounterTracker.LoadEncountersAsync] Updated EncounterTileId for player {kvp.Key} to {kvp.Value}");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                LogService.Info($"[ActiveEncounterTracker.LoadEncountersAsync] Could not update session for player {kvp.Key}: {ex.Message}");
-                            }
-                        }
-                    }
-                }
-
-                LogService.Info($"[ActiveEncounterTracker.LoadEncountersAsync] ✅ Loaded {persistenceData.Encounters?.Count ?? 0} encounters and {persistenceData.PlayerToEncounter?.Count ?? 0} player mappings. Saved at: {persistenceData.SavedAt:yyyy-MM-dd HH:mm:ss UTC}");
+                LogLoadResult(persistenceData);
             }
             catch (JsonException ex)
             {
@@ -462,6 +414,151 @@ namespace Adventure.Services
             }
         }
 
-        #endregion Persistence
+        /// <summary>
+        /// Gets the full path to the persistence file.
+        /// </summary>
+        /// <returns>Full file path.</returns>
+        private static string GetPersistenceFilePath()
+        {
+            return Path.Combine(AppContext.BaseDirectory, "Data", "ActiveEncounters.json");
+        }
+
+        /// <summary>
+        /// Reads and deserializes the persistence data from JSON file.
+        /// </summary>
+        /// <param name="filePath">Path to the JSON file.</param>
+        /// <returns>Deserialized persistence data, or null if invalid.</returns>
+        private static async Task<PersistenceData?> ReadAndDeserializePersistenceDataAsync(string filePath)
+        {
+            string json = await File.ReadAllTextAsync(filePath);
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                LogService.Info("[ActiveEncounterTracker.ReadAndDeserializePersistenceDataAsync] Encounters file is empty.");
+                return null;
+            }
+
+            var persistenceData = JsonSerializer.Deserialize<PersistenceData>(json);
+            if (persistenceData == null)
+            {
+                LogService.Info("[ActiveEncounterTracker.ReadAndDeserializePersistenceDataAsync] Failed to deserialize encounters data.");
+                return null;
+            }
+
+            return persistenceData;
+        }
+
+        /// <summary>
+        /// Restores encounters from DTOs into active encounters dictionary.
+        /// </summary>
+        /// <param name="encounterDtos">List of encounter DTOs to restore.</param>
+        private static void RestoreEncountersFromDtos(List<EncounterDataDto>? encounterDtos)
+        {
+            if (encounterDtos == null || encounterDtos.Count == 0)
+                return;
+
+            foreach (var encounterDto in encounterDtos)
+            {
+                if (string.IsNullOrWhiteSpace(encounterDto?.TileId))
+                {
+                    LogService.Info("[ActiveEncounterTracker.RestoreEncountersFromDtos] Skipping invalid encounter with no TileId.");
+                    continue;
+                }
+
+                var encounterData = CreateEncounterDataFromDto(encounterDto);
+
+                if (!ActiveEncounters.TryAdd(encounterDto.TileId, encounterData))
+                {
+                    LogService.Info($"[ActiveEncounterTracker.RestoreEncountersFromDtos] Failed to add encounter at {encounterDto.TileId} (already exists).");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates an EncounterData object from a DTO.
+        /// </summary>
+        /// <param name="dto">The encounter DTO.</param>
+        /// <returns>Fully initialized EncounterData object.</returns>
+        private static EncounterData CreateEncounterDataFromDto(EncounterDataDto dto)
+        {
+            var basicNpc = new NpcModel
+            {
+                Name = dto.NpcName ?? string.Empty,
+                ThumbHpNpc_100 = dto.ThumbHpNpc_100 ?? string.Empty,
+                ThumbHpNpc_50 = dto.ThumbHpNpc_50 ?? string.Empty,
+                ThumbHpNpc_10 = dto.ThumbHpNpc_10 ?? string.Empty,
+                ThumbHpNpc_0 = dto.ThumbHpNpc_0 ?? string.Empty
+            };
+
+            return new EncounterData
+            {
+                TileId = dto.TileId,
+                NpcName = dto.NpcName ?? string.Empty,
+                CurrentHitpoints = dto.CurrentHitpoints,
+                MaxHitpoints = dto.MaxHitpoints,
+                PlayerDamage = new ConcurrentDictionary<ulong, int>(dto.PlayerDamage ?? new Dictionary<ulong, int>()),
+                ParticipatingPlayers = dto.ParticipatingPlayers ?? new HashSet<ulong>(),
+                Npc = basicNpc
+            };
+        }
+
+        /// <summary>
+        /// Restores player-to-encounter mappings and updates battle sessions.
+        /// </summary>
+        /// <param name="playerMappings">Dictionary of player to tile mappings.</param>
+        private static void RestorePlayerMappings(Dictionary<ulong, string>? playerMappings)
+        {
+            if (playerMappings == null || playerMappings.Count == 0)
+                return;
+
+            foreach (var kvp in playerMappings)
+            {
+                if (string.IsNullOrWhiteSpace(kvp.Value))
+                {
+                    LogService.Info($"[ActiveEncounterTracker.RestorePlayerMappings] Skipping player {kvp.Key} with invalid tileId.");
+                    continue;
+                }
+
+                if (!PlayerToEncounter.TryAdd(kvp.Key, kvp.Value))
+                {
+                    LogService.Info($"[ActiveEncounterTracker.RestorePlayerMappings] Failed to add player {kvp.Key} mapping (already exists).");
+                }
+                else
+                {
+                    UpdatePlayerBattleSession(kvp.Key, kvp.Value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates a player's battle session with their encounter tile ID.
+        /// </summary>
+        /// <param name="userId">The player's user ID.</param>
+        /// <param name="tileId">The encounter tile ID.</param>
+        private static void UpdatePlayerBattleSession(ulong userId, string tileId)
+        {
+            try
+            {
+                var session = BattleStateSetup.GetBattleSession(userId);
+                if (session != null && session.State != null)
+                {
+                    session.State.EncounterTileId = tileId;
+                    LogService.Info($"[ActiveEncounterTracker.UpdatePlayerBattleSession] Updated EncounterTileId for player {userId} to {tileId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.Info($"[ActiveEncounterTracker.UpdatePlayerBattleSession] Could not update session for player {userId}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Logs the result of the load operation.
+        /// </summary>
+        /// <param name="persistenceData">The loaded persistence data.</param>
+        private static void LogLoadResult(PersistenceData persistenceData)
+        {
+            LogService.Info($"[ActiveEncounterTracker.LoadEncountersAsync] ✅ Loaded {persistenceData.Encounters?.Count ?? 0} encounters and {persistenceData.PlayerToEncounter?.Count ?? 0} player mappings. Saved at: {persistenceData.SavedAt:yyyy-MM-dd HH:mm:ss UTC}");
+        }
+        #endregion
     }
 }
