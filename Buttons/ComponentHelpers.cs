@@ -3,6 +3,7 @@ using Adventure.Loaders;
 using Adventure.Models.BattleState;
 using Adventure.Models.Items;
 using Adventure.Models.Map;
+using Adventure.Models.NPC;
 using Adventure.Models.Player;
 using Adventure.Modules.Helpers;
 using Adventure.Quest.Battle.BattleEngine;
@@ -10,11 +11,13 @@ using Adventure.Quest.Battle.Randomizers;
 using Adventure.Quest.Encounter;
 using Adventure.Quest.Map;
 using Adventure.Quest.Map.HashSets;
+using Adventure.Quest.Battle.Process;
 using Adventure.Services;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using static Adventure.Quest.Battle.Randomizers.EncounterRandomizer;
+using System.Linq;
 
 namespace Adventure.Buttons
 {
@@ -249,13 +252,45 @@ namespace Adventure.Buttons
             var encounterData = ActiveEncounterTracker.GetEncounter(session.State.EncounterTileId);
             if (encounterData?.Npc != null)
             {
-                session.Context.Npc = encounterData.Npc;
+                // Try to reload the full NPC model from both bestiary and humanoids by name
+                var fullNpc = encounterData.Npc;
+                var bestiaryNpcs = BestiaryLoader.Load();
+                var humanoidNpcs = HumanoidLoader.Load();
+
+                // Combine all NPCs and search by name
+                var allNpcs = new List<NpcModel>();
+                if (bestiaryNpcs != null)
+                    allNpcs.AddRange(bestiaryNpcs);
+                if (humanoidNpcs != null)
+                    allNpcs.AddRange(humanoidNpcs);
+
+                if (allNpcs.Count > 0)
+                {
+                    var reloadedNpc = allNpcs.FirstOrDefault(n => n.Name == encounterData.NpcName);
+                    if (reloadedNpc != null)
+                    {
+                        fullNpc = reloadedNpc;
+                        LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] Full NPC model reloaded: {reloadedNpc.Name}");
+                    }
+                }
+
+                session.Context.Npc = fullNpc;
                 // CRITICAL: Also restore NPC HP values from the encounter
                 session.State.HitpointsAtStartNPC = encounterData.MaxHitpoints;
                 session.State.CurrentHitpointsNPC = encounterData.CurrentHitpoints;
                 session.State.PreHpNPC = encounterData.CurrentHitpoints;
                 LogService.Info("[ComponentHelpers.HandleResumeEncounterAsync] NPC data reloaded from encounter tracker");
                 LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] NPC HP restored: {encounterData.CurrentHitpoints}/{encounterData.MaxHitpoints}");
+
+                // Reload NPC weapons and armor
+                if (fullNpc.Weapons != null)
+                    session.Context.NpcWeapons = GameEntityFetcher.RetrieveWeaponAttributes(fullNpc.Weapons);
+                if (fullNpc.Armor != null)
+                    session.Context.NpcArmor = GameEntityFetcher.RetrieveArmorAttributes(fullNpc.Armor);
+
+                // Recalculate NPC state based on current HP
+                HPStatusHelpers.GetHPStatus(encounterData.CurrentHitpoints, encounterData.MaxHitpoints, HPStatusHelpers.TargetType.NPC, session);
+                LogService.Info($"[ComponentHelpers.HandleResumeEncounterAsync] NPC state recalculated: {session.State.StateOfNPC}");
             }
             else
             {
@@ -300,7 +335,7 @@ namespace Adventure.Buttons
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(Color.Orange)
                 .WithTitle($"⚔️ Encounter Resumed!")
-                .WithDescription($"You return to face the {session.State.StateOfNPC} **{session.Context.Npc.Name}**!\n\n" +
+                .WithDescription($"You return to face the **{session.State.StateOfNPC} {session.Context.Npc.Name}**!\n\n" +
                                 $"The battle continues...");
 
             ComponentBuilder buttons = SlashCommandHelpers.BuildEncounterButtons(context.User.Id);
