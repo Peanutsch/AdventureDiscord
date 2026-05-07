@@ -73,8 +73,7 @@ namespace Adventure.Quest.Rolls
             // Calculate total attack value
             int totalAttackRoll = attackRoll + abilityModifier + proficiencyModifier;
 
-            LogService.Info($"[ProcessRollsAndDamage.ValidateHit] Calculating totalAttackRoll:\n" +
-                            $"> totalAttackRoll({totalAttackRoll}) = attackRoll(+{attackRoll}) + abilityModifier[{abilityStrength}](+{abilityModifier}) + proficiencyModifier(+{proficiencyModifier})\n");
+            LogService.Info($"[ProcessRollsAndDamage.ValidateHit] Calculating totalAttackRoll: totalAttackRoll({totalAttackRoll}) = attackRoll(+{attackRoll}) + abilityModifier[{abilityStrength}](+{abilityModifier}) + proficiencyModifier(+{proficiencyModifier})\n");
 
             // Store relevant data in the battle state
             session.State.AttackRoll = attackRoll;
@@ -159,13 +158,11 @@ namespace Adventure.Quest.Rolls
 
             // Base damage: normal roll + strength/ability modifier
             var totalDamage = damage + session.State.AbilityModifier;
-            LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] Calculating totalDamage:\n" +
-                            $"totalDamage({totalDamage}) = damage({damage}) + abilityModifier({session.State.AbilityModifier})\n");
+            LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] Calculating totalDamage: totalDamage({totalDamage}) = damage({damage}) + abilityModifier({session.State.AbilityModifier})\n");
 
             // Critical extra damage
             var totalCritDamage = damage + critRoll + session.State.AbilityModifier;
-            LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] Calculating totalCriticalDamage:\n" +
-                            $"totalCritDamage({totalCritDamage}) = damage({damage}) + critRoll({critRoll}) + abilityModifier({session.State.AbilityModifier})\n");
+            LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] Calculating totalCriticalDamage: totalCritDamage({totalCritDamage}) = damage({damage}) + critRoll({critRoll}) + abilityModifier({session.State.AbilityModifier})\n");
 
             // Apply critical-hit rule first
             if (session.State.IsCriticalHit)
@@ -197,13 +194,13 @@ namespace Adventure.Quest.Rolls
             {
                 var preSavedHPNpc = session.State.PreHpNPC;
                 session.State.PreHpNPC = currentHitpoints - totalDamage;
-                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] pre HP NPC: {preSavedHPNpc}\nUpdated state.PreHPNPC to: {session.State.PreHpNPC}\n");
+                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] pre HP NPC: {preSavedHPNpc} > Updated state.PreHPNPC to: {session.State.PreHpNPC}\n");
             }
             else
             {
                 var preSavedHPPlayer = session.State.PreHpPlayer;
                 session.State.PreHpPlayer = currentHitpoints - totalDamage;
-                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] pre HP Player: {preSavedHPPlayer}\nUpdated state.PreHPPlayer to: {session.State.PreHpPlayer}\n");
+                LogService.Info($"[ProcessRollAndApplyDamage.RollAndApplyDamage] pre HP Player: {preSavedHPPlayer} > Updated state.PreHPPlayer to: {session.State.PreHpPlayer}\n");
             }
 
             // Return tuple with detailed damage info (damage = raw dice sum, totalDamage = final after mods/crit/miss)

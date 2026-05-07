@@ -18,46 +18,46 @@ namespace Adventure.Quest.Battle.Attack
         /// </summary>
         /// <param name="cr">The challenge rating value.</param>
         /// <returns>A string representation of the challenge rating.</returns>
-        public static string DisplayCR(double cr)
+        public static string DisplayCR(double cr) => cr switch
         {
-            if (cr == 0.125) return "1/8";
-            else if (cr == 0.25) return "1/4";
-            else if (cr == 0.5) return "1/2";
-            else return cr.ToString();
-        }
+            0.125 => "1/8",
+            0.25 => "1/4",
+            0.5 => "1/2",
+            _ => cr.ToString()
+        };
 
         /// <summary>
         /// Returns hit dice (dice count, dice value) for a given CR.
         /// Used to calculate NPC hitpoints.
         /// </summary>
-        public static (int diceCount, int diceValue) GetHitDie(double cr)
+        public static (int diceCount, int diceValue) GetHitDie(double cr) => cr switch
         {
-            if (cr <= 0.125) return (2, 6);
-            else if (cr <= 0.25) return (2, 8);
-            else if (cr <= 0.5) return (2, 8);
-            else if (cr <= 1) return (2, 8);
-            else if (cr <= 2) return (3, 8);
-            else if (cr <= 3) return (4, 10);
-            else if (cr <= 5) return (6, 10);
-            else if (cr <= 10) return (12, 10);
-            else return (20, 12);
-        }
+            <= 0.125 => (2, 6),
+            <= 0.25 => (2, 8),
+            <= 0.5 => (2, 8),
+            <= 1 => (2, 8),
+            <= 2 => (3, 8),
+            <= 3 => (4, 10),
+            <= 5 => (6, 10),
+            <= 10 => (12, 10),
+            _ => (20, 12)
+        };
 
         /// <summary>
         /// Returns XP awarded to the player for defeating an NPC of given CR.
         /// </summary>
-        public static int GetRewardXP(double cr)
+        public static int GetRewardXP(double cr) => cr switch
         {
-            if (cr <= 0.125) return 25;
-            else if (cr <= 0.25) return 50;
-            else if (cr <= 0.5) return 100;
-            else if (cr <= 1) return 200;
-            else if (cr <= 2) return 450;
-            else if (cr <= 3) return 700;
-            else if (cr <= 5) return 1800;
-            else if (cr <= 10) return 5900;
-            else return 0;
-        }
+            <= 0.125 => 25,
+            <= 0.25 => 50,
+            <= 0.5 => 100,
+            <= 1 => 200,
+            <= 2 => 450,
+            <= 3 => 700,
+            <= 5 => 1800,
+            <= 10 => 5900,
+            _ => 0
+        };
         #endregion
 
         #region === Get NPC Hitpoints ===
