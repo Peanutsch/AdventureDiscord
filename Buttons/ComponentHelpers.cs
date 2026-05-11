@@ -49,7 +49,7 @@ namespace Adventure.Buttons
     /// </summary>
     public static class ComponentHelpers
     {
-        #region === Move Player ===
+        #region === PUBLIC API: Movement Orchestration ===
         /// <summary>
         /// Handles player movement across the map, including saving their position,
         /// performing automatic encounters, and updating the map display.
@@ -91,7 +91,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Tile Validation and Position Helpers ===
+        #region === PRIVATE: Movement Validation & Helpers ===
         /// <summary>
         /// Attempts to find a tile in the map based on the provided key.
         /// </summary>
@@ -163,7 +163,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Auto Encounter Handling ===
+        #region === PRIVATE: Normal Movement Flow ===
         /// <summary>
         /// Executes the logic for an automatic encounter, including NPC generation,
         /// battle setup, and displaying the encounter embed.
@@ -256,7 +256,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Resume Encounter Handling ===
+        #region === PRIVATE: Encounter Flow - Auto Encounter ===
         /// <summary>
         /// Resumes an existing encounter when player returns to the tile.
         /// Restores battle state with current NPC HP and continues the fight.
@@ -318,22 +318,25 @@ namespace Adventure.Buttons
                 return false;
             }
 
-            NpcModel fullNpc = ReloadFullNpcModel(encounterData);
+            NpcModel fullNpc = ReloadFullNpcModel(encounterData.NpcName, encounterData.Npc);
             RestoreNpcToSession(session, fullNpc, encounterData);
             ReloadNpcEquipment(session, fullNpc);
             RecalculateNpcState(session, encounterData);
 
             return true;
         }
+        #endregion
 
+        #region === PRIVATE: Encounter Flow - Resume =====
         /// <summary>
         /// Reloads the full NPC model from loaders with all details.
+        /// Searches both bestiary and humanoid NPCs by name to ensure complete NPC data.
         /// </summary>
-        /// <param name="encounterData">The encounter data containing NPC name.</param>
-        /// <returns>The full NPC model.</returns>
-        private static NpcModel ReloadFullNpcModel(dynamic encounterData)
+        /// <param name="npcName">The name of the NPC to reload.</param>
+        /// <param name="fallbackNpc">Optional fallback NPC if search fails.</param>
+        /// <returns>The full NPC model with all details (weapons, armor, etc.).</returns>
+        private static NpcModel ReloadFullNpcModel(string npcName, NpcModel? fallbackNpc = null)
         {
-            var fullNpc = encounterData.Npc;
             var bestiaryNpcs = BestiaryLoader.Load();
             var humanoidNpcs = HumanoidLoader.Load();
 
@@ -345,15 +348,15 @@ namespace Adventure.Buttons
 
             if (allNpcs.Count > 0)
             {
-                var reloadedNpc = allNpcs.FirstOrDefault(n => n.Name == encounterData.NpcName);
+                var reloadedNpc = allNpcs.FirstOrDefault(n => n.Name == npcName);
                 if (reloadedNpc != null)
                 {
-                    fullNpc = reloadedNpc;
                     LogService.Info($"[ComponentHelpers.ReloadFullNpcModel] Full NPC model reloaded: {reloadedNpc.Name}");
+                    return reloadedNpc;
                 }
             }
 
-            return fullNpc;
+            return fallbackNpc ?? new NpcModel { Name = npcName };
         }
 
         /// <summary>
@@ -484,7 +487,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Join Encounter Handling ===
+        #region === PRIVATE: Encounter Flow - Join Multiplayer ===
         /// <summary>
         /// Handles a player joining an existing multiplayer encounter.
         /// Allows multiple players to fight the same NPC together.
@@ -520,6 +523,7 @@ namespace Adventure.Buttons
 
         /// <summary>
         /// Retrieves the NPC model from encounter data, with fallback to other player sessions.
+        /// Reloads full NPC data from both bestiary and humanoid loaders to ensure weapons/armor are available.
         /// </summary>
         /// <param name="encounterData">The encounter data containing NPC information.</param>
         /// <returns>The NPC model if found, otherwise null.</returns>
@@ -536,6 +540,13 @@ namespace Adventure.Buttons
                     var firstPlayerSession = BattleStateSetup.GetBattleSession(firstPlayer);
                     npc = firstPlayerSession?.Context.Npc;
                 }
+            }
+
+            // Reload all NPC data from both bestiary and humanoids to ensure weapons/armor are available
+            if (npc != null)
+            {
+                npc = ReloadFullNpcModel(npc.Name!, npc);
+                LogService.Info($"[ComponentHelpers.GetNpcFromEncounter] Full NPC model reloaded: {npc.Name}");
             }
 
             return npc;
@@ -696,7 +707,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Player Inventory Management ===
+        #region === PRIVATE: NPC Model Rehydration Helpers ===
         /// <summary>
         /// Reloads player inventory (weapons, armor, items) into the battle session.
         /// Used when resuming an encounter after flee to ensure inventory is up-to-date.
@@ -717,7 +728,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Normal Movement Handling ===
+        #region === PRIVATE: Player Inventory Management ==="
         /// <summary>
         /// Handles standard player movement when no encounter occurs.
         /// Updates the map view and optionally displays a travel animation.
@@ -755,7 +766,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Travel Transition Embeds ===
+        #region === PUBLIC UI: Transition Embeds - Travel ===
         /// <summary>
         /// Builds a travel transition embed for moving between tiles.
         /// </summary>
@@ -824,7 +835,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Battle Transition Embeds ===
+        #region === PUBLIC UI: Transition Embeds - Battle ===
         public static async Task TransitionBattleEmbed(SocketInteractionContext context, string npc)
         {
             await context.Interaction.ModifyOriginalResponseAsync(msg =>
@@ -845,7 +856,7 @@ namespace Adventure.Buttons
         }
         #endregion
 
-        #region === Flee Transition Handling ===
+        #region === PUBLIC UI: Transition Embeds - Flee ==="
         /// <summary>
         /// Handles the transition when a player chooses to flee from battle.
         /// Displays a "fleeing" embed, waits briefly, then moves the player to a nearby or random safe tile.
