@@ -958,7 +958,7 @@ namespace Adventure.Buttons
             {
                 Random rnd = new Random();
                 string randomNeighbor = neighbors[rnd.Next(neighbors.Count)];
-                LogService.Info($"[TransitionFleeEmbed] Player fled to nearby tile: {randomNeighbor}");
+                LogService.Info($"[TransitionFleeEmbed] Player fled to [NEARBY] tile: {randomNeighbor}");
                 return TestHouseLoader.TileLookup[randomNeighbor];
             }
 
@@ -988,7 +988,7 @@ namespace Adventure.Buttons
             Random rnd = new Random();
             TileModel randomTile = safeTiles[rnd.Next(safeTiles.Count)];
 
-            LogService.Info($"[TransitionFleeEmbed] Player fled randomly to tile: {randomTile.TileId}");
+            LogService.Info($"[TransitionFleeEmbed] Player fled [RANDOMLY] to tile: {randomTile.TileId}");
             return randomTile;
         }
         #endregion
