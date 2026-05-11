@@ -38,7 +38,7 @@
           "Floor",
           "WISP1",
           "Wall",
-          "NPC01",
+          "Floor",
           "Wall"
         ],
         [
@@ -176,7 +176,7 @@
           "Wall",
           "Grass",
           "Water",
-          "Treasure",
+          "EXIT2",
           "Water",
           "Grass",
           "Wall",
