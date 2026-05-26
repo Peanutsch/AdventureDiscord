@@ -5,15 +5,19 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Models\Battle\**" />
     <Compile Remove="Quest\PlayerHelpers\**" />
+    <Compile Remove="AdventureMonoGame\**" />
     <EmbeddedResource Remove="Models\Battle\**" />
     <EmbeddedResource Remove="Quest\PlayerHelpers\**" />
+    <EmbeddedResource Remove="AdventureMonoGame\**" />
     <None Remove="Models\Battle\**" />
     <None Remove="Quest\PlayerHelpers\**" />
+    <None Remove="AdventureMonoGame\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -114,6 +118,10 @@
 
   <ItemGroup>
     <Folder Include="Data\Thumb\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".github\copilot-instructions.md" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
